@@ -1,6 +1,6 @@
 package com.algoprep.interviewbank.domain.ports.out;
 
-import com.algoprep.interviewbank.domain.model.TopicProgress;
+import com.algoprep.interviewbank.domain.model.study.TopicProgress;
 import java.util.List;
 import java.util.UUID;
 

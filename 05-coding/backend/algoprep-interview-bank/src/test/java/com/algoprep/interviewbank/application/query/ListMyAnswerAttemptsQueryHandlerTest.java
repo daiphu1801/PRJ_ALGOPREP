@@ -8,8 +8,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.algoprep.common.exception.ResourceNotFoundException;
-import com.algoprep.interviewbank.domain.model.AttemptPage;
-import com.algoprep.interviewbank.domain.model.PracticeQuestion;
+import com.algoprep.interviewbank.domain.model.practice.AttemptPage;
+import com.algoprep.interviewbank.domain.model.practice.PracticeQuestion;
 import com.algoprep.interviewbank.domain.ports.out.PracticeRepository;
 import java.util.List;
 import java.util.Optional;

@@ -1,5 +1,7 @@
-package com.algoprep.interviewbank.domain.model;
+package com.algoprep.interviewbank.domain.model.practice;
 
+import com.algoprep.interviewbank.domain.model.feedback.Feedback;
+import com.algoprep.interviewbank.domain.model.feedback.FeedbackStatus;
 import java.time.Instant;
 import java.util.UUID;
 

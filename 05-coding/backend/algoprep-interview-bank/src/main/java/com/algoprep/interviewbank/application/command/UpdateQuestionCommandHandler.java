@@ -2,7 +2,7 @@ package com.algoprep.interviewbank.application.command;
 
 import com.algoprep.interviewbank.application.dto.QuestionCommand;
 import com.algoprep.interviewbank.application.ports.in.UpdateQuestionUseCase;
-import com.algoprep.interviewbank.domain.model.AdminQuestion;
+import com.algoprep.interviewbank.domain.model.question.AdminQuestion;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

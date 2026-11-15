@@ -1,12 +1,12 @@
 package com.algoprep.interviewbank.domain.ports.out;
 
-import com.algoprep.interviewbank.domain.model.AdminQuestion;
-import com.algoprep.interviewbank.domain.model.AdminQuestionPage;
 import com.algoprep.interviewbank.domain.model.CatalogKind;
-import com.algoprep.interviewbank.domain.model.QuestionDraft;
-import com.algoprep.interviewbank.domain.model.QuestionListCriteria;
-import com.algoprep.interviewbank.domain.model.QuestionRow;
 import com.algoprep.interviewbank.domain.model.RubricCriterion;
+import com.algoprep.interviewbank.domain.model.question.AdminQuestion;
+import com.algoprep.interviewbank.domain.model.question.AdminQuestionPage;
+import com.algoprep.interviewbank.domain.model.question.QuestionDraft;
+import com.algoprep.interviewbank.domain.model.question.QuestionListCriteria;
+import com.algoprep.interviewbank.domain.model.question.QuestionRow;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;

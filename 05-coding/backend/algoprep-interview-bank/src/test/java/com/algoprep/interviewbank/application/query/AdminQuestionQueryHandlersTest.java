@@ -9,13 +9,13 @@ import static org.mockito.Mockito.when;
 
 import com.algoprep.common.exception.AlgoPrepException;
 import com.algoprep.interviewbank.application.dto.AdminQuestionQuery;
-import com.algoprep.interviewbank.domain.model.AdminQuestion;
-import com.algoprep.interviewbank.domain.model.AdminQuestionPage;
 import com.algoprep.interviewbank.domain.model.CatalogItem;
 import com.algoprep.interviewbank.domain.model.CatalogKind;
-import com.algoprep.interviewbank.domain.model.QuestionListCriteria;
 import com.algoprep.interviewbank.domain.model.QuestionSearch;
-import com.algoprep.interviewbank.domain.model.QuestionSort;
+import com.algoprep.interviewbank.domain.model.question.AdminQuestion;
+import com.algoprep.interviewbank.domain.model.question.AdminQuestionPage;
+import com.algoprep.interviewbank.domain.model.question.QuestionListCriteria;
+import com.algoprep.interviewbank.domain.model.question.QuestionSort;
 import com.algoprep.interviewbank.domain.ports.out.AdminQuestionRepository;
 import com.algoprep.interviewbank.domain.ports.out.CatalogRepository;
 import java.time.Instant;

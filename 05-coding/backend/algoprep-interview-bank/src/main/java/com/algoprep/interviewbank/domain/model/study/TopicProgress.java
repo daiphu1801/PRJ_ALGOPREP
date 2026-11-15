@@ -1,4 +1,4 @@
-package com.algoprep.interviewbank.domain.model;
+package com.algoprep.interviewbank.domain.model.study;
 
 import java.time.Instant;
 import java.util.UUID;

@@ -2,14 +2,14 @@ package com.algoprep.interviewbank.infrastructure.persistence;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.algoprep.interviewbank.domain.model.AdminQuestion;
-import com.algoprep.interviewbank.domain.model.AdminQuestionPage;
-import com.algoprep.interviewbank.domain.model.AdminQuestionRow;
 import com.algoprep.interviewbank.domain.model.CatalogKind;
-import com.algoprep.interviewbank.domain.model.QuestionDraft;
-import com.algoprep.interviewbank.domain.model.QuestionListCriteria;
-import com.algoprep.interviewbank.domain.model.QuestionSort;
 import com.algoprep.interviewbank.domain.model.RubricCriterion;
+import com.algoprep.interviewbank.domain.model.question.AdminQuestion;
+import com.algoprep.interviewbank.domain.model.question.AdminQuestionPage;
+import com.algoprep.interviewbank.domain.model.question.AdminQuestionRow;
+import com.algoprep.interviewbank.domain.model.question.QuestionDraft;
+import com.algoprep.interviewbank.domain.model.question.QuestionListCriteria;
+import com.algoprep.interviewbank.domain.model.question.QuestionSort;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;

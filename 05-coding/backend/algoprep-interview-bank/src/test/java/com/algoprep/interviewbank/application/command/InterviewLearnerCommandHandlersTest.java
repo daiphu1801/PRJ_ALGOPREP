@@ -8,8 +8,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.algoprep.common.exception.ResourceNotFoundException;
-import com.algoprep.interviewbank.domain.model.RecallRating;
-import com.algoprep.interviewbank.domain.model.RecallState;
+import com.algoprep.interviewbank.domain.model.study.RecallRating;
+import com.algoprep.interviewbank.domain.model.study.RecallState;
 import com.algoprep.interviewbank.domain.ports.out.LearnerQuestionRepository;
 import java.time.Instant;
 import java.util.Optional;

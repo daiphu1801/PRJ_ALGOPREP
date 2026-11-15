@@ -1,15 +1,15 @@
 package com.algoprep.interviewbank.infrastructure.persistence;
 
 import com.algoprep.interviewbank.domain.exception.AttemptNumberConflictException;
-import com.algoprep.interviewbank.domain.model.AnswerAttempt;
-import com.algoprep.interviewbank.domain.model.AttemptPage;
-import com.algoprep.interviewbank.domain.model.Feedback;
-import com.algoprep.interviewbank.domain.model.FeedbackCriterion;
-import com.algoprep.interviewbank.domain.model.FeedbackStatus;
-import com.algoprep.interviewbank.domain.model.NewAttempt;
-import com.algoprep.interviewbank.domain.model.PracticeQuestion;
-import com.algoprep.interviewbank.domain.model.QuestionLock;
 import com.algoprep.interviewbank.domain.model.RubricCriterion;
+import com.algoprep.interviewbank.domain.model.feedback.Feedback;
+import com.algoprep.interviewbank.domain.model.feedback.FeedbackCriterion;
+import com.algoprep.interviewbank.domain.model.feedback.FeedbackStatus;
+import com.algoprep.interviewbank.domain.model.practice.AnswerAttempt;
+import com.algoprep.interviewbank.domain.model.practice.AttemptPage;
+import com.algoprep.interviewbank.domain.model.practice.NewAttempt;
+import com.algoprep.interviewbank.domain.model.practice.PracticeQuestion;
+import com.algoprep.interviewbank.domain.model.practice.QuestionLock;
 import com.algoprep.interviewbank.domain.ports.out.PracticeRepository;
 import java.sql.Types;
 import java.time.OffsetDateTime;

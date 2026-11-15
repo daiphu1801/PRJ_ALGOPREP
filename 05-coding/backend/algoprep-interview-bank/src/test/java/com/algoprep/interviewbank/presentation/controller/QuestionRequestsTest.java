@@ -9,7 +9,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import com.algoprep.common.exception.AlgoPrepException;
 import com.algoprep.common.exception.ResourceNotFoundException;
 import com.algoprep.interviewbank.application.dto.ImportRow;
-import com.algoprep.interviewbank.domain.model.QuestionSort;
+import com.algoprep.interviewbank.domain.model.question.QuestionSort;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;

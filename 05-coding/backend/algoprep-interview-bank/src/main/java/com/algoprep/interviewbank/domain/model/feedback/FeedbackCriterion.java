@@ -1,4 +1,4 @@
-package com.algoprep.interviewbank.domain.model;
+package com.algoprep.interviewbank.domain.model.feedback;
 
 import java.math.BigDecimal;
 

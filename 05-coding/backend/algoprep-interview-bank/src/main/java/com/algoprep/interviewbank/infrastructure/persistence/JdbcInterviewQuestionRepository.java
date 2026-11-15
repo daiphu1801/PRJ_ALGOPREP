@@ -1,12 +1,12 @@
 package com.algoprep.interviewbank.infrastructure.persistence;
 
 import com.algoprep.common.domain.ports.out.IdGeneratorPort;
-import com.algoprep.interviewbank.domain.model.LearnerQuestion;
-import com.algoprep.interviewbank.domain.model.LearnerQuestionCriteria;
-import com.algoprep.interviewbank.domain.model.LearnerQuestionPage;
-import com.algoprep.interviewbank.domain.model.LearnerQuestionRow;
-import com.algoprep.interviewbank.domain.model.RecallRating;
-import com.algoprep.interviewbank.domain.model.RecallState;
+import com.algoprep.interviewbank.domain.model.study.LearnerQuestion;
+import com.algoprep.interviewbank.domain.model.study.LearnerQuestionCriteria;
+import com.algoprep.interviewbank.domain.model.study.LearnerQuestionPage;
+import com.algoprep.interviewbank.domain.model.study.LearnerQuestionRow;
+import com.algoprep.interviewbank.domain.model.study.RecallRating;
+import com.algoprep.interviewbank.domain.model.study.RecallState;
 import com.algoprep.interviewbank.domain.ports.out.LearnerQuestionRepository;
 import java.sql.ResultSet;
 import java.sql.SQLException;

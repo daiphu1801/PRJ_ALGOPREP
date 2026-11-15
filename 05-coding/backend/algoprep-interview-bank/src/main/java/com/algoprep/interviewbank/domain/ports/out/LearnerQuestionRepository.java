@@ -1,10 +1,10 @@
 package com.algoprep.interviewbank.domain.ports.out;
 
-import com.algoprep.interviewbank.domain.model.LearnerQuestion;
-import com.algoprep.interviewbank.domain.model.LearnerQuestionCriteria;
-import com.algoprep.interviewbank.domain.model.LearnerQuestionPage;
-import com.algoprep.interviewbank.domain.model.RecallRating;
-import com.algoprep.interviewbank.domain.model.RecallState;
+import com.algoprep.interviewbank.domain.model.study.LearnerQuestion;
+import com.algoprep.interviewbank.domain.model.study.LearnerQuestionCriteria;
+import com.algoprep.interviewbank.domain.model.study.LearnerQuestionPage;
+import com.algoprep.interviewbank.domain.model.study.RecallRating;
+import com.algoprep.interviewbank.domain.model.study.RecallState;
 import java.util.Optional;
 import java.util.UUID;
 

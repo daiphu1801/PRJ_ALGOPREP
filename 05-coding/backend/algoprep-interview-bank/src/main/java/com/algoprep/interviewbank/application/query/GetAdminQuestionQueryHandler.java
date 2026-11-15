@@ -2,7 +2,7 @@ package com.algoprep.interviewbank.application.query;
 
 import com.algoprep.common.exception.ResourceNotFoundException;
 import com.algoprep.interviewbank.application.ports.in.GetAdminQuestionUseCase;
-import com.algoprep.interviewbank.domain.model.AdminQuestion;
+import com.algoprep.interviewbank.domain.model.question.AdminQuestion;
 import com.algoprep.interviewbank.domain.ports.out.AdminQuestionRepository;
 import java.util.UUID;
 import org.springframework.stereotype.Service;

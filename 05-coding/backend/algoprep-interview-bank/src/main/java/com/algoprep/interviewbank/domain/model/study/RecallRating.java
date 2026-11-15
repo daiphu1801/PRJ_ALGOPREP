@@ -1,4 +1,4 @@
-package com.algoprep.interviewbank.domain.model;
+package com.algoprep.interviewbank.domain.model.study;
 
 /** Self rating and its fixed review interval (DD logic F6 BR-IB-06). */
 public enum RecallRating {

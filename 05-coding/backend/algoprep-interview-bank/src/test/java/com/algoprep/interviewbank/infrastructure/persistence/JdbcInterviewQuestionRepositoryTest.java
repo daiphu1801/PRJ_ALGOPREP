@@ -2,15 +2,15 @@ package com.algoprep.interviewbank.infrastructure.persistence;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.algoprep.interviewbank.domain.model.LearnerQuestion;
-import com.algoprep.interviewbank.domain.model.LearnerQuestionCriteria;
-import com.algoprep.interviewbank.domain.model.LearnerQuestionPage;
-import com.algoprep.interviewbank.domain.model.LearnerQuestionRow;
 import com.algoprep.interviewbank.domain.model.QuestionSearch;
-import com.algoprep.interviewbank.domain.model.RecallFilter;
-import com.algoprep.interviewbank.domain.model.RecallRating;
-import com.algoprep.interviewbank.domain.model.RecallState;
-import com.algoprep.interviewbank.domain.model.TopicProgress;
+import com.algoprep.interviewbank.domain.model.study.LearnerQuestion;
+import com.algoprep.interviewbank.domain.model.study.LearnerQuestionCriteria;
+import com.algoprep.interviewbank.domain.model.study.LearnerQuestionPage;
+import com.algoprep.interviewbank.domain.model.study.LearnerQuestionRow;
+import com.algoprep.interviewbank.domain.model.study.RecallFilter;
+import com.algoprep.interviewbank.domain.model.study.RecallRating;
+import com.algoprep.interviewbank.domain.model.study.RecallState;
+import com.algoprep.interviewbank.domain.model.study.TopicProgress;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;

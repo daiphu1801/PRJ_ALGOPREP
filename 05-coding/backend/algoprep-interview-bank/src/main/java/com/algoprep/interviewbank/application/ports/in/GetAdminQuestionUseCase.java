@@ -1,6 +1,6 @@
 package com.algoprep.interviewbank.application.ports.in;
 
-import com.algoprep.interviewbank.domain.model.AdminQuestion;
+import com.algoprep.interviewbank.domain.model.question.AdminQuestion;
 import java.util.UUID;
 
 public interface GetAdminQuestionUseCase {

@@ -1,4 +1,4 @@
-package com.algoprep.interviewbank.domain.model;
+package com.algoprep.interviewbank.domain.model.study;
 
 /** Learner list status tab; REVIEWING is VAGUE or FORGOTTEN, regardless of the due date. */
 public enum RecallFilter {

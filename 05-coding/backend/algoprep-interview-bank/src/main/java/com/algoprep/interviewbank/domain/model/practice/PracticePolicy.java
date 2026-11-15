@@ -1,4 +1,4 @@
-package com.algoprep.interviewbank.domain.model;
+package com.algoprep.interviewbank.domain.model.practice;
 
 /**
  * Constants of the practice mode (DD logic F6 section 1). ponytail: Java constants instead of

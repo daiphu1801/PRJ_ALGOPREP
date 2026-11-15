@@ -9,12 +9,12 @@ import static org.mockito.Mockito.when;
 
 import com.algoprep.interviewbank.application.dto.ImportCommand;
 import com.algoprep.interviewbank.application.dto.ImportRow;
-import com.algoprep.interviewbank.domain.model.AdminQuestion;
 import com.algoprep.interviewbank.domain.model.CatalogItem;
 import com.algoprep.interviewbank.domain.model.CatalogKind;
 import com.algoprep.interviewbank.domain.model.InterviewAuditEntry;
-import com.algoprep.interviewbank.domain.model.QuestionDraft;
 import com.algoprep.interviewbank.domain.model.RubricCriterion;
+import com.algoprep.interviewbank.domain.model.question.AdminQuestion;
+import com.algoprep.interviewbank.domain.model.question.QuestionDraft;
 import com.algoprep.interviewbank.domain.ports.out.AdminQuestionRepository;
 import com.algoprep.interviewbank.domain.ports.out.CatalogRepository;
 import com.algoprep.interviewbank.domain.ports.out.InterviewBankAuditPort;

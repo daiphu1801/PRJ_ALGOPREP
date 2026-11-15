@@ -1,9 +1,9 @@
 package com.algoprep.interviewbank.application.command;
 
 import com.algoprep.common.exception.ResourceNotFoundException;
-import com.algoprep.interviewbank.domain.model.AnswerAttempt;
-import com.algoprep.interviewbank.domain.model.NewAttempt;
-import com.algoprep.interviewbank.domain.model.QuestionLock;
+import com.algoprep.interviewbank.domain.model.practice.AnswerAttempt;
+import com.algoprep.interviewbank.domain.model.practice.NewAttempt;
+import com.algoprep.interviewbank.domain.model.practice.QuestionLock;
 import com.algoprep.interviewbank.domain.ports.out.PracticeRepository;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;

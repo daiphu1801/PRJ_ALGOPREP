@@ -5,7 +5,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.algoprep.interviewbank.domain.model.TopicProgress;
+import com.algoprep.interviewbank.domain.model.study.TopicProgress;
 import com.algoprep.interviewbank.domain.ports.out.TopicProgressRepository;
 import java.util.List;
 import java.util.UUID;

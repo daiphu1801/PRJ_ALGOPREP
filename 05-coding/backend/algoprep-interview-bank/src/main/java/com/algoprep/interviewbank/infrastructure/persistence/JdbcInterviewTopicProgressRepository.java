@@ -1,6 +1,6 @@
 package com.algoprep.interviewbank.infrastructure.persistence;
 
-import com.algoprep.interviewbank.domain.model.TopicProgress;
+import com.algoprep.interviewbank.domain.model.study.TopicProgress;
 import com.algoprep.interviewbank.domain.ports.out.TopicProgressRepository;
 import java.time.OffsetDateTime;
 import java.util.List;

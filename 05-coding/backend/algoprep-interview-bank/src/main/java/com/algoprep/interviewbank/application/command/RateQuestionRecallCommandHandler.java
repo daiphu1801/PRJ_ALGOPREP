@@ -2,8 +2,8 @@ package com.algoprep.interviewbank.application.command;
 
 import com.algoprep.common.exception.ResourceNotFoundException;
 import com.algoprep.interviewbank.application.ports.in.RateQuestionRecallUseCase;
-import com.algoprep.interviewbank.domain.model.RecallRating;
-import com.algoprep.interviewbank.domain.model.RecallState;
+import com.algoprep.interviewbank.domain.model.study.RecallRating;
+import com.algoprep.interviewbank.domain.model.study.RecallState;
 import com.algoprep.interviewbank.domain.ports.out.LearnerQuestionRepository;
 import java.util.UUID;
 import org.springframework.stereotype.Service;

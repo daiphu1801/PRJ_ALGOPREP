@@ -1,10 +1,10 @@
 package com.algoprep.interviewbank.domain.ports.out;
 
-import com.algoprep.interviewbank.domain.model.AnswerAttempt;
-import com.algoprep.interviewbank.domain.model.AttemptPage;
-import com.algoprep.interviewbank.domain.model.NewAttempt;
-import com.algoprep.interviewbank.domain.model.PracticeQuestion;
-import com.algoprep.interviewbank.domain.model.QuestionLock;
+import com.algoprep.interviewbank.domain.model.practice.AnswerAttempt;
+import com.algoprep.interviewbank.domain.model.practice.AttemptPage;
+import com.algoprep.interviewbank.domain.model.practice.NewAttempt;
+import com.algoprep.interviewbank.domain.model.practice.PracticeQuestion;
+import com.algoprep.interviewbank.domain.model.practice.QuestionLock;
 import java.util.Optional;
 import java.util.UUID;
 

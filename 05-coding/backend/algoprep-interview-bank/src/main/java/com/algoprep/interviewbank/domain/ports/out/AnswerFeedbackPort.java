@@ -1,9 +1,9 @@
 package com.algoprep.interviewbank.domain.ports.out;
 
-import com.algoprep.interviewbank.domain.model.FeedbackRequest;
-import com.algoprep.interviewbank.domain.model.FeedbackResult;
 import com.algoprep.interviewbank.domain.model.GateTicket;
-import com.algoprep.interviewbank.domain.model.LearnerCategory;
+import com.algoprep.interviewbank.domain.model.feedback.FeedbackRequest;
+import com.algoprep.interviewbank.domain.model.feedback.FeedbackResult;
+import com.algoprep.interviewbank.domain.model.practice.LearnerCategory;
 import java.util.UUID;
 
 /**

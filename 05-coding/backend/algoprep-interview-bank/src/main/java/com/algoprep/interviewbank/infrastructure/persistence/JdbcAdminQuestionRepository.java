@@ -1,14 +1,14 @@
 package com.algoprep.interviewbank.infrastructure.persistence;
 
 import com.algoprep.common.domain.ports.out.IdGeneratorPort;
-import com.algoprep.interviewbank.domain.model.AdminQuestion;
-import com.algoprep.interviewbank.domain.model.AdminQuestionPage;
-import com.algoprep.interviewbank.domain.model.AdminQuestionRow;
 import com.algoprep.interviewbank.domain.model.CatalogKind;
-import com.algoprep.interviewbank.domain.model.QuestionDraft;
-import com.algoprep.interviewbank.domain.model.QuestionListCriteria;
-import com.algoprep.interviewbank.domain.model.QuestionRow;
 import com.algoprep.interviewbank.domain.model.RubricCriterion;
+import com.algoprep.interviewbank.domain.model.question.AdminQuestion;
+import com.algoprep.interviewbank.domain.model.question.AdminQuestionPage;
+import com.algoprep.interviewbank.domain.model.question.AdminQuestionRow;
+import com.algoprep.interviewbank.domain.model.question.QuestionDraft;
+import com.algoprep.interviewbank.domain.model.question.QuestionListCriteria;
+import com.algoprep.interviewbank.domain.model.question.QuestionRow;
 import com.algoprep.interviewbank.domain.ports.out.AdminQuestionRepository;
 import java.sql.ResultSet;
 import java.sql.SQLException;

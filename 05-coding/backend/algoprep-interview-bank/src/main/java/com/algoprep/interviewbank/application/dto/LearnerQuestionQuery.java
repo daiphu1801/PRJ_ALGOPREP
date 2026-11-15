@@ -1,6 +1,6 @@
 package com.algoprep.interviewbank.application.dto;
 
-import com.algoprep.interviewbank.domain.model.RecallFilter;
+import com.algoprep.interviewbank.domain.model.study.RecallFilter;
 import java.util.UUID;
 
 /** Leniently parsed list parameters: bad values were already replaced by defaults. */

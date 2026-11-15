@@ -2,8 +2,8 @@ package com.algoprep.interviewbank.application.query;
 
 import com.algoprep.common.exception.ResourceNotFoundException;
 import com.algoprep.interviewbank.application.ports.in.ListMyAnswerAttemptsUseCase;
-import com.algoprep.interviewbank.domain.model.AttemptPage;
-import com.algoprep.interviewbank.domain.model.PracticePolicy;
+import com.algoprep.interviewbank.domain.model.practice.AttemptPage;
+import com.algoprep.interviewbank.domain.model.practice.PracticePolicy;
 import com.algoprep.interviewbank.domain.ports.out.PracticeRepository;
 import java.util.UUID;
 import org.springframework.stereotype.Service;

@@ -1,4 +1,4 @@
-package com.algoprep.interviewbank.domain.model;
+package com.algoprep.interviewbank.domain.model.question;
 
 /** Whitelisted sort columns of the management list (DD api F6 section 19.2). */
 public enum QuestionSort {

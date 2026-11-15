@@ -1,7 +1,7 @@
 package com.algoprep.interviewbank.application.query;
 
 import com.algoprep.interviewbank.application.ports.in.ReadMyInterviewTopicProgressUseCase;
-import com.algoprep.interviewbank.domain.model.TopicProgress;
+import com.algoprep.interviewbank.domain.model.study.TopicProgress;
 import com.algoprep.interviewbank.domain.ports.out.TopicProgressRepository;
 import java.util.List;
 import java.util.UUID;

@@ -1,4 +1,4 @@
-package com.algoprep.interviewbank.domain.model;
+package com.algoprep.interviewbank.domain.model.question;
 
 import java.math.BigDecimal;
 import java.util.UUID;

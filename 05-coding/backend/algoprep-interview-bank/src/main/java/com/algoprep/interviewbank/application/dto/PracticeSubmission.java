@@ -1,6 +1,6 @@
 package com.algoprep.interviewbank.application.dto;
 
-import com.algoprep.interviewbank.domain.model.LearnerCategory;
+import com.algoprep.interviewbank.domain.model.practice.LearnerCategory;
 import java.util.UUID;
 
 /** The trusted caller (from the token) plus the one untrusted field, the answer text. */

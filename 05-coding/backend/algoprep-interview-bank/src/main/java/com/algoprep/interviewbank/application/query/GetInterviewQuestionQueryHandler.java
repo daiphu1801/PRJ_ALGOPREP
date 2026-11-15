@@ -2,7 +2,7 @@ package com.algoprep.interviewbank.application.query;
 
 import com.algoprep.common.exception.ResourceNotFoundException;
 import com.algoprep.interviewbank.application.ports.in.GetInterviewQuestionUseCase;
-import com.algoprep.interviewbank.domain.model.LearnerQuestion;
+import com.algoprep.interviewbank.domain.model.study.LearnerQuestion;
 import com.algoprep.interviewbank.domain.ports.out.LearnerQuestionRepository;
 import java.util.UUID;
 import org.springframework.stereotype.Service;

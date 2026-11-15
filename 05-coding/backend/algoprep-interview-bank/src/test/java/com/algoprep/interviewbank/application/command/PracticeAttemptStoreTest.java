@@ -11,10 +11,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.algoprep.common.exception.ResourceNotFoundException;
-import com.algoprep.interviewbank.domain.model.AnswerAttempt;
-import com.algoprep.interviewbank.domain.model.FeedbackStatus;
-import com.algoprep.interviewbank.domain.model.NewAttempt;
-import com.algoprep.interviewbank.domain.model.QuestionLock;
+import com.algoprep.interviewbank.domain.model.feedback.FeedbackStatus;
+import com.algoprep.interviewbank.domain.model.practice.AnswerAttempt;
+import com.algoprep.interviewbank.domain.model.practice.NewAttempt;
+import com.algoprep.interviewbank.domain.model.practice.QuestionLock;
 import com.algoprep.interviewbank.domain.ports.out.PracticeRepository;
 import java.time.Instant;
 import java.util.List;

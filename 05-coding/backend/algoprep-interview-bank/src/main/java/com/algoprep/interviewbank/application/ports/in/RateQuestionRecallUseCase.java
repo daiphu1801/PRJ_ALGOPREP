@@ -1,7 +1,7 @@
 package com.algoprep.interviewbank.application.ports.in;
 
-import com.algoprep.interviewbank.domain.model.RecallRating;
-import com.algoprep.interviewbank.domain.model.RecallState;
+import com.algoprep.interviewbank.domain.model.study.RecallRating;
+import com.algoprep.interviewbank.domain.model.study.RecallState;
 import java.util.UUID;
 
 public interface RateQuestionRecallUseCase {
