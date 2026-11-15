@@ -54,3 +54,42 @@ export type QueuePage = {
   /** Epoch ms the snapshot was taken, for "Cập nhật lúc" and the stale check. */
   generatedAt: number;
 };
+
+/**
+ * What the screen renders, the same shape whether it comes from the mock or the real backend.
+ * `workers` is empty when the source has no worker data (the real snapshot has none yet).
+ */
+export type QueueState = "ok" | "paused" | "overloaded" | "backlog";
+
+export type QueueSettings = {
+  autoscaleThreshold: number;
+  jobsPerPage: number;
+  errorRetentionHours: number;
+  latencyCapSeconds: number;
+};
+
+export type QueueSummary = {
+  state: QueueState;
+  pendingCount: number;
+  controls: ClusterControls;
+  latency: { seconds: number | null; label: string };
+  settings: QueueSettings;
+  workers: Worker[];
+  workerCount: number;
+  maxWorkers: number;
+  /** Epoch ms the snapshot was taken. */
+  generatedAt: number;
+  infra: { warn: number; error: number };
+};
+
+export type QueueTab = "waiting" | "failed" | "all";
+
+export type JobsPage = {
+  items: QueueJob[];
+  page: number;
+  pageSize: number;
+  total: number;
+  counts: { waiting: number; failed: number; all: number };
+  /** True when the source sorts by wait time (the mock); the server list is fixed order. */
+  sortable: boolean;
+};

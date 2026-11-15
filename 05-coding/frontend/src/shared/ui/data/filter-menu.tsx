@@ -133,6 +133,7 @@ export function FilterMenu<T extends string>({
           ref={listRef}
           id={listId}
           role="listbox"
+          tabIndex={-1}
           aria-label={label}
           onKeyDown={onListKeyDown}
           className={cn(

@@ -11,6 +11,8 @@ export default defineConfig({
     // e2e/ thuộc Playwright, không phải Vitest — không loại trừ thì vitest bắt file .spec.ts
     // trong đó và vỡ ngay ở import @playwright/test.
     exclude: ["node_modules/**", "e2e/**", ".next/**"],
+    // lcov is what SonarQube reads (sonar.javascript.lcov.reportPaths); the default reporters omit it.
+    coverage: { provider: "v8", reporter: ["text", "lcov"] },
   },
   resolve: {
     alias: {

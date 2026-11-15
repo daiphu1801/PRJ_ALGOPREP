@@ -12,7 +12,6 @@ export {
   useAssignProblems,
   useAssignmentSummary,
   useClassAssignedProblems,
-  useClassAssignments,
   useClassAssignmentsPage,
   useRemoveAssignment,
   useTopAssignedProblems,

@@ -9,7 +9,7 @@ export function splitOutline(markdown: string | null | undefined): string[] {
   for (const raw of (markdown ?? "").split(/\r?\n/)) {
     const line = raw.trim();
     if (!line) continue;
-    const bullet = /^(?:[-*]|\d+\.)\s+(.*)$/.exec(line);
+    const bullet = /^(?:[-*]|\d+\.)\s+(\S.*)$/.exec(line);
     if (bullet) items.push(bullet[1]!.trim());
     else if (items.length === 0) items.push(line);
     else items[items.length - 1] += ` ${line}`;

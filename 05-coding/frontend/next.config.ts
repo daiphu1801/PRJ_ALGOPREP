@@ -7,6 +7,8 @@ const withNextIntl = createNextIntlPlugin("./src/shared/i18n/request.ts");
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  // Self-contained server bundle (.next/standalone) for a small Docker image: `node .next/standalone/server.js`.
+  output: "standalone",
   // Off by request — the dev-only floating "N" badge (route/build indicator) was mistaken for an
   // app button during UI review. Dev-mode only; never renders in production either way.
   devIndicators: false,

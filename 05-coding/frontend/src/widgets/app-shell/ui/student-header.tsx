@@ -1,7 +1,7 @@
 // PROTOTYPE — no DD yet. See 06-plan/PROTOTYPE_DEBT.md
 "use client";
 
-import { useRef, useState, type KeyboardEvent } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { BrandMark, ThemeLangSwitcher } from "@/shared/ui";
@@ -39,25 +39,30 @@ export function StudentHeader() {
   const menuButtonRef = useRef<HTMLButtonElement>(null);
 
   // Escape closes whichever popup is open and hands focus back to the button that opened it.
-  function onKeyDown(event: KeyboardEvent<HTMLElement>) {
-    if (event.key !== "Escape") return;
-    if (menuOpen) {
-      setMenuOpen(false);
-      menuButtonRef.current?.focus();
-    } else if (navOpen) {
-      setNavOpen(false);
-      navButtonRef.current?.focus();
+  // Listens on the document (only while a popup is open) so the non-interactive <header> carries
+  // no key handler.
+  useEffect(() => {
+    if (!menuOpen && !navOpen) return;
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key !== "Escape") return;
+      if (menuOpen) {
+        setMenuOpen(false);
+        menuButtonRef.current?.focus();
+      } else {
+        setNavOpen(false);
+        navButtonRef.current?.focus();
+      }
     }
-  }
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [menuOpen, navOpen]);
 
   const isActive = (href: string) =>
     pathname === href || pathname.startsWith(`${href}/`);
 
   return (
-    <header
-      onKeyDown={onKeyDown}
-      className="sticky top-0 z-30 bg-[linear-gradient(var(--color-background)_82%,transparent)] px-5 pb-3 pt-3.5">
-      <div className="student-header-bar glass-surface relative mx-auto flex h-[58px] max-w-[1400px] items-center gap-4 rounded-2xl border border-[var(--color-border)] px-4 shadow-sm lg:gap-7 lg:px-5">
+    <header className="sticky top-0 z-30 bg-[linear-gradient(var(--color-background)_82%,transparent)] px-3 pb-3 pt-3.5 sm:px-5">
+      <div className="student-header-bar glass-surface relative mx-auto flex h-[58px] max-w-[1400px] items-center gap-2 rounded-2xl border border-[var(--color-border)] px-3 shadow-sm sm:gap-4 sm:px-4 lg:gap-7 lg:px-5">
         <button
           ref={navButtonRef}
           type="button"
@@ -75,7 +80,10 @@ export function StudentHeader() {
         >
           <BrandMark size={32} />
           <span className="text-[19px] font-bold tracking-tight">AlgoPrep</span>
-          <JudgeEngineTag />
+          {/* Hidden below sm: brand + tag + the right cluster do not fit a 390px bar. */}
+          <span className="hidden sm:contents">
+            <JudgeEngineTag />
+          </span>
         </Link>
 
         <nav
@@ -103,8 +111,8 @@ export function StudentHeader() {
             remaining children sit side by side against the brand. */}
         <div className="flex-1 lg:hidden" />
 
-        <div className="flex shrink-0 items-center gap-3">
-          <ThemeLangSwitcher />
+        <div className="flex shrink-0 items-center gap-1.5 sm:gap-3">
+          <ThemeLangSwitcher iconOnlyBelowSm />
 
           <div className="relative">
             <button
@@ -133,9 +141,7 @@ export function StudentHeader() {
                 />
                 {/* Plain links, not role="menu": arrow-key navigation is not implemented, so the menu role
                     would promise more than the keyboard gets. */}
-                <div
-                  className="absolute right-0 top-10 z-50 w-[258px] rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-2.5 shadow-lg"
-                >
+                <div className="absolute right-0 top-10 z-50 w-[258px] rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-2.5 shadow-lg">
                   {STUDENT_MENU_ITEMS.map((item, index) => (
                     <div key={item.key}>
                       {item.danger && (

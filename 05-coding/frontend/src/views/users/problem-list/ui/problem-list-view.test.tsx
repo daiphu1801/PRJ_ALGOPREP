@@ -62,7 +62,10 @@ describe("ProblemListView", () => {
     await waitFor(() =>
       expect(screen.queryByText("Two Sum")).not.toBeInTheDocument(),
     );
-    expect(screen.getByRole("link", { name: /#139/ })).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: "Word Break" }),
+    ).toHaveAttribute("href", "/problems/139");
+    expect(screen.queryByText("#139")).not.toBeInTheDocument();
   });
 });
 

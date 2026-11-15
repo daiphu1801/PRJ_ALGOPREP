@@ -62,11 +62,6 @@ export {
   useSubmitPracticeAnswer,
 } from "./api/learner-queries";
 export { DRILL_SIZE } from "./api/real-learner";
-export {
-  useImportInterviewQuestions,
-  useInterviewQuestion,
-  useInterviewQuestionPage,
-} from "./api/queries";
 
 // --- Admin question management (SHR0301/0302/0303, F6 #19-#24): hooks and wire types. ---
 export {

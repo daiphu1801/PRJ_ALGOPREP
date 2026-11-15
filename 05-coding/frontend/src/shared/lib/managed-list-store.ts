@@ -35,7 +35,7 @@ export function slugify(label: string): string {
     .replace(/đ/gi, "d")
     .toUpperCase()
     .replace(/[^A-Z0-9]+/g, "_")
-    .replace(/^_+|_+$/g, "");
+    .replace(/^_|_$/g, "");
 }
 
 export function createManagedListStore<T extends ManagedItem>(

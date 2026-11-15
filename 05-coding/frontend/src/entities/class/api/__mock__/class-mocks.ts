@@ -6,16 +6,13 @@
 // ponytail: global mutable module state, fine for a single-tab prototype; swap for the real
 // `identity` endpoints wholesale at graduation, not patched incrementally.
 import type {
-  AttentionItem,
   ClassRosterRow,
   ClassActivity,
   ClassForm,
-  ClassScoreTrend,
   ClassStudent,
   ClassSummary,
   InviteCode,
   MyClass,
-  StudentStatus,
 } from "../../model/types";
 
 function delay<T>(value: T, ms = 350): Promise<T> {
@@ -272,15 +269,6 @@ const inviteCodes: Record<string, InviteCode[]> = {
 };
 let inviteSeq = 5;
 
-// REASON_BY_STATUS: câu ngắn sinh từ chính ngưỡng đã kích hoạt, không phải chuỗi tự do
-// (02-bd/screens/teacher/INS0203_class_progress.md Sheet 5 Khu vực C NO 4).
-function reasonFor(student: ClassStudent): string {
-  if (student.status === "absent") return "Không nộp bài 9 ngày";
-  if (student.status === "needs_support") return "Điểm giảm 3 tuần liên tiếp";
-  if (student.status === "watch") return `Hoàn thành ${student.completionPct}%`;
-  return "";
-}
-
 export function listInstructorClasses(): Promise<ClassSummary[]> {
   return delay(
     [...classes].sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1)),
@@ -408,46 +396,6 @@ export function removeStudent(studentId: string): Promise<void> {
     }
   }
   return delay(undefined);
-}
-
-export function listClassAttention(classId?: string): Promise<AttentionItem[]> {
-  const scoped = activeStudents(classId);
-  const order: StudentStatus[] = ["absent", "needs_support", "watch"];
-  const items = scoped
-    .filter((s) => order.includes(s.status))
-    .sort((a, b) => order.indexOf(a.status) - order.indexOf(b.status))
-    .slice(0, 5)
-    .map((s) => ({
-      studentId: s.id,
-      classId: s.classId,
-      name: s.name,
-      reason: reasonFor(s),
-      status: s.status,
-    }));
-  return delay(items);
-}
-
-export function classScoreTrend(classId?: string): Promise<ClassScoreTrend> {
-  const scoped = classId ? classes.filter((c) => c.id === classId) : classes;
-  const weekLabels = [
-    "Tuần 1",
-    "Tuần 2",
-    "Tuần 3",
-    "Tuần 4",
-    "Tuần 5",
-    "Tuần 6",
-  ];
-  const series = scoped.map((c, index) => ({
-    classId: c.id,
-    className: c.name,
-    // Deterministic 6-point ramp toward the class's current avgScore — no persisted weekly
-    // snapshot table exists yet (Câu hỏi mở Q3 of class_progress BD), so this is a stand-in shape.
-    points: weekLabels.map((_, week) => {
-      const base = (c.avgScore ?? 6) - 1.2 + week * 0.24 + index * 0.05;
-      return Math.round(base * 10) / 10;
-    }),
-  }));
-  return delay({ weekLabels, series });
 }
 
 // ponytail: fixed list, not derived from the other mocks; swap for the identity recent-activity query at graduation.

@@ -36,7 +36,7 @@ export function SegmentedTabs<T extends string>({
       role="group"
       aria-label={label}
       className={cn(
-        "flex gap-0.5 rounded-xl border border-[var(--color-border)] bg-[var(--color-track)] p-[3px]",
+        "flex max-w-full gap-0.5 overflow-x-auto rounded-xl border border-[var(--color-border)] bg-[var(--color-track)] p-[3px]",
         className,
       )}
     >

@@ -40,6 +40,8 @@ type MockQueryArgs<T> = {
   keepPrevious?: boolean;
   /** Retain placeholder data only when this query-key segment still names the same owner. */
   previousScopeIndex?: number;
+  /** Poll interval in ms, or false for none (a live screen that falls back to polling). */
+  refetchInterval?: number | false;
 };
 
 export function useMockQuery<T>({
@@ -51,6 +53,7 @@ export function useMockQuery<T>({
   enabled,
   keepPrevious,
   previousScopeIndex,
+  refetchInterval,
 }: MockQueryArgs<T>) {
   return useQuery({
     queryKey,
@@ -58,6 +61,7 @@ export function useMockQuery<T>({
     staleTime,
     retry: false,
     enabled,
+    refetchInterval,
     placeholderData: keepPrevious
       ? (data, previousQuery) =>
           previousScopeIndex === undefined ||

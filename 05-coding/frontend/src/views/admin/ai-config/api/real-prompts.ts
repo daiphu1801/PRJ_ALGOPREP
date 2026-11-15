@@ -66,7 +66,7 @@ function isGuarded(feature: AiFeatureKey): feature is GuardedFeature {
 
 /** 1600 becomes "1.600 token", the way the screen has always printed the cap. */
 function formatTokens(value: number): string {
-  return `${String(value).replace(/\B(?=(\d{3})+(?!\d))/g, ".")} token`;
+  return `${new Intl.NumberFormat("vi-VN").format(value)} token`;
 }
 
 function toGuardSet(dto: GuardsDto): GuardSet {

@@ -234,9 +234,6 @@ export function ProblemListView() {
             href={`/problems/${problem.id}`}
             className="block truncate font-semibold hover:underline"
           >
-            <span className="mr-1.5 font-mono text-xs text-[var(--color-text-muted)]">
-              {problem.code}
-            </span>
             {problem.title}
           </Link>
           <div className="mt-1 flex flex-wrap items-center gap-1.5">

@@ -1,8 +1,7 @@
 import { currentUserScope } from "@/shared/api/user-scope";
 // PROTOTYPE with a real API behind most of it (03-dd/api/F1_identity.md #19 to #28, #25A, #25B, #56,
 // #59, #45). The hooks of INS0201, INS0203, INS0204, INS0205, USR0701 and USR0702 take a real call
-// through `withMockData`. What still goes through `useMockQuery` and fails with NOT_IMPLEMENTED in
-// real mode: `useClassAttention` / `useClassScoreTrend` (#58, #57 are built, no screen uses them).
+// through `withMockData`. `useClassActivity` still goes through `useMockQuery`.
 import {
   keepPreviousData,
   useMutation,
@@ -13,14 +12,12 @@ import { ApiError, isMockMode, useMockQuery, withMockData } from "@/shared/api";
 import type { ClassForm, ClassStudentDetail } from "../model/types";
 import {
   listClassRoster,
-  classScoreTrend,
   createClass,
   createInviteCode,
   deleteClass,
   getClassStudent,
   joinClassByCode,
   listClassActivity,
-  listClassAttention,
   listClassStudents,
   listInstructorClasses,
   listInviteCodes,
@@ -180,22 +177,6 @@ export const useClassActivity = () =>
     queryKey: ["classes", "activity"],
     mock: listClassActivity,
     real: realListClassActivity,
-    spec: SPEC,
-    staleTime: STALE,
-  });
-
-export const useClassAttention = (classId?: string) =>
-  useMockQuery({
-    queryKey: ["classes", "attention", classId ?? "all"],
-    mock: () => listClassAttention(classId),
-    spec: SPEC,
-    staleTime: STALE,
-  });
-
-export const useClassScoreTrend = (classId?: string) =>
-  useMockQuery({
-    queryKey: ["classes", "score-trend", classId ?? "all"],
-    mock: () => classScoreTrend(classId),
     spec: SPEC,
     staleTime: STALE,
   });

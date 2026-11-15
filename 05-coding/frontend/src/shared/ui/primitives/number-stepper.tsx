@@ -71,7 +71,7 @@ export function NumberStepper({
     if (typed === null) return;
     setTyped(null);
     // A whole number; a pasted unit after it ("85%") is tolerated and dropped.
-    const match = /^\s*(-?\d+)\s*(?:[^\d.,-].*)?$/.exec(typed);
+    const match = /^\s*(-?\d+)(?![\d.,-])/.exec(typed);
     if (!match) return;
     const next = Math.min(max, Math.max(min, Number(match[1])));
     if (next !== value) onValueChange(next);

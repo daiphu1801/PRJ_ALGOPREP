@@ -4,15 +4,18 @@
 // no minimap, slim scrollbars, roomy line height, ligature mono font, a bracket-pair colouring and a
 // status bar with cursor position. Follows the app light/dark theme.
 //
-// ponytail: Monaco's loader pulls the editor from the jsDelivr CDN at runtime, so the screen needs
-// network. Self-host it (loader.config({ paths })) before an offline demo.
+// Monaco is self-hosted: `pnpm copy:monaco` (predev/prebuild) copies node_modules/monaco-editor/min/vs
+// to public/monaco/vs, and the loader below points at it, so no CDN or network is needed.
 "use client";
 
 import { useState } from "react";
 import dynamic from "next/dynamic";
+import { loader } from "@monaco-editor/react";
 import type { BeforeMount, OnMount } from "@monaco-editor/react";
 import { useTheme } from "next-themes";
 import { Skeleton } from "../primitives/skeleton";
+
+loader.config({ paths: { vs: "/monaco/vs" } });
 
 const MonacoEditor = dynamic(() => import("@monaco-editor/react"), {
   ssr: false,

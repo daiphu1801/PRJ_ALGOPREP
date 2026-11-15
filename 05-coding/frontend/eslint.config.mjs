@@ -149,6 +149,7 @@ const eslintConfig = [
       "node_modules/**",
       "playwright-report/**",
       "test-results/**",
+      "public/monaco/**",
     ],
   },
 ];

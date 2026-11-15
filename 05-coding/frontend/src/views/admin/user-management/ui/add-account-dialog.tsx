@@ -22,7 +22,7 @@ type Props = {
   }) => Promise<void>;
 };
 
-const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@.]+(?:\.[^\s@.]+)+$/;
 
 export function AddAccountDialog({
   open,

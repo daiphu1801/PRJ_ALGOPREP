@@ -1,17 +1,11 @@
 // Data boundary of INS0202 (03-dd/api/F2_problem-bank.md #49 to #53): `withMockData(mock, real)`.
-// `useClassAssignments()` (the whole unpaged list) serves INS0204 on mock data only; INS0101 reads #54.
 import {
   keepPreviousData,
   useMutation,
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
-import {
-  ApiError,
-  isMockMode,
-  withMockData,
-  type PageMeta,
-} from "@/shared/api";
+import { withMockData, type PageMeta } from "@/shared/api";
 import {
   assignProblemsToClass,
   assignmentSummary,
@@ -39,27 +33,7 @@ export type { AssignmentParams };
 
 const PAGE_SIZE = 20;
 
-function notImplemented(): never {
-  throw new ApiError(
-    "NOT_IMPLEMENTED",
-    501,
-    "03-dd/api/F2_problem-bank.md: danh sách không phân trang chưa có endpoint",
-  );
-}
-
 const QUERY_OPTIONS = { staleTime: 15_000, retry: false } as const;
-
-/**
- * Whole list, mock data only: INS0204 reads it in mock mode (see PROTOTYPE_DEBT). In real mode the
- * query is off, because no endpoint returns an unpaged list and INS0204 reads the paged #49.
- */
-export const useClassAssignments = () =>
-  useQuery({
-    queryKey: ["class-assignments", "list"],
-    queryFn: () => withMockData(listClassAssignments, notImplemented),
-    enabled: isMockMode(),
-    ...QUERY_OPTIONS,
-  });
 
 const TOP_COUNT = 5;
 

@@ -20,8 +20,6 @@ export { formatClassSchedule } from "./model/schedule";
 export { STUDENT_STATUS_VARIANT } from "./model/status";
 export {
   useClassActivity,
-  useClassAttention,
-  useClassScoreTrend,
   useClassRoster,
   useClassStudentDetail,
   useClassStudents,

@@ -288,7 +288,7 @@ const UNITS_MS: Record<string, number> = {
 
 /** "3 ngày trước" in the literal above becomes a timestamp, so the screen prints it the way it prints a real one. */
 function ageToIso(label: string): string {
-  const match = /(\d+)\s*(giờ|ngày|tuần|tháng)/.exec(label);
+  const match = /(\d{1,9})\s*(giờ|ngày|tuần|tháng)/.exec(label);
   const age = match ? Number(match[1]) * UNITS_MS[match[2]!]! : 0;
   return new Date(Date.now() - age).toISOString();
 }

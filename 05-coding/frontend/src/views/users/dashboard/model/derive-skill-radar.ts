@@ -60,8 +60,10 @@ export function deriveSkillRadar(topics: TopicProgress[]): SkillRadarPoint[] {
 export function pickWeakestTopic(
   points: SkillRadarPoint[],
 ): SkillRadarPoint | null {
-  if (points.length === 0) return null;
-  return points.reduce((weakest, point) =>
-    point.score < weakest.score ? point : weakest,
+  const [first] = points;
+  if (!first) return null;
+  return points.reduce(
+    (weakest, point) => (point.score < weakest.score ? point : weakest),
+    first,
   );
 }

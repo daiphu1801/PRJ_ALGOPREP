@@ -20,6 +20,8 @@ type ThemeLangSwitcherProps = {
    * only loses the theme group's text.
    */
   collapsed?: boolean;
+  /** Below the `sm` breakpoint show only the theme icons (label moves to title/aria-label). */
+  iconOnlyBelowSm?: boolean;
   className?: string;
 };
 
@@ -47,6 +49,7 @@ const THEME_OPTIONS = [
 export function ThemeLangSwitcher({
   variant = "inline",
   collapsed = false,
+  iconOnlyBelowSm = false,
   className,
 }: ThemeLangSwitcherProps) {
   const t = useT("common");
@@ -123,7 +126,11 @@ export function ThemeLangSwitcher({
       // total width and shifting whatever sits next to it (owner-flagged 2026-09-16 screenshot: the
       // VI/EN circles visibly jump right on switching to English). 62px fits the widest of the four
       // labels ("Light") with `px-1.5` — see the sidebar-budget note above for why not wider.
-      stacked ? "flex-1 px-1.5" : "min-w-[62px] px-1.5",
+      stacked
+        ? "flex-1 px-1.5"
+        : iconOnlyBelowSm
+          ? "px-1.5 sm:min-w-[62px]"
+          : "min-w-[62px] px-1.5",
       active
         ? cn(
             "bg-[var(--color-primary)] text-[var(--color-on-primary)]",
@@ -180,7 +187,7 @@ export function ThemeLangSwitcher({
             type="button"
             onClick={() => setTheme(option)}
             title={
-              collapsed
+              collapsed || iconOnlyBelowSm
                 ? option === "dark"
                   ? t("themeDark")
                   : t("themeLight")
@@ -191,8 +198,11 @@ export function ThemeLangSwitcher({
             suppressHydrationWarning
           >
             <Icon aria-hidden="true" className="h-3.5 w-3.5" />
-            {!collapsed &&
-              (option === "dark" ? t("themeDark") : t("themeLight"))}
+            {!collapsed && (
+              <span className={cn(iconOnlyBelowSm && "max-sm:sr-only")}>
+                {option === "dark" ? t("themeDark") : t("themeLight")}
+              </span>
+            )}
           </button>
         ))}
       </div>

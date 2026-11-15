@@ -92,7 +92,10 @@ httpClient.interceptors.response.use(
     return response;
   },
   async (failure: unknown) => {
-    if (axios.isCancel(failure)) return Promise.reject(failure);
+    // CanceledError extends Error; the cast only tells the type system what isCancel already proves.
+    if (axios.isCancel(failure)) {
+      return Promise.reject(failure as CanceledError<unknown>);
+    }
     const error = failure as AxiosError<ErrorBody>;
     const original = error.config;
     assertCurrentSession(original);
