@@ -1,9 +1,9 @@
 package com.algoprep.problembank.application.query;
 
-import com.algoprep.problembank.application.ports.in.ReadSubmissionProblemSummariesUseCase;
-import com.algoprep.problembank.application.ports.in.ReadSubmissionSampleIdsUseCase;
-import com.algoprep.problembank.application.ports.in.SearchSubmissionProblemsUseCase;
-import com.algoprep.problembank.domain.model.SubmissionProblemSummary;
+import com.algoprep.problembank.application.ports.in.grading.ReadSubmissionProblemSummariesUseCase;
+import com.algoprep.problembank.application.ports.in.grading.ReadSubmissionSampleIdsUseCase;
+import com.algoprep.problembank.application.ports.in.grading.SearchSubmissionProblemsUseCase;
+import com.algoprep.problembank.domain.model.grading.SubmissionProblemSummary;
 import com.algoprep.problembank.domain.ports.out.SubmissionMetadataRepository;
 import java.util.List;
 import java.util.Set;

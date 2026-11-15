@@ -1,6 +1,6 @@
 package com.algoprep.problembank.infrastructure.cache;
 
-import com.algoprep.problembank.application.dto.TestcaseUploadSession.Session;
+import com.algoprep.problembank.application.dto.testcase.TestcaseUploadSession.Session;
 import com.algoprep.problembank.application.ports.out.TestcaseUploadSessionPort;
 import java.time.Duration;
 import java.util.Optional;

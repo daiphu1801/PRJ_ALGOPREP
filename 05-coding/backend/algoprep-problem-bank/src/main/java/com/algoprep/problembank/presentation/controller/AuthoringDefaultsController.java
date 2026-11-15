@@ -1,7 +1,7 @@
 package com.algoprep.problembank.presentation.controller;
 
-import com.algoprep.problembank.application.dto.AuthoringDefaults;
-import com.algoprep.problembank.application.ports.in.ReadAuthoringDefaultsUseCase;
+import com.algoprep.problembank.application.dto.problem.AuthoringDefaults;
+import com.algoprep.problembank.application.ports.in.problem.ReadAuthoringDefaultsUseCase;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

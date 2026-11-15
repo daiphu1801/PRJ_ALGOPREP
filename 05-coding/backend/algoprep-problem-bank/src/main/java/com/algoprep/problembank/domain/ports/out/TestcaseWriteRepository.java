@@ -1,8 +1,8 @@
 package com.algoprep.problembank.domain.ports.out;
 
-import com.algoprep.problembank.domain.model.ApprovalCounts;
 import com.algoprep.problembank.domain.model.ProblemTouch;
 import com.algoprep.problembank.domain.model.StoredTestcase;
+import com.algoprep.problembank.domain.model.stats.ApprovalCounts;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;

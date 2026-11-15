@@ -1,7 +1,7 @@
 package com.algoprep.problembank.infrastructure.persistence;
 
 import com.algoprep.common.domain.ports.out.IdGeneratorPort;
-import com.algoprep.problembank.domain.model.ProblemContentData;
+import com.algoprep.problembank.domain.model.problem.ProblemContentData;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Comparator;

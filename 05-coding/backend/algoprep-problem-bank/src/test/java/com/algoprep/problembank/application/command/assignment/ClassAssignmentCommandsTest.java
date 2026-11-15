@@ -1,4 +1,4 @@
-package com.algoprep.problembank.application.command;
+package com.algoprep.problembank.application.command.assignment;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -17,8 +17,8 @@ import com.algoprep.common.exception.ResourceConflictException;
 import com.algoprep.common.exception.ResourceNotFoundException;
 import com.algoprep.common.exception.ServiceUnavailableException;
 import com.algoprep.problembank.application.ports.out.InstructorClassPort;
-import com.algoprep.problembank.domain.model.ClassAssignmentModels.ClassRef;
-import com.algoprep.problembank.domain.model.ClassAssignmentModels.ProblemState;
+import com.algoprep.problembank.domain.model.assignment.ClassAssignmentModels.ClassRef;
+import com.algoprep.problembank.domain.model.assignment.ClassAssignmentModels.ProblemState;
 import com.algoprep.problembank.domain.ports.out.ClassAssignmentRepository;
 import com.algoprep.problembank.domain.ports.out.ProblemPublishRepository;
 import java.time.Instant;

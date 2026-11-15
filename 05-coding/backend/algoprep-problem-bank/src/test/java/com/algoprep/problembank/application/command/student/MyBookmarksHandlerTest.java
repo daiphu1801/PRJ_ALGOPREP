@@ -1,4 +1,4 @@
-package com.algoprep.problembank.application.command;
+package com.algoprep.problembank.application.command.student;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -11,9 +11,9 @@ import static org.mockito.Mockito.when;
 import com.algoprep.common.exception.InvalidRequestException;
 import com.algoprep.common.exception.ResourceNotFoundException;
 import com.algoprep.problembank.application.ports.out.SolveStatePort;
-import com.algoprep.problembank.domain.model.PublishedProblemModels.SolveStates;
-import com.algoprep.problembank.domain.model.StudentCatalogModels.Bookmark;
-import com.algoprep.problembank.domain.model.StudentCatalogModels.BookmarkSaved;
+import com.algoprep.problembank.domain.model.student.PublishedProblemModels.SolveStates;
+import com.algoprep.problembank.domain.model.student.StudentCatalogModels.Bookmark;
+import com.algoprep.problembank.domain.model.student.StudentCatalogModels.BookmarkSaved;
 import com.algoprep.problembank.domain.ports.out.BookmarkRepository;
 import java.time.Instant;
 import java.util.ArrayList;

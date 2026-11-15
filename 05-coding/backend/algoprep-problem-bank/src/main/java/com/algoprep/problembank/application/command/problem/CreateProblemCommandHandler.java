@@ -1,14 +1,14 @@
-package com.algoprep.problembank.application.command;
+package com.algoprep.problembank.application.command.problem;
 
 import com.algoprep.common.exception.ServiceUnavailableException;
-import com.algoprep.problembank.application.dto.CreateProblemCommand;
-import com.algoprep.problembank.application.dto.SaveProblemContentCommand;
-import com.algoprep.problembank.application.ports.in.CreateProblemUseCase;
-import com.algoprep.problembank.application.ports.in.SaveProblemContentUseCase;
+import com.algoprep.problembank.application.dto.problem.CreateProblemCommand;
+import com.algoprep.problembank.application.dto.problem.SaveProblemContentCommand;
+import com.algoprep.problembank.application.ports.in.problem.CreateProblemUseCase;
+import com.algoprep.problembank.application.ports.in.problem.SaveProblemContentUseCase;
 import com.algoprep.problembank.application.ports.out.JudgeConfigReadPort;
 import com.algoprep.problembank.domain.model.CatalogAuditEntry;
-import com.algoprep.problembank.domain.model.ProblemContentData;
 import com.algoprep.problembank.domain.model.ProblemContentSnapshot;
+import com.algoprep.problembank.domain.model.problem.ProblemContentData;
 import com.algoprep.problembank.domain.ports.out.ProblemAuditPort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

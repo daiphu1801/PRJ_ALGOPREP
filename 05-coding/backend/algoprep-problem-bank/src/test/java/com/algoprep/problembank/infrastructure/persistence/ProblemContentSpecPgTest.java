@@ -3,12 +3,12 @@ package com.algoprep.problembank.infrastructure.persistence;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import com.algoprep.problembank.domain.model.ProblemContentData;
-import com.algoprep.problembank.domain.model.ProblemContentData.Example;
-import com.algoprep.problembank.domain.model.ProblemContentData.Limits;
-import com.algoprep.problembank.domain.model.ProblemContentData.Solution;
-import com.algoprep.problembank.domain.model.ProblemSpecData;
-import com.algoprep.problembank.domain.model.StoredProblemSpec;
+import com.algoprep.problembank.domain.model.problem.ProblemContentData;
+import com.algoprep.problembank.domain.model.problem.ProblemContentData.Example;
+import com.algoprep.problembank.domain.model.problem.ProblemContentData.Limits;
+import com.algoprep.problembank.domain.model.problem.ProblemContentData.Solution;
+import com.algoprep.problembank.domain.model.problem.ProblemSpecData;
+import com.algoprep.problembank.domain.model.problem.StoredProblemSpec;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;

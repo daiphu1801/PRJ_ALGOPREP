@@ -1,9 +1,10 @@
-package com.algoprep.problembank.application.command;
+package com.algoprep.problembank.application.command.generation;
 
 import com.algoprep.common.exception.PermissionDeniedException;
 import com.algoprep.common.exception.ResourceNotFoundException;
-import com.algoprep.problembank.application.dto.SaveAiContextCommand;
-import com.algoprep.problembank.application.ports.in.SaveAiAuthoringContextUseCase;
+import com.algoprep.problembank.application.command.ProblemContentValidation;
+import com.algoprep.problembank.application.dto.generation.SaveAiContextCommand;
+import com.algoprep.problembank.application.ports.in.generation.SaveAiAuthoringContextUseCase;
 import com.algoprep.problembank.domain.exception.ProblemVersionConflictException;
 import com.algoprep.problembank.domain.ports.out.ProblemContentRepository;
 import org.springframework.stereotype.Service;

@@ -1,7 +1,7 @@
 package com.algoprep.problembank.domain.ports.out;
 
-import com.algoprep.problembank.domain.model.ProblemWriteState;
-import com.algoprep.problembank.domain.model.StoredProblemSpec;
+import com.algoprep.problembank.domain.model.problem.ProblemWriteState;
+import com.algoprep.problembank.domain.model.problem.StoredProblemSpec;
 import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;

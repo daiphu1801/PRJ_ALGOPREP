@@ -1,5 +1,6 @@
-package com.algoprep.problembank.domain.model;
+package com.algoprep.problembank.domain.model.student;
 
+import com.algoprep.problembank.domain.model.StoredGradingTestcase;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Set;

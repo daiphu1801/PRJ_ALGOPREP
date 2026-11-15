@@ -1,12 +1,12 @@
 package com.algoprep.problembank.presentation.controller;
 
-import com.algoprep.problembank.application.dto.CatalogQuery;
-import com.algoprep.problembank.application.ports.in.CreateProblemLevelUseCase;
-import com.algoprep.problembank.application.ports.in.DeleteProblemLevelUseCase;
-import com.algoprep.problembank.application.ports.in.ListProblemLevelsUseCase;
-import com.algoprep.problembank.application.ports.in.ReorderProblemLevelsUseCase;
-import com.algoprep.problembank.application.ports.in.UpdateProblemLevelUseCase;
-import com.algoprep.problembank.domain.model.CatalogItem;
+import com.algoprep.problembank.application.dto.catalog.CatalogQuery;
+import com.algoprep.problembank.application.ports.in.catalog.CreateProblemLevelUseCase;
+import com.algoprep.problembank.application.ports.in.catalog.DeleteProblemLevelUseCase;
+import com.algoprep.problembank.application.ports.in.catalog.ListProblemLevelsUseCase;
+import com.algoprep.problembank.application.ports.in.catalog.ReorderProblemLevelsUseCase;
+import com.algoprep.problembank.application.ports.in.catalog.UpdateProblemLevelUseCase;
+import com.algoprep.problembank.domain.model.catalog.CatalogItem;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.http.HttpStatus;

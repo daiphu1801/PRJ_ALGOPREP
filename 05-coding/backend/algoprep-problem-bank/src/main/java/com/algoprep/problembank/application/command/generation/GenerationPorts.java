@@ -1,4 +1,4 @@
-package com.algoprep.problembank.application.command;
+package com.algoprep.problembank.application.command.generation;
 
 import com.algoprep.problembank.application.ports.out.GeneratorSandboxPort;
 import com.algoprep.problembank.application.ports.out.JudgeConfigReadPort;

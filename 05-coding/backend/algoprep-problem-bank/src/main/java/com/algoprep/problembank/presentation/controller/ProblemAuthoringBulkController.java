@@ -1,10 +1,10 @@
 package com.algoprep.problembank.presentation.controller;
 
 import com.algoprep.problembank.application.dto.AuthoringScope;
-import com.algoprep.problembank.application.dto.BulkProblemActionResult;
-import com.algoprep.problembank.application.dto.ExportProblemsQuery;
-import com.algoprep.problembank.application.ports.in.BulkProblemActionsUseCase;
-import com.algoprep.problembank.application.ports.in.ExportProblemsCsvUseCase;
+import com.algoprep.problembank.application.dto.bulk.BulkProblemActionResult;
+import com.algoprep.problembank.application.dto.bulk.ExportProblemsQuery;
+import com.algoprep.problembank.application.ports.in.bulk.BulkProblemActionsUseCase;
+import com.algoprep.problembank.application.ports.in.bulk.ExportProblemsCsvUseCase;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.http.ContentDisposition;

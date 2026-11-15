@@ -1,7 +1,7 @@
 package com.algoprep.problembank.application.ports.out;
 
 import com.algoprep.problembank.application.dto.ReferenceSolutionRun;
-import com.algoprep.problembank.application.dto.TestcaseGeneration;
+import com.algoprep.problembank.application.dto.generation.TestcaseGeneration;
 import java.util.List;
 
 /**

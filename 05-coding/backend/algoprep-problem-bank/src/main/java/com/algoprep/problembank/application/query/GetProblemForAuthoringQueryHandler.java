@@ -1,18 +1,18 @@
 package com.algoprep.problembank.application.query;
 
 import com.algoprep.common.exception.ResourceNotFoundException;
-import com.algoprep.problembank.application.dto.ProblemAuthoringQuery;
 import com.algoprep.problembank.application.dto.ProblemAuthoringView;
 import com.algoprep.problembank.application.dto.ProblemAuthoringView.TestcaseSummary;
 import com.algoprep.problembank.application.dto.ProblemAuthoringView.TestcaseView;
 import com.algoprep.problembank.application.dto.ProblemAuthoringView.UpdatedBy;
+import com.algoprep.problembank.application.dto.problem.ProblemAuthoringQuery;
 import com.algoprep.problembank.application.policy.PublishChecklistPolicy;
 import com.algoprep.problembank.application.policy.TestcaseViewMapper;
-import com.algoprep.problembank.application.ports.in.GetProblemForAuthoringUseCase;
+import com.algoprep.problembank.application.ports.in.problem.GetProblemForAuthoringUseCase;
 import com.algoprep.problembank.application.ports.out.UserDirectoryPort;
 import com.algoprep.problembank.domain.model.AuthoringProblemRecord;
 import com.algoprep.problembank.domain.model.AuthoringProblemRecord.AuthoringTestcase;
-import com.algoprep.problembank.domain.model.StoredProblemSpec;
+import com.algoprep.problembank.domain.model.problem.StoredProblemSpec;
 import com.algoprep.problembank.domain.ports.out.ProblemAuthoringReadRepository;
 import java.util.ArrayList;
 import java.util.List;

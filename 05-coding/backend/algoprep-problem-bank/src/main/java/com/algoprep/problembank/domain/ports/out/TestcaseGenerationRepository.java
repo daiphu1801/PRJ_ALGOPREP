@@ -1,6 +1,6 @@
 package com.algoprep.problembank.domain.ports.out;
 
-import com.algoprep.problembank.domain.model.TestcaseGenerationRun;
+import com.algoprep.problembank.domain.model.generation.TestcaseGenerationRun;
 import java.util.UUID;
 
 /** Persistence of BR-16 and of the cap setting; every call joins the caller transaction. */

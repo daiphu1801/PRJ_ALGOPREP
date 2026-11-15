@@ -1,13 +1,13 @@
-package com.algoprep.problembank.application.command;
+package com.algoprep.problembank.application.command.assignment;
 
 import com.algoprep.common.exception.AlgoPrepException;
 import com.algoprep.common.exception.InvalidRequestException;
 import com.algoprep.common.exception.PermissionDeniedException;
-import com.algoprep.problembank.application.dto.ClassAssignmentViews.AssignResult;
-import com.algoprep.problembank.application.dto.ClassAssignmentViews.Failed;
-import com.algoprep.problembank.application.ports.in.ManageClassAssignmentsUseCase;
+import com.algoprep.problembank.application.dto.assignment.ClassAssignmentViews.AssignResult;
+import com.algoprep.problembank.application.dto.assignment.ClassAssignmentViews.Failed;
+import com.algoprep.problembank.application.ports.in.assignment.ManageClassAssignmentsUseCase;
 import com.algoprep.problembank.application.ports.out.InstructorClassPort;
-import com.algoprep.problembank.domain.model.ClassAssignmentModels.ClassRef;
+import com.algoprep.problembank.domain.model.assignment.ClassAssignmentModels.ClassRef;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;

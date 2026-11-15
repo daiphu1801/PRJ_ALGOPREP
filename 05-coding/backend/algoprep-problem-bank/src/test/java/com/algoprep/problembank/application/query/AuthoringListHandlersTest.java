@@ -9,8 +9,8 @@ import static org.mockito.Mockito.verifyNoInteractions;
 
 import com.algoprep.common.exception.AlgoPrepException;
 import com.algoprep.problembank.application.dto.AuthoringScope;
-import com.algoprep.problembank.application.dto.ListProblemsQuery;
-import com.algoprep.problembank.domain.model.AuthoringListFilter;
+import com.algoprep.problembank.application.dto.problem.ListProblemsQuery;
+import com.algoprep.problembank.domain.model.problem.AuthoringListFilter;
 import com.algoprep.problembank.domain.ports.out.ProblemAuthoringListRepository;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;

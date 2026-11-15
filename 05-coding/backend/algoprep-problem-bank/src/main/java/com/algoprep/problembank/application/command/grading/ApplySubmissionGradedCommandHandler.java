@@ -1,7 +1,7 @@
-package com.algoprep.problembank.application.command;
+package com.algoprep.problembank.application.command.grading;
 
-import com.algoprep.problembank.application.ports.in.ApplySubmissionGradedUseCase;
-import com.algoprep.problembank.domain.model.ProblemStatsModels.GradedSubmission;
+import com.algoprep.problembank.application.ports.in.grading.ApplySubmissionGradedUseCase;
+import com.algoprep.problembank.domain.model.stats.ProblemStatsModels.GradedSubmission;
 import com.algoprep.problembank.domain.ports.out.ProblemStatsRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

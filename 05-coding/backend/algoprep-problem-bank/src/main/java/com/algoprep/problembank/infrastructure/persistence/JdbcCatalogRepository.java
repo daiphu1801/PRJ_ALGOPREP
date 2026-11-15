@@ -2,9 +2,9 @@ package com.algoprep.problembank.infrastructure.persistence;
 
 import com.algoprep.common.domain.ports.out.IdGeneratorPort;
 import com.algoprep.common.exception.ResourceConflictException;
-import com.algoprep.problembank.domain.model.CatalogItem;
-import com.algoprep.problembank.domain.model.CatalogKind;
-import com.algoprep.problembank.domain.model.CatalogSlug;
+import com.algoprep.problembank.domain.model.catalog.CatalogItem;
+import com.algoprep.problembank.domain.model.catalog.CatalogKind;
+import com.algoprep.problembank.domain.model.catalog.CatalogSlug;
 import com.algoprep.problembank.domain.ports.out.CatalogRepository;
 import java.util.List;
 import java.util.UUID;

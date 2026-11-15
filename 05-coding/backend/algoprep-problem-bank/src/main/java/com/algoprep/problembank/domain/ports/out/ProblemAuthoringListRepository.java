@@ -1,9 +1,9 @@
 package com.algoprep.problembank.domain.ports.out;
 
-import com.algoprep.problembank.domain.model.AttentionCount;
-import com.algoprep.problembank.domain.model.AuthoringListFilter;
-import com.algoprep.problembank.domain.model.AuthoringListPage;
-import com.algoprep.problembank.domain.model.TopicDistribution;
+import com.algoprep.problembank.domain.model.problem.AuthoringListFilter;
+import com.algoprep.problembank.domain.model.problem.AuthoringListPage;
+import com.algoprep.problembank.domain.model.stats.AttentionCount;
+import com.algoprep.problembank.domain.model.stats.TopicDistribution;
 import java.util.List;
 import java.util.UUID;
 

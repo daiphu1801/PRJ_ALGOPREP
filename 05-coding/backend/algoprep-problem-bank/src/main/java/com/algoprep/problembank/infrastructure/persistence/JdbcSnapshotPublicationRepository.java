@@ -1,9 +1,9 @@
 package com.algoprep.problembank.infrastructure.persistence;
 
-import com.algoprep.problembank.domain.model.SnapshotMetadata;
-import com.algoprep.problembank.domain.model.SnapshotPublicationState;
 import com.algoprep.problembank.domain.model.StoredGradingTestcase;
-import com.algoprep.problembank.domain.model.TestcaseDescriptor;
+import com.algoprep.problembank.domain.model.snapshot.SnapshotMetadata;
+import com.algoprep.problembank.domain.model.snapshot.SnapshotPublicationState;
+import com.algoprep.problembank.domain.model.testcase.TestcaseDescriptor;
 import com.algoprep.problembank.domain.ports.out.SnapshotPublicationRepository;
 import java.time.Instant;
 import java.util.List;

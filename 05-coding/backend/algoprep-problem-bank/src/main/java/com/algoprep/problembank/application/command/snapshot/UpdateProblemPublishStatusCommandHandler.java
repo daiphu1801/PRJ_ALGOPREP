@@ -1,17 +1,18 @@
-package com.algoprep.problembank.application.command;
+package com.algoprep.problembank.application.command.snapshot;
 
 import com.algoprep.common.exception.InvalidRequestException;
 import com.algoprep.common.exception.PermissionDeniedException;
 import com.algoprep.common.exception.ResourceNotFoundException;
+import com.algoprep.problembank.application.command.StatusChangeRecorder;
 import com.algoprep.problembank.application.dto.ProblemAuthoringView.PublishChecklist;
-import com.algoprep.problembank.application.dto.UpdateProblemStatusCommand;
-import com.algoprep.problembank.application.dto.UpdateProblemStatusResult;
-import com.algoprep.problembank.application.ports.in.PublishTestcaseSnapshotUseCase;
-import com.algoprep.problembank.application.ports.in.UpdateProblemPublishStatusUseCase;
+import com.algoprep.problembank.application.dto.snapshot.UpdateProblemStatusCommand;
+import com.algoprep.problembank.application.dto.snapshot.UpdateProblemStatusResult;
+import com.algoprep.problembank.application.ports.in.snapshot.PublishTestcaseSnapshotUseCase;
+import com.algoprep.problembank.application.ports.in.snapshot.UpdateProblemPublishStatusUseCase;
 import com.algoprep.problembank.domain.exception.ProblemVersionConflictException;
 import com.algoprep.problembank.domain.exception.PublishChecklistFailedException;
 import com.algoprep.problembank.domain.model.ProblemContentSnapshot;
-import com.algoprep.problembank.domain.model.ProblemStatusWrite;
+import com.algoprep.problembank.domain.model.snapshot.ProblemStatusWrite;
 import com.algoprep.problembank.domain.ports.out.ProblemAuthoringReadRepository;
 import com.algoprep.problembank.domain.ports.out.ProblemContentRepository;
 import java.util.ArrayList;

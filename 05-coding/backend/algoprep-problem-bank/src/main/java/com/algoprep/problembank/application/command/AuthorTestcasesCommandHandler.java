@@ -3,14 +3,14 @@ package com.algoprep.problembank.application.command;
 import com.algoprep.common.exception.DomainRuleViolationException;
 import com.algoprep.common.exception.InvalidRequestException;
 import com.algoprep.common.exception.ResourceNotFoundException;
-import com.algoprep.problembank.application.dto.TestcaseCommands;
-import com.algoprep.problembank.application.dto.TestcaseMutationResults;
-import com.algoprep.problembank.application.dto.TestcaseMutationResults.Position;
+import com.algoprep.problembank.application.dto.testcase.TestcaseCommands;
+import com.algoprep.problembank.application.dto.testcase.TestcaseMutationResults;
+import com.algoprep.problembank.application.dto.testcase.TestcaseMutationResults.Position;
 import com.algoprep.problembank.application.policy.PublishChecklistPolicy;
-import com.algoprep.problembank.application.ports.in.AuthorTestcasesUseCase;
-import com.algoprep.problembank.domain.model.ApprovalCounts;
+import com.algoprep.problembank.application.ports.in.testcase.AuthorTestcasesUseCase;
 import com.algoprep.problembank.domain.model.ProblemContentSnapshot;
 import com.algoprep.problembank.domain.model.StoredTestcase;
+import com.algoprep.problembank.domain.model.stats.ApprovalCounts;
 import com.algoprep.problembank.domain.ports.out.TestcaseWriteRepository;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -25,8 +25,8 @@ import org.springframework.transaction.annotation.Transactional;
  * after it, the order the publication kernel requires.
  */
 @Service
-class AuthorTestcasesCommandHandler implements AuthorTestcasesUseCase {
-  static final int MAX_TESTCASES = 500;
+public class AuthorTestcasesCommandHandler implements AuthorTestcasesUseCase {
+  public static final int MAX_TESTCASES = 500;
   private static final Set<String> CATEGORIES =
       Set.of(
           "TYPICAL",
@@ -42,7 +42,7 @@ class AuthorTestcasesCommandHandler implements AuthorTestcasesUseCase {
   private final TestcaseContentStore contents;
   private final PublishChecklistPolicy policy;
 
-  AuthorTestcasesCommandHandler(
+  public AuthorTestcasesCommandHandler(
       TestcaseAuthoringSupport support,
       TestcaseWriteRepository testcases,
       TestcaseContentStore contents,
@@ -193,14 +193,14 @@ class AuthorTestcasesCommandHandler implements AuthorTestcasesUseCase {
     return new TestcaseMutationResults.Ordered(items, updatedAt, version);
   }
 
-  static String visibility(String value) {
+  public static String visibility(String value) {
     if (!"SAMPLE".equals(value) && !"HIDDEN".equals(value)) {
       throw new InvalidRequestException("PRB-001", "Invalid visibility");
     }
     return value;
   }
 
-  static String category(String value) {
+  public static String category(String value) {
     if (value != null && !CATEGORIES.contains(value)) {
       throw new InvalidRequestException("PRB-001", "Invalid category");
     }

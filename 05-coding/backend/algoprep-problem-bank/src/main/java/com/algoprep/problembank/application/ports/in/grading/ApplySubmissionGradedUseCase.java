@@ -1,6 +1,6 @@
-package com.algoprep.problembank.application.ports.in;
+package com.algoprep.problembank.application.ports.in.grading;
 
-import com.algoprep.problembank.domain.model.ProblemStatsModels.GradedSubmission;
+import com.algoprep.problembank.domain.model.stats.ProblemStatsModels.GradedSubmission;
 
 /** BR-20: counts a {@code SubmissionGraded} event into {@code problem_stats}, once per event id. */
 public interface ApplySubmissionGradedUseCase {

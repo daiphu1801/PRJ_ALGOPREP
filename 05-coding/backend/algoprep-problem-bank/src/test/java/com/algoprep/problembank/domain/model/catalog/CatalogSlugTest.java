@@ -1,4 +1,4 @@
-package com.algoprep.problembank.domain.model;
+package com.algoprep.problembank.domain.model.catalog;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

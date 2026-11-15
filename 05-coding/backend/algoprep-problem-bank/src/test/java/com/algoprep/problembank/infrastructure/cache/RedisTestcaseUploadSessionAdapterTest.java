@@ -9,10 +9,10 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.algoprep.problembank.application.dto.TestcaseUploadSession.Confirmation;
-import com.algoprep.problembank.application.dto.TestcaseUploadSession.Session;
-import com.algoprep.problembank.application.dto.TestcaseUploadSession.Side;
-import com.algoprep.problembank.application.dto.TestcaseUploadSession.Slot;
+import com.algoprep.problembank.application.dto.testcase.TestcaseUploadSession.Confirmation;
+import com.algoprep.problembank.application.dto.testcase.TestcaseUploadSession.Session;
+import com.algoprep.problembank.application.dto.testcase.TestcaseUploadSession.Side;
+import com.algoprep.problembank.application.dto.testcase.TestcaseUploadSession.Slot;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;

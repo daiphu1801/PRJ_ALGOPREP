@@ -1,6 +1,6 @@
-package com.algoprep.problembank.application.command;
+package com.algoprep.problembank.application.command.outbox;
 
-import com.algoprep.problembank.application.ports.in.CleanProblemOutboxUseCase;
+import com.algoprep.problembank.application.ports.in.outbox.CleanProblemOutboxUseCase;
 import com.algoprep.problembank.domain.ports.out.ProblemOutboxRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

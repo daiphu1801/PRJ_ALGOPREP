@@ -1,7 +1,7 @@
 package com.algoprep.problembank.application.ports.out;
 
-import com.algoprep.problembank.domain.model.ClassAssignmentModels.Metric;
-import com.algoprep.problembank.domain.model.ClassAssignmentSnapshot;
+import com.algoprep.problembank.domain.model.assignment.ClassAssignmentModels.Metric;
+import com.algoprep.problembank.domain.model.assignment.ClassAssignmentSnapshot;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;

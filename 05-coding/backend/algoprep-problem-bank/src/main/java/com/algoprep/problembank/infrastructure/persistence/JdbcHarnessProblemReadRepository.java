@@ -1,7 +1,7 @@
 package com.algoprep.problembank.infrastructure.persistence;
 
-import com.algoprep.problembank.domain.model.ProblemSpecData;
-import com.algoprep.problembank.domain.model.ProblemSpecReadView;
+import com.algoprep.problembank.domain.model.problem.ProblemSpecData;
+import com.algoprep.problembank.domain.model.problem.ProblemSpecReadView;
 import com.algoprep.problembank.domain.ports.out.HarnessProblemReadRepository;
 import java.util.Optional;
 import java.util.UUID;

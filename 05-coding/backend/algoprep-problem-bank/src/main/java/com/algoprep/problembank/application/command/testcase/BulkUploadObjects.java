@@ -1,7 +1,8 @@
-package com.algoprep.problembank.application.command;
+package com.algoprep.problembank.application.command.testcase;
 
-import com.algoprep.problembank.application.dto.BulkTestcaseUpload.Target;
-import com.algoprep.problembank.application.dto.TestcaseUploadSession.Side;
+import com.algoprep.problembank.application.command.TestcaseContentStore;
+import com.algoprep.problembank.application.dto.testcase.BulkTestcaseUpload.Target;
+import com.algoprep.problembank.application.dto.testcase.TestcaseUploadSession.Side;
 import com.algoprep.problembank.application.ports.out.TestcaseObjectStorePort;
 import com.algoprep.problembank.domain.exception.TestcaseStorageUnavailableException;
 import com.algoprep.problembank.domain.exception.TestcaseUploadInvalidException.Fault;

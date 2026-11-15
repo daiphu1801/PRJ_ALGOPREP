@@ -1,6 +1,6 @@
-package com.algoprep.problembank.application.ports.in;
+package com.algoprep.problembank.application.ports.in.assignment;
 
-import com.algoprep.problembank.domain.model.ClassAssignmentSnapshot;
+import com.algoprep.problembank.domain.model.assignment.ClassAssignmentSnapshot;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;

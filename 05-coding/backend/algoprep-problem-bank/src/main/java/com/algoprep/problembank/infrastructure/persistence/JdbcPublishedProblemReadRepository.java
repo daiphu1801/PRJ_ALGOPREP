@@ -1,16 +1,16 @@
 package com.algoprep.problembank.infrastructure.persistence;
 
-import com.algoprep.problembank.domain.model.PublishedProblemModels.Example;
-import com.algoprep.problembank.domain.model.PublishedProblemModels.Filter;
-import com.algoprep.problembank.domain.model.PublishedProblemModels.Overview;
-import com.algoprep.problembank.domain.model.PublishedProblemModels.Page;
-import com.algoprep.problembank.domain.model.PublishedProblemModels.Paging;
-import com.algoprep.problembank.domain.model.PublishedProblemModels.Row;
-import com.algoprep.problembank.domain.model.PublishedProblemModels.Sample;
-import com.algoprep.problembank.domain.model.PublishedProblemModels.Samples;
-import com.algoprep.problembank.domain.model.PublishedProblemModels.SolveStates;
-import com.algoprep.problembank.domain.model.PublishedProblemModels.Workspace;
 import com.algoprep.problembank.domain.model.StoredGradingTestcase.Content;
+import com.algoprep.problembank.domain.model.student.PublishedProblemModels.Example;
+import com.algoprep.problembank.domain.model.student.PublishedProblemModels.Filter;
+import com.algoprep.problembank.domain.model.student.PublishedProblemModels.Overview;
+import com.algoprep.problembank.domain.model.student.PublishedProblemModels.Page;
+import com.algoprep.problembank.domain.model.student.PublishedProblemModels.Paging;
+import com.algoprep.problembank.domain.model.student.PublishedProblemModels.Row;
+import com.algoprep.problembank.domain.model.student.PublishedProblemModels.Sample;
+import com.algoprep.problembank.domain.model.student.PublishedProblemModels.Samples;
+import com.algoprep.problembank.domain.model.student.PublishedProblemModels.SolveStates;
+import com.algoprep.problembank.domain.model.student.PublishedProblemModels.Workspace;
 import com.algoprep.problembank.domain.ports.out.PublishedProblemReadRepository;
 import java.sql.Array;
 import java.sql.ResultSet;

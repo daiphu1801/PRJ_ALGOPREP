@@ -1,5 +1,7 @@
 package com.algoprep.problembank.domain.model;
 
+import com.algoprep.problembank.domain.model.problem.ProblemContentData;
+import com.algoprep.problembank.domain.model.problem.StoredProblemSpec;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;

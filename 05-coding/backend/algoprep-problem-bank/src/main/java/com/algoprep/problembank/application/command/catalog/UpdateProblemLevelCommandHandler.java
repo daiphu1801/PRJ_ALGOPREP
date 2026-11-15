@@ -1,9 +1,9 @@
-package com.algoprep.problembank.application.command;
+package com.algoprep.problembank.application.command.catalog;
 
-import com.algoprep.problembank.application.dto.CatalogCommand;
-import com.algoprep.problembank.application.ports.in.UpdateProblemLevelUseCase;
-import com.algoprep.problembank.domain.model.CatalogItem;
-import com.algoprep.problembank.domain.model.CatalogKind;
+import com.algoprep.problembank.application.dto.catalog.CatalogCommand;
+import com.algoprep.problembank.application.ports.in.catalog.UpdateProblemLevelUseCase;
+import com.algoprep.problembank.domain.model.catalog.CatalogItem;
+import com.algoprep.problembank.domain.model.catalog.CatalogKind;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

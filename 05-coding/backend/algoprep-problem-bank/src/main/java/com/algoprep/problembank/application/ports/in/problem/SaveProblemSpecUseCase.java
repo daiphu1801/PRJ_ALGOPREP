@@ -1,7 +1,7 @@
-package com.algoprep.problembank.application.ports.in;
+package com.algoprep.problembank.application.ports.in.problem;
 
-import com.algoprep.problembank.application.dto.SaveProblemSpecCommand;
-import com.algoprep.problembank.application.dto.SaveProblemSpecResult;
+import com.algoprep.problembank.application.dto.problem.SaveProblemSpecCommand;
+import com.algoprep.problembank.application.dto.problem.SaveProblemSpecResult;
 
 /** PUT /authoring/problems/{problemId}/spec, DD F2 section 38. */
 public interface SaveProblemSpecUseCase {

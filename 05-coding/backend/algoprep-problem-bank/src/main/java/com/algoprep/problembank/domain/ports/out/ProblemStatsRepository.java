@@ -1,6 +1,6 @@
 package com.algoprep.problembank.domain.ports.out;
 
-import com.algoprep.problembank.domain.model.ProblemStatsModels.ProblemStatsRow;
+import com.algoprep.problembank.domain.model.stats.ProblemStatsModels.ProblemStatsRow;
 import java.util.Optional;
 import java.util.UUID;
 

@@ -6,8 +6,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.algoprep.common.exception.ServiceUnavailableException;
-import com.algoprep.problembank.application.dto.AuthoringDefaults;
-import com.algoprep.problembank.application.dto.JudgeGradingDefaults;
+import com.algoprep.problembank.application.dto.grading.JudgeGradingDefaults;
+import com.algoprep.problembank.application.dto.problem.AuthoringDefaults;
 import com.algoprep.problembank.application.ports.out.JudgeConfigReadPort;
 import com.algoprep.problembank.domain.ports.out.ProblemAuthoringReadRepository;
 import org.junit.jupiter.api.Test;

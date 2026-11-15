@@ -5,8 +5,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-import com.algoprep.problembank.application.dto.CatalogQuery;
-import com.algoprep.problembank.domain.model.CatalogKind;
+import com.algoprep.problembank.application.dto.catalog.CatalogQuery;
+import com.algoprep.problembank.domain.model.catalog.CatalogKind;
 import com.algoprep.problembank.domain.ports.out.CatalogRepository;
 import java.io.ByteArrayOutputStream;
 import java.net.URLClassLoader;

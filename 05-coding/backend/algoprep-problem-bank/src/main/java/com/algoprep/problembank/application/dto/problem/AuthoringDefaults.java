@@ -1,4 +1,4 @@
-package com.algoprep.problembank.application.dto;
+package com.algoprep.problembank.application.dto.problem;
 
 /** Only author-visible defaults; no worker/admin settings or secrets. */
 public record AuthoringDefaults(

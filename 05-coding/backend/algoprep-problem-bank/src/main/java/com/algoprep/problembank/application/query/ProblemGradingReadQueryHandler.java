@@ -1,19 +1,19 @@
 package com.algoprep.problembank.application.query;
 
 import com.algoprep.common.functionspec.MatchingStrategy;
-import com.algoprep.problembank.application.ports.in.ReadProblemGradingSpecUseCase;
-import com.algoprep.problembank.application.ports.in.ReadSampleTestcasesUseCase;
-import com.algoprep.problembank.application.ports.in.ReadTestcaseSnapshotUseCase;
+import com.algoprep.problembank.application.ports.in.grading.ReadProblemGradingSpecUseCase;
+import com.algoprep.problembank.application.ports.in.grading.ReadSampleTestcasesUseCase;
+import com.algoprep.problembank.application.ports.in.snapshot.ReadTestcaseSnapshotUseCase;
 import com.algoprep.problembank.application.ports.out.TestcaseObjectStorePort;
 import com.algoprep.problembank.application.snapshot.TestcaseSnapshotCodec;
 import com.algoprep.problembank.domain.exception.GradingDataException;
 import com.algoprep.problembank.domain.exception.TestcaseStorageUnavailableException;
-import com.algoprep.problembank.domain.model.GradingReadSnapshot;
-import com.algoprep.problembank.domain.model.GradingSpecification;
-import com.algoprep.problembank.domain.model.SnapshotMetadata;
-import com.algoprep.problembank.domain.model.StoredSampleTestcase;
 import com.algoprep.problembank.domain.model.TestcaseData;
-import com.algoprep.problembank.domain.model.TestcaseSnapshot;
+import com.algoprep.problembank.domain.model.grading.GradingReadSnapshot;
+import com.algoprep.problembank.domain.model.grading.GradingSpecification;
+import com.algoprep.problembank.domain.model.grading.StoredSampleTestcase;
+import com.algoprep.problembank.domain.model.snapshot.SnapshotMetadata;
+import com.algoprep.problembank.domain.model.snapshot.TestcaseSnapshot;
 import com.algoprep.problembank.domain.ports.out.GradingReadRepository;
 import java.nio.charset.StandardCharsets;
 import java.util.List;

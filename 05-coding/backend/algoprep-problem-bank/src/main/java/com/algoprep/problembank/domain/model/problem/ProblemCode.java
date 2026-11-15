@@ -1,4 +1,4 @@
-package com.algoprep.problembank.domain.model;
+package com.algoprep.problembank.domain.model.problem;
 
 import com.algoprep.common.text.EdgeTrim;
 import java.text.Normalizer;

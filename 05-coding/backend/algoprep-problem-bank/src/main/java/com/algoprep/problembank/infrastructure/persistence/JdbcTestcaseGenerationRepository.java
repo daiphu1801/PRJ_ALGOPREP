@@ -1,6 +1,6 @@
 package com.algoprep.problembank.infrastructure.persistence;
 
-import com.algoprep.problembank.domain.model.TestcaseGenerationRun;
+import com.algoprep.problembank.domain.model.generation.TestcaseGenerationRun;
 import com.algoprep.problembank.domain.ports.out.TestcaseGenerationRepository;
 import java.util.UUID;
 import org.springframework.beans.factory.ObjectProvider;

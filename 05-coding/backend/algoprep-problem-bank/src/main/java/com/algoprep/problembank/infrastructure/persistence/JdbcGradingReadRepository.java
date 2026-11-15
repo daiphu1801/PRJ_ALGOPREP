@@ -1,10 +1,10 @@
 package com.algoprep.problembank.infrastructure.persistence;
 
-import com.algoprep.problembank.domain.model.GradingReadSnapshot;
-import com.algoprep.problembank.domain.model.GradingSpecData;
-import com.algoprep.problembank.domain.model.SnapshotMetadata;
-import com.algoprep.problembank.domain.model.StoredSampleTestcase;
-import com.algoprep.problembank.domain.model.TestcaseDescriptor;
+import com.algoprep.problembank.domain.model.grading.GradingReadSnapshot;
+import com.algoprep.problembank.domain.model.grading.GradingSpecData;
+import com.algoprep.problembank.domain.model.grading.StoredSampleTestcase;
+import com.algoprep.problembank.domain.model.snapshot.SnapshotMetadata;
+import com.algoprep.problembank.domain.model.testcase.TestcaseDescriptor;
 import com.algoprep.problembank.domain.ports.out.GradingReadRepository;
 import java.sql.ResultSet;
 import java.sql.SQLException;

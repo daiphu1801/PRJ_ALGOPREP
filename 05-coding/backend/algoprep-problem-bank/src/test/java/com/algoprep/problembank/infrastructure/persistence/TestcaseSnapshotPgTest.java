@@ -3,10 +3,10 @@ package com.algoprep.problembank.infrastructure.persistence;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import com.algoprep.problembank.domain.model.SnapshotMetadata;
 import com.algoprep.problembank.domain.model.StoredGradingTestcase.Content;
 import com.algoprep.problembank.domain.model.StoredTestcase;
-import com.algoprep.problembank.domain.model.TestcaseDescriptor;
+import com.algoprep.problembank.domain.model.snapshot.SnapshotMetadata;
+import com.algoprep.problembank.domain.model.testcase.TestcaseDescriptor;
 import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;

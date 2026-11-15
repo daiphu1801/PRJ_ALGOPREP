@@ -1,13 +1,13 @@
 package com.algoprep.problembank.presentation.controller;
 
 import com.algoprep.problembank.application.dto.AuthoringScope;
-import com.algoprep.problembank.application.dto.ListProblemsQuery;
-import com.algoprep.problembank.application.ports.in.GetAttentionListUseCase;
-import com.algoprep.problembank.application.ports.in.GetTopicDistributionUseCase;
-import com.algoprep.problembank.application.ports.in.ListAuthoringProblemsUseCase;
-import com.algoprep.problembank.domain.model.AttentionCount;
-import com.algoprep.problembank.domain.model.AuthoringListPage;
-import com.algoprep.problembank.domain.model.TopicDistribution;
+import com.algoprep.problembank.application.dto.problem.ListProblemsQuery;
+import com.algoprep.problembank.application.ports.in.problem.ListAuthoringProblemsUseCase;
+import com.algoprep.problembank.application.ports.in.stats.GetAttentionListUseCase;
+import com.algoprep.problembank.application.ports.in.stats.GetTopicDistributionUseCase;
+import com.algoprep.problembank.domain.model.problem.AuthoringListPage;
+import com.algoprep.problembank.domain.model.stats.AttentionCount;
+import com.algoprep.problembank.domain.model.stats.TopicDistribution;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.security.access.prepost.PreAuthorize;

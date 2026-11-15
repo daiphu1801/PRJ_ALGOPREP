@@ -1,4 +1,4 @@
-package com.algoprep.problembank.application.command;
+package com.algoprep.problembank.application.command.bulk;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -12,16 +12,17 @@ import static org.mockito.Mockito.when;
 
 import com.algoprep.common.exception.AlgoPrepException;
 import com.algoprep.common.exception.ClientErrorDetails;
+import com.algoprep.problembank.application.command.StatusChangeRecorder;
 import com.algoprep.problembank.application.dto.AuthoringScope;
-import com.algoprep.problembank.application.dto.UpdateProblemStatusCommand;
-import com.algoprep.problembank.application.dto.UpdateProblemStatusResult;
-import com.algoprep.problembank.application.ports.in.UpdateProblemPublishStatusUseCase;
+import com.algoprep.problembank.application.dto.snapshot.UpdateProblemStatusCommand;
+import com.algoprep.problembank.application.dto.snapshot.UpdateProblemStatusResult;
+import com.algoprep.problembank.application.ports.in.snapshot.UpdateProblemPublishStatusUseCase;
 import com.algoprep.problembank.application.ports.out.ProblemListVersionPort;
 import com.algoprep.problembank.domain.exception.PublishChecklistFailedException;
 import com.algoprep.problembank.domain.model.AuthoringProblemRecord;
 import com.algoprep.problembank.domain.model.CatalogAuditEntry;
-import com.algoprep.problembank.domain.model.ProblemContentData;
 import com.algoprep.problembank.domain.model.ProblemContentSnapshot;
+import com.algoprep.problembank.domain.model.problem.ProblemContentData;
 import com.algoprep.problembank.domain.ports.out.ProblemAuditPort;
 import com.algoprep.problembank.domain.ports.out.ProblemAuthoringReadRepository;
 import com.algoprep.problembank.domain.ports.out.ProblemBulkRepository;

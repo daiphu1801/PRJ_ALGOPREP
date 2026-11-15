@@ -1,7 +1,7 @@
-package com.algoprep.problembank.application.ports.in;
+package com.algoprep.problembank.application.ports.in.assignment;
 
-import com.algoprep.problembank.application.dto.StudentClassViews.MyAssignmentGroups;
-import com.algoprep.problembank.application.dto.StudentClassViews.MyClassProblems;
+import com.algoprep.problembank.application.dto.assignment.StudentClassViews.MyAssignmentGroups;
+import com.algoprep.problembank.application.dto.assignment.StudentClassViews.MyClassProblems;
 import java.util.UUID;
 
 /** The learner's class assignments (DD F2 sections 5 and 5A). */

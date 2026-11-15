@@ -1,4 +1,4 @@
-package com.algoprep.problembank.application.command;
+package com.algoprep.problembank.application.command.outbox;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -9,7 +9,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.algoprep.problembank.application.ports.out.ProblemDomainEventPort;
-import com.algoprep.problembank.domain.model.OutboxEvent;
+import com.algoprep.problembank.domain.model.outbox.OutboxEvent;
 import com.algoprep.problembank.domain.ports.out.ProblemOutboxRepository;
 import java.util.List;
 import java.util.UUID;

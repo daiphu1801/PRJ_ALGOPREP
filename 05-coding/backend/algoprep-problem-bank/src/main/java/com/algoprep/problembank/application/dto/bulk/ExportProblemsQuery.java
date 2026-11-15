@@ -1,5 +1,6 @@
-package com.algoprep.problembank.application.dto;
+package com.algoprep.problembank.application.dto.bulk;
 
+import com.algoprep.problembank.application.dto.AuthoringScope;
 import java.util.List;
 
 /**

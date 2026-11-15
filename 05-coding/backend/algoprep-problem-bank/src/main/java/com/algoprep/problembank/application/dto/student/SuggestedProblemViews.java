@@ -1,4 +1,4 @@
-package com.algoprep.problembank.application.dto;
+package com.algoprep.problembank.application.dto.student;
 
 import java.math.BigDecimal;
 import java.util.List;

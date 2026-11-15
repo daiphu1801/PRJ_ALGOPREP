@@ -1,4 +1,4 @@
-package com.algoprep.problembank.application.dto;
+package com.algoprep.problembank.application.dto.catalog;
 
 import java.util.List;
 import java.util.UUID;

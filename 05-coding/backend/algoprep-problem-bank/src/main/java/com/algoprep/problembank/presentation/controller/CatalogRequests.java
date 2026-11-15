@@ -3,7 +3,7 @@ package com.algoprep.problembank.presentation.controller;
 import com.algoprep.common.exception.DomainRuleViolationException;
 import com.algoprep.common.exception.InvalidRequestException;
 import com.algoprep.common.exception.PermissionDeniedException;
-import com.algoprep.problembank.application.dto.CatalogCommand;
+import com.algoprep.problembank.application.dto.catalog.CatalogCommand;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;

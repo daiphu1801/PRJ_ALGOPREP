@@ -1,6 +1,6 @@
 package com.algoprep.problembank.domain.ports.out;
 
-import com.algoprep.problembank.domain.model.ProblemContextView;
+import com.algoprep.problembank.domain.model.grading.ProblemContextView;
 import java.util.Optional;
 import java.util.UUID;
 

@@ -1,4 +1,4 @@
-package com.algoprep.problembank.domain.model;
+package com.algoprep.problembank.domain.model.generation;
 
 import java.util.UUID;
 

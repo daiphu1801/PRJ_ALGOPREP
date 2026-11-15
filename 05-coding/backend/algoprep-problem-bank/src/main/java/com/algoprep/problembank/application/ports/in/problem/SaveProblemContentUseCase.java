@@ -1,6 +1,6 @@
-package com.algoprep.problembank.application.ports.in;
+package com.algoprep.problembank.application.ports.in.problem;
 
-import com.algoprep.problembank.application.dto.SaveProblemContentCommand;
+import com.algoprep.problembank.application.dto.problem.SaveProblemContentCommand;
 import com.algoprep.problembank.domain.model.ProblemContentSnapshot;
 
 /**

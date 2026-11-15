@@ -1,7 +1,7 @@
 package com.algoprep.problembank.application.ports.out;
 
-import com.algoprep.problembank.domain.model.StudentClassModels.AssignmentKey;
-import com.algoprep.problembank.domain.model.StudentClassModels.ClassSolveState;
+import com.algoprep.problembank.domain.model.assignment.StudentClassModels.AssignmentKey;
+import com.algoprep.problembank.domain.model.assignment.StudentClassModels.ClassSolveState;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;

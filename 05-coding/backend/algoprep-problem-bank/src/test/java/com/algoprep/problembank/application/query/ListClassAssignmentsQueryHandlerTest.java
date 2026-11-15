@@ -7,7 +7,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
-import com.algoprep.problembank.domain.model.ClassAssignmentSnapshot;
+import com.algoprep.problembank.domain.model.assignment.ClassAssignmentSnapshot;
 import com.algoprep.problembank.domain.ports.out.ClassAssignmentReadRepository;
 import java.time.Instant;
 import java.util.ArrayList;

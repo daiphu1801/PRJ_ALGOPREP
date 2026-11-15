@@ -1,9 +1,9 @@
-package com.algoprep.problembank.application.command;
+package com.algoprep.problembank.application.command.generation;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import com.algoprep.problembank.application.command.GeneratorOutputParser.GeneratedCase;
+import com.algoprep.problembank.application.command.generation.GeneratorOutputParser.GeneratedCase;
 import com.algoprep.problembank.domain.exception.TestcaseGenerationRejectedException;
 import org.junit.jupiter.api.Test;
 

@@ -1,8 +1,8 @@
 package com.algoprep.problembank.application.query;
 
 import com.algoprep.problembank.application.dto.AuthoringScope;
-import com.algoprep.problembank.application.ports.in.GetAttentionListUseCase;
-import com.algoprep.problembank.domain.model.AttentionCount;
+import com.algoprep.problembank.application.ports.in.stats.GetAttentionListUseCase;
+import com.algoprep.problembank.domain.model.stats.AttentionCount;
 import com.algoprep.problembank.domain.ports.out.ProblemAuthoringListRepository;
 import java.util.List;
 import org.springframework.core.env.Environment;

@@ -1,6 +1,6 @@
 package com.algoprep.problembank.infrastructure.persistence;
 
-import com.algoprep.problembank.domain.model.OutboxEvent;
+import com.algoprep.problembank.domain.model.outbox.OutboxEvent;
 import com.algoprep.problembank.domain.ports.out.ProblemOutboxRepository;
 import java.util.List;
 import java.util.UUID;

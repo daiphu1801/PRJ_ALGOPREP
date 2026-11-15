@@ -5,7 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.algoprep.common.domain.ports.out.IdGeneratorPort;
-import com.algoprep.problembank.domain.model.ProblemContentData;
+import com.algoprep.problembank.domain.model.problem.ProblemContentData;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;

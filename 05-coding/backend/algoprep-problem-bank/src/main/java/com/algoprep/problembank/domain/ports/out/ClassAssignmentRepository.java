@@ -1,8 +1,8 @@
 package com.algoprep.problembank.domain.ports.out;
 
-import com.algoprep.problembank.domain.model.ClassAssignmentModels.ActiveRow;
-import com.algoprep.problembank.domain.model.ClassAssignmentModels.AssignablePage;
-import com.algoprep.problembank.domain.model.ClassAssignmentModels.ProblemState;
+import com.algoprep.problembank.domain.model.assignment.ClassAssignmentModels.ActiveRow;
+import com.algoprep.problembank.domain.model.assignment.ClassAssignmentModels.AssignablePage;
+import com.algoprep.problembank.domain.model.assignment.ClassAssignmentModels.ProblemState;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;

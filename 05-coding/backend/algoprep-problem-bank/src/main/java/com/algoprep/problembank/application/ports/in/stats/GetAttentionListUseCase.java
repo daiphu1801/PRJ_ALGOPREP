@@ -1,7 +1,7 @@
-package com.algoprep.problembank.application.ports.in;
+package com.algoprep.problembank.application.ports.in.stats;
 
 import com.algoprep.problembank.application.dto.AuthoringScope;
-import com.algoprep.problembank.domain.model.AttentionCount;
+import com.algoprep.problembank.domain.model.stats.AttentionCount;
 import java.util.List;
 
 /** Attention list #26 (DD F2 section 27): four rule counts, always in the same order. */

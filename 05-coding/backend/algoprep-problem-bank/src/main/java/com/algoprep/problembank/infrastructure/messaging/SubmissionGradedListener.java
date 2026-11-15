@@ -1,6 +1,6 @@
 package com.algoprep.problembank.infrastructure.messaging;
 
-import com.algoprep.problembank.application.ports.in.ApplySubmissionGradedUseCase;
+import com.algoprep.problembank.application.ports.in.grading.ApplySubmissionGradedUseCase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.AmqpRejectAndDontRequeueException;

@@ -1,7 +1,7 @@
-package com.algoprep.problembank.application.ports.in;
+package com.algoprep.problembank.application.ports.in.bulk;
 
 import com.algoprep.problembank.application.dto.AuthoringScope;
-import com.algoprep.problembank.application.dto.BulkProblemActionResult;
+import com.algoprep.problembank.application.dto.bulk.BulkProblemActionResult;
 import java.util.List;
 import java.util.UUID;
 

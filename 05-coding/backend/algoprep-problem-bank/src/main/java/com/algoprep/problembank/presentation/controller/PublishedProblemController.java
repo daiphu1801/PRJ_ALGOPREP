@@ -1,10 +1,10 @@
 package com.algoprep.problembank.presentation.controller;
 
 import com.algoprep.common.exception.ResourceNotFoundException;
-import com.algoprep.problembank.application.dto.StudentProblemViews;
-import com.algoprep.problembank.application.ports.in.ReadPublishedProblemsUseCase;
-import com.algoprep.problembank.domain.model.PublishedProblemModels.Overview;
-import com.algoprep.problembank.domain.model.PublishedProblemModels.Workspace;
+import com.algoprep.problembank.application.dto.student.StudentProblemViews;
+import com.algoprep.problembank.application.ports.in.student.ReadPublishedProblemsUseCase;
+import com.algoprep.problembank.domain.model.student.PublishedProblemModels.Overview;
+import com.algoprep.problembank.domain.model.student.PublishedProblemModels.Workspace;
 import java.util.Map;
 import java.util.UUID;
 import org.springframework.security.access.prepost.PreAuthorize;

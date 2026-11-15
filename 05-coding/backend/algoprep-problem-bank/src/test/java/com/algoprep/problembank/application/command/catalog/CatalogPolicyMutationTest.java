@@ -1,4 +1,4 @@
-package com.algoprep.problembank.application.command;
+package com.algoprep.problembank.application.command.catalog;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -8,10 +8,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.algoprep.common.exception.AlgoPrepException;
-import com.algoprep.problembank.application.dto.CatalogCommand;
+import com.algoprep.problembank.application.dto.catalog.CatalogCommand;
 import com.algoprep.problembank.application.ports.out.ProblemListVersionPort;
-import com.algoprep.problembank.domain.model.CatalogItem;
-import com.algoprep.problembank.domain.model.CatalogKind;
+import com.algoprep.problembank.domain.model.catalog.CatalogItem;
+import com.algoprep.problembank.domain.model.catalog.CatalogKind;
 import com.algoprep.problembank.domain.ports.out.CatalogRepository;
 import com.algoprep.problembank.domain.ports.out.ProblemAuditPort;
 import java.io.ByteArrayOutputStream;
@@ -38,14 +38,14 @@ class CatalogPolicyMutationTest {
 
   @TempDir Path temporary;
   private static final String COPY =
-      "com.algoprep.problembank.application.command.mutationcopy.CatalogMutationService";
+      "com.algoprep.problembank.application.command.catalog.mutationcopy.CatalogMutationService";
 
   @ParameterizedTest
   @EnumSource(Rule.class)
   void eachBusinessGuardIsKilledOnACompiledCopy(Rule rule) throws Exception {
     Path source =
         Path.of(
-            "src/main/java/com/algoprep/problembank/application/command/CatalogMutationService.java");
+            "src/main/java/com/algoprep/problembank/application/command/catalog/CatalogMutationService.java");
     String original = Files.readString(source);
     checkCopy(original, rule, false);
     checkCopy(weaken(original, rule), rule, true);
@@ -82,8 +82,8 @@ class CatalogPolicyMutationTest {
     Files.writeString(
         java,
         source.replace(
-            "package com.algoprep.problembank.application.command;",
-            "package com.algoprep.problembank.application.command.mutationcopy;"));
+            "package com.algoprep.problembank.application.command.catalog;",
+            "package com.algoprep.problembank.application.command.catalog.mutationcopy;"));
     var errors = new ByteArrayOutputStream();
     int code =
         ToolProvider.getSystemJavaCompiler()

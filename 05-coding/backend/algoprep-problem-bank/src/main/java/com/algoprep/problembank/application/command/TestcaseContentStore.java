@@ -18,24 +18,24 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
  * is removed after commit; both are best effort and only logged.
  */
 @Component
-class TestcaseContentStore {
-  static final int INLINE_LIMIT_BYTES = 8192;
-  static final int MAX_BYTES = 1_048_576;
+public class TestcaseContentStore {
+  public static final int INLINE_LIMIT_BYTES = 8192;
+  public static final int MAX_BYTES = 1_048_576;
   private static final Logger LOG = LoggerFactory.getLogger(TestcaseContentStore.class);
 
   private final TestcaseObjectStorePort store;
   private final IdGeneratorPort ids;
 
-  TestcaseContentStore(TestcaseObjectStorePort store, IdGeneratorPort ids) {
+  public TestcaseContentStore(TestcaseObjectStorePort store, IdGeneratorPort ids) {
     this.store = store;
     this.ids = ids;
   }
 
-  UUID newTestcaseId() {
+  public UUID newTestcaseId() {
     return ids.newId();
   }
 
-  static boolean tooLarge(String text) {
+  public static boolean tooLarge(String text) {
     return text.getBytes(StandardCharsets.UTF_8).length > MAX_BYTES;
   }
 
@@ -43,7 +43,7 @@ class TestcaseContentStore {
    * Stores one side. {@code side} is {@code input} or {@code expected_output}. A new object always
    * gets a fresh key so that a rolled-back rewrite can never damage the object the row still uses.
    */
-  Content place(UUID problemId, UUID testcaseId, String side, String text) {
+  public Content place(UUID problemId, UUID testcaseId, String side, String text) {
     byte[] bytes = text.getBytes(StandardCharsets.UTF_8);
     if (bytes.length <= INLINE_LIMIT_BYTES) {
       return new Content("INLINE", text, null);
@@ -62,7 +62,7 @@ class TestcaseContentStore {
    * Content of a side for a copy of a testcase in another problem. An INLINE side is shared as is;
    * a MINIO object is copied under a fresh key that the rollback of this call removes again.
    */
-  Content copyOf(UUID problemId, UUID testcaseId, String side, Content source) {
+  public Content copyOf(UUID problemId, UUID testcaseId, String side, Content source) {
     if (!"MINIO".equals(source.storage())) {
       return source;
     }
@@ -77,7 +77,7 @@ class TestcaseContentStore {
   }
 
   /** A fresh server-made object key; the bulk upload signs it before any row exists. */
-  String newKey(UUID problemId, UUID testcaseId, String side) {
+  public String newKey(UUID problemId, UUID testcaseId, String side) {
     return "problems/"
         + problemId
         + "/testcases/"
@@ -90,7 +90,7 @@ class TestcaseContentStore {
   }
 
   /** Removes the object of a side the row no longer uses, once the change is committed. */
-  void discardAfterCommit(Content old) {
+  public void discardAfterCommit(Content old) {
     if ("MINIO".equals(old.storage()) && old.objectKey() != null) {
       afterCompletion(old.objectKey(), true);
     }

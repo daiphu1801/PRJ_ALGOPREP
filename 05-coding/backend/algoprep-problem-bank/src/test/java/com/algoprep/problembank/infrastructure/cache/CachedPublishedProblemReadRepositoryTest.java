@@ -5,10 +5,10 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
-import com.algoprep.problembank.domain.model.PublishedProblemModels.Filter;
-import com.algoprep.problembank.domain.model.PublishedProblemModels.Page;
-import com.algoprep.problembank.domain.model.PublishedProblemModels.Paging;
-import com.algoprep.problembank.domain.model.PublishedProblemModels.SolveStates;
+import com.algoprep.problembank.domain.model.student.PublishedProblemModels.Filter;
+import com.algoprep.problembank.domain.model.student.PublishedProblemModels.Page;
+import com.algoprep.problembank.domain.model.student.PublishedProblemModels.Paging;
+import com.algoprep.problembank.domain.model.student.PublishedProblemModels.SolveStates;
 import com.algoprep.problembank.domain.ports.out.PublishedProblemReadRepository;
 import java.util.List;
 import java.util.Set;

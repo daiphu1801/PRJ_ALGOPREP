@@ -1,4 +1,4 @@
-package com.algoprep.problembank.domain.model;
+package com.algoprep.problembank.domain.model.grading;
 
 import java.math.BigDecimal;
 import java.util.UUID;

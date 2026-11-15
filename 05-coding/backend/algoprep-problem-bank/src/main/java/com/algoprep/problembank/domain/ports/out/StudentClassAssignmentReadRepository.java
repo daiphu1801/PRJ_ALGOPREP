@@ -1,6 +1,6 @@
 package com.algoprep.problembank.domain.ports.out;
 
-import com.algoprep.problembank.domain.model.StudentClassModels.MyAssignment;
+import com.algoprep.problembank.domain.model.assignment.StudentClassModels.MyAssignment;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;

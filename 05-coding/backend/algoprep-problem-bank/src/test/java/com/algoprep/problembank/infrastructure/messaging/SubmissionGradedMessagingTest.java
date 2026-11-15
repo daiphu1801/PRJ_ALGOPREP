@@ -6,7 +6,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-import com.algoprep.problembank.application.ports.in.ApplySubmissionGradedUseCase;
+import com.algoprep.problembank.application.ports.in.grading.ApplySubmissionGradedUseCase;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;

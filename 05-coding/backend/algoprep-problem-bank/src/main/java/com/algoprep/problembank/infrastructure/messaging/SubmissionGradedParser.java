@@ -1,6 +1,6 @@
 package com.algoprep.problembank.infrastructure.messaging;
 
-import com.algoprep.problembank.domain.model.ProblemStatsModels.GradedSubmission;
+import com.algoprep.problembank.domain.model.stats.ProblemStatsModels.GradedSubmission;
 import java.util.Set;
 import java.util.UUID;
 import tools.jackson.databind.JsonNode;

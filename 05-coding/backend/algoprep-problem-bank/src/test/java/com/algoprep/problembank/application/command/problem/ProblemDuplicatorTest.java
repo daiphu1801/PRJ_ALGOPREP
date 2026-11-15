@@ -1,4 +1,4 @@
-package com.algoprep.problembank.application.command;
+package com.algoprep.problembank.application.command.problem;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -12,14 +12,15 @@ import static org.mockito.Mockito.when;
 
 import com.algoprep.common.domain.ports.out.IdGeneratorPort;
 import com.algoprep.common.exception.AlgoPrepException;
+import com.algoprep.problembank.application.command.TestcaseContentStore;
 import com.algoprep.problembank.application.ports.out.TestcaseObjectStorePort;
 import com.algoprep.problembank.domain.exception.TestcaseStorageUnavailableException;
 import com.algoprep.problembank.domain.model.AuthoringProblemRecord;
 import com.algoprep.problembank.domain.model.AuthoringProblemRecord.AuthoringTestcase;
-import com.algoprep.problembank.domain.model.ProblemContentData;
-import com.algoprep.problembank.domain.model.ProblemSpecData;
-import com.algoprep.problembank.domain.model.StoredProblemSpec;
 import com.algoprep.problembank.domain.model.StoredTestcase;
+import com.algoprep.problembank.domain.model.problem.ProblemContentData;
+import com.algoprep.problembank.domain.model.problem.ProblemSpecData;
+import com.algoprep.problembank.domain.model.problem.StoredProblemSpec;
 import com.algoprep.problembank.domain.ports.out.ProblemAuthoringReadRepository;
 import com.algoprep.problembank.domain.ports.out.ProblemContentRepository;
 import com.algoprep.problembank.domain.ports.out.ProblemSpecRepository;

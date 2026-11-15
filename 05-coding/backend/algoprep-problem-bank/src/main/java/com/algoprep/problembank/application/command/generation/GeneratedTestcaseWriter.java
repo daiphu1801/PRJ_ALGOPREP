@@ -1,13 +1,16 @@
-package com.algoprep.problembank.application.command;
+package com.algoprep.problembank.application.command.generation;
 
 import com.algoprep.common.exception.DomainRuleViolationException;
+import com.algoprep.problembank.application.command.AuthorTestcasesCommandHandler;
+import com.algoprep.problembank.application.command.TestcaseAuthoringSupport;
+import com.algoprep.problembank.application.command.TestcaseContentStore;
 import com.algoprep.problembank.application.dto.AuthoringScope;
 import com.algoprep.problembank.application.dto.ProblemAuthoringView.TestcaseView;
-import com.algoprep.problembank.application.dto.TestcaseGeneration;
+import com.algoprep.problembank.application.dto.generation.TestcaseGeneration;
 import com.algoprep.problembank.domain.exception.TestcaseGenerationRejectedException;
 import com.algoprep.problembank.domain.model.ProblemTouch;
 import com.algoprep.problembank.domain.model.StoredTestcase;
-import com.algoprep.problembank.domain.model.TestcaseGenerationRun;
+import com.algoprep.problembank.domain.model.generation.TestcaseGenerationRun;
 import com.algoprep.problembank.domain.ports.out.TestcaseGenerationRepository;
 import com.algoprep.problembank.domain.ports.out.TestcaseWriteRepository;
 import java.util.ArrayList;

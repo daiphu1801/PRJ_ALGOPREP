@@ -1,7 +1,7 @@
 package com.algoprep.problembank.presentation.controller;
 
-import com.algoprep.problembank.application.dto.SuggestedProblemViews.SuggestedProblems;
-import com.algoprep.problembank.application.ports.in.SuggestedProblemsUseCase;
+import com.algoprep.problembank.application.dto.student.SuggestedProblemViews.SuggestedProblems;
+import com.algoprep.problembank.application.ports.in.student.SuggestedProblemsUseCase;
 import java.util.Map;
 import java.util.UUID;
 import org.springframework.security.access.prepost.PreAuthorize;

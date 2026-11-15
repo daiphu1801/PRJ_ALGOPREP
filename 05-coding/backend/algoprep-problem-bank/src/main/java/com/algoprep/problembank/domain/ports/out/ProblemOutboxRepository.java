@@ -1,6 +1,6 @@
 package com.algoprep.problembank.domain.ports.out;
 
-import com.algoprep.problembank.domain.model.OutboxEvent;
+import com.algoprep.problembank.domain.model.outbox.OutboxEvent;
 import java.util.List;
 import java.util.UUID;
 

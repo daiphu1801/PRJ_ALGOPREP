@@ -1,5 +1,6 @@
-package com.algoprep.problembank.domain.model;
+package com.algoprep.problembank.domain.model.snapshot;
 
+import com.algoprep.problembank.domain.model.TestcaseData;
 import java.util.List;
 import java.util.UUID;
 

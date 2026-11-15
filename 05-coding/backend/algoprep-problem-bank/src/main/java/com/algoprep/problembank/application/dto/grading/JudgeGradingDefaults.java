@@ -1,4 +1,4 @@
-package com.algoprep.problembank.application.dto;
+package com.algoprep.problembank.application.dto.grading;
 
 /** F2-owned configuration values, with original units and no language multipliers. */
 public record JudgeGradingDefaults(

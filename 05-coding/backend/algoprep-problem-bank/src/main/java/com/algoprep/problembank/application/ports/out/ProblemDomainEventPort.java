@@ -1,6 +1,6 @@
 package com.algoprep.problembank.application.ports.out;
 
-import com.algoprep.problembank.domain.model.OutboxEvent;
+import com.algoprep.problembank.domain.model.outbox.OutboxEvent;
 
 public interface ProblemDomainEventPort {
   /** False means retry later: unconfirmed or unroutable. */

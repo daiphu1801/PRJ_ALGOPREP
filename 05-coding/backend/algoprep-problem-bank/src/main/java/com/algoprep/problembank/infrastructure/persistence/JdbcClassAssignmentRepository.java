@@ -1,9 +1,9 @@
 package com.algoprep.problembank.infrastructure.persistence;
 
-import com.algoprep.problembank.domain.model.ClassAssignmentModels.ActiveRow;
-import com.algoprep.problembank.domain.model.ClassAssignmentModels.Assignable;
-import com.algoprep.problembank.domain.model.ClassAssignmentModels.AssignablePage;
-import com.algoprep.problembank.domain.model.ClassAssignmentModels.ProblemState;
+import com.algoprep.problembank.domain.model.assignment.ClassAssignmentModels.ActiveRow;
+import com.algoprep.problembank.domain.model.assignment.ClassAssignmentModels.Assignable;
+import com.algoprep.problembank.domain.model.assignment.ClassAssignmentModels.AssignablePage;
+import com.algoprep.problembank.domain.model.assignment.ClassAssignmentModels.ProblemState;
 import com.algoprep.problembank.domain.ports.out.ClassAssignmentRepository;
 import java.sql.Array;
 import java.sql.SQLException;

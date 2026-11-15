@@ -1,4 +1,4 @@
-package com.algoprep.problembank.application.ports.in;
+package com.algoprep.problembank.application.ports.in.grading;
 
 import com.algoprep.problembank.domain.model.TestcaseData;
 import java.util.List;

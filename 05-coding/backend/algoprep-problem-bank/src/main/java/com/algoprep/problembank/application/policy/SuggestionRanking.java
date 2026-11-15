@@ -1,7 +1,7 @@
 package com.algoprep.problembank.application.policy;
 
-import com.algoprep.problembank.domain.model.PublishedProblemModels.SolveStates;
-import com.algoprep.problembank.domain.model.SuggestedProblemModels.Candidate;
+import com.algoprep.problembank.domain.model.student.PublishedProblemModels.SolveStates;
+import com.algoprep.problembank.domain.model.student.SuggestedProblemModels.Candidate;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;

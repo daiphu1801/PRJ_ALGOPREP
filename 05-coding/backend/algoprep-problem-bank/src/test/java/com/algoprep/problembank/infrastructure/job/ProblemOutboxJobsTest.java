@@ -4,8 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-import com.algoprep.problembank.application.ports.in.CleanProblemOutboxUseCase;
-import com.algoprep.problembank.application.ports.in.RelayProblemOutboxUseCase;
+import com.algoprep.problembank.application.ports.in.outbox.CleanProblemOutboxUseCase;
+import com.algoprep.problembank.application.ports.in.outbox.RelayProblemOutboxUseCase;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;

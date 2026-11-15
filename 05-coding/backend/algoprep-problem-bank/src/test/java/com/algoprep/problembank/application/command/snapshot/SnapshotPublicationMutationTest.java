@@ -1,4 +1,4 @@
-package com.algoprep.problembank.application.command;
+package com.algoprep.problembank.application.command.snapshot;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -7,8 +7,8 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
 import com.algoprep.common.domain.ports.out.IdGeneratorPort;
-import com.algoprep.problembank.application.ports.in.PublishTestcaseSnapshotUseCase;
-import com.algoprep.problembank.application.ports.in.ReadTestcaseSnapshotUseCase;
+import com.algoprep.problembank.application.ports.in.snapshot.PublishTestcaseSnapshotUseCase;
+import com.algoprep.problembank.application.ports.in.snapshot.ReadTestcaseSnapshotUseCase;
 import com.algoprep.problembank.application.ports.out.TestcaseObjectStorePort;
 import com.algoprep.problembank.application.snapshot.TestcaseSnapshotCodec;
 import com.algoprep.problembank.domain.ports.out.SnapshotPublicationRepository;
@@ -33,7 +33,7 @@ class SnapshotPublicationMutationTest {
   void copiedWriterCannotMissGradingChangesOrSkipObjectVerification(String rule) throws Exception {
     Path file =
         Path.of(
-            "src/main/java/com/algoprep/problembank/application/command/PublishTestcaseSnapshotCommandHandler.java");
+            "src/main/java/com/algoprep/problembank/application/command/snapshot/PublishTestcaseSnapshotCommandHandler.java");
     String source = Files.readString(file);
     String mutant =
         switch (rule) {
@@ -109,7 +109,8 @@ class SnapshotPublicationMutationTest {
     Path folder = Files.createDirectories(temporary.resolve(mutant ? "mutant" : "original"));
     Path file = folder.resolve("PublishTestcaseSnapshotCommandHandler.java");
     Files.writeString(
-        file, source.replace("package " + prefix + ";", "package " + prefix + ".mutationcopy;"));
+        file,
+        source.replace("package " + prefix + ".snapshot;", "package " + prefix + ".mutationcopy;"));
     var errors = new ByteArrayOutputStream();
     int code =
         ToolProvider.getSystemJavaCompiler()

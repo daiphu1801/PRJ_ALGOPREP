@@ -1,15 +1,15 @@
 package com.algoprep.problembank.application.command;
 
-import com.algoprep.problembank.domain.model.ProblemContentData;
+import com.algoprep.problembank.domain.model.problem.ProblemContentData;
 import java.util.List;
 import java.util.UUID;
 
-final class ContentTestData {
-  static final UUID LEVEL = UUID.fromString("20000000-0000-4000-8000-000000000001");
+public final class ContentTestData {
+  public static final UUID LEVEL = UUID.fromString("20000000-0000-4000-8000-000000000001");
 
   private ContentTestData() {}
 
-  static ProblemContentData valid() {
+  public static ProblemContentData valid() {
     return new ProblemContentData(
         " Bài cộng ",
         "# Raw <b>Markdown</b>",
@@ -22,11 +22,11 @@ final class ContentTestData {
         null);
   }
 
-  static ProblemContentData replace(String field, Object value) {
+  public static ProblemContentData replace(String field, Object value) {
     return replace(valid(), field, value);
   }
 
-  static ProblemContentData replace(ProblemContentData base, String field, Object value) {
+  public static ProblemContentData replace(ProblemContentData base, String field, Object value) {
     try {
       var fields = ProblemContentData.class.getRecordComponents();
       Object[] values = new Object[fields.length];

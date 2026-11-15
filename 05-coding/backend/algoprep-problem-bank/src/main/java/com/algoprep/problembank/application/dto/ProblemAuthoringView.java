@@ -1,7 +1,7 @@
 package com.algoprep.problembank.application.dto;
 
 import com.algoprep.problembank.domain.model.AuthoringProblemRecord.Tag;
-import com.algoprep.problembank.domain.model.ProblemContentData;
+import com.algoprep.problembank.domain.model.problem.ProblemContentData;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;

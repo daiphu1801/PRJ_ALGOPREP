@@ -1,7 +1,7 @@
 package com.algoprep.problembank.infrastructure.job;
 
-import com.algoprep.problembank.application.ports.in.CleanProblemOutboxUseCase;
-import com.algoprep.problembank.application.ports.in.RelayProblemOutboxUseCase;
+import com.algoprep.problembank.application.ports.in.outbox.CleanProblemOutboxUseCase;
+import com.algoprep.problembank.application.ports.in.outbox.RelayProblemOutboxUseCase;
 import java.util.concurrent.TimeUnit;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.Scheduled;

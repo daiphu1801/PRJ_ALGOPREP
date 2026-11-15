@@ -1,8 +1,8 @@
 package com.algoprep.problembank.application.query;
 
-import com.algoprep.problembank.application.ports.in.ProblemBankStatsUseCase;
-import com.algoprep.problembank.domain.model.ProblemBankStatsModels.LevelRef;
-import com.algoprep.problembank.domain.model.ProblemBankStatsModels.ProblemStat;
+import com.algoprep.problembank.application.ports.in.stats.ProblemBankStatsUseCase;
+import com.algoprep.problembank.domain.model.stats.ProblemBankStatsModels.LevelRef;
+import com.algoprep.problembank.domain.model.stats.ProblemBankStatsModels.ProblemStat;
 import com.algoprep.problembank.domain.ports.out.ProblemBankStatsRepository;
 import java.util.List;
 import java.util.Set;

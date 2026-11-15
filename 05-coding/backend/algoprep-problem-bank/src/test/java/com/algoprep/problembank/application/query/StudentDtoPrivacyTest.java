@@ -2,9 +2,9 @@ package com.algoprep.problembank.application.query;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.algoprep.problembank.application.dto.StudentCatalogViews;
-import com.algoprep.problembank.application.dto.StudentProblemViews;
-import com.algoprep.problembank.domain.model.PublishedProblemModels;
+import com.algoprep.problembank.application.dto.student.StudentCatalogViews;
+import com.algoprep.problembank.application.dto.student.StudentProblemViews;
+import com.algoprep.problembank.domain.model.student.PublishedProblemModels;
 import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.Test;

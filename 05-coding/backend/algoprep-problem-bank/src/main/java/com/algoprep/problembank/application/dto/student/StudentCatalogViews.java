@@ -1,6 +1,6 @@
-package com.algoprep.problembank.application.dto;
+package com.algoprep.problembank.application.dto.student;
 
-import com.algoprep.problembank.application.dto.StudentProblemViews.PageMeta;
+import com.algoprep.problembank.application.dto.student.StudentProblemViews.PageMeta;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;

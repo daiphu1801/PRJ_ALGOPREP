@@ -1,7 +1,7 @@
 package com.algoprep.problembank.application.command;
 
 import com.algoprep.problembank.domain.exception.ProblemContentInvalidException;
-import com.algoprep.problembank.domain.model.ProblemContentData;
+import com.algoprep.problembank.domain.model.problem.ProblemContentData;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -15,14 +15,14 @@ import org.springframework.stereotype.Component;
  * Technical ceilings use environment-backed application properties; Markdown/source stay verbatim.
  */
 @Component
-class ProblemContentValidation {
+public class ProblemContentValidation {
   private final Environment environment;
 
-  ProblemContentValidation(Environment environment) {
+  public ProblemContentValidation(Environment environment) {
     this.environment = environment;
   }
 
-  ProblemContentData normalize(ProblemContentData data) {
+  public ProblemContentData normalize(ProblemContentData data) {
     if (data == null) {
       throw invalid("content", "required");
     }
@@ -136,7 +136,7 @@ class ProblemContentValidation {
         "algoprep.problem-bank.authoring." + key, Integer.class, fallback);
   }
 
-  static ProblemContentInvalidException invalid(String field, String rule) {
+  public static ProblemContentInvalidException invalid(String field, String rule) {
     return new ProblemContentInvalidException(field, rule);
   }
 }

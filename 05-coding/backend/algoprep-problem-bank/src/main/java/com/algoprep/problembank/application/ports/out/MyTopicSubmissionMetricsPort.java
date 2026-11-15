@@ -1,6 +1,6 @@
 package com.algoprep.problembank.application.ports.out;
 
-import com.algoprep.problembank.domain.model.SuggestedProblemModels.TopicMetric;
+import com.algoprep.problembank.domain.model.student.SuggestedProblemModels.TopicMetric;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;

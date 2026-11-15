@@ -1,10 +1,10 @@
 package com.algoprep.problembank.application.query;
 
-import com.algoprep.problembank.application.dto.ListProblemsQuery;
-import com.algoprep.problembank.application.ports.in.ListAuthoringProblemsUseCase;
+import com.algoprep.problembank.application.dto.problem.ListProblemsQuery;
+import com.algoprep.problembank.application.ports.in.problem.ListAuthoringProblemsUseCase;
 import com.algoprep.problembank.domain.exception.ProblemContentInvalidException;
-import com.algoprep.problembank.domain.model.AuthoringListFilter;
-import com.algoprep.problembank.domain.model.AuthoringListPage;
+import com.algoprep.problembank.domain.model.problem.AuthoringListFilter;
+import com.algoprep.problembank.domain.model.problem.AuthoringListPage;
 import com.algoprep.problembank.domain.ports.out.ProblemAuthoringListRepository;
 import java.util.Set;
 import java.util.UUID;

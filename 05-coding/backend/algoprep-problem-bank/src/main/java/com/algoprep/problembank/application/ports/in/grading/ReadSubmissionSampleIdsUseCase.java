@@ -1,4 +1,4 @@
-package com.algoprep.problembank.application.ports.in;
+package com.algoprep.problembank.application.ports.in.grading;
 
 import java.util.Set;
 import java.util.UUID;

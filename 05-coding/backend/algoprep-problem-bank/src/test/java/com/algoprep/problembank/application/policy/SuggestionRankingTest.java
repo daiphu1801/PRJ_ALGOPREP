@@ -2,8 +2,8 @@ package com.algoprep.problembank.application.policy;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.algoprep.problembank.domain.model.PublishedProblemModels.SolveStates;
-import com.algoprep.problembank.domain.model.SuggestedProblemModels.Candidate;
+import com.algoprep.problembank.domain.model.student.PublishedProblemModels.SolveStates;
+import com.algoprep.problembank.domain.model.student.SuggestedProblemModels.Candidate;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;

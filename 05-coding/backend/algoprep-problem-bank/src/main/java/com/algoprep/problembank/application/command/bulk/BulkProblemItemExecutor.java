@@ -1,9 +1,10 @@
-package com.algoprep.problembank.application.command;
+package com.algoprep.problembank.application.command.bulk;
 
 import com.algoprep.common.exception.DomainRuleViolationException;
 import com.algoprep.common.exception.PermissionDeniedException;
 import com.algoprep.common.exception.ResourceNotFoundException;
 import com.algoprep.common.exception.ServiceUnavailableException;
+import com.algoprep.problembank.application.command.StatusChangeRecorder;
 import com.algoprep.problembank.application.dto.AuthoringScope;
 import com.algoprep.problembank.application.ports.out.ProblemListVersionPort;
 import com.algoprep.problembank.domain.model.CatalogAuditEntry;

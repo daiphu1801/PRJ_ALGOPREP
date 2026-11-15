@@ -1,9 +1,9 @@
 package com.algoprep.problembank.infrastructure.persistence;
 
-import com.algoprep.problembank.domain.model.ApprovalCounts;
 import com.algoprep.problembank.domain.model.ProblemTouch;
 import com.algoprep.problembank.domain.model.StoredGradingTestcase.Content;
 import com.algoprep.problembank.domain.model.StoredTestcase;
+import com.algoprep.problembank.domain.model.stats.ApprovalCounts;
 import com.algoprep.problembank.domain.ports.out.TestcaseWriteRepository;
 import java.sql.ResultSet;
 import java.sql.SQLException;

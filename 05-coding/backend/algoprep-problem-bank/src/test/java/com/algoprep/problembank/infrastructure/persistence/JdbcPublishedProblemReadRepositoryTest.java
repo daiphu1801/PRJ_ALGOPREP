@@ -3,9 +3,9 @@ package com.algoprep.problembank.infrastructure.persistence;
 import static com.algoprep.problembank.infrastructure.persistence.FakeJdbc.row;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.algoprep.problembank.domain.model.PublishedProblemModels.Filter;
-import com.algoprep.problembank.domain.model.PublishedProblemModels.Paging;
-import com.algoprep.problembank.domain.model.PublishedProblemModels.SolveStates;
+import com.algoprep.problembank.domain.model.student.PublishedProblemModels.Filter;
+import com.algoprep.problembank.domain.model.student.PublishedProblemModels.Paging;
+import com.algoprep.problembank.domain.model.student.PublishedProblemModels.SolveStates;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Set;

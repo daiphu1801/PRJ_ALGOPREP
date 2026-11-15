@@ -1,14 +1,14 @@
 package com.algoprep.problembank.application.query;
 
 import com.algoprep.common.exception.ServiceUnavailableException;
-import com.algoprep.problembank.application.dto.StudentCatalogViews.LevelProgressItem;
-import com.algoprep.problembank.application.dto.StudentCatalogViews.MyLevelProgress;
-import com.algoprep.problembank.application.dto.StudentCatalogViews.TopicProgressItem;
-import com.algoprep.problembank.application.dto.StudentCatalogViews.TopicProgressList;
-import com.algoprep.problembank.application.ports.in.StudentCatalogUseCase;
+import com.algoprep.problembank.application.dto.student.StudentCatalogViews.LevelProgressItem;
+import com.algoprep.problembank.application.dto.student.StudentCatalogViews.MyLevelProgress;
+import com.algoprep.problembank.application.dto.student.StudentCatalogViews.TopicProgressItem;
+import com.algoprep.problembank.application.dto.student.StudentCatalogViews.TopicProgressList;
+import com.algoprep.problembank.application.ports.in.student.StudentCatalogUseCase;
 import com.algoprep.problembank.application.ports.out.SolveStatePort;
-import com.algoprep.problembank.domain.model.StudentCatalogModels.CatalogSummary;
-import com.algoprep.problembank.domain.model.StudentCatalogModels.LevelProgress;
+import com.algoprep.problembank.domain.model.student.StudentCatalogModels.CatalogSummary;
+import com.algoprep.problembank.domain.model.student.StudentCatalogModels.LevelProgress;
 import com.algoprep.problembank.domain.ports.out.StudentCatalogReadRepository;
 import java.util.UUID;
 import org.springframework.stereotype.Service;

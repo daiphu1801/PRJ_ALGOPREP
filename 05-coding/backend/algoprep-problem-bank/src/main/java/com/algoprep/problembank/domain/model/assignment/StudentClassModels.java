@@ -1,4 +1,4 @@
-package com.algoprep.problembank.domain.model;
+package com.algoprep.problembank.domain.model.assignment;
 
 import java.time.Instant;
 import java.util.UUID;

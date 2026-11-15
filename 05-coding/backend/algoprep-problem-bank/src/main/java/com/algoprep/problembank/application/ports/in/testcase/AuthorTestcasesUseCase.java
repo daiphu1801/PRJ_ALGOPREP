@@ -1,7 +1,7 @@
-package com.algoprep.problembank.application.ports.in;
+package com.algoprep.problembank.application.ports.in.testcase;
 
-import com.algoprep.problembank.application.dto.TestcaseCommands;
-import com.algoprep.problembank.application.dto.TestcaseMutationResults;
+import com.algoprep.problembank.application.dto.testcase.TestcaseCommands;
+import com.algoprep.problembank.application.dto.testcase.TestcaseMutationResults;
 
 /**
  * Inline testcase authoring of DD F2 sections 42 to 45. One interface because the four operations

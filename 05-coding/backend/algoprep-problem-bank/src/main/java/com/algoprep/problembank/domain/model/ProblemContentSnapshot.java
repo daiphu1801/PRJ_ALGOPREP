@@ -1,5 +1,6 @@
 package com.algoprep.problembank.domain.model;
 
+import com.algoprep.problembank.domain.model.problem.ProblemContentData;
 import java.time.Instant;
 import java.util.UUID;
 

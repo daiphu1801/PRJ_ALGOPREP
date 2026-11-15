@@ -6,8 +6,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
-import com.algoprep.problembank.domain.model.ProblemBankStatsModels.LevelRef;
-import com.algoprep.problembank.domain.model.ProblemBankStatsModels.ProblemStat;
+import com.algoprep.problembank.domain.model.stats.ProblemBankStatsModels.LevelRef;
+import com.algoprep.problembank.domain.model.stats.ProblemBankStatsModels.ProblemStat;
 import com.algoprep.problembank.domain.ports.out.ProblemBankStatsRepository;
 import java.util.List;
 import java.util.Set;

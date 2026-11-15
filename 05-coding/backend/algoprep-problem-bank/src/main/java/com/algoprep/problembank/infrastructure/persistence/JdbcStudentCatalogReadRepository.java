@@ -1,11 +1,11 @@
 package com.algoprep.problembank.infrastructure.persistence;
 
-import com.algoprep.problembank.domain.model.PublishedProblemModels.SolveStates;
-import com.algoprep.problembank.domain.model.StudentCatalogModels.CatalogSummary;
-import com.algoprep.problembank.domain.model.StudentCatalogModels.LevelCount;
-import com.algoprep.problembank.domain.model.StudentCatalogModels.LevelProgress;
-import com.algoprep.problembank.domain.model.StudentCatalogModels.TopicCount;
-import com.algoprep.problembank.domain.model.StudentCatalogModels.TopicProgress;
+import com.algoprep.problembank.domain.model.student.PublishedProblemModels.SolveStates;
+import com.algoprep.problembank.domain.model.student.StudentCatalogModels.CatalogSummary;
+import com.algoprep.problembank.domain.model.student.StudentCatalogModels.LevelCount;
+import com.algoprep.problembank.domain.model.student.StudentCatalogModels.LevelProgress;
+import com.algoprep.problembank.domain.model.student.StudentCatalogModels.TopicCount;
+import com.algoprep.problembank.domain.model.student.StudentCatalogModels.TopicProgress;
 import com.algoprep.problembank.domain.ports.out.StudentCatalogReadRepository;
 import java.util.List;
 import java.util.UUID;

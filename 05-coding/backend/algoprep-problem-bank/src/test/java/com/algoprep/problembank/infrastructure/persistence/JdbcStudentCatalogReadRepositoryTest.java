@@ -3,7 +3,7 @@ package com.algoprep.problembank.infrastructure.persistence;
 import static com.algoprep.problembank.infrastructure.persistence.FakeJdbc.row;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.algoprep.problembank.domain.model.PublishedProblemModels.SolveStates;
+import com.algoprep.problembank.domain.model.student.PublishedProblemModels.SolveStates;
 import java.util.Set;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;

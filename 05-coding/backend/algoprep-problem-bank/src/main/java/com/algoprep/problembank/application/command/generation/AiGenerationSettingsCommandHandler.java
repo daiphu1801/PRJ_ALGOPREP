@@ -1,10 +1,10 @@
-package com.algoprep.problembank.application.command;
+package com.algoprep.problembank.application.command.generation;
 
 import com.algoprep.common.exception.InvalidRequestException;
 import com.algoprep.common.exception.ServiceUnavailableException;
-import com.algoprep.problembank.application.dto.TestcaseGeneration.Settings;
-import com.algoprep.problembank.application.dto.TestcaseGeneration.UpdateSettings;
-import com.algoprep.problembank.application.ports.in.AiGenerationSettingsUseCase;
+import com.algoprep.problembank.application.dto.generation.TestcaseGeneration.Settings;
+import com.algoprep.problembank.application.dto.generation.TestcaseGeneration.UpdateSettings;
+import com.algoprep.problembank.application.ports.in.generation.AiGenerationSettingsUseCase;
 import com.algoprep.problembank.domain.model.CatalogAuditEntry;
 import com.algoprep.problembank.domain.ports.out.ProblemAuditPort;
 import com.algoprep.problembank.domain.ports.out.ProblemAuthoringReadRepository;

@@ -1,6 +1,6 @@
-package com.algoprep.problembank.application.ports.in;
+package com.algoprep.problembank.application.ports.in.snapshot;
 
-import com.algoprep.problembank.application.dto.SnapshotPublicationResult;
+import com.algoprep.problembank.application.dto.snapshot.SnapshotPublicationResult;
 import java.util.UUID;
 
 /**

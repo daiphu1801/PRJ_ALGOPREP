@@ -1,4 +1,4 @@
-package com.algoprep.problembank.domain.model;
+package com.algoprep.problembank.domain.model.student;
 
 import java.math.BigDecimal;
 import java.util.List;

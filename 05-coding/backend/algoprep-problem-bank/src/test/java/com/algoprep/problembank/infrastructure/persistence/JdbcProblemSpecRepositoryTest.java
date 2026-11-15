@@ -3,8 +3,8 @@ package com.algoprep.problembank.infrastructure.persistence;
 import static com.algoprep.problembank.infrastructure.persistence.FakeJdbc.row;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.algoprep.problembank.domain.model.ProblemSpecData;
-import com.algoprep.problembank.domain.model.StoredProblemSpec;
+import com.algoprep.problembank.domain.model.problem.ProblemSpecData;
+import com.algoprep.problembank.domain.model.problem.StoredProblemSpec;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.UUID;

@@ -1,4 +1,4 @@
-package com.algoprep.problembank.application.command;
+package com.algoprep.problembank.application.command.generation;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -10,7 +10,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.algoprep.common.exception.AlgoPrepException;
-import com.algoprep.problembank.application.dto.TestcaseGeneration.UpdateSettings;
+import com.algoprep.problembank.application.dto.generation.TestcaseGeneration.UpdateSettings;
 import com.algoprep.problembank.domain.model.CatalogAuditEntry;
 import com.algoprep.problembank.domain.ports.out.ProblemAuditPort;
 import com.algoprep.problembank.domain.ports.out.ProblemAuthoringReadRepository;

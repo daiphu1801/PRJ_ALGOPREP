@@ -1,6 +1,6 @@
-package com.algoprep.problembank.application.ports.in;
+package com.algoprep.problembank.application.ports.in.grading;
 
-import com.algoprep.problembank.domain.model.SubmissionProblemSummary;
+import com.algoprep.problembank.domain.model.grading.SubmissionProblemSummary;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;

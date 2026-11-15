@@ -1,7 +1,7 @@
 package com.algoprep.problembank.infrastructure.cache;
 
 import com.algoprep.problembank.application.ports.out.SolveStatePort;
-import com.algoprep.problembank.domain.model.PublishedProblemModels.SolveStates;
+import com.algoprep.problembank.domain.model.student.PublishedProblemModels.SolveStates;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.beans.factory.ObjectProvider;

@@ -1,9 +1,9 @@
 package com.algoprep.problembank.application.query;
 
 import com.algoprep.common.domain.ports.out.ClockPort;
-import com.algoprep.problembank.application.dto.ExportProblemsQuery;
-import com.algoprep.problembank.application.dto.ExportedCsv;
-import com.algoprep.problembank.application.ports.in.ExportProblemsCsvUseCase;
+import com.algoprep.problembank.application.dto.bulk.ExportProblemsQuery;
+import com.algoprep.problembank.application.dto.bulk.ExportedCsv;
+import com.algoprep.problembank.application.ports.in.bulk.ExportProblemsCsvUseCase;
 import com.algoprep.problembank.domain.exception.ProblemContentInvalidException;
 import com.algoprep.problembank.domain.ports.out.ProblemAuthoringListRepository;
 import java.nio.charset.StandardCharsets;
@@ -49,7 +49,7 @@ class ExportProblemsCsvQueryHandler implements ExportProblemsCsvUseCase {
     return new ExportedCsv(name, ProblemCsv.render(items).getBytes(StandardCharsets.UTF_8));
   }
 
-  private List<com.algoprep.problembank.domain.model.AuthoringListPage.Item> filtered(
+  private List<com.algoprep.problembank.domain.model.problem.AuthoringListPage.Item> filtered(
       UUID scope, ExportProblemsQuery.Filter f) {
     String q = f.q() == null || f.q().isBlank() ? null : f.q().trim();
     if (q != null && q.length() > ListAuthoringProblemsQueryHandler.Q_MAX) {

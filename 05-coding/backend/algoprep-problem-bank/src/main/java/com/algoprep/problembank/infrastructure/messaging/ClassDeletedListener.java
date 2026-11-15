@@ -1,6 +1,6 @@
 package com.algoprep.problembank.infrastructure.messaging;
 
-import com.algoprep.problembank.application.ports.in.ApplyClassDeletedUseCase;
+import com.algoprep.problembank.application.ports.in.assignment.ApplyClassDeletedUseCase;
 import java.time.Instant;
 import java.util.UUID;
 import org.springframework.amqp.AmqpRejectAndDontRequeueException;

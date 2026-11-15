@@ -1,4 +1,4 @@
-package com.algoprep.problembank.application.dto;
+package com.algoprep.problembank.application.dto.bulk;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

@@ -1,8 +1,8 @@
 package com.algoprep.problembank.infrastructure.cache;
 
-import com.algoprep.problembank.domain.model.PublishedProblemModels.Page;
-import com.algoprep.problembank.domain.model.PublishedProblemModels.SolveStates;
-import com.algoprep.problembank.domain.model.StudentCatalogModels.CatalogSummary;
+import com.algoprep.problembank.domain.model.student.PublishedProblemModels.Page;
+import com.algoprep.problembank.domain.model.student.PublishedProblemModels.SolveStates;
+import com.algoprep.problembank.domain.model.student.StudentCatalogModels.CatalogSummary;
 import java.time.Duration;
 import java.util.Objects;
 import java.util.function.Supplier;

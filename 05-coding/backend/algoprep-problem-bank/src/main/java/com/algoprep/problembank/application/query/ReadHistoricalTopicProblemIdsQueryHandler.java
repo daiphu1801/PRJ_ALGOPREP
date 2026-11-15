@@ -1,6 +1,6 @@
 package com.algoprep.problembank.application.query;
 
-import com.algoprep.problembank.application.ports.in.ReadHistoricalTopicProblemIdsUseCase;
+import com.algoprep.problembank.application.ports.in.grading.ReadHistoricalTopicProblemIdsUseCase;
 import com.algoprep.problembank.domain.ports.out.HistoricalTopicProblemRepository;
 import java.util.Map;
 import java.util.Set;

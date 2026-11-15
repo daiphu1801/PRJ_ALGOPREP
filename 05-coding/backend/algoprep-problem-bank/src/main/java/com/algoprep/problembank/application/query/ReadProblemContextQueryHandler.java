@@ -1,8 +1,8 @@
 package com.algoprep.problembank.application.query;
 
 import com.algoprep.common.exception.ResourceNotFoundException;
-import com.algoprep.problembank.application.ports.in.ReadProblemContextUseCase;
-import com.algoprep.problembank.domain.model.ProblemContextView;
+import com.algoprep.problembank.application.ports.in.grading.ReadProblemContextUseCase;
+import com.algoprep.problembank.domain.model.grading.ProblemContextView;
 import com.algoprep.problembank.domain.ports.out.ProblemContextReadRepository;
 import java.util.Locale;
 import java.util.UUID;

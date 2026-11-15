@@ -1,11 +1,12 @@
-package com.algoprep.problembank.application.command;
+package com.algoprep.problembank.application.command.problem;
 
 import com.algoprep.common.exception.PermissionDeniedException;
 import com.algoprep.common.exception.ResourceNotFoundException;
+import com.algoprep.problembank.application.command.TestcaseContentStore;
 import com.algoprep.problembank.domain.model.AuthoringProblemRecord;
 import com.algoprep.problembank.domain.model.StoredGradingTestcase.Content;
-import com.algoprep.problembank.domain.model.StoredProblemSpec;
 import com.algoprep.problembank.domain.model.StoredTestcase;
+import com.algoprep.problembank.domain.model.problem.StoredProblemSpec;
 import com.algoprep.problembank.domain.ports.out.ProblemAuthoringReadRepository;
 import com.algoprep.problembank.domain.ports.out.ProblemContentRepository;
 import com.algoprep.problembank.domain.ports.out.ProblemSpecRepository;

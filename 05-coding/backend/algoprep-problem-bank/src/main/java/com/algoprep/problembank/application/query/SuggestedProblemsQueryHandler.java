@@ -1,18 +1,18 @@
 package com.algoprep.problembank.application.query;
 
 import com.algoprep.common.exception.InvalidRequestException;
-import com.algoprep.problembank.application.dto.SuggestedProblemViews.Item;
-import com.algoprep.problembank.application.dto.SuggestedProblemViews.SuggestedProblems;
-import com.algoprep.problembank.application.dto.SuggestedProblemViews.TopicScoreItem;
+import com.algoprep.problembank.application.dto.student.SuggestedProblemViews.Item;
+import com.algoprep.problembank.application.dto.student.SuggestedProblemViews.SuggestedProblems;
+import com.algoprep.problembank.application.dto.student.SuggestedProblemViews.TopicScoreItem;
 import com.algoprep.problembank.application.policy.SuggestionRanking;
-import com.algoprep.problembank.application.ports.in.SuggestedProblemsUseCase;
+import com.algoprep.problembank.application.ports.in.student.SuggestedProblemsUseCase;
 import com.algoprep.problembank.application.ports.out.MyTopicSubmissionMetricsPort;
 import com.algoprep.problembank.application.ports.out.SolveStatePort;
-import com.algoprep.problembank.domain.model.PublishedProblemModels.SolveStates;
-import com.algoprep.problembank.domain.model.StudentCatalogModels.TopicProgress;
-import com.algoprep.problembank.domain.model.SuggestedProblemModels.Candidate;
-import com.algoprep.problembank.domain.model.SuggestedProblemModels.TopicMetric;
-import com.algoprep.problembank.domain.model.SuggestedProblemModels.TopicScore;
+import com.algoprep.problembank.domain.model.student.PublishedProblemModels.SolveStates;
+import com.algoprep.problembank.domain.model.student.StudentCatalogModels.TopicProgress;
+import com.algoprep.problembank.domain.model.student.SuggestedProblemModels.Candidate;
+import com.algoprep.problembank.domain.model.student.SuggestedProblemModels.TopicMetric;
+import com.algoprep.problembank.domain.model.student.SuggestedProblemModels.TopicScore;
 import com.algoprep.problembank.domain.ports.out.HistoricalTopicProblemRepository;
 import com.algoprep.problembank.domain.ports.out.StudentCatalogReadRepository;
 import com.algoprep.problembank.domain.ports.out.SuggestedProblemReadRepository;

@@ -1,4 +1,4 @@
-package com.algoprep.problembank.application.command;
+package com.algoprep.problembank.application.command.grading;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -8,7 +8,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.algoprep.problembank.domain.model.ProblemStatsModels.GradedSubmission;
+import com.algoprep.problembank.domain.model.stats.ProblemStatsModels.GradedSubmission;
 import com.algoprep.problembank.domain.ports.out.ProblemStatsRepository;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;

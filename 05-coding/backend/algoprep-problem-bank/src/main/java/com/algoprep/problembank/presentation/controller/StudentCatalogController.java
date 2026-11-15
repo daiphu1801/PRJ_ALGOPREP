@@ -1,10 +1,10 @@
 package com.algoprep.problembank.presentation.controller;
 
 import com.algoprep.common.exception.ResourceNotFoundException;
-import com.algoprep.problembank.application.dto.StudentCatalogViews;
-import com.algoprep.problembank.application.ports.in.MyBookmarksUseCase;
-import com.algoprep.problembank.application.ports.in.StudentCatalogUseCase;
-import com.algoprep.problembank.domain.model.StudentCatalogModels.CatalogSummary;
+import com.algoprep.problembank.application.dto.student.StudentCatalogViews;
+import com.algoprep.problembank.application.ports.in.student.MyBookmarksUseCase;
+import com.algoprep.problembank.application.ports.in.student.StudentCatalogUseCase;
+import com.algoprep.problembank.domain.model.student.StudentCatalogModels.CatalogSummary;
 import java.util.Map;
 import java.util.UUID;
 import org.springframework.http.HttpStatus;

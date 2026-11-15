@@ -5,7 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.algoprep.common.exception.ResourceConflictException;
-import com.algoprep.problembank.domain.model.CatalogKind;
+import com.algoprep.problembank.domain.model.catalog.CatalogKind;
 import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;

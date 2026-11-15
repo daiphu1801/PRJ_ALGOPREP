@@ -1,4 +1,4 @@
-package com.algoprep.problembank.application.command;
+package com.algoprep.problembank.application.command.problem;
 
 import com.algoprep.common.exception.InvalidRequestException;
 import com.algoprep.common.functionspec.FunctionParameter;
@@ -8,7 +8,7 @@ import com.algoprep.common.functionspec.SpecEvaluation;
 import com.algoprep.common.functionspec.TypeKind;
 import com.algoprep.common.functionspec.TypeNode;
 import com.algoprep.problembank.domain.exception.ProblemSpecInvalidException;
-import com.algoprep.problembank.domain.model.ProblemSpecData;
+import com.algoprep.problembank.domain.model.problem.ProblemSpecData;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;

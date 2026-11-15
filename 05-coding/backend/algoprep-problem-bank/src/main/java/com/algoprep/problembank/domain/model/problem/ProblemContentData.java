@@ -1,4 +1,4 @@
-package com.algoprep.problembank.domain.model;
+package com.algoprep.problembank.domain.model.problem;
 
 import java.util.ArrayList;
 import java.util.Collections;

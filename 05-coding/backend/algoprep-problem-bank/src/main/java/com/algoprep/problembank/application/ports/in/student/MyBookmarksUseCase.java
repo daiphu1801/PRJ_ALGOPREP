@@ -1,6 +1,6 @@
-package com.algoprep.problembank.application.ports.in;
+package com.algoprep.problembank.application.ports.in.student;
 
-import com.algoprep.problembank.application.dto.StudentCatalogViews;
+import com.algoprep.problembank.application.dto.student.StudentCatalogViews;
 import java.util.Map;
 import java.util.UUID;
 

@@ -1,9 +1,9 @@
 package com.algoprep.problembank.application.snapshot;
 
 import com.algoprep.problembank.domain.exception.GradingDataException;
-import com.algoprep.problembank.domain.model.SnapshotMetadata;
 import com.algoprep.problembank.domain.model.TestcaseData;
-import com.algoprep.problembank.domain.model.TestcaseSnapshot;
+import com.algoprep.problembank.domain.model.snapshot.SnapshotMetadata;
+import com.algoprep.problembank.domain.model.snapshot.TestcaseSnapshot;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;

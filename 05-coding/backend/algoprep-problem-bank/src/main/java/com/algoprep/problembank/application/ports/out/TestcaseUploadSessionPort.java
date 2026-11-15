@@ -1,6 +1,6 @@
 package com.algoprep.problembank.application.ports.out;
 
-import com.algoprep.problembank.application.dto.TestcaseUploadSession.Session;
+import com.algoprep.problembank.application.dto.testcase.TestcaseUploadSession.Session;
 import java.time.Duration;
 import java.util.Optional;
 import java.util.UUID;

@@ -1,7 +1,7 @@
-package com.algoprep.problembank.application.dto;
+package com.algoprep.problembank.application.dto.assignment;
 
-import com.algoprep.problembank.application.dto.StudentProblemViews.PageMeta;
-import com.algoprep.problembank.domain.model.StudentClassModels.ClassSolveState;
+import com.algoprep.problembank.application.dto.student.StudentProblemViews.PageMeta;
+import com.algoprep.problembank.domain.model.assignment.StudentClassModels.ClassSolveState;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;

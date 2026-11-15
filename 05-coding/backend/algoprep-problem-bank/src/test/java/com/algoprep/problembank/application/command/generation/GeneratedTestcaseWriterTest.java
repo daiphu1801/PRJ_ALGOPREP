@@ -1,4 +1,4 @@
-package com.algoprep.problembank.application.command;
+package com.algoprep.problembank.application.command.generation;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -9,16 +9,18 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.algoprep.common.exception.AlgoPrepException;
-import com.algoprep.problembank.application.command.GeneratedTestcaseWriter.Kept;
-import com.algoprep.problembank.application.command.GeneratedTestcaseWriter.RunInfo;
+import com.algoprep.problembank.application.command.TestcaseAuthoringSupport;
+import com.algoprep.problembank.application.command.TestcaseContentStore;
+import com.algoprep.problembank.application.command.generation.GeneratedTestcaseWriter.Kept;
+import com.algoprep.problembank.application.command.generation.GeneratedTestcaseWriter.RunInfo;
 import com.algoprep.problembank.application.dto.AuthoringScope;
-import com.algoprep.problembank.application.dto.TestcaseGeneration;
-import com.algoprep.problembank.domain.model.ApprovalCounts;
+import com.algoprep.problembank.application.dto.generation.TestcaseGeneration;
 import com.algoprep.problembank.domain.model.ProblemContentSnapshot;
 import com.algoprep.problembank.domain.model.ProblemTouch;
 import com.algoprep.problembank.domain.model.StoredGradingTestcase.Content;
 import com.algoprep.problembank.domain.model.StoredTestcase;
-import com.algoprep.problembank.domain.model.TestcaseGenerationRun;
+import com.algoprep.problembank.domain.model.generation.TestcaseGenerationRun;
+import com.algoprep.problembank.domain.model.stats.ApprovalCounts;
 import com.algoprep.problembank.domain.ports.out.TestcaseGenerationRepository;
 import com.algoprep.problembank.domain.ports.out.TestcaseWriteRepository;
 import java.time.Instant;

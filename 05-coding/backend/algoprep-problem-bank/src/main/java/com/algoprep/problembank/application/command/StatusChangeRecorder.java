@@ -2,10 +2,10 @@ package com.algoprep.problembank.application.command;
 
 import com.algoprep.common.domain.ports.out.IdGeneratorPort;
 import com.algoprep.common.exception.ServiceUnavailableException;
-import com.algoprep.problembank.application.dto.UpdateProblemStatusCommand;
+import com.algoprep.problembank.application.dto.snapshot.UpdateProblemStatusCommand;
 import com.algoprep.problembank.application.ports.out.ProblemListVersionPort;
 import com.algoprep.problembank.domain.model.CatalogAuditEntry;
-import com.algoprep.problembank.domain.model.ProblemStatusWrite;
+import com.algoprep.problembank.domain.model.snapshot.ProblemStatusWrite;
 import com.algoprep.problembank.domain.ports.out.ProblemAuditPort;
 import com.algoprep.problembank.domain.ports.out.ProblemPublishRepository;
 import java.time.Instant;
@@ -15,7 +15,7 @@ import tools.jackson.databind.json.JsonMapper;
 
 /** The row write, the audit entry, the Outbox event and the cache bump of one status change. */
 @Component
-class StatusChangeRecorder {
+public class StatusChangeRecorder {
   private static final JsonMapper JSON = JsonMapper.builder().build();
 
   private final ProblemPublishRepository writes;
@@ -23,7 +23,7 @@ class StatusChangeRecorder {
   private final ProblemListVersionPort cache;
   private final IdGeneratorPort ids;
 
-  StatusChangeRecorder(
+  public StatusChangeRecorder(
       ProblemPublishRepository writes,
       ProblemAuditPort audit,
       ProblemListVersionPort cache,
@@ -35,7 +35,7 @@ class StatusChangeRecorder {
   }
 
   /** Publishing: {@code ProblemPublished}; withdrawing: {@code ProblemUnpublished}. */
-  ProblemStatusWrite change(UpdateProblemStatusCommand command, boolean publish) {
+  public ProblemStatusWrite change(UpdateProblemStatusCommand command, boolean publish) {
     var write = writes.setStatus(command.problemId(), command.actorId(), command.status());
     String action = publish ? "PROBLEM_PUBLISHED" : "PROBLEM_UNPUBLISHED";
     String event = publish ? "ProblemPublished" : "ProblemUnpublished";
@@ -71,7 +71,7 @@ class StatusChangeRecorder {
    * Deleting a published problem withdraws it, so listeners get the same {@code
    * ProblemUnpublished}.
    */
-  void withdrawnByDelete(UUID problemId, UUID actorId, Instant at) {
+  public void withdrawnByDelete(UUID problemId, UUID actorId, Instant at) {
     try {
       writes.appendEvent(
           problemId,

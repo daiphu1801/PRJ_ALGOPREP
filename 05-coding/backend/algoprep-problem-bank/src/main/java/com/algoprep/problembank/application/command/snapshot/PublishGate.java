@@ -1,4 +1,4 @@
-package com.algoprep.problembank.application.command;
+package com.algoprep.problembank.application.command.snapshot;
 
 import com.algoprep.common.exception.ServiceUnavailableException;
 import com.algoprep.problembank.application.dto.ProblemAuthoringView.PublishChecklist;

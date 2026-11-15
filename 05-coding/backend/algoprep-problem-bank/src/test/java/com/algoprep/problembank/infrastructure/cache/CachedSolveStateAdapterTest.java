@@ -7,7 +7,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.algoprep.problembank.application.ports.out.SolveStatePort;
-import com.algoprep.problembank.domain.model.PublishedProblemModels.SolveStates;
+import com.algoprep.problembank.domain.model.student.PublishedProblemModels.SolveStates;
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.Optional;

@@ -3,7 +3,7 @@ package com.algoprep.problembank.infrastructure.persistence;
 import static com.algoprep.problembank.infrastructure.persistence.FakeJdbc.row;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.algoprep.problembank.domain.model.AuthoringListFilter;
+import com.algoprep.problembank.domain.model.problem.AuthoringListFilter;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;

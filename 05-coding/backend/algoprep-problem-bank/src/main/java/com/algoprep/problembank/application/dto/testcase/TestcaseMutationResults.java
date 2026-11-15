@@ -1,4 +1,4 @@
-package com.algoprep.problembank.application.dto;
+package com.algoprep.problembank.application.dto.testcase;
 
 import com.algoprep.problembank.application.dto.ProblemAuthoringView.TestcaseView;
 import java.time.Instant;

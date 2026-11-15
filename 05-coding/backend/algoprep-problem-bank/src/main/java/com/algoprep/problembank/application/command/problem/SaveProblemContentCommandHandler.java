@@ -1,14 +1,15 @@
-package com.algoprep.problembank.application.command;
+package com.algoprep.problembank.application.command.problem;
 
 import com.algoprep.common.exception.DomainRuleViolationException;
 import com.algoprep.common.exception.PermissionDeniedException;
 import com.algoprep.common.exception.ResourceNotFoundException;
-import com.algoprep.problembank.application.dto.SaveProblemContentCommand;
-import com.algoprep.problembank.application.ports.in.SaveProblemContentUseCase;
+import com.algoprep.problembank.application.command.ProblemContentValidation;
+import com.algoprep.problembank.application.dto.problem.SaveProblemContentCommand;
+import com.algoprep.problembank.application.ports.in.problem.SaveProblemContentUseCase;
 import com.algoprep.problembank.application.ports.out.ProblemListVersionPort;
 import com.algoprep.problembank.domain.exception.ProblemVersionConflictException;
-import com.algoprep.problembank.domain.model.ProblemContentData;
 import com.algoprep.problembank.domain.model.ProblemContentSnapshot;
+import com.algoprep.problembank.domain.model.problem.ProblemContentData;
 import com.algoprep.problembank.domain.ports.out.ProblemContentRepository;
 import java.util.HashSet;
 import org.springframework.stereotype.Service;

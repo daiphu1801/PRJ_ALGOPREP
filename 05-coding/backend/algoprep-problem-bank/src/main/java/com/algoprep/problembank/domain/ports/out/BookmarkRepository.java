@@ -1,7 +1,7 @@
 package com.algoprep.problembank.domain.ports.out;
 
-import com.algoprep.problembank.domain.model.StudentCatalogModels.Bookmark;
-import com.algoprep.problembank.domain.model.StudentCatalogModels.BookmarkSaved;
+import com.algoprep.problembank.domain.model.student.StudentCatalogModels.Bookmark;
+import com.algoprep.problembank.domain.model.student.StudentCatalogModels.BookmarkSaved;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;

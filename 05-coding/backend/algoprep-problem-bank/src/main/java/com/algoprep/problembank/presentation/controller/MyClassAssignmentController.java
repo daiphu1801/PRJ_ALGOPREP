@@ -1,8 +1,8 @@
 package com.algoprep.problembank.presentation.controller;
 
-import com.algoprep.problembank.application.dto.StudentClassViews.MyAssignmentGroups;
-import com.algoprep.problembank.application.dto.StudentClassViews.MyClassProblems;
-import com.algoprep.problembank.application.ports.in.MyClassAssignmentsUseCase;
+import com.algoprep.problembank.application.dto.assignment.StudentClassViews.MyAssignmentGroups;
+import com.algoprep.problembank.application.dto.assignment.StudentClassViews.MyClassProblems;
+import com.algoprep.problembank.application.ports.in.assignment.MyClassAssignmentsUseCase;
 import java.util.UUID;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;

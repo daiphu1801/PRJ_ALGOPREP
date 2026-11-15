@@ -1,7 +1,7 @@
 package com.algoprep.problembank.application.query;
 
-import com.algoprep.problembank.application.ports.in.ListClassAssignmentsUseCase;
-import com.algoprep.problembank.domain.model.ClassAssignmentSnapshot;
+import com.algoprep.problembank.application.ports.in.assignment.ListClassAssignmentsUseCase;
+import com.algoprep.problembank.domain.model.assignment.ClassAssignmentSnapshot;
 import com.algoprep.problembank.domain.ports.out.ClassAssignmentReadRepository;
 import java.util.Collection;
 import java.util.List;

@@ -1,9 +1,9 @@
 package com.algoprep.problembank.presentation.controller;
 
 import com.algoprep.common.exception.InvalidRequestException;
-import com.algoprep.problembank.application.dto.SaveProblemSpecCommand;
-import com.algoprep.problembank.application.dto.SaveProblemSpecResult;
-import com.algoprep.problembank.application.ports.in.SaveProblemSpecUseCase;
+import com.algoprep.problembank.application.dto.problem.SaveProblemSpecCommand;
+import com.algoprep.problembank.application.dto.problem.SaveProblemSpecResult;
+import com.algoprep.problembank.application.ports.in.problem.SaveProblemSpecUseCase;
 import java.time.Instant;
 import java.time.format.DateTimeParseException;
 import java.util.UUID;

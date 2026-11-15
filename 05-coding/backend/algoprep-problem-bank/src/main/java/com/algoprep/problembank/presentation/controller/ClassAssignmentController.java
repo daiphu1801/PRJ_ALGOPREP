@@ -1,9 +1,9 @@
 package com.algoprep.problembank.presentation.controller;
 
 import com.algoprep.common.exception.PermissionDeniedException;
-import com.algoprep.problembank.application.dto.ClassAssignmentViews;
-import com.algoprep.problembank.application.ports.in.ManageClassAssignmentsUseCase;
-import com.algoprep.problembank.application.ports.in.ReadClassAssignmentsUseCase;
+import com.algoprep.problembank.application.dto.assignment.ClassAssignmentViews;
+import com.algoprep.problembank.application.ports.in.assignment.ManageClassAssignmentsUseCase;
+import com.algoprep.problembank.application.ports.in.assignment.ReadClassAssignmentsUseCase;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;

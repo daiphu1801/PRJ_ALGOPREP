@@ -1,4 +1,4 @@
-package com.algoprep.problembank.application.command;
+package com.algoprep.problembank.application.command.catalog;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -15,12 +15,12 @@ import static org.mockito.Mockito.when;
 
 import com.algoprep.common.exception.AlgoPrepException;
 import com.algoprep.common.exception.ServiceUnavailableException;
-import com.algoprep.problembank.application.dto.CatalogCommand;
+import com.algoprep.problembank.application.dto.catalog.CatalogCommand;
 import com.algoprep.problembank.application.ports.out.ProblemListVersionPort;
 import com.algoprep.problembank.domain.exception.CatalogInUseException;
 import com.algoprep.problembank.domain.exception.LastProblemLevelException;
-import com.algoprep.problembank.domain.model.CatalogItem;
-import com.algoprep.problembank.domain.model.CatalogKind;
+import com.algoprep.problembank.domain.model.catalog.CatalogItem;
+import com.algoprep.problembank.domain.model.catalog.CatalogKind;
 import com.algoprep.problembank.domain.ports.out.CatalogRepository;
 import com.algoprep.problembank.domain.ports.out.ProblemAuditPort;
 import java.util.Arrays;

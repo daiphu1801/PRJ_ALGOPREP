@@ -1,12 +1,12 @@
-package com.algoprep.problembank.application.command;
+package com.algoprep.problembank.application.command.catalog;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import com.algoprep.problembank.application.dto.CatalogCommand;
-import com.algoprep.problembank.domain.model.CatalogItem;
-import com.algoprep.problembank.domain.model.CatalogKind;
+import com.algoprep.problembank.application.dto.catalog.CatalogCommand;
+import com.algoprep.problembank.domain.model.catalog.CatalogItem;
+import com.algoprep.problembank.domain.model.catalog.CatalogKind;
 import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;

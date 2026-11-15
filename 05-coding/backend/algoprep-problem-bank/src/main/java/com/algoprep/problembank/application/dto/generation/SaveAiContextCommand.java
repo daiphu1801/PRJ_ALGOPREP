@@ -1,4 +1,4 @@
-package com.algoprep.problembank.application.dto;
+package com.algoprep.problembank.application.dto.generation;
 
 import java.time.Instant;
 import java.util.UUID;

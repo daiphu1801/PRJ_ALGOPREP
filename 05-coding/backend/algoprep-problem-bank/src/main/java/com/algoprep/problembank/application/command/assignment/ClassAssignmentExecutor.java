@@ -1,4 +1,4 @@
-package com.algoprep.problembank.application.command;
+package com.algoprep.problembank.application.command.assignment;
 
 import com.algoprep.common.domain.ports.out.IdGeneratorPort;
 import com.algoprep.common.exception.DomainRuleViolationException;

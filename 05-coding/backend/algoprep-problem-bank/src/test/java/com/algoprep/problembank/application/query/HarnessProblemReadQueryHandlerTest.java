@@ -9,8 +9,8 @@ import static org.mockito.Mockito.when;
 
 import com.algoprep.common.functionspec.TypeKind;
 import com.algoprep.problembank.domain.exception.UnreadableProblemSpecException;
-import com.algoprep.problembank.domain.model.ProblemSpecData;
-import com.algoprep.problembank.domain.model.ProblemSpecReadView;
+import com.algoprep.problembank.domain.model.problem.ProblemSpecData;
+import com.algoprep.problembank.domain.model.problem.ProblemSpecReadView;
 import com.algoprep.problembank.domain.ports.out.HarnessProblemReadRepository;
 import java.math.BigDecimal;
 import java.util.Optional;

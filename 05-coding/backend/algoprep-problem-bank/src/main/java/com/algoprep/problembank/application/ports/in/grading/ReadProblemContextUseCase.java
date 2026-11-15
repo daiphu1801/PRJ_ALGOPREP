@@ -1,6 +1,6 @@
-package com.algoprep.problembank.application.ports.in;
+package com.algoprep.problembank.application.ports.in.grading;
 
-import com.algoprep.problembank.domain.model.ProblemContextView;
+import com.algoprep.problembank.domain.model.grading.ProblemContextView;
 import java.util.UUID;
 
 /** In-process read behind {@code ProblemContextPort.getContext}, DD F2 section 58.1 (AC-83). */

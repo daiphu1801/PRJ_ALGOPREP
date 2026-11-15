@@ -1,7 +1,7 @@
 package com.algoprep.problembank.infrastructure.persistence;
 
-import com.algoprep.problembank.domain.model.StudentCatalogModels.Bookmark;
-import com.algoprep.problembank.domain.model.StudentCatalogModels.BookmarkSaved;
+import com.algoprep.problembank.domain.model.student.StudentCatalogModels.Bookmark;
+import com.algoprep.problembank.domain.model.student.StudentCatalogModels.BookmarkSaved;
 import com.algoprep.problembank.domain.ports.out.BookmarkRepository;
 import java.sql.Array;
 import java.sql.SQLException;

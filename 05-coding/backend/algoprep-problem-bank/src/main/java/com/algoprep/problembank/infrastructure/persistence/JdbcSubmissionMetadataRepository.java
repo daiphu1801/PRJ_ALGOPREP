@@ -1,6 +1,6 @@
 package com.algoprep.problembank.infrastructure.persistence;
 
-import com.algoprep.problembank.domain.model.SubmissionProblemSummary;
+import com.algoprep.problembank.domain.model.grading.SubmissionProblemSummary;
 import com.algoprep.problembank.domain.ports.out.SubmissionMetadataRepository;
 import java.util.HashSet;
 import java.util.List;

@@ -1,8 +1,8 @@
 package com.algoprep.problembank.domain.ports.out;
 
-import com.algoprep.problembank.domain.model.GradingReadSnapshot;
-import com.algoprep.problembank.domain.model.SnapshotMetadata;
-import com.algoprep.problembank.domain.model.StoredSampleTestcase;
+import com.algoprep.problembank.domain.model.grading.GradingReadSnapshot;
+import com.algoprep.problembank.domain.model.grading.StoredSampleTestcase;
+import com.algoprep.problembank.domain.model.snapshot.SnapshotMetadata;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;

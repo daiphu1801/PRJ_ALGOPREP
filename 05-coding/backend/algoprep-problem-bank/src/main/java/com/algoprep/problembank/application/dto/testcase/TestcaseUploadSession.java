@@ -1,4 +1,4 @@
-package com.algoprep.problembank.application.dto;
+package com.algoprep.problembank.application.dto.testcase;
 
 import java.time.Instant;
 import java.util.List;

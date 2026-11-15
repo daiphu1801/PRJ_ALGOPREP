@@ -1,4 +1,4 @@
-package com.algoprep.problembank.application.dto;
+package com.algoprep.problembank.application.dto.snapshot;
 
 import java.time.Instant;
 import java.util.UUID;

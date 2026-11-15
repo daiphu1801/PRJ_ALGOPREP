@@ -1,6 +1,6 @@
-package com.algoprep.problembank.application.ports.in;
+package com.algoprep.problembank.application.ports.in.snapshot;
 
-import com.algoprep.problembank.domain.model.TestcaseSnapshot;
+import com.algoprep.problembank.domain.model.snapshot.TestcaseSnapshot;
 import java.util.UUID;
 
 /**

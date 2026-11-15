@@ -1,4 +1,4 @@
-package com.algoprep.problembank.domain.model;
+package com.algoprep.problembank.domain.model.stats;
 
 import java.math.BigDecimal;
 import java.util.List;

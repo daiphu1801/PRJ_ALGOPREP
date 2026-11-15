@@ -6,8 +6,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.algoprep.problembank.application.dto.SaveProblemSpecResult;
-import com.algoprep.problembank.application.ports.in.SaveProblemSpecUseCase;
+import com.algoprep.problembank.application.dto.problem.SaveProblemSpecResult;
+import com.algoprep.problembank.application.ports.in.problem.SaveProblemSpecUseCase;
 import java.io.ByteArrayOutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URLClassLoader;

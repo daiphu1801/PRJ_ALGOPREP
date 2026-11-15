@@ -4,8 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import com.algoprep.problembank.application.dto.CatalogCommand;
-import com.algoprep.problembank.domain.model.CatalogItem;
+import com.algoprep.problembank.application.dto.catalog.CatalogCommand;
+import com.algoprep.problembank.domain.model.catalog.CatalogItem;
 import java.io.ByteArrayOutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URLClassLoader;

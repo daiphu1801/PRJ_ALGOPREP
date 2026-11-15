@@ -6,7 +6,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
-import com.algoprep.problembank.application.ports.in.ApplyClassDeletedUseCase;
+import com.algoprep.problembank.application.ports.in.assignment.ApplyClassDeletedUseCase;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;

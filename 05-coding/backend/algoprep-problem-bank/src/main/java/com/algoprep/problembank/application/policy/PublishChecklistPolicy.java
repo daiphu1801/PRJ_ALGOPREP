@@ -3,7 +3,7 @@ package com.algoprep.problembank.application.policy;
 import com.algoprep.problembank.application.dto.ProblemAuthoringView.PublishChecklist;
 import com.algoprep.problembank.domain.model.AuthoringProblemRecord;
 import com.algoprep.problembank.domain.model.AuthoringProblemRecord.AuthoringTestcase;
-import com.algoprep.problembank.domain.model.StoredProblemSpec;
+import com.algoprep.problembank.domain.model.problem.StoredProblemSpec;
 import java.util.List;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;

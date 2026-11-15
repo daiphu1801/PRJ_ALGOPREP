@@ -1,4 +1,4 @@
-package com.algoprep.problembank.application.dto;
+package com.algoprep.problembank.application.dto.snapshot;
 
 import com.algoprep.problembank.application.dto.ProblemAuthoringView.PublishChecklist;
 import java.time.Instant;

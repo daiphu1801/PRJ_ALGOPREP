@@ -3,8 +3,8 @@ package com.algoprep.problembank.infrastructure.persistence;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import com.algoprep.problembank.domain.model.OutboxEvent;
-import com.algoprep.problembank.domain.model.TestcaseGenerationRun;
+import com.algoprep.problembank.domain.model.generation.TestcaseGenerationRun;
+import com.algoprep.problembank.domain.model.outbox.OutboxEvent;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;

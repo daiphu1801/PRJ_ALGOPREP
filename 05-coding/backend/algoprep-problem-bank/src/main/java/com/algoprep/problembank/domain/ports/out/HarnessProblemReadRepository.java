@@ -1,6 +1,6 @@
 package com.algoprep.problembank.domain.ports.out;
 
-import com.algoprep.problembank.domain.model.ProblemSpecReadView;
+import com.algoprep.problembank.domain.model.problem.ProblemSpecReadView;
 import java.util.Optional;
 import java.util.UUID;
 

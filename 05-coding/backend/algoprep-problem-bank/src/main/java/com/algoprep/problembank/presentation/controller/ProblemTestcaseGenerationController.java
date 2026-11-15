@@ -2,8 +2,8 @@ package com.algoprep.problembank.presentation.controller;
 
 import com.algoprep.common.exception.ResourceNotFoundException;
 import com.algoprep.problembank.application.dto.AuthoringScope;
-import com.algoprep.problembank.application.dto.TestcaseGeneration;
-import com.algoprep.problembank.application.ports.in.GenerateTestcasesUseCase;
+import com.algoprep.problembank.application.dto.generation.TestcaseGeneration;
+import com.algoprep.problembank.application.ports.in.generation.GenerateTestcasesUseCase;
 import java.util.UUID;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;

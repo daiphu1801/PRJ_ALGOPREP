@@ -1,7 +1,7 @@
 package com.algoprep.problembank.infrastructure.persistence;
 
-import com.algoprep.problembank.domain.model.ProblemBankStatsModels.LevelRef;
-import com.algoprep.problembank.domain.model.ProblemBankStatsModels.ProblemStat;
+import com.algoprep.problembank.domain.model.stats.ProblemBankStatsModels.LevelRef;
+import com.algoprep.problembank.domain.model.stats.ProblemBankStatsModels.ProblemStat;
 import com.algoprep.problembank.domain.ports.out.ProblemBankStatsRepository;
 import java.util.List;
 import java.util.Set;

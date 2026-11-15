@@ -1,4 +1,4 @@
-package com.algoprep.problembank.application.command;
+package com.algoprep.problembank.application.command.snapshot;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -9,14 +9,14 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.algoprep.common.domain.ports.out.IdGeneratorPort;
-import com.algoprep.problembank.application.ports.in.ReadTestcaseSnapshotUseCase;
+import com.algoprep.problembank.application.ports.in.snapshot.ReadTestcaseSnapshotUseCase;
 import com.algoprep.problembank.application.ports.out.TestcaseObjectStorePort;
 import com.algoprep.problembank.application.snapshot.TestcaseSnapshotCodec;
-import com.algoprep.problembank.domain.model.SnapshotPublicationState;
 import com.algoprep.problembank.domain.model.StoredGradingTestcase;
 import com.algoprep.problembank.domain.model.TestcaseData;
-import com.algoprep.problembank.domain.model.TestcaseDescriptor;
-import com.algoprep.problembank.domain.model.TestcaseSnapshot;
+import com.algoprep.problembank.domain.model.snapshot.SnapshotPublicationState;
+import com.algoprep.problembank.domain.model.snapshot.TestcaseSnapshot;
+import com.algoprep.problembank.domain.model.testcase.TestcaseDescriptor;
 import com.algoprep.problembank.domain.ports.out.SnapshotPublicationRepository;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;

@@ -1,4 +1,4 @@
-package com.algoprep.problembank.application.command;
+package com.algoprep.problembank.application.command.snapshot;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -17,10 +17,10 @@ import static org.mockito.Mockito.when;
 import com.algoprep.common.exception.ResourceNotFoundException;
 import com.algoprep.problembank.domain.exception.GradingDataException;
 import com.algoprep.problembank.domain.exception.TestcaseStorageUnavailableException;
-import com.algoprep.problembank.domain.model.SnapshotMetadata;
-import com.algoprep.problembank.domain.model.SnapshotPublicationState;
 import com.algoprep.problembank.domain.model.StoredGradingTestcase;
-import com.algoprep.problembank.domain.model.TestcaseSnapshot;
+import com.algoprep.problembank.domain.model.snapshot.SnapshotMetadata;
+import com.algoprep.problembank.domain.model.snapshot.SnapshotPublicationState;
+import com.algoprep.problembank.domain.model.snapshot.TestcaseSnapshot;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;

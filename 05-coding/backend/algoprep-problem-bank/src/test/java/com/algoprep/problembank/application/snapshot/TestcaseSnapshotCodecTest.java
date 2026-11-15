@@ -4,8 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.algoprep.problembank.domain.exception.GradingDataException;
-import com.algoprep.problembank.domain.model.SnapshotMetadata;
 import com.algoprep.problembank.domain.model.TestcaseData;
+import com.algoprep.problembank.domain.model.snapshot.SnapshotMetadata;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.UUID;

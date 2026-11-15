@@ -1,4 +1,4 @@
-package com.algoprep.problembank.application.command;
+package com.algoprep.problembank.application.command.problem;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -12,16 +12,16 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.algoprep.common.exception.ServiceUnavailableException;
-import com.algoprep.problembank.application.dto.CreateProblemCommand;
-import com.algoprep.problembank.application.dto.CreateProblemCommand.PartialLimits;
-import com.algoprep.problembank.application.dto.JudgeGradingDefaults;
-import com.algoprep.problembank.application.dto.SaveProblemContentCommand;
-import com.algoprep.problembank.application.ports.in.SaveProblemContentUseCase;
+import com.algoprep.problembank.application.dto.grading.JudgeGradingDefaults;
+import com.algoprep.problembank.application.dto.problem.CreateProblemCommand;
+import com.algoprep.problembank.application.dto.problem.CreateProblemCommand.PartialLimits;
+import com.algoprep.problembank.application.dto.problem.SaveProblemContentCommand;
+import com.algoprep.problembank.application.ports.in.problem.SaveProblemContentUseCase;
 import com.algoprep.problembank.application.ports.out.JudgeConfigReadPort;
 import com.algoprep.problembank.domain.model.AuthoringProblemRecord;
 import com.algoprep.problembank.domain.model.CatalogAuditEntry;
-import com.algoprep.problembank.domain.model.ProblemContentData;
 import com.algoprep.problembank.domain.model.ProblemContentSnapshot;
+import com.algoprep.problembank.domain.model.problem.ProblemContentData;
 import com.algoprep.problembank.domain.ports.out.ProblemAuditPort;
 import java.time.Instant;
 import java.util.List;

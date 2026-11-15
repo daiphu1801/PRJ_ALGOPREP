@@ -1,13 +1,13 @@
-package com.algoprep.problembank.application.command;
+package com.algoprep.problembank.application.command.bulk;
 
 import com.algoprep.common.exception.AlgoPrepException;
 import com.algoprep.common.exception.ClientErrorDetails;
 import com.algoprep.common.exception.DomainRuleViolationException;
 import com.algoprep.problembank.application.dto.AuthoringScope;
-import com.algoprep.problembank.application.dto.BulkProblemActionResult;
-import com.algoprep.problembank.application.dto.UpdateProblemStatusCommand;
-import com.algoprep.problembank.application.ports.in.BulkProblemActionsUseCase;
-import com.algoprep.problembank.application.ports.in.UpdateProblemPublishStatusUseCase;
+import com.algoprep.problembank.application.dto.bulk.BulkProblemActionResult;
+import com.algoprep.problembank.application.dto.snapshot.UpdateProblemStatusCommand;
+import com.algoprep.problembank.application.ports.in.bulk.BulkProblemActionsUseCase;
+import com.algoprep.problembank.application.ports.in.snapshot.UpdateProblemPublishStatusUseCase;
 import com.algoprep.problembank.domain.exception.ProblemContentInvalidException;
 import com.algoprep.problembank.domain.ports.out.ProblemAuthoringReadRepository;
 import com.algoprep.problembank.domain.ports.out.ProblemBulkRepository;

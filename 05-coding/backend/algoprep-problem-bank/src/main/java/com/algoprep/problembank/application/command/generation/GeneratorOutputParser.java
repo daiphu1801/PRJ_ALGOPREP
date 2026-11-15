@@ -1,4 +1,4 @@
-package com.algoprep.problembank.application.command;
+package com.algoprep.problembank.application.command.generation;
 
 import com.algoprep.problembank.domain.exception.TestcaseGenerationRejectedException;
 import java.util.ArrayList;

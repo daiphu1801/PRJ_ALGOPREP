@@ -6,8 +6,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.algoprep.common.exception.ResourceNotFoundException;
-import com.algoprep.problembank.application.dto.ProblemAuthoringQuery;
-import com.algoprep.problembank.domain.model.ProblemStatsModels.ProblemStatsRow;
+import com.algoprep.problembank.application.dto.problem.ProblemAuthoringQuery;
+import com.algoprep.problembank.domain.model.stats.ProblemStatsModels.ProblemStatsRow;
 import com.algoprep.problembank.domain.ports.out.ProblemStatsRepository;
 import java.math.BigDecimal;
 import java.time.Instant;

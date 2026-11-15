@@ -1,4 +1,4 @@
-package com.algoprep.problembank.application.command;
+package com.algoprep.problembank.application.command.problem;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -13,10 +13,10 @@ import static org.mockito.Mockito.when;
 import com.algoprep.common.domain.ports.out.IdGeneratorPort;
 import com.algoprep.common.exception.AlgoPrepException;
 import com.algoprep.common.exception.ClientErrorDetails;
-import com.algoprep.problembank.application.dto.SaveProblemSpecCommand;
+import com.algoprep.problembank.application.dto.problem.SaveProblemSpecCommand;
 import com.algoprep.problembank.application.ports.out.ProblemSpecCachePort;
-import com.algoprep.problembank.domain.model.ProblemWriteState;
-import com.algoprep.problembank.domain.model.StoredProblemSpec;
+import com.algoprep.problembank.domain.model.problem.ProblemWriteState;
+import com.algoprep.problembank.domain.model.problem.StoredProblemSpec;
 import com.algoprep.problembank.domain.ports.out.ProblemSpecRepository;
 import java.time.Instant;
 import java.util.Optional;

@@ -1,6 +1,6 @@
-package com.algoprep.problembank.application.dto;
+package com.algoprep.problembank.application.dto.problem;
 
-import com.algoprep.problembank.domain.model.ProblemContentData;
+import com.algoprep.problembank.domain.model.problem.ProblemContentData;
 import java.util.UUID;
 
 /**

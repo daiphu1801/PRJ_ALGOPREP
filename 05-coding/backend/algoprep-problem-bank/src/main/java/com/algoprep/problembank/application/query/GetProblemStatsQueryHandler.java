@@ -1,9 +1,9 @@
 package com.algoprep.problembank.application.query;
 
 import com.algoprep.common.exception.ResourceNotFoundException;
-import com.algoprep.problembank.application.dto.ProblemAuthoringQuery;
-import com.algoprep.problembank.application.dto.ProblemStatsView;
-import com.algoprep.problembank.application.ports.in.GetProblemStatsUseCase;
+import com.algoprep.problembank.application.dto.problem.ProblemAuthoringQuery;
+import com.algoprep.problembank.application.dto.stats.ProblemStatsView;
+import com.algoprep.problembank.application.ports.in.stats.GetProblemStatsUseCase;
 import com.algoprep.problembank.domain.ports.out.ProblemStatsRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

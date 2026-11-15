@@ -1,7 +1,7 @@
 package com.algoprep.problembank.infrastructure.persistence;
 
-import com.algoprep.problembank.domain.model.ProblemContextView;
-import com.algoprep.problembank.domain.model.ProblemContextView.FunctionSignature;
+import com.algoprep.problembank.domain.model.grading.ProblemContextView;
+import com.algoprep.problembank.domain.model.grading.ProblemContextView.FunctionSignature;
 import com.algoprep.problembank.domain.ports.out.ProblemContextReadRepository;
 import java.util.List;
 import java.util.Optional;

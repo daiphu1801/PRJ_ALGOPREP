@@ -1,6 +1,6 @@
 package com.algoprep.problembank.application.ports.out;
 
-import com.algoprep.problembank.application.dto.TestcaseGeneration;
+import com.algoprep.problembank.application.dto.generation.TestcaseGeneration;
 
 /**
  * Asks the AI subsystem for generator and validator scripts (DD F2 section 58.2, F5 P3). Any

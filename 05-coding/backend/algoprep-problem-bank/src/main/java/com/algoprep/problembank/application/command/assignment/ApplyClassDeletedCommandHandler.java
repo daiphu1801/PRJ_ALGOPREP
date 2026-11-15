@@ -1,6 +1,6 @@
-package com.algoprep.problembank.application.command;
+package com.algoprep.problembank.application.command.assignment;
 
-import com.algoprep.problembank.application.ports.in.ApplyClassDeletedUseCase;
+import com.algoprep.problembank.application.ports.in.assignment.ApplyClassDeletedUseCase;
 import com.algoprep.problembank.domain.ports.out.ClassDeletedRepository;
 import java.util.UUID;
 import org.springframework.stereotype.Service;

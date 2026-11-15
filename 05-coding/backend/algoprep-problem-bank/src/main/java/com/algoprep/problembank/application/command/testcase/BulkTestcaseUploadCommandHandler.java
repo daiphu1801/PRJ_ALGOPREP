@@ -1,16 +1,18 @@
-package com.algoprep.problembank.application.command;
+package com.algoprep.problembank.application.command.testcase;
 
 import com.algoprep.common.domain.ports.out.ClockPort;
 import com.algoprep.common.exception.DomainRuleViolationException;
 import com.algoprep.common.exception.InvalidRequestException;
 import com.algoprep.common.exception.ServiceUnavailableException;
-import com.algoprep.problembank.application.dto.BulkTestcaseUpload;
-import com.algoprep.problembank.application.dto.BulkTestcaseUpload.Item;
-import com.algoprep.problembank.application.dto.BulkTestcaseUpload.UrlItem;
-import com.algoprep.problembank.application.dto.TestcaseUploadSession.Confirmation;
-import com.algoprep.problembank.application.dto.TestcaseUploadSession.Session;
-import com.algoprep.problembank.application.dto.TestcaseUploadSession.Slot;
-import com.algoprep.problembank.application.ports.in.BulkTestcaseUploadUseCase;
+import com.algoprep.problembank.application.command.AuthorTestcasesCommandHandler;
+import com.algoprep.problembank.application.command.TestcaseAuthoringSupport;
+import com.algoprep.problembank.application.dto.testcase.BulkTestcaseUpload;
+import com.algoprep.problembank.application.dto.testcase.BulkTestcaseUpload.Item;
+import com.algoprep.problembank.application.dto.testcase.BulkTestcaseUpload.UrlItem;
+import com.algoprep.problembank.application.dto.testcase.TestcaseUploadSession.Confirmation;
+import com.algoprep.problembank.application.dto.testcase.TestcaseUploadSession.Session;
+import com.algoprep.problembank.application.dto.testcase.TestcaseUploadSession.Slot;
+import com.algoprep.problembank.application.ports.in.testcase.BulkTestcaseUploadUseCase;
 import com.algoprep.problembank.application.ports.out.TestcaseUploadSessionPort;
 import com.algoprep.problembank.domain.exception.TestcaseUploadInvalidException;
 import com.algoprep.problembank.domain.model.StoredTestcase;

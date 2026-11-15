@@ -1,6 +1,6 @@
-package com.algoprep.problembank.application.ports.in;
+package com.algoprep.problembank.application.ports.in.problem;
 
-import com.algoprep.problembank.application.dto.ProblemSpecReadResult;
+import com.algoprep.problembank.application.dto.problem.ProblemSpecReadResult;
 import java.util.Optional;
 import java.util.UUID;
 

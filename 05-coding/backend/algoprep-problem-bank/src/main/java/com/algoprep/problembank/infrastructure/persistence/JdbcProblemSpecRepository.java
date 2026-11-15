@@ -1,9 +1,9 @@
 package com.algoprep.problembank.infrastructure.persistence;
 
 import com.algoprep.common.domain.ports.out.IdGeneratorPort;
-import com.algoprep.problembank.domain.model.ProblemSpecData;
-import com.algoprep.problembank.domain.model.ProblemWriteState;
-import com.algoprep.problembank.domain.model.StoredProblemSpec;
+import com.algoprep.problembank.domain.model.problem.ProblemSpecData;
+import com.algoprep.problembank.domain.model.problem.ProblemWriteState;
+import com.algoprep.problembank.domain.model.problem.StoredProblemSpec;
 import com.algoprep.problembank.domain.ports.out.ProblemSpecRepository;
 import java.sql.Types;
 import java.time.Instant;

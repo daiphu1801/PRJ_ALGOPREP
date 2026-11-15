@@ -1,5 +1,6 @@
-package com.algoprep.problembank.domain.model;
+package com.algoprep.problembank.domain.model.grading;
 
+import com.algoprep.problembank.domain.model.testcase.TestcaseDescriptor;
 import java.util.List;
 
 public record GradingSpecification(

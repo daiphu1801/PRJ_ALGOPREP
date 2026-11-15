@@ -10,8 +10,8 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.algoprep.problembank.domain.model.PublishedProblemModels.Page;
-import com.algoprep.problembank.domain.model.PublishedProblemModels.SolveStates;
+import com.algoprep.problembank.domain.model.student.PublishedProblemModels.Page;
+import com.algoprep.problembank.domain.model.student.PublishedProblemModels.SolveStates;
 import java.time.Duration;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;

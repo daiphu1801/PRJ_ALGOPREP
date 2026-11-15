@@ -10,7 +10,7 @@ import static org.mockito.Mockito.when;
 
 import com.algoprep.common.exception.ServiceUnavailableException;
 import com.algoprep.problembank.application.ports.out.SolveStatePort;
-import com.algoprep.problembank.domain.model.StudentCatalogModels.TopicProgress;
+import com.algoprep.problembank.domain.model.student.StudentCatalogModels.TopicProgress;
 import com.algoprep.problembank.domain.ports.out.StudentCatalogReadRepository;
 import java.util.List;
 import java.util.Optional;

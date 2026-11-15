@@ -1,6 +1,6 @@
 package com.algoprep.problembank.domain.ports.out;
 
-import com.algoprep.problembank.domain.model.ProblemStatusWrite;
+import com.algoprep.problembank.domain.model.snapshot.ProblemStatusWrite;
 import java.util.UUID;
 
 /** Status writes of DD F2 section 40; every call joins the caller's transaction. */

@@ -1,6 +1,6 @@
 package com.algoprep.problembank.infrastructure.persistence;
 
-import com.algoprep.problembank.domain.model.ProblemStatusWrite;
+import com.algoprep.problembank.domain.model.snapshot.ProblemStatusWrite;
 import com.algoprep.problembank.domain.ports.out.ProblemPublishRepository;
 import java.sql.Timestamp;
 import java.util.UUID;

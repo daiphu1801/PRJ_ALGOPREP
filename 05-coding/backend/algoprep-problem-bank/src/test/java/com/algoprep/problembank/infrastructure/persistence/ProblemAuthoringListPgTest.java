@@ -2,9 +2,9 @@ package com.algoprep.problembank.infrastructure.persistence;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.algoprep.problembank.domain.model.AttentionCount;
-import com.algoprep.problembank.domain.model.AuthoringListFilter;
-import com.algoprep.problembank.domain.model.AuthoringListPage;
+import com.algoprep.problembank.domain.model.problem.AuthoringListFilter;
+import com.algoprep.problembank.domain.model.problem.AuthoringListPage;
+import com.algoprep.problembank.domain.model.stats.AttentionCount;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;

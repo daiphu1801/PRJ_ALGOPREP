@@ -1,16 +1,16 @@
-package com.algoprep.problembank.application.command;
+package com.algoprep.problembank.application.command.snapshot;
 
 import com.algoprep.common.domain.ports.out.IdGeneratorPort;
 import com.algoprep.common.exception.ResourceNotFoundException;
-import com.algoprep.problembank.application.dto.SnapshotPublicationResult;
-import com.algoprep.problembank.application.ports.in.PublishTestcaseSnapshotUseCase;
-import com.algoprep.problembank.application.ports.in.ReadTestcaseSnapshotUseCase;
+import com.algoprep.problembank.application.dto.snapshot.SnapshotPublicationResult;
+import com.algoprep.problembank.application.ports.in.snapshot.PublishTestcaseSnapshotUseCase;
+import com.algoprep.problembank.application.ports.in.snapshot.ReadTestcaseSnapshotUseCase;
 import com.algoprep.problembank.application.ports.out.TestcaseObjectStorePort;
 import com.algoprep.problembank.application.snapshot.TestcaseSnapshotCodec;
 import com.algoprep.problembank.domain.exception.TestcaseStorageUnavailableException;
-import com.algoprep.problembank.domain.model.SnapshotMetadata;
 import com.algoprep.problembank.domain.model.StoredGradingTestcase;
 import com.algoprep.problembank.domain.model.TestcaseData;
+import com.algoprep.problembank.domain.model.snapshot.SnapshotMetadata;
 import com.algoprep.problembank.domain.ports.out.SnapshotPublicationRepository;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;

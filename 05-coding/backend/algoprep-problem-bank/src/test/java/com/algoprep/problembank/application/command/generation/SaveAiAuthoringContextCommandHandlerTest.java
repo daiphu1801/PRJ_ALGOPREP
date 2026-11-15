@@ -1,4 +1,4 @@
-package com.algoprep.problembank.application.command;
+package com.algoprep.problembank.application.command.generation;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -11,7 +11,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.algoprep.common.exception.AlgoPrepException;
-import com.algoprep.problembank.application.dto.SaveAiContextCommand;
+import com.algoprep.problembank.application.command.ContentTestData;
+import com.algoprep.problembank.application.dto.generation.SaveAiContextCommand;
 import com.algoprep.problembank.domain.exception.ProblemVersionConflictException;
 import com.algoprep.problembank.domain.model.ProblemContentSnapshot;
 import com.algoprep.problembank.domain.ports.out.ProblemContentRepository;

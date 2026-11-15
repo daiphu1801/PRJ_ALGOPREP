@@ -1,4 +1,4 @@
-package com.algoprep.problembank.application.dto;
+package com.algoprep.problembank.application.dto.problem;
 
 import com.algoprep.common.functionspec.FunctionSpecDraft;
 import java.util.UUID;

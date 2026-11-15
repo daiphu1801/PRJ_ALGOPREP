@@ -1,6 +1,6 @@
-package com.algoprep.problembank.application.ports.in;
+package com.algoprep.problembank.application.ports.in.assignment;
 
-import com.algoprep.problembank.application.dto.ClassAssignmentViews;
+import com.algoprep.problembank.application.dto.assignment.ClassAssignmentViews;
 import java.util.List;
 import java.util.UUID;
 

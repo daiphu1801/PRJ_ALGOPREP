@@ -1,7 +1,7 @@
 package com.algoprep.problembank.infrastructure.messaging;
 
 import com.algoprep.problembank.application.ports.out.ProblemDomainEventPort;
-import com.algoprep.problembank.domain.model.OutboxEvent;
+import com.algoprep.problembank.domain.model.outbox.OutboxEvent;
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.ConnectionFactory;
 import java.nio.charset.StandardCharsets;

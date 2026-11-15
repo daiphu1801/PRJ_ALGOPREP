@@ -1,6 +1,6 @@
 package com.algoprep.problembank.application.query;
 
-import com.algoprep.problembank.domain.model.AuthoringListPage;
+import com.algoprep.problembank.domain.model.problem.AuthoringListPage;
 import java.util.List;
 import java.util.stream.Collectors;
 

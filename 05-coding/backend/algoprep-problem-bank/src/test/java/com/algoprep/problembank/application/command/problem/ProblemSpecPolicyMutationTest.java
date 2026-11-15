@@ -1,4 +1,4 @@
-package com.algoprep.problembank.application.command;
+package com.algoprep.problembank.application.command.problem;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -10,10 +10,10 @@ import static org.mockito.Mockito.when;
 
 import com.algoprep.common.domain.ports.out.IdGeneratorPort;
 import com.algoprep.common.exception.AlgoPrepException;
-import com.algoprep.problembank.application.dto.SaveProblemSpecCommand;
-import com.algoprep.problembank.application.ports.in.SaveProblemSpecUseCase;
+import com.algoprep.problembank.application.dto.problem.SaveProblemSpecCommand;
+import com.algoprep.problembank.application.ports.in.problem.SaveProblemSpecUseCase;
 import com.algoprep.problembank.application.ports.out.ProblemSpecCachePort;
-import com.algoprep.problembank.domain.model.ProblemWriteState;
+import com.algoprep.problembank.domain.model.problem.ProblemWriteState;
 import com.algoprep.problembank.domain.ports.out.ProblemSpecRepository;
 import java.io.ByteArrayOutputStream;
 import java.net.URLClassLoader;
@@ -44,7 +44,7 @@ class ProblemSpecPolicyMutationTest {
   @ParameterizedTest
   @EnumSource(Rule.class)
   void weakenedGuardFailsIndependentContractOracle(Rule rule) throws Exception {
-    Path root = Path.of("src/main/java/com/algoprep/problembank/application/command");
+    Path root = Path.of("src/main/java/com/algoprep/problembank/application/command/problem");
     String original = Files.readString(root.resolve("SaveProblemSpecCommandHandler.java"));
     String mutant =
         switch (rule) {
@@ -77,7 +77,7 @@ class ProblemSpecPolicyMutationTest {
         isolate(
             Files.readString(
                 Path.of(
-                    "src/main/java/com/algoprep/problembank/application/command/ProblemSpecJson.java"))));
+                    "src/main/java/com/algoprep/problembank/application/command/problem/ProblemSpecJson.java"))));
     var errors = new ByteArrayOutputStream();
     int code =
         ToolProvider.getSystemJavaCompiler()
@@ -111,7 +111,7 @@ class ProblemSpecPolicyMutationTest {
 
   private String isolate(String source) {
     return source.replace(
-        "package com.algoprep.problembank.application.command;",
+        "package com.algoprep.problembank.application.command.problem;",
         "package com.algoprep.problembank.application.command.mutationcopy;");
   }
 

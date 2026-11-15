@@ -1,5 +1,6 @@
-package com.algoprep.problembank.application.dto;
+package com.algoprep.problembank.application.dto.grading;
 
+import com.algoprep.problembank.application.dto.AuthoringScope;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;

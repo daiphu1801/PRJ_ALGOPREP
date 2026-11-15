@@ -1,13 +1,13 @@
 package com.algoprep.problembank.presentation.controller;
 
 import com.algoprep.common.exception.ResourceNotFoundException;
-import com.algoprep.problembank.application.dto.DuplicateSourceView;
-import com.algoprep.problembank.application.dto.ProblemAuthoringQuery;
-import com.algoprep.problembank.application.dto.ProblemStatsView;
-import com.algoprep.problembank.application.dto.SaveAiContextCommand;
-import com.algoprep.problembank.application.ports.in.GetDuplicateSourceUseCase;
-import com.algoprep.problembank.application.ports.in.GetProblemStatsUseCase;
-import com.algoprep.problembank.application.ports.in.SaveAiAuthoringContextUseCase;
+import com.algoprep.problembank.application.dto.generation.SaveAiContextCommand;
+import com.algoprep.problembank.application.dto.problem.DuplicateSourceView;
+import com.algoprep.problembank.application.dto.problem.ProblemAuthoringQuery;
+import com.algoprep.problembank.application.dto.stats.ProblemStatsView;
+import com.algoprep.problembank.application.ports.in.generation.SaveAiAuthoringContextUseCase;
+import com.algoprep.problembank.application.ports.in.problem.GetDuplicateSourceUseCase;
+import com.algoprep.problembank.application.ports.in.stats.GetProblemStatsUseCase;
 import java.time.Instant;
 import java.util.UUID;
 import org.springframework.security.access.prepost.PreAuthorize;

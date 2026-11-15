@@ -1,6 +1,6 @@
 package com.algoprep.problembank.infrastructure.persistence;
 
-import com.algoprep.problembank.domain.model.SuggestedProblemModels.Candidate;
+import com.algoprep.problembank.domain.model.student.SuggestedProblemModels.Candidate;
 import com.algoprep.problembank.domain.ports.out.SuggestedProblemReadRepository;
 import java.sql.Array;
 import java.sql.SQLException;

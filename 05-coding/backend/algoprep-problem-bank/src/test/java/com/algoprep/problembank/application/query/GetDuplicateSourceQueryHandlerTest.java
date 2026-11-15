@@ -6,13 +6,13 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.algoprep.common.exception.AlgoPrepException;
-import com.algoprep.problembank.application.dto.ProblemAuthoringQuery;
+import com.algoprep.problembank.application.dto.problem.ProblemAuthoringQuery;
 import com.algoprep.problembank.domain.model.AuthoringProblemRecord;
 import com.algoprep.problembank.domain.model.AuthoringProblemRecord.AuthoringTestcase;
 import com.algoprep.problembank.domain.model.AuthoringProblemRecord.Tag;
-import com.algoprep.problembank.domain.model.ProblemContentData;
-import com.algoprep.problembank.domain.model.ProblemSpecData;
-import com.algoprep.problembank.domain.model.StoredProblemSpec;
+import com.algoprep.problembank.domain.model.problem.ProblemContentData;
+import com.algoprep.problembank.domain.model.problem.ProblemSpecData;
+import com.algoprep.problembank.domain.model.problem.StoredProblemSpec;
 import com.algoprep.problembank.domain.ports.out.ProblemAuthoringReadRepository;
 import java.time.Instant;
 import java.util.List;

@@ -1,4 +1,4 @@
-package com.algoprep.problembank.application.dto;
+package com.algoprep.problembank.application.dto.stats;
 
 import java.math.BigDecimal;
 import java.time.Instant;

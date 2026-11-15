@@ -1,11 +1,11 @@
 package com.algoprep.problembank.application.query;
 
-import com.algoprep.problembank.application.command.ProblemSpecJson;
-import com.algoprep.problembank.application.dto.ProblemSpecReadResult;
-import com.algoprep.problembank.application.ports.in.ProblemSpecQuery;
-import com.algoprep.problembank.application.ports.in.StarterCodeAccessQuery;
+import com.algoprep.problembank.application.command.problem.ProblemSpecJson;
+import com.algoprep.problembank.application.dto.problem.ProblemSpecReadResult;
+import com.algoprep.problembank.application.ports.in.grading.StarterCodeAccessQuery;
+import com.algoprep.problembank.application.ports.in.problem.ProblemSpecQuery;
 import com.algoprep.problembank.domain.exception.UnreadableProblemSpecException;
-import com.algoprep.problembank.domain.model.ProblemSpecReadView;
+import com.algoprep.problembank.domain.model.problem.ProblemSpecReadView;
 import com.algoprep.problembank.domain.ports.out.HarnessProblemReadRepository;
 import java.util.Optional;
 import java.util.Set;

@@ -1,8 +1,8 @@
 package com.algoprep.problembank.application.query;
 
 import com.algoprep.common.exception.ServiceUnavailableException;
-import com.algoprep.problembank.application.dto.AuthoringDefaults;
-import com.algoprep.problembank.application.ports.in.ReadAuthoringDefaultsUseCase;
+import com.algoprep.problembank.application.dto.problem.AuthoringDefaults;
+import com.algoprep.problembank.application.ports.in.problem.ReadAuthoringDefaultsUseCase;
 import com.algoprep.problembank.application.ports.out.JudgeConfigReadPort;
 import com.algoprep.problembank.domain.ports.out.ProblemAuthoringReadRepository;
 import org.springframework.stereotype.Service;

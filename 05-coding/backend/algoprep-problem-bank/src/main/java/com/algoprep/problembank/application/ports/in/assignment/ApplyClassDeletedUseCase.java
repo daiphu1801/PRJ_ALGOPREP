@@ -1,4 +1,4 @@
-package com.algoprep.problembank.application.ports.in;
+package com.algoprep.problembank.application.ports.in.assignment;
 
 import java.util.UUID;
 

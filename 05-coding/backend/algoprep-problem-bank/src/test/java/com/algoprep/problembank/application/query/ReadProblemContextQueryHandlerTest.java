@@ -8,7 +8,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import com.algoprep.common.exception.ResourceNotFoundException;
-import com.algoprep.problembank.domain.model.ProblemContextView;
+import com.algoprep.problembank.domain.model.grading.ProblemContextView;
 import com.algoprep.problembank.domain.ports.out.ProblemContextReadRepository;
 import java.util.List;
 import java.util.Optional;
