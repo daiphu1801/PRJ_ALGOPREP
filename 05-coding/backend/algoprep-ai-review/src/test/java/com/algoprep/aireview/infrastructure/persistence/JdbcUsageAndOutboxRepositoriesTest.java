@@ -2,13 +2,13 @@ package com.algoprep.aireview.infrastructure.persistence;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.algoprep.aireview.domain.model.AiOutboxEvent;
-import com.algoprep.aireview.domain.model.AlertReview;
-import com.algoprep.aireview.domain.model.AnomalyAlert;
 import com.algoprep.aireview.domain.model.FeatureCode;
-import com.algoprep.aireview.domain.model.PromptSnapshot;
 import com.algoprep.aireview.domain.model.ResponseGuards;
-import com.algoprep.aireview.domain.model.TokenUsageRecord;
+import com.algoprep.aireview.domain.model.outbox.AiOutboxEvent;
+import com.algoprep.aireview.domain.model.prompt.PromptSnapshot;
+import com.algoprep.aireview.domain.model.usage.AlertReview;
+import com.algoprep.aireview.domain.model.usage.AnomalyAlert;
+import com.algoprep.aireview.domain.model.usage.TokenUsageRecord;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;

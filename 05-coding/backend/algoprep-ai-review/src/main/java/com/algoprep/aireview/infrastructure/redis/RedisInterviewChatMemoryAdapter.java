@@ -1,7 +1,7 @@
 package com.algoprep.aireview.infrastructure.redis;
 
 import com.algoprep.aireview.application.ports.out.InterviewChatMemoryPort;
-import com.algoprep.aireview.domain.model.ChatMessage;
+import com.algoprep.aireview.domain.model.interview.ChatMessage;
 import java.time.Duration;
 import java.util.List;
 import java.util.Optional;

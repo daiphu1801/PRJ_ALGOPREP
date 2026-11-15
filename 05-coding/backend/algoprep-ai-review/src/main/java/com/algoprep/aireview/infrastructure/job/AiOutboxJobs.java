@@ -1,7 +1,7 @@
 package com.algoprep.aireview.infrastructure.job;
 
-import com.algoprep.aireview.application.ports.in.CleanAiOutboxUseCase;
-import com.algoprep.aireview.application.ports.in.RelayAiOutboxUseCase;
+import com.algoprep.aireview.application.ports.in.outbox.CleanAiOutboxUseCase;
+import com.algoprep.aireview.application.ports.in.outbox.RelayAiOutboxUseCase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;

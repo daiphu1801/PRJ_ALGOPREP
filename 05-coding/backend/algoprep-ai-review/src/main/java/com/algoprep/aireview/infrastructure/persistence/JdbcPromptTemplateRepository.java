@@ -1,10 +1,10 @@
 package com.algoprep.aireview.infrastructure.persistence;
 
 import com.algoprep.aireview.domain.model.FeatureCode;
-import com.algoprep.aireview.domain.model.PromptContent;
-import com.algoprep.aireview.domain.model.PromptStatus;
-import com.algoprep.aireview.domain.model.PromptTemplate;
 import com.algoprep.aireview.domain.model.ResponseGuards;
+import com.algoprep.aireview.domain.model.prompt.PromptContent;
+import com.algoprep.aireview.domain.model.prompt.PromptStatus;
+import com.algoprep.aireview.domain.model.prompt.PromptTemplate;
 import com.algoprep.aireview.domain.ports.out.PromptTemplateRepository;
 import java.sql.ResultSet;
 import java.sql.SQLException;

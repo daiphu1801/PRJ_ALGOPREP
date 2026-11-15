@@ -1,11 +1,11 @@
 package com.algoprep.aireview.presentation.controller;
 
-import com.algoprep.aireview.application.dto.TurnAccepted;
-import com.algoprep.aireview.application.dto.TurnCompleted;
+import com.algoprep.aireview.application.dto.interview.TurnAccepted;
+import com.algoprep.aireview.application.dto.interview.TurnCompleted;
 import com.algoprep.aireview.application.ports.out.InterviewTurnSink;
 import com.algoprep.aireview.domain.exception.AiInvalidResponseException;
 import com.algoprep.aireview.domain.exception.AiProviderUnavailableException;
-import com.algoprep.aireview.domain.exception.AiSessionNotRunningException;
+import com.algoprep.aireview.domain.exception.interview.AiSessionNotRunningException;
 import com.algoprep.common.exception.AlgoPrepException;
 import com.algoprep.common.exception.ClientErrorDetails;
 import java.io.IOException;

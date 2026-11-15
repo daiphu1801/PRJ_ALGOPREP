@@ -9,7 +9,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.algoprep.aireview.domain.model.AiOutboxEvent;
+import com.algoprep.aireview.domain.model.outbox.AiOutboxEvent;
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;

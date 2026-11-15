@@ -1,6 +1,6 @@
 package com.algoprep.aireview.presentation.controller;
 
-import com.algoprep.aireview.application.dto.PublishChange;
+import com.algoprep.aireview.application.dto.prompt.PublishChange;
 import com.algoprep.aireview.domain.exception.AiInvalidRequestException;
 import com.algoprep.aireview.domain.model.FeatureCode;
 import com.algoprep.aireview.domain.model.ResponseGuards;

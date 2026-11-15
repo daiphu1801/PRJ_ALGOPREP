@@ -1,7 +1,7 @@
 package com.algoprep.aireview.application.ports.out;
 
-import com.algoprep.aireview.application.dto.TurnAccepted;
-import com.algoprep.aireview.application.dto.TurnCompleted;
+import com.algoprep.aireview.application.dto.interview.TurnAccepted;
+import com.algoprep.aireview.application.dto.interview.TurnCompleted;
 import java.util.concurrent.CompletableFuture;
 
 /** Where a running turn reports its events; implementations must never throw. */

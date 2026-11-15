@@ -1,8 +1,8 @@
 package com.algoprep.aireview.domain.ports.out;
 
-import com.algoprep.aireview.domain.model.RecentSolutionReview;
-import com.algoprep.aireview.domain.model.ReviewCacheEntry;
-import com.algoprep.aireview.domain.model.StoredSolutionReview;
+import com.algoprep.aireview.domain.model.review.RecentSolutionReview;
+import com.algoprep.aireview.domain.model.review.ReviewCacheEntry;
+import com.algoprep.aireview.domain.model.review.StoredSolutionReview;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;

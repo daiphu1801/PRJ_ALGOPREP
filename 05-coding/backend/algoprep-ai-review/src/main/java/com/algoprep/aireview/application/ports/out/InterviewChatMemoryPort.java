@@ -1,6 +1,6 @@
 package com.algoprep.aireview.application.ports.out;
 
-import com.algoprep.aireview.domain.model.ChatMessage;
+import com.algoprep.aireview.domain.model.interview.ChatMessage;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;

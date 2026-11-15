@@ -1,10 +1,10 @@
 package com.algoprep.aireview.infrastructure.persistence;
 
-import com.algoprep.aireview.domain.model.IdleSession;
-import com.algoprep.aireview.domain.model.InterviewEntryType;
-import com.algoprep.aireview.domain.model.RubricCriterion;
-import com.algoprep.aireview.domain.model.RubricRow;
-import com.algoprep.aireview.domain.model.RubricScore;
+import com.algoprep.aireview.domain.model.interview.IdleSession;
+import com.algoprep.aireview.domain.model.interview.InterviewEntryType;
+import com.algoprep.aireview.domain.model.interview.RubricCriterion;
+import com.algoprep.aireview.domain.model.interview.RubricRow;
+import com.algoprep.aireview.domain.model.interview.RubricScore;
 import com.algoprep.aireview.domain.ports.out.InterviewScoringRepository;
 import java.time.Instant;
 import java.time.OffsetDateTime;

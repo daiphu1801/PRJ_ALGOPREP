@@ -1,8 +1,8 @@
 package com.algoprep.aireview.presentation.controller;
 
-import com.algoprep.aireview.application.dto.SendInterviewTurnCommand;
-import com.algoprep.aireview.application.ports.in.SendInterviewTurnUseCase;
-import com.algoprep.aireview.domain.exception.AiSessionNotFoundException;
+import com.algoprep.aireview.application.dto.interview.SendInterviewTurnCommand;
+import com.algoprep.aireview.application.ports.in.interview.SendInterviewTurnUseCase;
+import com.algoprep.aireview.domain.exception.interview.AiSessionNotFoundException;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;

@@ -1,6 +1,6 @@
 package com.algoprep.aireview.domain.ports.out;
 
-import com.algoprep.aireview.domain.model.TokenUsageRecord;
+import com.algoprep.aireview.domain.model.usage.TokenUsageRecord;
 
 /** Write side of the token ledger. */
 public interface AiTokenUsageRepository {

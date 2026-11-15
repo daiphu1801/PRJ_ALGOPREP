@@ -1,7 +1,7 @@
 package com.algoprep.aireview.infrastructure.job;
 
-import com.algoprep.aireview.application.dto.SweepOutcome;
-import com.algoprep.aireview.application.ports.in.SweepIdleInterviewSessionsUseCase;
+import com.algoprep.aireview.application.dto.interview.SweepOutcome;
+import com.algoprep.aireview.application.ports.in.interview.SweepIdleInterviewSessionsUseCase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;

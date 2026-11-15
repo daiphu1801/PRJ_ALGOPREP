@@ -1,9 +1,9 @@
 package com.algoprep.aireview.domain.ports.out;
 
 import com.algoprep.aireview.domain.model.FeatureCode;
-import com.algoprep.aireview.domain.model.PromptContent;
-import com.algoprep.aireview.domain.model.PromptStatus;
-import com.algoprep.aireview.domain.model.PromptTemplate;
+import com.algoprep.aireview.domain.model.prompt.PromptContent;
+import com.algoprep.aireview.domain.model.prompt.PromptStatus;
+import com.algoprep.aireview.domain.model.prompt.PromptTemplate;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;

@@ -1,9 +1,9 @@
 package com.algoprep.aireview.domain.ports.out;
 
-import com.algoprep.aireview.domain.model.BudgetConfig;
 import com.algoprep.aireview.domain.model.FeatureCode;
-import com.algoprep.aireview.domain.model.LimitsConfig;
-import com.algoprep.aireview.domain.model.LimitsPatch;
+import com.algoprep.aireview.domain.model.budget.BudgetConfig;
+import com.algoprep.aireview.domain.model.budget.LimitsConfig;
+import com.algoprep.aireview.domain.model.budget.LimitsPatch;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Map;

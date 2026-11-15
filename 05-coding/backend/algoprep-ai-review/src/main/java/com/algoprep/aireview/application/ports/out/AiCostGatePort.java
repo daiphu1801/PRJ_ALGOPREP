@@ -1,7 +1,7 @@
 package com.algoprep.aireview.application.ports.out;
 
-import com.algoprep.aireview.domain.model.CostReservation;
 import com.algoprep.aireview.domain.model.FeatureCode;
+import com.algoprep.aireview.domain.model.budget.CostReservation;
 import java.util.UUID;
 
 /** Cooldown plus hourly quota in Redis (BR-AI-04 steps 3, 4, 8, 9). */

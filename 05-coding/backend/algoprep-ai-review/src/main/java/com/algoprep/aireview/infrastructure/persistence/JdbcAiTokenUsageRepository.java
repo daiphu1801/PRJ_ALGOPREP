@@ -1,6 +1,6 @@
 package com.algoprep.aireview.infrastructure.persistence;
 
-import com.algoprep.aireview.domain.model.TokenUsageRecord;
+import com.algoprep.aireview.domain.model.usage.TokenUsageRecord;
 import com.algoprep.aireview.domain.ports.out.AiTokenUsageRepository;
 import com.algoprep.common.domain.ports.out.IdGeneratorPort;
 import org.springframework.beans.factory.ObjectProvider;

@@ -3,9 +3,9 @@ package com.algoprep.aireview.presentation.controller;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import com.algoprep.aireview.application.dto.OpenInterviewSessionCommand;
+import com.algoprep.aireview.application.dto.interview.OpenInterviewSessionCommand;
 import com.algoprep.aireview.domain.exception.AiInvalidRequestException;
-import com.algoprep.aireview.domain.exception.AiSubmissionNotFoundException;
+import com.algoprep.aireview.domain.exception.review.AiSubmissionNotFoundException;
 import com.algoprep.aireview.domain.model.CallerCategory;
 import com.algoprep.aireview.presentation.controller.InterviewRequests.StartRequest;
 import java.util.ArrayList;

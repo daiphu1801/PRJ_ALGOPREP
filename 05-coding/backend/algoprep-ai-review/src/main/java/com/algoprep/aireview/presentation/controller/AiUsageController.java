@@ -1,15 +1,15 @@
 package com.algoprep.aireview.presentation.controller;
 
-import com.algoprep.aireview.application.dto.TopProblemItem;
-import com.algoprep.aireview.application.dto.TopUserItem;
-import com.algoprep.aireview.application.dto.UsageAlertItem;
-import com.algoprep.aireview.application.dto.UsageDaily;
-import com.algoprep.aireview.application.ports.in.GetAiUsageDailyUseCase;
-import com.algoprep.aireview.application.ports.in.ListAiUsageAlertsUseCase;
-import com.algoprep.aireview.application.ports.in.ListTopAiProblemsUseCase;
-import com.algoprep.aireview.application.ports.in.ListTopAiUsersUseCase;
-import com.algoprep.aireview.application.ports.in.MarkAiUsageAlertReviewedUseCase;
-import com.algoprep.aireview.domain.model.AlertReview;
+import com.algoprep.aireview.application.dto.usage.TopProblemItem;
+import com.algoprep.aireview.application.dto.usage.TopUserItem;
+import com.algoprep.aireview.application.dto.usage.UsageAlertItem;
+import com.algoprep.aireview.application.dto.usage.UsageDaily;
+import com.algoprep.aireview.application.ports.in.usage.GetAiUsageDailyUseCase;
+import com.algoprep.aireview.application.ports.in.usage.ListAiUsageAlertsUseCase;
+import com.algoprep.aireview.application.ports.in.usage.ListTopAiProblemsUseCase;
+import com.algoprep.aireview.application.ports.in.usage.ListTopAiUsersUseCase;
+import com.algoprep.aireview.application.ports.in.usage.MarkAiUsageAlertReviewedUseCase;
+import com.algoprep.aireview.domain.model.usage.AlertReview;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;

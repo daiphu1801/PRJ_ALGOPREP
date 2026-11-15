@@ -1,7 +1,7 @@
 package com.algoprep.aireview.infrastructure.messaging;
 
 import com.algoprep.aireview.application.ports.out.AiDomainEventPort;
-import com.algoprep.aireview.domain.model.AiOutboxEvent;
+import com.algoprep.aireview.domain.model.outbox.AiOutboxEvent;
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.ConnectionFactory;
 import java.nio.charset.StandardCharsets;

@@ -1,7 +1,7 @@
 package com.algoprep.aireview.infrastructure.persistence;
 
-import com.algoprep.aireview.domain.exception.AiModelPriceConflictException;
-import com.algoprep.aireview.domain.model.ModelPrice;
+import com.algoprep.aireview.domain.exception.price.AiModelPriceConflictException;
+import com.algoprep.aireview.domain.model.price.ModelPrice;
 import com.algoprep.aireview.domain.ports.out.AiModelPriceRepository;
 import java.math.BigDecimal;
 import java.sql.ResultSet;

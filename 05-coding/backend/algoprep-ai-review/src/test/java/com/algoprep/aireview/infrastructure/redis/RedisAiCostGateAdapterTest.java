@@ -9,9 +9,9 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.algoprep.aireview.domain.model.CostReservation;
 import com.algoprep.aireview.domain.model.FeatureCode;
-import com.algoprep.aireview.domain.model.GateOutcome;
+import com.algoprep.aireview.domain.model.budget.CostReservation;
+import com.algoprep.aireview.domain.model.budget.GateOutcome;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;

@@ -1,7 +1,7 @@
 package com.algoprep.aireview.infrastructure.job;
 
-import com.algoprep.aireview.application.dto.AnomalyRunOutcome;
-import com.algoprep.aireview.application.ports.in.DetectAiUsageAnomaliesUseCase;
+import com.algoprep.aireview.application.dto.usage.AnomalyRunOutcome;
+import com.algoprep.aireview.application.ports.in.usage.DetectAiUsageAnomaliesUseCase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;

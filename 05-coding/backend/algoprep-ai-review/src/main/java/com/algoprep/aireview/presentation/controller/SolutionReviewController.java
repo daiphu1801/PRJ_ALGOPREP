@@ -1,14 +1,14 @@
 package com.algoprep.aireview.presentation.controller;
 
-import com.algoprep.aireview.application.ports.in.GetMyRecentSolutionReviewsUseCase;
-import com.algoprep.aireview.application.ports.in.GetMySolutionReviewQuickInsightUseCase;
-import com.algoprep.aireview.application.ports.in.GetOrCreateSolutionReviewUseCase;
-import com.algoprep.aireview.application.ports.in.ListMyReviewedProblemIdsUseCase;
+import com.algoprep.aireview.application.ports.in.review.GetMyRecentSolutionReviewsUseCase;
+import com.algoprep.aireview.application.ports.in.review.GetMySolutionReviewQuickInsightUseCase;
+import com.algoprep.aireview.application.ports.in.review.GetOrCreateSolutionReviewUseCase;
+import com.algoprep.aireview.application.ports.in.review.ListMyReviewedProblemIdsUseCase;
 import com.algoprep.aireview.domain.exception.AiInvalidRequestException;
-import com.algoprep.aireview.domain.exception.AiSubmissionNotFoundException;
+import com.algoprep.aireview.domain.exception.review.AiSubmissionNotFoundException;
 import com.algoprep.aireview.domain.model.CallerCategory;
-import com.algoprep.aireview.domain.model.RecentSolutionReview;
-import com.algoprep.aireview.domain.model.StoredSolutionReview;
+import com.algoprep.aireview.domain.model.review.RecentSolutionReview;
+import com.algoprep.aireview.domain.model.review.StoredSolutionReview;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;

@@ -1,6 +1,6 @@
 package com.algoprep.aireview.infrastructure.persistence;
 
-import com.algoprep.aireview.domain.model.BudgetConfig;
+import com.algoprep.aireview.domain.model.budget.BudgetConfig;
 import com.algoprep.aireview.domain.ports.out.AiBudgetRepository;
 import java.time.Instant;
 import java.time.LocalDate;

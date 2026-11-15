@@ -1,16 +1,16 @@
 package com.algoprep.aireview.application.query;
 
-import com.algoprep.aireview.application.dto.InterviewSessionDetail;
-import com.algoprep.aireview.application.ports.in.GetInterviewSessionUseCase;
+import com.algoprep.aireview.application.dto.interview.InterviewSessionDetail;
+import com.algoprep.aireview.application.ports.in.interview.GetInterviewSessionUseCase;
 import com.algoprep.aireview.application.ports.out.InterviewReplyTracker;
 import com.algoprep.aireview.domain.exception.AiNotOwnerException;
-import com.algoprep.aireview.domain.exception.AiSessionNotFoundException;
-import com.algoprep.aireview.domain.model.InterviewResult;
-import com.algoprep.aireview.domain.model.InterviewSession;
-import com.algoprep.aireview.domain.model.InterviewSessionStage;
-import com.algoprep.aireview.domain.model.InterviewTurn;
-import com.algoprep.aireview.domain.model.ReplyState;
-import com.algoprep.aireview.domain.model.RubricScore;
+import com.algoprep.aireview.domain.exception.interview.AiSessionNotFoundException;
+import com.algoprep.aireview.domain.model.interview.InterviewResult;
+import com.algoprep.aireview.domain.model.interview.InterviewSession;
+import com.algoprep.aireview.domain.model.interview.InterviewSessionStage;
+import com.algoprep.aireview.domain.model.interview.InterviewTurn;
+import com.algoprep.aireview.domain.model.interview.ReplyState;
+import com.algoprep.aireview.domain.model.interview.RubricScore;
 import com.algoprep.aireview.domain.ports.out.InterviewScoringRepository;
 import com.algoprep.aireview.domain.ports.out.InterviewSessionRepository;
 import java.util.List;

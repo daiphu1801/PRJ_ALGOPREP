@@ -1,9 +1,9 @@
 package com.algoprep.aireview.infrastructure.redis;
 
 import com.algoprep.aireview.application.ports.out.AiCostGatePort;
-import com.algoprep.aireview.domain.model.CostReservation;
 import com.algoprep.aireview.domain.model.FeatureCode;
-import com.algoprep.aireview.domain.model.GateOutcome;
+import com.algoprep.aireview.domain.model.budget.CostReservation;
+import com.algoprep.aireview.domain.model.budget.GateOutcome;
 import com.algoprep.common.domain.ports.out.ClockPort;
 import java.util.List;
 import java.util.UUID;

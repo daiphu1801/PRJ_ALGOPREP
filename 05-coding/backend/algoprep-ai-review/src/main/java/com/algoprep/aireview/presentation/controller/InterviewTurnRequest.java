@@ -1,6 +1,6 @@
 package com.algoprep.aireview.presentation.controller;
 
-import com.algoprep.aireview.application.dto.SendInterviewTurnCommand;
+import com.algoprep.aireview.application.dto.interview.SendInterviewTurnCommand;
 import com.algoprep.aireview.domain.exception.AiInvalidRequestException;
 import com.algoprep.aireview.domain.model.CallerCategory;
 import java.util.UUID;

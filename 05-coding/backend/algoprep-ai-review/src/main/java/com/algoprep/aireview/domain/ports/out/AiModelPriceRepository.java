@@ -1,6 +1,6 @@
 package com.algoprep.aireview.domain.ports.out;
 
-import com.algoprep.aireview.domain.model.ModelPrice;
+import com.algoprep.aireview.domain.model.price.ModelPrice;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;

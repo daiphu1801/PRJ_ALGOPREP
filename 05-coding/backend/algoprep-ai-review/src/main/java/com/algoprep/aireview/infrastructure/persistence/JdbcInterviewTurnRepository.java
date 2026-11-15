@@ -1,7 +1,7 @@
 package com.algoprep.aireview.infrastructure.persistence;
 
-import com.algoprep.aireview.domain.model.InterviewSessionStage;
-import com.algoprep.aireview.domain.model.InterviewTurn;
+import com.algoprep.aireview.domain.model.interview.InterviewSessionStage;
+import com.algoprep.aireview.domain.model.interview.InterviewTurn;
 import com.algoprep.aireview.domain.ports.out.InterviewTurnRepository;
 import java.time.Instant;
 import java.time.OffsetDateTime;

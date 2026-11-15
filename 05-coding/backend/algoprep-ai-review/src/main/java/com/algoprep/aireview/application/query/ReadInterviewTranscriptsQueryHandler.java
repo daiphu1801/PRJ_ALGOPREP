@@ -1,9 +1,9 @@
 package com.algoprep.aireview.application.query;
 
-import com.algoprep.aireview.application.dto.InterviewTranscript;
-import com.algoprep.aireview.application.ports.in.InterviewTranscriptReadUseCase;
-import com.algoprep.aireview.domain.model.InterviewSession;
-import com.algoprep.aireview.domain.model.InterviewTurn;
+import com.algoprep.aireview.application.dto.interview.InterviewTranscript;
+import com.algoprep.aireview.application.ports.in.interview.InterviewTranscriptReadUseCase;
+import com.algoprep.aireview.domain.model.interview.InterviewSession;
+import com.algoprep.aireview.domain.model.interview.InterviewTurn;
 import com.algoprep.aireview.domain.ports.out.InterviewSessionRepository;
 import java.util.ArrayList;
 import java.util.HashMap;

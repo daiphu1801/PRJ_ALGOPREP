@@ -1,8 +1,8 @@
 package com.algoprep.aireview.domain.prompt;
 
-import com.algoprep.aireview.domain.model.PromptSnapshot;
 import com.algoprep.aireview.domain.model.ResponseGuards;
-import com.algoprep.aireview.domain.model.SessionState;
+import com.algoprep.aireview.domain.model.interview.SessionState;
+import com.algoprep.aireview.domain.model.prompt.PromptSnapshot;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.HexFormat;

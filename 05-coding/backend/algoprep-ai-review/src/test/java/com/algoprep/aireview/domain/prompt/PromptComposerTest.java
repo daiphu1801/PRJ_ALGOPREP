@@ -4,11 +4,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.algoprep.aireview.domain.model.FeatureCode;
-import com.algoprep.aireview.domain.model.InterviewStage;
-import com.algoprep.aireview.domain.model.InterviewerLevel;
-import com.algoprep.aireview.domain.model.PromptSnapshot;
 import com.algoprep.aireview.domain.model.ResponseGuards;
-import com.algoprep.aireview.domain.model.SessionState;
+import com.algoprep.aireview.domain.model.interview.InterviewStage;
+import com.algoprep.aireview.domain.model.interview.InterviewerLevel;
+import com.algoprep.aireview.domain.model.interview.SessionState;
+import com.algoprep.aireview.domain.model.prompt.PromptSnapshot;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;

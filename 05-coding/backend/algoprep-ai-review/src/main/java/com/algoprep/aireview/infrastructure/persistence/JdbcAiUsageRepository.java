@@ -1,11 +1,11 @@
 package com.algoprep.aireview.infrastructure.persistence;
 
-import com.algoprep.aireview.domain.model.AlertReview;
-import com.algoprep.aireview.domain.model.AnomalyAlert;
-import com.algoprep.aireview.domain.model.DailyFeatureTokens;
 import com.algoprep.aireview.domain.model.FeatureCode;
-import com.algoprep.aireview.domain.model.ProblemUsage;
-import com.algoprep.aireview.domain.model.UserUsage;
+import com.algoprep.aireview.domain.model.usage.AlertReview;
+import com.algoprep.aireview.domain.model.usage.AnomalyAlert;
+import com.algoprep.aireview.domain.model.usage.DailyFeatureTokens;
+import com.algoprep.aireview.domain.model.usage.ProblemUsage;
+import com.algoprep.aireview.domain.model.usage.UserUsage;
 import com.algoprep.aireview.domain.ports.out.AiUsageRepository;
 import java.time.Instant;
 import java.time.LocalDate;

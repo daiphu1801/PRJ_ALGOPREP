@@ -10,7 +10,7 @@ import static org.mockito.Mockito.when;
 import com.algoprep.aireview.application.ports.out.ProblemBankStatsPort;
 import com.algoprep.aireview.domain.exception.AiInvalidRequestException;
 import com.algoprep.aireview.domain.model.ProblemSummary;
-import com.algoprep.aireview.domain.model.RecentSolutionReview;
+import com.algoprep.aireview.domain.model.review.RecentSolutionReview;
 import com.algoprep.aireview.domain.ports.out.SolutionReviewRepository;
 import java.util.List;
 import java.util.Optional;

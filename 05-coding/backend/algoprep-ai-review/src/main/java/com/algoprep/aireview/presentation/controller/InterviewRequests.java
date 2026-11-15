@@ -1,11 +1,11 @@
 package com.algoprep.aireview.presentation.controller;
 
-import com.algoprep.aireview.application.dto.OpenInterviewSessionCommand;
+import com.algoprep.aireview.application.dto.interview.OpenInterviewSessionCommand;
 import com.algoprep.aireview.domain.exception.AiInvalidRequestException;
-import com.algoprep.aireview.domain.exception.AiSubmissionNotFoundException;
+import com.algoprep.aireview.domain.exception.review.AiSubmissionNotFoundException;
 import com.algoprep.aireview.domain.model.CallerCategory;
-import com.algoprep.aireview.domain.model.InterviewEntryType;
-import com.algoprep.aireview.domain.model.InterviewerLevel;
+import com.algoprep.aireview.domain.model.interview.InterviewEntryType;
+import com.algoprep.aireview.domain.model.interview.InterviewerLevel;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;

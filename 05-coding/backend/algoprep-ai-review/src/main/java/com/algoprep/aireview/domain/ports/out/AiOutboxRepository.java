@@ -1,6 +1,6 @@
 package com.algoprep.aireview.domain.ports.out;
 
-import com.algoprep.aireview.domain.model.AiOutboxEvent;
+import com.algoprep.aireview.domain.model.outbox.AiOutboxEvent;
 import java.util.List;
 import java.util.UUID;
 

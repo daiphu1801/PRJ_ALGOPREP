@@ -1,8 +1,8 @@
 package com.algoprep.aireview.infrastructure.persistence;
 
 import com.algoprep.aireview.domain.model.FeatureCode;
-import com.algoprep.aireview.domain.model.PromptSnapshot;
 import com.algoprep.aireview.domain.model.ResponseGuards;
+import com.algoprep.aireview.domain.model.prompt.PromptSnapshot;
 import com.algoprep.aireview.domain.ports.out.AiPromptSnapshotRepository;
 import java.util.Optional;
 import java.util.UUID;

@@ -1,12 +1,12 @@
 package com.algoprep.aireview.application.query;
 
-import com.algoprep.aireview.application.dto.InterviewSummary;
-import com.algoprep.aireview.application.ports.in.GetMyInterviewSummaryUseCase;
+import com.algoprep.aireview.application.dto.interview.InterviewSummary;
+import com.algoprep.aireview.application.ports.in.interview.GetMyInterviewSummaryUseCase;
 import com.algoprep.aireview.domain.exception.AiInvalidRequestException;
-import com.algoprep.aireview.domain.model.InterviewResult;
-import com.algoprep.aireview.domain.model.RubricCriterion;
-import com.algoprep.aireview.domain.model.RubricRow;
-import com.algoprep.aireview.domain.model.RubricScore;
+import com.algoprep.aireview.domain.model.interview.InterviewResult;
+import com.algoprep.aireview.domain.model.interview.RubricCriterion;
+import com.algoprep.aireview.domain.model.interview.RubricRow;
+import com.algoprep.aireview.domain.model.interview.RubricScore;
 import com.algoprep.aireview.domain.ports.out.InterviewScoringRepository;
 import com.algoprep.common.domain.ports.out.ClockPort;
 import java.math.BigDecimal;

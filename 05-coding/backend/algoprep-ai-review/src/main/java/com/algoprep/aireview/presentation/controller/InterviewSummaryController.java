@@ -1,7 +1,7 @@
 package com.algoprep.aireview.presentation.controller;
 
-import com.algoprep.aireview.application.dto.InterviewSummary;
-import com.algoprep.aireview.application.ports.in.GetMyInterviewSummaryUseCase;
+import com.algoprep.aireview.application.dto.interview.InterviewSummary;
+import com.algoprep.aireview.application.ports.in.interview.GetMyInterviewSummaryUseCase;
 import com.algoprep.aireview.domain.exception.AiInvalidRequestException;
 import java.math.BigDecimal;
 import java.time.Instant;

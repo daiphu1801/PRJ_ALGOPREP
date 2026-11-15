@@ -1,11 +1,11 @@
 package com.algoprep.aireview.application.query;
 
-import com.algoprep.aireview.application.dto.BudgetStatus;
-import com.algoprep.aireview.application.ports.in.GetAiLimitsConfigUseCase;
-import com.algoprep.aireview.application.ports.in.GetAiTokenBudgetUseCase;
-import com.algoprep.aireview.application.ports.in.ListModelPricesUseCase;
-import com.algoprep.aireview.domain.model.LimitsConfig;
-import com.algoprep.aireview.domain.model.ModelPrice;
+import com.algoprep.aireview.application.dto.budget.BudgetStatus;
+import com.algoprep.aireview.application.ports.in.budget.GetAiLimitsConfigUseCase;
+import com.algoprep.aireview.application.ports.in.budget.GetAiTokenBudgetUseCase;
+import com.algoprep.aireview.application.ports.in.price.ListModelPricesUseCase;
+import com.algoprep.aireview.domain.model.budget.LimitsConfig;
+import com.algoprep.aireview.domain.model.price.ModelPrice;
 import com.algoprep.aireview.domain.ports.out.AiBudgetAdminRepository;
 import com.algoprep.aireview.domain.ports.out.AiModelPriceRepository;
 import java.util.List;

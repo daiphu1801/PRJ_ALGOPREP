@@ -9,8 +9,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.algoprep.aireview.domain.model.ChatMessage;
-import com.algoprep.aireview.domain.model.ChatMessage.Kind;
+import com.algoprep.aireview.domain.model.interview.ChatMessage;
+import com.algoprep.aireview.domain.model.interview.ChatMessage.Kind;
 import java.time.Duration;
 import java.util.List;
 import java.util.UUID;

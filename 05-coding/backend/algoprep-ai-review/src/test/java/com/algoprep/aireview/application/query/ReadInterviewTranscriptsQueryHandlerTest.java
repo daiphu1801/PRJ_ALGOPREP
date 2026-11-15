@@ -4,12 +4,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import com.algoprep.aireview.application.dto.InterviewTranscript;
-import com.algoprep.aireview.domain.model.InterviewEntryType;
-import com.algoprep.aireview.domain.model.InterviewSession;
-import com.algoprep.aireview.domain.model.InterviewSessionStage;
-import com.algoprep.aireview.domain.model.InterviewStage;
-import com.algoprep.aireview.domain.model.InterviewTurn;
+import com.algoprep.aireview.application.dto.interview.InterviewTranscript;
+import com.algoprep.aireview.domain.model.interview.InterviewEntryType;
+import com.algoprep.aireview.domain.model.interview.InterviewSession;
+import com.algoprep.aireview.domain.model.interview.InterviewSessionStage;
+import com.algoprep.aireview.domain.model.interview.InterviewStage;
+import com.algoprep.aireview.domain.model.interview.InterviewTurn;
 import com.algoprep.aireview.domain.ports.out.InterviewSessionRepository;
 import java.time.Instant;
 import java.util.List;

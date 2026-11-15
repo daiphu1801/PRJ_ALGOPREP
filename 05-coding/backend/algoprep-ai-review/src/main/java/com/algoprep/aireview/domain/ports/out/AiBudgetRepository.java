@@ -1,6 +1,6 @@
 package com.algoprep.aireview.domain.ports.out;
 
-import com.algoprep.aireview.domain.model.BudgetConfig;
+import com.algoprep.aireview.domain.model.budget.BudgetConfig;
 import java.time.Instant;
 
 /** Budget singleton row and the usage total of the current period. */

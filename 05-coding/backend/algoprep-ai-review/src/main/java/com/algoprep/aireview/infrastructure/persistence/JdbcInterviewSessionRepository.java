@@ -1,11 +1,11 @@
 package com.algoprep.aireview.infrastructure.persistence;
 
-import com.algoprep.aireview.domain.model.InterviewEntryType;
-import com.algoprep.aireview.domain.model.InterviewSession;
-import com.algoprep.aireview.domain.model.InterviewSessionStage;
-import com.algoprep.aireview.domain.model.InterviewStage;
-import com.algoprep.aireview.domain.model.InterviewTurn;
-import com.algoprep.aireview.domain.model.InterviewerLevel;
+import com.algoprep.aireview.domain.model.interview.InterviewEntryType;
+import com.algoprep.aireview.domain.model.interview.InterviewSession;
+import com.algoprep.aireview.domain.model.interview.InterviewSessionStage;
+import com.algoprep.aireview.domain.model.interview.InterviewStage;
+import com.algoprep.aireview.domain.model.interview.InterviewTurn;
+import com.algoprep.aireview.domain.model.interview.InterviewerLevel;
 import com.algoprep.aireview.domain.ports.out.InterviewSessionRepository;
 import java.sql.ResultSet;
 import java.sql.SQLException;

@@ -2,12 +2,12 @@ package com.algoprep.aireview.presentation.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.algoprep.aireview.application.dto.TurnAccepted;
-import com.algoprep.aireview.application.dto.TurnCompleted;
+import com.algoprep.aireview.application.dto.interview.TurnAccepted;
+import com.algoprep.aireview.application.dto.interview.TurnCompleted;
 import com.algoprep.aireview.domain.exception.AiInvalidResponseException;
 import com.algoprep.aireview.domain.exception.AiProviderUnavailableException;
-import com.algoprep.aireview.domain.exception.AiSessionNotFoundException;
-import com.algoprep.aireview.domain.exception.AiSessionNotRunningException;
+import com.algoprep.aireview.domain.exception.interview.AiSessionNotFoundException;
+import com.algoprep.aireview.domain.exception.interview.AiSessionNotRunningException;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;

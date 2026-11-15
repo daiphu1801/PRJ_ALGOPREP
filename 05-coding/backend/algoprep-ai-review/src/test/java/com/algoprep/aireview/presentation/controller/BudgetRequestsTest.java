@@ -4,8 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.algoprep.aireview.domain.exception.AiInvalidRequestException;
-import com.algoprep.aireview.domain.exception.AiModelPriceNotFoundException;
-import com.algoprep.aireview.domain.model.LimitsPatch;
+import com.algoprep.aireview.domain.exception.price.AiModelPriceNotFoundException;
+import com.algoprep.aireview.domain.model.budget.LimitsPatch;
 import java.math.BigDecimal;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;

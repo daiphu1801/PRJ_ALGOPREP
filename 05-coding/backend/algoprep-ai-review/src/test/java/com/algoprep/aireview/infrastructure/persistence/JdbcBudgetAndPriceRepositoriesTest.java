@@ -3,12 +3,12 @@ package com.algoprep.aireview.infrastructure.persistence;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import com.algoprep.aireview.domain.exception.AiModelPriceConflictException;
-import com.algoprep.aireview.domain.model.BudgetConfig;
+import com.algoprep.aireview.domain.exception.price.AiModelPriceConflictException;
 import com.algoprep.aireview.domain.model.FeatureCode;
-import com.algoprep.aireview.domain.model.LimitsConfig;
-import com.algoprep.aireview.domain.model.LimitsPatch;
-import com.algoprep.aireview.domain.model.ModelPrice;
+import com.algoprep.aireview.domain.model.budget.BudgetConfig;
+import com.algoprep.aireview.domain.model.budget.LimitsConfig;
+import com.algoprep.aireview.domain.model.budget.LimitsPatch;
+import com.algoprep.aireview.domain.model.price.ModelPrice;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;

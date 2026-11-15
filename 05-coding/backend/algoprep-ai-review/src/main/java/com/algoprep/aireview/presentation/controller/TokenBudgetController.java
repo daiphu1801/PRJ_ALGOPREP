@@ -1,13 +1,13 @@
 package com.algoprep.aireview.presentation.controller;
 
-import com.algoprep.aireview.application.dto.BudgetStatus;
-import com.algoprep.aireview.application.ports.in.GetAiLimitsConfigUseCase;
-import com.algoprep.aireview.application.ports.in.GetAiTokenBudgetUseCase;
-import com.algoprep.aireview.application.ports.in.SetAiTokenLimitUseCase;
-import com.algoprep.aireview.application.ports.in.UnlockAiTokenBudgetUseCase;
-import com.algoprep.aireview.application.ports.in.UpdateAiLimitsConfigUseCase;
+import com.algoprep.aireview.application.dto.budget.BudgetStatus;
+import com.algoprep.aireview.application.ports.in.budget.GetAiLimitsConfigUseCase;
+import com.algoprep.aireview.application.ports.in.budget.GetAiTokenBudgetUseCase;
+import com.algoprep.aireview.application.ports.in.budget.SetAiTokenLimitUseCase;
+import com.algoprep.aireview.application.ports.in.budget.UnlockAiTokenBudgetUseCase;
+import com.algoprep.aireview.application.ports.in.budget.UpdateAiLimitsConfigUseCase;
 import com.algoprep.aireview.domain.model.FeatureCode;
-import com.algoprep.aireview.domain.model.LimitsConfig;
+import com.algoprep.aireview.domain.model.budget.LimitsConfig;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;

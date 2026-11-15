@@ -3,12 +3,12 @@ package com.algoprep.aireview.presentation.controller;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import com.algoprep.aireview.application.dto.SendInterviewTurnCommand;
+import com.algoprep.aireview.application.dto.interview.SendInterviewTurnCommand;
 import com.algoprep.aireview.domain.exception.AiInvalidRequestException;
 import com.algoprep.aireview.domain.exception.AiInvalidResponseException;
 import com.algoprep.aireview.domain.exception.AiProviderUnavailableException;
-import com.algoprep.aireview.domain.exception.AiSessionNotRunningException;
-import com.algoprep.aireview.domain.exception.AiTurnCountMismatchException;
+import com.algoprep.aireview.domain.exception.interview.AiSessionNotRunningException;
+import com.algoprep.aireview.domain.exception.interview.AiTurnCountMismatchException;
 import com.algoprep.aireview.domain.model.CallerCategory;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;

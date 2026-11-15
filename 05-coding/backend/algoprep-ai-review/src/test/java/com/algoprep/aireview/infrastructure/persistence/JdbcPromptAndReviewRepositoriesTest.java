@@ -3,12 +3,12 @@ package com.algoprep.aireview.infrastructure.persistence;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.algoprep.aireview.domain.model.FeatureCode;
-import com.algoprep.aireview.domain.model.PromptContent;
-import com.algoprep.aireview.domain.model.PromptStatus;
-import com.algoprep.aireview.domain.model.PromptTemplate;
 import com.algoprep.aireview.domain.model.ResponseGuards;
-import com.algoprep.aireview.domain.model.ReviewCacheEntry;
-import com.algoprep.aireview.domain.model.StoredSolutionReview;
+import com.algoprep.aireview.domain.model.prompt.PromptContent;
+import com.algoprep.aireview.domain.model.prompt.PromptStatus;
+import com.algoprep.aireview.domain.model.prompt.PromptTemplate;
+import com.algoprep.aireview.domain.model.review.ReviewCacheEntry;
+import com.algoprep.aireview.domain.model.review.StoredSolutionReview;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;

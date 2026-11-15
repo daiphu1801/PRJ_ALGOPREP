@@ -1,10 +1,10 @@
 package com.algoprep.aireview.domain.ports.out;
 
-import com.algoprep.aireview.domain.model.AlertReview;
-import com.algoprep.aireview.domain.model.AnomalyAlert;
-import com.algoprep.aireview.domain.model.DailyFeatureTokens;
-import com.algoprep.aireview.domain.model.ProblemUsage;
-import com.algoprep.aireview.domain.model.UserUsage;
+import com.algoprep.aireview.domain.model.usage.AlertReview;
+import com.algoprep.aireview.domain.model.usage.AnomalyAlert;
+import com.algoprep.aireview.domain.model.usage.DailyFeatureTokens;
+import com.algoprep.aireview.domain.model.usage.ProblemUsage;
+import com.algoprep.aireview.domain.model.usage.UserUsage;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;

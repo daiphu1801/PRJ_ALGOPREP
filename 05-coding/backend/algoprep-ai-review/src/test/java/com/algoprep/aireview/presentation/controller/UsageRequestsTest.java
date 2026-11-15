@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.algoprep.aireview.domain.exception.AiInvalidRequestException;
-import com.algoprep.aireview.domain.exception.AiUsageAlertNotFoundException;
+import com.algoprep.aireview.domain.exception.usage.AiUsageAlertNotFoundException;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 

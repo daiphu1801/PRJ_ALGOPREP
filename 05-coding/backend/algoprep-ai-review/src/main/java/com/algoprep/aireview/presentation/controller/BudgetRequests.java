@@ -1,8 +1,8 @@
 package com.algoprep.aireview.presentation.controller;
 
 import com.algoprep.aireview.domain.exception.AiInvalidRequestException;
-import com.algoprep.aireview.domain.exception.AiModelPriceNotFoundException;
-import com.algoprep.aireview.domain.model.LimitsPatch;
+import com.algoprep.aireview.domain.exception.price.AiModelPriceNotFoundException;
+import com.algoprep.aireview.domain.model.budget.LimitsPatch;
 import java.math.BigDecimal;
 import java.util.UUID;
 import tools.jackson.databind.JsonNode;

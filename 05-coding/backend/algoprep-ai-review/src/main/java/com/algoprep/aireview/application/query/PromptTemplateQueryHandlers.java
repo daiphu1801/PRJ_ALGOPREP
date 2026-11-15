@@ -1,12 +1,12 @@
 package com.algoprep.aireview.application.query;
 
-import com.algoprep.aireview.application.dto.PromptTemplateList;
-import com.algoprep.aireview.application.ports.in.GetPromptTemplateHistoryUseCase;
-import com.algoprep.aireview.application.ports.in.ListPromptTemplatesUseCase;
+import com.algoprep.aireview.application.dto.prompt.PromptTemplateList;
+import com.algoprep.aireview.application.ports.in.prompt.GetPromptTemplateHistoryUseCase;
+import com.algoprep.aireview.application.ports.in.prompt.ListPromptTemplatesUseCase;
 import com.algoprep.aireview.application.ports.out.AiModelOptionsPort;
 import com.algoprep.aireview.domain.model.CallOptions;
 import com.algoprep.aireview.domain.model.FeatureCode;
-import com.algoprep.aireview.domain.model.PromptTemplate;
+import com.algoprep.aireview.domain.model.prompt.PromptTemplate;
 import com.algoprep.aireview.domain.ports.out.PromptTemplateRepository;
 import java.util.List;
 import org.springframework.stereotype.Service;

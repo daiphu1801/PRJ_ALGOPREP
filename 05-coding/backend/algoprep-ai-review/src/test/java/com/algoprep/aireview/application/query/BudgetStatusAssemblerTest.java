@@ -7,11 +7,11 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.algoprep.aireview.application.dto.BudgetStatus;
-import com.algoprep.aireview.domain.model.BudgetConfig;
+import com.algoprep.aireview.application.dto.budget.BudgetStatus;
 import com.algoprep.aireview.domain.model.FeatureCode;
-import com.algoprep.aireview.domain.model.LimitsConfig;
-import com.algoprep.aireview.domain.model.ModelPrice;
+import com.algoprep.aireview.domain.model.budget.BudgetConfig;
+import com.algoprep.aireview.domain.model.budget.LimitsConfig;
+import com.algoprep.aireview.domain.model.price.ModelPrice;
 import com.algoprep.aireview.domain.ports.out.AiBudgetAdminRepository;
 import com.algoprep.aireview.domain.ports.out.AiBudgetRepository;
 import com.algoprep.aireview.domain.ports.out.AiModelPriceRepository;

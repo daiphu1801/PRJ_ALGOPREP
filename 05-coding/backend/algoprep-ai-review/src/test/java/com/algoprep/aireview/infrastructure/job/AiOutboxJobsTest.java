@@ -5,8 +5,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.algoprep.aireview.application.ports.in.CleanAiOutboxUseCase;
-import com.algoprep.aireview.application.ports.in.RelayAiOutboxUseCase;
+import com.algoprep.aireview.application.ports.in.outbox.CleanAiOutboxUseCase;
+import com.algoprep.aireview.application.ports.in.outbox.RelayAiOutboxUseCase;
 import org.junit.jupiter.api.Test;
 
 class AiOutboxJobsTest {

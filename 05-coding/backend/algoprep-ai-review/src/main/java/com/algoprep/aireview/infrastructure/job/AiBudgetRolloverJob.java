@@ -1,7 +1,7 @@
 package com.algoprep.aireview.infrastructure.job;
 
-import com.algoprep.aireview.application.dto.RolloverOutcome;
-import com.algoprep.aireview.application.ports.in.RolloverAiBudgetPeriodUseCase;
+import com.algoprep.aireview.application.dto.budget.RolloverOutcome;
+import com.algoprep.aireview.application.ports.in.budget.RolloverAiBudgetPeriodUseCase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.event.ApplicationReadyEvent;

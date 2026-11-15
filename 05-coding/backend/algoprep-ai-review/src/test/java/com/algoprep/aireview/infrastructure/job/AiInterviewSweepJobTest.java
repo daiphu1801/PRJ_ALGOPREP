@@ -6,8 +6,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.algoprep.aireview.application.dto.SweepOutcome;
-import com.algoprep.aireview.application.ports.in.SweepIdleInterviewSessionsUseCase;
+import com.algoprep.aireview.application.dto.interview.SweepOutcome;
+import com.algoprep.aireview.application.ports.in.interview.SweepIdleInterviewSessionsUseCase;
 import org.junit.jupiter.api.Test;
 
 class AiInterviewSweepJobTest {

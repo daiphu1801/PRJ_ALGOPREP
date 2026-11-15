@@ -1,8 +1,8 @@
 package com.algoprep.aireview.domain.ports.out;
 
-import com.algoprep.aireview.domain.model.IdleSession;
-import com.algoprep.aireview.domain.model.RubricRow;
-import com.algoprep.aireview.domain.model.RubricScore;
+import com.algoprep.aireview.domain.model.interview.IdleSession;
+import com.algoprep.aireview.domain.model.interview.RubricRow;
+import com.algoprep.aireview.domain.model.interview.RubricScore;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;

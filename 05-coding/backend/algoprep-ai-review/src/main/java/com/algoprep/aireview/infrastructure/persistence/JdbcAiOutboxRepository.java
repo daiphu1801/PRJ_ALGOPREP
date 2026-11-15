@@ -1,6 +1,6 @@
 package com.algoprep.aireview.infrastructure.persistence;
 
-import com.algoprep.aireview.domain.model.AiOutboxEvent;
+import com.algoprep.aireview.domain.model.outbox.AiOutboxEvent;
 import com.algoprep.aireview.domain.ports.out.AiOutboxRepository;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;

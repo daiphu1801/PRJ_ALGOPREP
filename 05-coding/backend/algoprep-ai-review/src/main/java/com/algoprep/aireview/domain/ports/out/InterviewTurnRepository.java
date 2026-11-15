@@ -1,7 +1,7 @@
 package com.algoprep.aireview.domain.ports.out;
 
-import com.algoprep.aireview.domain.model.InterviewSessionStage;
-import com.algoprep.aireview.domain.model.InterviewTurn;
+import com.algoprep.aireview.domain.model.interview.InterviewSessionStage;
+import com.algoprep.aireview.domain.model.interview.InterviewTurn;
 import java.time.Instant;
 import java.util.UUID;
 

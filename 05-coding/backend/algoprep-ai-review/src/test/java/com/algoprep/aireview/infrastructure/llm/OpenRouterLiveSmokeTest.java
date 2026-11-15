@@ -4,9 +4,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.algoprep.aireview.domain.model.CallOptions;
 import com.algoprep.aireview.domain.model.FeatureCode;
-import com.algoprep.aireview.domain.model.PromptSnapshot;
 import com.algoprep.aireview.domain.model.ResponseSchema;
 import com.algoprep.aireview.domain.model.StructuredResult;
+import com.algoprep.aireview.domain.model.prompt.PromptSnapshot;
 import com.algoprep.aireview.domain.prompt.BlockName;
 import com.algoprep.aireview.domain.prompt.ComposedPrompt;
 import com.algoprep.aireview.domain.prompt.DataBlock;

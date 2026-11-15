@@ -1,10 +1,10 @@
 package com.algoprep.aireview.presentation.controller;
 
-import com.algoprep.aireview.application.ports.in.CreateModelPriceUseCase;
-import com.algoprep.aireview.application.ports.in.DeleteModelPriceUseCase;
-import com.algoprep.aireview.application.ports.in.ListModelPricesUseCase;
-import com.algoprep.aireview.application.ports.in.UpdateModelPriceUseCase;
-import com.algoprep.aireview.domain.model.ModelPrice;
+import com.algoprep.aireview.application.ports.in.price.CreateModelPriceUseCase;
+import com.algoprep.aireview.application.ports.in.price.DeleteModelPriceUseCase;
+import com.algoprep.aireview.application.ports.in.price.ListModelPricesUseCase;
+import com.algoprep.aireview.application.ports.in.price.UpdateModelPriceUseCase;
+import com.algoprep.aireview.domain.model.price.ModelPrice;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;

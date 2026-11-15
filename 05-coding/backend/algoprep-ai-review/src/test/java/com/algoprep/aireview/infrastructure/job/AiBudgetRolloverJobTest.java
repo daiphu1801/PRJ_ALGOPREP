@@ -7,8 +7,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.algoprep.aireview.application.dto.RolloverOutcome;
-import com.algoprep.aireview.application.ports.in.RolloverAiBudgetPeriodUseCase;
+import com.algoprep.aireview.application.dto.budget.RolloverOutcome;
+import com.algoprep.aireview.application.ports.in.budget.RolloverAiBudgetPeriodUseCase;
 import java.lang.reflect.Method;
 import java.time.LocalDate;
 import org.junit.jupiter.api.Test;

@@ -1,6 +1,6 @@
 package com.algoprep.aireview.application.ports.out;
 
-import com.algoprep.aireview.domain.model.AiOutboxEvent;
+import com.algoprep.aireview.domain.model.outbox.AiOutboxEvent;
 
 public interface AiDomainEventPort {
   /** False means retry later: unconfirmed or unroutable. {@code envelope} is the JSON body. */

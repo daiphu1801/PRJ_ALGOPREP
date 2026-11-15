@@ -1,7 +1,7 @@
 package com.algoprep.aireview.presentation.controller;
 
 import com.algoprep.aireview.domain.exception.AiInvalidRequestException;
-import com.algoprep.aireview.domain.exception.AiUsageAlertNotFoundException;
+import com.algoprep.aireview.domain.exception.usage.AiUsageAlertNotFoundException;
 import java.util.Set;
 import java.util.UUID;
 
