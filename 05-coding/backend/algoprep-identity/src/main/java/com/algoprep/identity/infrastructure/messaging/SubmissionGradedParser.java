@@ -1,6 +1,6 @@
 package com.algoprep.identity.infrastructure.messaging;
 
-import com.algoprep.identity.domain.model.GradedSubmission;
+import com.algoprep.identity.domain.model.progress.GradedSubmission;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Set;

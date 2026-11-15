@@ -1,6 +1,6 @@
-package com.algoprep.identity.application.query;
+package com.algoprep.identity.application.query.audit;
 
-import com.algoprep.identity.application.dto.AuditLogItem;
+import com.algoprep.identity.application.dto.audit.AuditLogItem;
 import java.util.Map;
 import java.util.stream.Collectors;
 

@@ -1,6 +1,6 @@
 package com.algoprep.identity.infrastructure.job;
 
-import com.algoprep.identity.application.ports.in.PurgePendingAccountsUseCase;
+import com.algoprep.identity.application.ports.in.registration.PurgePendingAccountsUseCase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;

@@ -1,9 +1,9 @@
-package com.algoprep.identity.application.command;
+package com.algoprep.identity.application.command.classes;
 
 import com.algoprep.common.domain.ports.out.IdGeneratorPort;
-import com.algoprep.identity.application.ports.in.ApplyProblemAssignedToClassUseCase;
-import com.algoprep.identity.domain.model.ActivityEntry;
-import com.algoprep.identity.domain.model.ClassProblemAssignment;
+import com.algoprep.identity.application.ports.in.classes.ApplyProblemAssignedToClassUseCase;
+import com.algoprep.identity.domain.model.classes.ClassProblemAssignment;
+import com.algoprep.identity.domain.model.progress.ActivityEntry;
 import com.algoprep.identity.domain.ports.out.ProcessedEventRepository;
 import com.algoprep.identity.domain.ports.out.RecentActivityRepository;
 import org.springframework.stereotype.Service;

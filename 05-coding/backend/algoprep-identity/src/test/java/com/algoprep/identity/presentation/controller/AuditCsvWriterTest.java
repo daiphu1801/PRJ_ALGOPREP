@@ -2,7 +2,7 @@ package com.algoprep.identity.presentation.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.algoprep.identity.application.dto.AuditExport;
+import com.algoprep.identity.application.dto.audit.AuditExport;
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;

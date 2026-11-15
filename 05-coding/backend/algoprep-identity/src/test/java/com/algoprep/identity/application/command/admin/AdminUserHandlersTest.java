@@ -1,4 +1,4 @@
-package com.algoprep.identity.application.command;
+package com.algoprep.identity.application.command.admin;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -12,14 +12,15 @@ import static org.mockito.Mockito.when;
 
 import com.algoprep.common.domain.ports.out.IdGeneratorPort;
 import com.algoprep.common.exception.AlgoPrepException;
-import com.algoprep.identity.application.dto.ChangeUserRoleCommand;
-import com.algoprep.identity.application.dto.ChangeUserStatusCommand;
-import com.algoprep.identity.application.dto.CreateUserAccountCommand;
+import com.algoprep.identity.application.command.RegistrationValidation;
+import com.algoprep.identity.application.dto.admin.ChangeUserRoleCommand;
+import com.algoprep.identity.application.dto.admin.ChangeUserStatusCommand;
+import com.algoprep.identity.application.dto.admin.CreateUserAccountCommand;
 import com.algoprep.identity.application.ports.out.EmailPort;
 import com.algoprep.identity.application.ports.out.PasswordHasherPort;
-import com.algoprep.identity.domain.model.AdminUserItem;
-import com.algoprep.identity.domain.model.AuditEntry;
-import com.algoprep.identity.domain.model.RbacRole;
+import com.algoprep.identity.domain.model.admin.AdminUserItem;
+import com.algoprep.identity.domain.model.audit.AuditEntry;
+import com.algoprep.identity.domain.model.rbac.RbacRole;
 import com.algoprep.identity.domain.ports.out.AccountLifecycleRepository;
 import com.algoprep.identity.domain.ports.out.AdminUserRepository;
 import com.algoprep.identity.domain.ports.out.AuditLogPort;

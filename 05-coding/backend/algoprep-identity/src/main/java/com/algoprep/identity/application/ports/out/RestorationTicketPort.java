@@ -1,6 +1,6 @@
 package com.algoprep.identity.application.ports.out;
 
-import com.algoprep.identity.domain.model.RestorationGrant;
+import com.algoprep.identity.domain.model.account.RestorationGrant;
 import java.util.Optional;
 
 /** Ticket storage uses hashes only; no session/access-token authority is granted here. */

@@ -1,4 +1,4 @@
-package com.algoprep.identity.application.command;
+package com.algoprep.identity.application.command.auth;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.anyString;
@@ -10,7 +10,7 @@ import static org.mockito.Mockito.when;
 
 import com.algoprep.common.exception.RateLimitExceededException;
 import com.algoprep.common.exception.UnauthenticatedException;
-import com.algoprep.identity.application.dto.LoginCommand;
+import com.algoprep.identity.application.dto.auth.LoginCommand;
 import com.algoprep.identity.application.ports.out.LoginAttemptPort;
 import com.algoprep.identity.application.ports.out.PasswordHasherPort;
 import java.util.Optional;

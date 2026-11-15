@@ -1,7 +1,8 @@
-package com.algoprep.identity.domain.model;
+package com.algoprep.identity.domain.model.account;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.algoprep.identity.domain.model.UserStatus;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.UUID;

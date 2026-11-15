@@ -1,8 +1,8 @@
 package com.algoprep.identity.infrastructure.persistence;
 
-import com.algoprep.identity.domain.model.RestorableAccount;
-import com.algoprep.identity.domain.model.RestorationGrant;
 import com.algoprep.identity.domain.model.UserStatus;
+import com.algoprep.identity.domain.model.account.RestorableAccount;
+import com.algoprep.identity.domain.model.account.RestorationGrant;
 import com.algoprep.identity.domain.ports.out.AccountRestorationRepository;
 import java.sql.Timestamp;
 import java.time.Instant;

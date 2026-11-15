@@ -1,4 +1,4 @@
-package com.algoprep.identity.application.command;
+package com.algoprep.identity.application.command.progress;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -8,7 +8,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.algoprep.identity.domain.model.GradedSubmission;
+import com.algoprep.identity.domain.model.progress.GradedSubmission;
 import com.algoprep.identity.domain.ports.out.ProcessedEventRepository;
 import com.algoprep.identity.domain.ports.out.SubmissionStatsRepository;
 import java.math.BigDecimal;

@@ -1,10 +1,10 @@
-package com.algoprep.identity.application.command;
+package com.algoprep.identity.application.command.admin;
 
 import com.algoprep.common.exception.DomainRuleViolationException;
 import com.algoprep.common.exception.InvalidRequestException;
 import com.algoprep.common.exception.ResourceNotFoundException;
 import com.algoprep.identity.domain.exception.IdentityErrorCodes;
-import com.algoprep.identity.domain.model.AdminUserItem;
+import com.algoprep.identity.domain.model.admin.AdminUserItem;
 import com.algoprep.identity.domain.ports.out.AccountLifecycleRepository;
 import java.util.UUID;
 import org.springframework.stereotype.Component;

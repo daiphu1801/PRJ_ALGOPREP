@@ -1,8 +1,8 @@
-package com.algoprep.identity.application.command;
+package com.algoprep.identity.application.command.classes;
 
-import com.algoprep.identity.application.dto.UpdateClassCommand;
-import com.algoprep.identity.application.ports.in.UpdateClassUseCase;
-import com.algoprep.identity.domain.model.InstructorClass;
+import com.algoprep.identity.application.dto.classes.UpdateClassCommand;
+import com.algoprep.identity.application.ports.in.classes.UpdateClassUseCase;
+import com.algoprep.identity.domain.model.classes.InstructorClass;
 import com.algoprep.identity.domain.ports.out.InstructorClassRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

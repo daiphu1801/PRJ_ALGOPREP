@@ -1,6 +1,6 @@
 package com.algoprep.identity.application.ports.out;
 
-import com.algoprep.identity.application.dto.EmailChangeIssueResult;
+import com.algoprep.identity.application.dto.account.EmailChangeIssueResult;
 import java.util.Optional;
 import java.util.UUID;
 

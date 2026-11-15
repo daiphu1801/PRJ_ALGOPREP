@@ -1,7 +1,7 @@
-package com.algoprep.identity.application.query;
+package com.algoprep.identity.application.query.rbac;
 
-import com.algoprep.identity.application.ports.in.GetPermissionMatrixUseCase;
-import com.algoprep.identity.domain.model.PermissionMatrix;
+import com.algoprep.identity.application.ports.in.rbac.GetPermissionMatrixUseCase;
+import com.algoprep.identity.domain.model.rbac.PermissionMatrix;
 import com.algoprep.identity.domain.ports.out.RbacRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

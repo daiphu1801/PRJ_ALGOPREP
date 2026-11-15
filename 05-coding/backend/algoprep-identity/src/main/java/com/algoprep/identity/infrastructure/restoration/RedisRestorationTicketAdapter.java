@@ -1,7 +1,7 @@
 package com.algoprep.identity.infrastructure.restoration;
 
 import com.algoprep.identity.application.ports.out.RestorationTicketPort;
-import com.algoprep.identity.domain.model.RestorationGrant;
+import com.algoprep.identity.domain.model.account.RestorationGrant;
 import java.time.DateTimeException;
 import java.time.Duration;
 import java.time.Instant;

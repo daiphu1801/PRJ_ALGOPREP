@@ -1,14 +1,14 @@
-package com.algoprep.identity.application.query;
+package com.algoprep.identity.application.query.rbac;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import com.algoprep.identity.domain.model.CatalogEntry;
-import com.algoprep.identity.domain.model.PermissionCell;
-import com.algoprep.identity.domain.model.PermissionMatrix;
-import com.algoprep.identity.domain.model.RbacRole;
-import com.algoprep.identity.domain.model.RoleListItem;
+import com.algoprep.identity.domain.model.rbac.CatalogEntry;
+import com.algoprep.identity.domain.model.rbac.PermissionCell;
+import com.algoprep.identity.domain.model.rbac.PermissionMatrix;
+import com.algoprep.identity.domain.model.rbac.RbacRole;
+import com.algoprep.identity.domain.model.rbac.RoleListItem;
 import com.algoprep.identity.domain.ports.out.RbacRepository;
 import java.util.List;
 import java.util.UUID;

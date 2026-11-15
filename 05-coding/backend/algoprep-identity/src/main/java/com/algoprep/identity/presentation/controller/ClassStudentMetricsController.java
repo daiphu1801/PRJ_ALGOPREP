@@ -1,11 +1,11 @@
 package com.algoprep.identity.presentation.controller;
 
-import com.algoprep.identity.application.ports.in.GetClassProgressUseCase;
-import com.algoprep.identity.application.ports.in.GetClassStudentProfileUseCase;
-import com.algoprep.identity.domain.model.ClassMetricViews.ClassProgress;
-import com.algoprep.identity.domain.model.ClassStudentRow;
-import com.algoprep.identity.domain.model.ClassStudentStatus;
-import com.algoprep.identity.domain.model.StudentMetrics;
+import com.algoprep.identity.application.ports.in.classes.GetClassProgressUseCase;
+import com.algoprep.identity.application.ports.in.classes.GetClassStudentProfileUseCase;
+import com.algoprep.identity.domain.model.classes.ClassMetricViews.ClassProgress;
+import com.algoprep.identity.domain.model.classes.ClassStudentRow;
+import com.algoprep.identity.domain.model.classes.ClassStudentStatus;
+import com.algoprep.identity.domain.model.classes.StudentMetrics;
 import java.math.BigDecimal;
 import java.util.Comparator;
 import java.util.LinkedHashMap;

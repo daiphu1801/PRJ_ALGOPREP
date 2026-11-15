@@ -7,11 +7,11 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
-import com.algoprep.identity.application.ports.in.ApplyMockInterviewFinishedUseCase;
-import com.algoprep.identity.application.ports.in.ApplyProblemAssignedToClassUseCase;
-import com.algoprep.identity.application.ports.in.ApplySolutionReviewCompletedUseCase;
-import com.algoprep.identity.application.ports.in.ApplySubmissionAcceptedUseCase;
-import com.algoprep.identity.application.ports.in.ApplySubmissionGradedUseCase;
+import com.algoprep.identity.application.ports.in.classes.ApplyProblemAssignedToClassUseCase;
+import com.algoprep.identity.application.ports.in.progress.ApplyMockInterviewFinishedUseCase;
+import com.algoprep.identity.application.ports.in.progress.ApplySolutionReviewCompletedUseCase;
+import com.algoprep.identity.application.ports.in.progress.ApplySubmissionAcceptedUseCase;
+import com.algoprep.identity.application.ports.in.progress.ApplySubmissionGradedUseCase;
 import java.nio.charset.StandardCharsets;
 import org.junit.jupiter.api.Test;
 import org.springframework.amqp.AmqpRejectAndDontRequeueException;

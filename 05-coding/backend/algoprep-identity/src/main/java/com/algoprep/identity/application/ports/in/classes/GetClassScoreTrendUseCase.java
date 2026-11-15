@@ -1,6 +1,6 @@
-package com.algoprep.identity.application.ports.in;
+package com.algoprep.identity.application.ports.in.classes;
 
-import com.algoprep.identity.domain.model.ClassMetricViews.ScoreTrend;
+import com.algoprep.identity.domain.model.classes.ClassMetricViews.ScoreTrend;
 import java.util.UUID;
 
 /** Six completed weeks of average score, for one class or all of them (#57). */

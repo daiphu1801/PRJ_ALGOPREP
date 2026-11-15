@@ -2,9 +2,9 @@ package com.algoprep.identity.infrastructure.persistence;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.algoprep.identity.domain.model.AuditCategory;
-import com.algoprep.identity.domain.model.AuditLogCursor;
-import com.algoprep.identity.domain.model.AuditLogFilter;
+import com.algoprep.identity.domain.model.audit.AuditCategory;
+import com.algoprep.identity.domain.model.audit.AuditLogCursor;
+import com.algoprep.identity.domain.model.audit.AuditLogFilter;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.Map;

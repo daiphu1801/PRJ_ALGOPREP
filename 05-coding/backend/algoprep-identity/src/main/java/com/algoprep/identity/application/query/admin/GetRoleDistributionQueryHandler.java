@@ -1,7 +1,7 @@
-package com.algoprep.identity.application.query;
+package com.algoprep.identity.application.query.admin;
 
-import com.algoprep.identity.application.ports.in.GetRoleDistributionUseCase;
-import com.algoprep.identity.domain.model.UserGroupShare;
+import com.algoprep.identity.application.ports.in.admin.GetRoleDistributionUseCase;
+import com.algoprep.identity.domain.model.admin.UserGroupShare;
 import com.algoprep.identity.domain.ports.out.AdminUserRepository;
 import java.math.BigDecimal;
 import java.math.RoundingMode;

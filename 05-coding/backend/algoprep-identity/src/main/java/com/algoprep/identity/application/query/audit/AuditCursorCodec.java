@@ -1,9 +1,9 @@
-package com.algoprep.identity.application.query;
+package com.algoprep.identity.application.query.audit;
 
 import com.algoprep.common.exception.InvalidRequestException;
 import com.algoprep.identity.domain.exception.IdentityErrorCodes;
-import com.algoprep.identity.domain.model.AuditLogCursor;
-import com.algoprep.identity.domain.model.AuditLogFilter;
+import com.algoprep.identity.domain.model.audit.AuditLogCursor;
+import com.algoprep.identity.domain.model.audit.AuditLogFilter;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Base64;

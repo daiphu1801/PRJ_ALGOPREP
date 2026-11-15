@@ -1,7 +1,7 @@
 package com.algoprep.identity.infrastructure.persistence;
 
-import com.algoprep.identity.domain.model.MyProfile;
-import com.algoprep.identity.domain.model.ProfileFields;
+import com.algoprep.identity.domain.model.account.MyProfile;
+import com.algoprep.identity.domain.model.account.ProfileFields;
 import com.algoprep.identity.domain.ports.out.MyProfileRepository;
 import java.sql.Timestamp;
 import java.util.List;

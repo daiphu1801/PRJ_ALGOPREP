@@ -1,10 +1,10 @@
-package com.algoprep.identity.application.command;
+package com.algoprep.identity.application.command.classes;
 
 import com.algoprep.common.domain.ports.out.IdGeneratorPort;
-import com.algoprep.identity.application.dto.CreateClassCommand;
-import com.algoprep.identity.application.dto.CreatedClass;
-import com.algoprep.identity.application.ports.in.CreateClassUseCase;
-import com.algoprep.identity.domain.model.ClassInviteCode;
+import com.algoprep.identity.application.dto.classes.CreateClassCommand;
+import com.algoprep.identity.application.dto.classes.CreatedClass;
+import com.algoprep.identity.application.ports.in.classes.CreateClassUseCase;
+import com.algoprep.identity.domain.model.classes.ClassInviteCode;
 import com.algoprep.identity.domain.ports.out.InstructorClassRepository;
 import java.util.UUID;
 import org.springframework.stereotype.Service;

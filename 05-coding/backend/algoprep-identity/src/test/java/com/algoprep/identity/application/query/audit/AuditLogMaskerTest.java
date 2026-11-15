@@ -1,4 +1,4 @@
-package com.algoprep.identity.application.query;
+package com.algoprep.identity.application.query.audit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

@@ -1,6 +1,6 @@
-package com.algoprep.identity.application.ports.in;
+package com.algoprep.identity.application.ports.in.password;
 
-import com.algoprep.identity.application.dto.ResetPasswordCommand;
+import com.algoprep.identity.application.dto.password.ResetPasswordCommand;
 
 /** Changes password and revokes existing refresh sessions (#8). */
 public interface ResetPasswordUseCase {

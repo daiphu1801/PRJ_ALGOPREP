@@ -1,9 +1,9 @@
-package com.algoprep.identity.application.command;
+package com.algoprep.identity.application.command.progress;
 
 import com.algoprep.common.domain.ports.out.IdGeneratorPort;
-import com.algoprep.identity.application.ports.in.ApplyMockInterviewFinishedUseCase;
-import com.algoprep.identity.domain.model.ActivityEntry;
-import com.algoprep.identity.domain.model.FinishedMockInterview;
+import com.algoprep.identity.application.ports.in.progress.ApplyMockInterviewFinishedUseCase;
+import com.algoprep.identity.domain.model.progress.ActivityEntry;
+import com.algoprep.identity.domain.model.progress.FinishedMockInterview;
 import com.algoprep.identity.domain.ports.out.ProcessedEventRepository;
 import com.algoprep.identity.domain.ports.out.RecentActivityRepository;
 import org.springframework.stereotype.Service;

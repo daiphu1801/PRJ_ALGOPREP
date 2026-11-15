@@ -1,6 +1,6 @@
-package com.algoprep.identity.application.ports.in;
+package com.algoprep.identity.application.ports.in.account;
 
-import com.algoprep.identity.application.dto.ConfirmEmailChangeCommand;
+import com.algoprep.identity.application.dto.account.ConfirmEmailChangeCommand;
 
 /** Confirms the code and moves the login e-mail (#12). */
 public interface ConfirmEmailChangeUseCase {

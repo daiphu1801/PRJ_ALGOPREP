@@ -1,4 +1,4 @@
-package com.algoprep.identity.application.ports.in;
+package com.algoprep.identity.application.ports.in.account;
 
 import java.util.UUID;
 

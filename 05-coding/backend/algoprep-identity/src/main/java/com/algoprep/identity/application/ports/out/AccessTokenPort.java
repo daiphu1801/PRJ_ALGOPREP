@@ -1,6 +1,6 @@
 package com.algoprep.identity.application.ports.out;
 
-import com.algoprep.identity.application.dto.IssuedAccessToken;
+import com.algoprep.identity.application.dto.auth.IssuedAccessToken;
 import com.algoprep.identity.domain.model.BaseCategory;
 import java.util.UUID;
 

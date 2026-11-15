@@ -1,4 +1,4 @@
-package com.algoprep.identity.domain.model;
+package com.algoprep.identity.domain.model.audit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

@@ -1,4 +1,4 @@
-package com.algoprep.identity.application.query;
+package com.algoprep.identity.application.query.audit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -12,18 +12,18 @@ import static org.mockito.Mockito.when;
 
 import com.algoprep.common.domain.ports.out.ClockPort;
 import com.algoprep.common.exception.AlgoPrepException;
-import com.algoprep.identity.application.dto.AuditExport;
-import com.algoprep.identity.application.dto.AuditLogPageResult;
-import com.algoprep.identity.application.dto.AuditStreamBatch;
-import com.algoprep.identity.application.dto.AuditStreamRequest;
-import com.algoprep.identity.application.dto.CategoryCount;
-import com.algoprep.identity.application.dto.ExportAuditLogsQuery;
-import com.algoprep.identity.application.dto.SearchAuditLogsQuery;
-import com.algoprep.identity.domain.model.ActiveAdmin;
-import com.algoprep.identity.domain.model.AuditEntry;
-import com.algoprep.identity.domain.model.AuditLogCursor;
-import com.algoprep.identity.domain.model.AuditLogFilter;
-import com.algoprep.identity.domain.model.AuditLogRow;
+import com.algoprep.identity.application.dto.audit.AuditExport;
+import com.algoprep.identity.application.dto.audit.AuditLogPageResult;
+import com.algoprep.identity.application.dto.audit.AuditStreamBatch;
+import com.algoprep.identity.application.dto.audit.AuditStreamRequest;
+import com.algoprep.identity.application.dto.audit.CategoryCount;
+import com.algoprep.identity.application.dto.audit.ExportAuditLogsQuery;
+import com.algoprep.identity.application.dto.audit.SearchAuditLogsQuery;
+import com.algoprep.identity.domain.model.audit.ActiveAdmin;
+import com.algoprep.identity.domain.model.audit.AuditEntry;
+import com.algoprep.identity.domain.model.audit.AuditLogCursor;
+import com.algoprep.identity.domain.model.audit.AuditLogFilter;
+import com.algoprep.identity.domain.model.audit.AuditLogRow;
 import com.algoprep.identity.domain.ports.out.AuditLogPort;
 import com.algoprep.identity.domain.ports.out.AuditLogReadRepository;
 import java.time.Instant;

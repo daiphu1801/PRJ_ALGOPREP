@@ -1,10 +1,10 @@
-package com.algoprep.identity.application.query;
+package com.algoprep.identity.application.query.classes;
 
 import com.algoprep.common.domain.ports.out.ClockPort;
 import com.algoprep.common.exception.ResourceNotFoundException;
-import com.algoprep.identity.application.ports.in.ListInstructorRecentActivityUseCase;
+import com.algoprep.identity.application.ports.in.classes.ListInstructorRecentActivityUseCase;
 import com.algoprep.identity.domain.exception.IdentityErrorCodes;
-import com.algoprep.identity.domain.model.ClassActivityItem;
+import com.algoprep.identity.domain.model.classes.ClassActivityItem;
 import com.algoprep.identity.domain.ports.out.ClassActivityReadRepository;
 import com.algoprep.identity.domain.ports.out.InstructorClassRepository;
 import java.time.Duration;

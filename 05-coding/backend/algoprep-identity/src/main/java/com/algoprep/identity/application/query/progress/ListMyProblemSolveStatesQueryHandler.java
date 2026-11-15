@@ -1,9 +1,9 @@
-package com.algoprep.identity.application.query;
+package com.algoprep.identity.application.query.progress;
 
 import com.algoprep.common.exception.DomainRuleViolationException;
-import com.algoprep.identity.application.ports.in.ListMyProblemSolveStatesUseCase;
+import com.algoprep.identity.application.ports.in.progress.ListMyProblemSolveStatesUseCase;
 import com.algoprep.identity.domain.exception.IdentityErrorCodes;
-import com.algoprep.identity.domain.model.SolveState;
+import com.algoprep.identity.domain.model.progress.SolveState;
 import com.algoprep.identity.domain.ports.out.MyProgressReadRepository;
 import java.util.LinkedHashSet;
 import java.util.Map;

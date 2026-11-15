@@ -1,11 +1,12 @@
-package com.algoprep.identity.application.command;
+package com.algoprep.identity.application.command.rbac;
 
 import com.algoprep.common.exception.DomainRuleViolationException;
 import com.algoprep.common.exception.ServiceUnavailableException;
-import com.algoprep.identity.application.ports.in.DeleteRoleUseCase;
+import com.algoprep.identity.application.command.RbacAuditJson;
+import com.algoprep.identity.application.ports.in.rbac.DeleteRoleUseCase;
 import com.algoprep.identity.domain.exception.IdentityErrorCodes;
-import com.algoprep.identity.domain.model.AuditEntry;
-import com.algoprep.identity.domain.model.RbacRole;
+import com.algoprep.identity.domain.model.audit.AuditEntry;
+import com.algoprep.identity.domain.model.rbac.RbacRole;
 import com.algoprep.identity.domain.ports.out.AuditLogPort;
 import com.algoprep.identity.domain.ports.out.RbacRepository;
 import java.util.UUID;

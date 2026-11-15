@@ -1,9 +1,10 @@
-package com.algoprep.identity.application.command;
+package com.algoprep.identity.application.command.admin;
 
 import com.algoprep.common.domain.ports.out.IdGeneratorPort;
 import com.algoprep.common.exception.DomainRuleViolationException;
 import com.algoprep.common.exception.InvalidRequestException;
-import com.algoprep.identity.application.ports.in.BootstrapFirstAdminUseCase;
+import com.algoprep.identity.application.command.RegistrationValidation;
+import com.algoprep.identity.application.ports.in.admin.BootstrapFirstAdminUseCase;
 import com.algoprep.identity.application.ports.out.PasswordHasherPort;
 import com.algoprep.identity.domain.ports.out.AdminBootstrapRepository;
 import java.util.function.Supplier;

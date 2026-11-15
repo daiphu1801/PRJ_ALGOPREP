@@ -1,8 +1,8 @@
-package com.algoprep.identity.application.command;
+package com.algoprep.identity.application.command.audit;
 
-import com.algoprep.identity.application.ports.in.PurgeExpiredAuditLogsUseCase;
-import com.algoprep.identity.domain.model.ExpiredLogPolicy;
-import com.algoprep.identity.domain.model.LogRetentionSettings;
+import com.algoprep.identity.application.ports.in.audit.PurgeExpiredAuditLogsUseCase;
+import com.algoprep.identity.domain.model.audit.ExpiredLogPolicy;
+import com.algoprep.identity.domain.model.audit.LogRetentionSettings;
 import com.algoprep.identity.domain.ports.out.LogRetentionRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

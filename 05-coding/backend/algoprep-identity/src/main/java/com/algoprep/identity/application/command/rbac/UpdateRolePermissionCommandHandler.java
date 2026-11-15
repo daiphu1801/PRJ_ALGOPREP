@@ -1,12 +1,13 @@
-package com.algoprep.identity.application.command;
+package com.algoprep.identity.application.command.rbac;
 
 import com.algoprep.common.exception.DomainRuleViolationException;
-import com.algoprep.identity.application.dto.UpdateRolePermissionCommand;
-import com.algoprep.identity.application.ports.in.UpdateRolePermissionUseCase;
+import com.algoprep.identity.application.command.RbacAuditJson;
+import com.algoprep.identity.application.dto.rbac.UpdateRolePermissionCommand;
+import com.algoprep.identity.application.ports.in.rbac.UpdateRolePermissionUseCase;
 import com.algoprep.identity.domain.exception.RbacErrorCodes;
-import com.algoprep.identity.domain.model.AuditEntry;
-import com.algoprep.identity.domain.model.PermissionChange;
-import com.algoprep.identity.domain.model.RbacRole;
+import com.algoprep.identity.domain.model.audit.AuditEntry;
+import com.algoprep.identity.domain.model.rbac.PermissionChange;
+import com.algoprep.identity.domain.model.rbac.RbacRole;
 import com.algoprep.identity.domain.ports.out.AuditLogPort;
 import com.algoprep.identity.domain.ports.out.RbacRepository;
 import org.springframework.stereotype.Service;

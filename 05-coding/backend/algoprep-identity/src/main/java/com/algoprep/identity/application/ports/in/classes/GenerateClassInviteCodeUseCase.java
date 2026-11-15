@@ -1,6 +1,6 @@
-package com.algoprep.identity.application.ports.in;
+package com.algoprep.identity.application.ports.in.classes;
 
-import com.algoprep.identity.domain.model.ClassInviteCode;
+import com.algoprep.identity.domain.model.classes.ClassInviteCode;
 import java.util.UUID;
 
 /** Issues one more invite code for an owned class (#23). */

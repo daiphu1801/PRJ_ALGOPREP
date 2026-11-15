@@ -1,8 +1,8 @@
 package com.algoprep.identity.infrastructure.persistence;
 
-import com.algoprep.identity.domain.model.ActivityEntry;
-import com.algoprep.identity.domain.model.ProgressCounters;
-import com.algoprep.identity.domain.model.SolveState;
+import com.algoprep.identity.domain.model.progress.ActivityEntry;
+import com.algoprep.identity.domain.model.progress.ProgressCounters;
+import com.algoprep.identity.domain.model.progress.SolveState;
 import com.algoprep.identity.domain.ports.out.MyProgressReadRepository;
 import java.sql.Timestamp;
 import java.time.Instant;

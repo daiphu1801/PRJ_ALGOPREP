@@ -1,6 +1,6 @@
-package com.algoprep.identity.application.dto;
+package com.algoprep.identity.application.dto.classes;
 
-import com.algoprep.identity.domain.model.ScheduleSpec;
+import com.algoprep.identity.domain.model.classes.ScheduleSpec;
 import java.util.UUID;
 
 /**

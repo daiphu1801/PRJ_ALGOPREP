@@ -1,6 +1,6 @@
-package com.algoprep.identity.application.command;
+package com.algoprep.identity.application.command.outbox;
 
-import com.algoprep.identity.application.ports.in.CleanIdentityOutboxUseCase;
+import com.algoprep.identity.application.ports.in.outbox.CleanIdentityOutboxUseCase;
 import com.algoprep.identity.domain.ports.out.IdentityOutboxRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -1,8 +1,8 @@
-package com.algoprep.identity.application.query;
+package com.algoprep.identity.application.query.progress;
 
-import com.algoprep.identity.application.ports.in.GetMyProgressSummaryUseCase;
-import com.algoprep.identity.domain.model.MyProgressSummary;
-import com.algoprep.identity.domain.model.ProgressCounters;
+import com.algoprep.identity.application.ports.in.progress.GetMyProgressSummaryUseCase;
+import com.algoprep.identity.domain.model.progress.MyProgressSummary;
+import com.algoprep.identity.domain.model.progress.ProgressCounters;
 import com.algoprep.identity.domain.ports.out.MyProgressReadRepository;
 import java.util.UUID;
 import org.springframework.stereotype.Service;

@@ -1,4 +1,4 @@
-package com.algoprep.identity.application.ports.in;
+package com.algoprep.identity.application.ports.in.admin;
 
 /** Creates the first ADMIN from startup configuration when none exists (DD BR-23). */
 public interface BootstrapFirstAdminUseCase {

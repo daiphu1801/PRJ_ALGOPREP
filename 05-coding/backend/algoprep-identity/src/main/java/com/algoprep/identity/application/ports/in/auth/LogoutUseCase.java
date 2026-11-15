@@ -1,4 +1,4 @@
-package com.algoprep.identity.application.ports.in;
+package com.algoprep.identity.application.ports.in.auth;
 
 /** Endpoint #4: end the current session by revoking its refresh token. */
 public interface LogoutUseCase {

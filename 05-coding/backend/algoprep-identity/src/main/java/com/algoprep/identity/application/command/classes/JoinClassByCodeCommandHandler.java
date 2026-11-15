@@ -1,12 +1,12 @@
-package com.algoprep.identity.application.command;
+package com.algoprep.identity.application.command.classes;
 
 import com.algoprep.common.exception.DomainRuleViolationException;
 import com.algoprep.common.exception.RateLimitExceededException;
-import com.algoprep.identity.application.dto.JoinClassByCodeCommand;
-import com.algoprep.identity.application.ports.in.JoinClassByCodeUseCase;
+import com.algoprep.identity.application.dto.classes.JoinClassByCodeCommand;
+import com.algoprep.identity.application.ports.in.classes.JoinClassByCodeUseCase;
 import com.algoprep.identity.application.ports.out.JoinAttemptLimitPort;
 import com.algoprep.identity.domain.exception.IdentityErrorCodes;
-import com.algoprep.identity.domain.model.ClassRef;
+import com.algoprep.identity.domain.model.classes.ClassRef;
 import com.algoprep.identity.domain.ports.out.StudentClassRepository;
 import java.util.Locale;
 import java.util.Optional;

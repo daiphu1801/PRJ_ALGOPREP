@@ -1,13 +1,13 @@
 package com.algoprep.identity.presentation.controller;
 
-import com.algoprep.identity.application.ports.in.GetAdminSubmissionBlocksUseCase;
-import com.algoprep.identity.domain.model.AdminSubmissionBlocks.Days;
-import com.algoprep.identity.domain.model.AdminSubmissionBlocks.Difficulty;
-import com.algoprep.identity.domain.model.AdminSubmissionBlocks.Languages;
-import com.algoprep.identity.domain.model.AdminSubmissionBlocks.Months;
-import com.algoprep.identity.domain.model.AdminSubmissionBlocks.TopProblems;
-import com.algoprep.identity.domain.model.AdminSubmissionBlocks.Verdicts;
-import com.algoprep.identity.domain.model.StatSummary;
+import com.algoprep.identity.application.ports.in.admin.GetAdminSubmissionBlocksUseCase;
+import com.algoprep.identity.domain.model.admin.AdminSubmissionBlocks.Days;
+import com.algoprep.identity.domain.model.admin.AdminSubmissionBlocks.Difficulty;
+import com.algoprep.identity.domain.model.admin.AdminSubmissionBlocks.Languages;
+import com.algoprep.identity.domain.model.admin.AdminSubmissionBlocks.Months;
+import com.algoprep.identity.domain.model.admin.AdminSubmissionBlocks.TopProblems;
+import com.algoprep.identity.domain.model.admin.AdminSubmissionBlocks.Verdicts;
+import com.algoprep.identity.domain.model.admin.StatSummary;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

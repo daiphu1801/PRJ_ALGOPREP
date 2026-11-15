@@ -1,12 +1,12 @@
 package com.algoprep.identity.presentation.controller;
 
-import com.algoprep.identity.application.ports.in.GetMyActivityCalendarUseCase;
-import com.algoprep.identity.application.ports.in.GetMyProgressSummaryUseCase;
-import com.algoprep.identity.application.ports.in.ListMyProblemSolveStatesUseCase;
-import com.algoprep.identity.application.ports.in.ListMyRecentActivityUseCase;
-import com.algoprep.identity.domain.model.ActivityCalendar;
-import com.algoprep.identity.domain.model.MyProgressSummary;
-import com.algoprep.identity.domain.model.SolveState;
+import com.algoprep.identity.application.ports.in.progress.GetMyActivityCalendarUseCase;
+import com.algoprep.identity.application.ports.in.progress.GetMyProgressSummaryUseCase;
+import com.algoprep.identity.application.ports.in.progress.ListMyProblemSolveStatesUseCase;
+import com.algoprep.identity.application.ports.in.progress.ListMyRecentActivityUseCase;
+import com.algoprep.identity.domain.model.progress.ActivityCalendar;
+import com.algoprep.identity.domain.model.progress.MyProgressSummary;
+import com.algoprep.identity.domain.model.progress.SolveState;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;

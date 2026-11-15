@@ -1,4 +1,4 @@
-package com.algoprep.identity.domain.model;
+package com.algoprep.identity.domain.model.audit;
 
 /**
  * What an {@code action_type} shows as: display group and the module that produced it.

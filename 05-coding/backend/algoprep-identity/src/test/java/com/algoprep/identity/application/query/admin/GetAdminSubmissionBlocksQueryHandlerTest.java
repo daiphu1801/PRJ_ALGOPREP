@@ -1,4 +1,4 @@
-package com.algoprep.identity.application.query;
+package com.algoprep.identity.application.query.admin;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -10,14 +10,14 @@ import static org.mockito.Mockito.when;
 import com.algoprep.common.exception.ServiceUnavailableException;
 import com.algoprep.identity.application.ports.out.JudgeStatsPort;
 import com.algoprep.identity.application.ports.out.ProblemBankStatsPort;
-import com.algoprep.identity.domain.model.AdminSubmissionBlocks.Difficulty;
-import com.algoprep.identity.domain.model.AdminSubmissionBlocks.LevelCount;
-import com.algoprep.identity.domain.model.AdminSubmissionBlocks.LevelRef;
-import com.algoprep.identity.domain.model.AdminSubmissionBlocks.LevelScope;
-import com.algoprep.identity.domain.model.AdminSubmissionBlocks.ProblemCount;
-import com.algoprep.identity.domain.model.AdminSubmissionBlocks.PublishedProblem;
-import com.algoprep.identity.domain.model.AdminSubmissionBlocks.TopProblem;
-import com.algoprep.identity.domain.model.StatSummary;
+import com.algoprep.identity.domain.model.admin.AdminSubmissionBlocks.Difficulty;
+import com.algoprep.identity.domain.model.admin.AdminSubmissionBlocks.LevelCount;
+import com.algoprep.identity.domain.model.admin.AdminSubmissionBlocks.LevelRef;
+import com.algoprep.identity.domain.model.admin.AdminSubmissionBlocks.LevelScope;
+import com.algoprep.identity.domain.model.admin.AdminSubmissionBlocks.ProblemCount;
+import com.algoprep.identity.domain.model.admin.AdminSubmissionBlocks.PublishedProblem;
+import com.algoprep.identity.domain.model.admin.AdminSubmissionBlocks.TopProblem;
+import com.algoprep.identity.domain.model.admin.StatSummary;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;

@@ -1,9 +1,9 @@
 package com.algoprep.identity.presentation.controller;
 
-import com.algoprep.identity.application.dto.UpdateMyProfileCommand;
-import com.algoprep.identity.application.ports.in.GetMyProfileUseCase;
-import com.algoprep.identity.application.ports.in.UpdateMyProfileUseCase;
-import com.algoprep.identity.domain.model.MyProfile;
+import com.algoprep.identity.application.dto.account.UpdateMyProfileCommand;
+import com.algoprep.identity.application.ports.in.account.GetMyProfileUseCase;
+import com.algoprep.identity.application.ports.in.account.UpdateMyProfileUseCase;
+import com.algoprep.identity.domain.model.account.MyProfile;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;

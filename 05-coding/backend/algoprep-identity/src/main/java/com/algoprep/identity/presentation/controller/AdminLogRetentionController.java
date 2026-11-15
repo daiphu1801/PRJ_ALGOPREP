@@ -1,9 +1,9 @@
 package com.algoprep.identity.presentation.controller;
 
-import com.algoprep.identity.application.dto.UpdateLogRetentionCommand;
-import com.algoprep.identity.application.ports.in.GetLogRetentionSettingsUseCase;
-import com.algoprep.identity.application.ports.in.UpdateLogRetentionSettingsUseCase;
-import com.algoprep.identity.domain.model.LogRetentionSettings;
+import com.algoprep.identity.application.dto.audit.UpdateLogRetentionCommand;
+import com.algoprep.identity.application.ports.in.audit.GetLogRetentionSettingsUseCase;
+import com.algoprep.identity.application.ports.in.audit.UpdateLogRetentionSettingsUseCase;
+import com.algoprep.identity.domain.model.audit.LogRetentionSettings;
 import java.math.BigInteger;
 import java.util.UUID;
 import org.springframework.security.access.prepost.PreAuthorize;

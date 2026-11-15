@@ -1,14 +1,15 @@
-package com.algoprep.identity.application.command;
+package com.algoprep.identity.application.command.password;
 
 import com.algoprep.common.exception.DomainRuleViolationException;
 import com.algoprep.common.exception.RateLimitExceededException;
 import com.algoprep.common.exception.UnauthenticatedException;
-import com.algoprep.identity.application.dto.ChangeMyPasswordCommand;
-import com.algoprep.identity.application.ports.in.ChangeMyPasswordUseCase;
+import com.algoprep.identity.application.command.RegistrationValidation;
+import com.algoprep.identity.application.dto.password.ChangeMyPasswordCommand;
+import com.algoprep.identity.application.ports.in.password.ChangeMyPasswordUseCase;
 import com.algoprep.identity.application.ports.out.LoginAttemptPort;
 import com.algoprep.identity.application.ports.out.PasswordHasherPort;
 import com.algoprep.identity.domain.exception.IdentityErrorCodes;
-import com.algoprep.identity.domain.model.PasswordChangeAccount;
+import com.algoprep.identity.domain.model.password.PasswordChangeAccount;
 import com.algoprep.identity.domain.ports.out.PasswordChangeRepository;
 import java.util.UUID;
 import org.springframework.stereotype.Service;

@@ -1,4 +1,4 @@
-package com.algoprep.identity.domain.model;
+package com.algoprep.identity.domain.model.account;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;

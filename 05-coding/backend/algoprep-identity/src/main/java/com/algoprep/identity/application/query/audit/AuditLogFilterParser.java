@@ -1,10 +1,10 @@
-package com.algoprep.identity.application.query;
+package com.algoprep.identity.application.query.audit;
 
 import com.algoprep.common.domain.ports.out.ClockPort;
 import com.algoprep.common.exception.InvalidRequestException;
 import com.algoprep.identity.domain.exception.IdentityErrorCodes;
-import com.algoprep.identity.domain.model.AuditCategory;
-import com.algoprep.identity.domain.model.AuditLogFilter;
+import com.algoprep.identity.domain.model.audit.AuditCategory;
+import com.algoprep.identity.domain.model.audit.AuditLogFilter;
 import com.algoprep.identity.domain.ports.out.AuditLogReadRepository;
 import java.time.Instant;
 import java.time.LocalDate;

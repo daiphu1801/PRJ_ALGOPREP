@@ -1,4 +1,4 @@
-package com.algoprep.identity.domain.model;
+package com.algoprep.identity.domain.model.account;
 
 /**
  * The caller's account settings (DD api F1 section 0.3.1): five {@code user_preferences} columns

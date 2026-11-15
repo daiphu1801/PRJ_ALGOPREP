@@ -1,6 +1,6 @@
-package com.algoprep.identity.application.query;
+package com.algoprep.identity.application.query.admin;
 
-import com.algoprep.identity.application.ports.in.GetUserManagementStatsUseCase;
+import com.algoprep.identity.application.ports.in.admin.GetUserManagementStatsUseCase;
 import com.algoprep.identity.domain.ports.out.AdminUserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

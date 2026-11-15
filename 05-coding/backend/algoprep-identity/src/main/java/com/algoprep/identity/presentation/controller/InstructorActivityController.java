@@ -1,6 +1,6 @@
 package com.algoprep.identity.presentation.controller;
 
-import com.algoprep.identity.application.ports.in.ListInstructorRecentActivityUseCase;
+import com.algoprep.identity.application.ports.in.classes.ListInstructorRecentActivityUseCase;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.security.access.prepost.PreAuthorize;

@@ -1,4 +1,4 @@
-package com.algoprep.identity.domain.model;
+package com.algoprep.identity.domain.model.account;
 
 /**
  * The editable profile columns after validation. A {@code null} optional value is stored as {@code

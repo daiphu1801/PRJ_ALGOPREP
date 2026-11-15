@@ -1,4 +1,4 @@
-package com.algoprep.identity.domain.model;
+package com.algoprep.identity.domain.model.auth;
 
 /**
  * What the provider vouches for after a successful code exchange. {@code email} is lower-case and

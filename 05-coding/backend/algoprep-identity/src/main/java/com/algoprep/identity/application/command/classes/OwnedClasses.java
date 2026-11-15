@@ -1,4 +1,4 @@
-package com.algoprep.identity.application.command;
+package com.algoprep.identity.application.command.classes;
 
 import com.algoprep.common.exception.ResourceNotFoundException;
 import com.algoprep.identity.domain.exception.IdentityErrorCodes;

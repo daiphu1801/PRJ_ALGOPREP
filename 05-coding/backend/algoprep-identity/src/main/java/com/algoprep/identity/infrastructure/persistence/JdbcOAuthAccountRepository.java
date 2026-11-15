@@ -1,7 +1,7 @@
 package com.algoprep.identity.infrastructure.persistence;
 
 import com.algoprep.common.domain.ports.out.IdGeneratorPort;
-import com.algoprep.identity.domain.model.OAuthProvider;
+import com.algoprep.identity.domain.model.auth.OAuthProvider;
 import com.algoprep.identity.domain.ports.out.OAuthAccountRepository;
 import java.util.Optional;
 import java.util.UUID;

@@ -1,6 +1,6 @@
 package com.algoprep.identity.infrastructure.messaging;
 
-import com.algoprep.identity.domain.model.AcceptedSubmission;
+import com.algoprep.identity.domain.model.progress.AcceptedSubmission;
 import java.time.Instant;
 import java.util.UUID;
 import tools.jackson.databind.JsonNode;

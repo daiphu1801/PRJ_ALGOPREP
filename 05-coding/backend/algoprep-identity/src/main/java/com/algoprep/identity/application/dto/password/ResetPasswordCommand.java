@@ -1,4 +1,4 @@
-package com.algoprep.identity.application.dto;
+package com.algoprep.identity.application.dto.password;
 
 /** Secrets are excluded from diagnostics. */
 public record ResetPasswordCommand(String email, String otp, String newPassword) {

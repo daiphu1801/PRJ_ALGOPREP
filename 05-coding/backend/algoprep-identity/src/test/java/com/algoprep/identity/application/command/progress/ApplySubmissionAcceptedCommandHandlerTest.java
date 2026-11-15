@@ -1,4 +1,4 @@
-package com.algoprep.identity.application.command;
+package com.algoprep.identity.application.command.progress;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -11,9 +11,9 @@ import static org.mockito.Mockito.when;
 
 import com.algoprep.common.domain.ports.out.IdGeneratorPort;
 import com.algoprep.identity.application.ports.out.ClassAssignmentLookupPort;
-import com.algoprep.identity.domain.model.AcceptedSubmission;
-import com.algoprep.identity.domain.model.ActivityEntry;
-import com.algoprep.identity.domain.model.ClassProblemWindow;
+import com.algoprep.identity.domain.model.classes.ClassProblemWindow;
+import com.algoprep.identity.domain.model.progress.AcceptedSubmission;
+import com.algoprep.identity.domain.model.progress.ActivityEntry;
 import com.algoprep.identity.domain.ports.out.ProcessedEventRepository;
 import com.algoprep.identity.domain.ports.out.RecentActivityRepository;
 import java.time.Instant;

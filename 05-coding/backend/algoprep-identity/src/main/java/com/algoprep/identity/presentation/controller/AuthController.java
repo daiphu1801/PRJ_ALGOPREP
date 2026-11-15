@@ -1,13 +1,13 @@
 package com.algoprep.identity.presentation.controller;
 
 import com.algoprep.common.exception.InvalidRequestException;
-import com.algoprep.identity.application.dto.LoginCommand;
-import com.algoprep.identity.application.dto.LoginResult;
-import com.algoprep.identity.application.dto.RefreshResult;
 import com.algoprep.identity.application.dto.UserSummary;
-import com.algoprep.identity.application.ports.in.LoginUseCase;
-import com.algoprep.identity.application.ports.in.LogoutUseCase;
-import com.algoprep.identity.application.ports.in.RefreshSessionUseCase;
+import com.algoprep.identity.application.dto.auth.LoginCommand;
+import com.algoprep.identity.application.dto.auth.LoginResult;
+import com.algoprep.identity.application.dto.auth.RefreshResult;
+import com.algoprep.identity.application.ports.in.auth.LoginUseCase;
+import com.algoprep.identity.application.ports.in.auth.LogoutUseCase;
+import com.algoprep.identity.application.ports.in.auth.RefreshSessionUseCase;
 import com.algoprep.identity.domain.exception.IdentityErrorCodes;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.Duration;

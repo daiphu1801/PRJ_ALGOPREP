@@ -3,7 +3,7 @@ package com.algoprep.identity.infrastructure.messaging;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import com.algoprep.identity.domain.model.GradedSubmission;
+import com.algoprep.identity.domain.model.progress.GradedSubmission;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;

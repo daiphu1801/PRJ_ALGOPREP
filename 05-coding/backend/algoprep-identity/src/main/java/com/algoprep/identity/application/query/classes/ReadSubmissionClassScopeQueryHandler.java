@@ -1,7 +1,7 @@
-package com.algoprep.identity.application.query;
+package com.algoprep.identity.application.query.classes;
 
-import com.algoprep.identity.application.ports.in.ReadSubmissionClassScopeUseCase;
-import com.algoprep.identity.domain.model.SubmissionClassScope;
+import com.algoprep.identity.application.ports.in.classes.ReadSubmissionClassScopeUseCase;
+import com.algoprep.identity.domain.model.classes.SubmissionClassScope;
 import com.algoprep.identity.domain.ports.out.SubmissionClassScopeRepository;
 import java.util.List;
 import java.util.UUID;

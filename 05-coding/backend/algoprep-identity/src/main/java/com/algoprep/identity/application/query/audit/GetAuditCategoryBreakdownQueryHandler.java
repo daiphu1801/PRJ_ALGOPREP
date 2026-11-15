@@ -1,9 +1,9 @@
-package com.algoprep.identity.application.query;
+package com.algoprep.identity.application.query.audit;
 
-import com.algoprep.identity.application.dto.CategoryCount;
-import com.algoprep.identity.application.ports.in.GetAuditCategoryBreakdownUseCase;
-import com.algoprep.identity.domain.model.AuditActionCatalog;
-import com.algoprep.identity.domain.model.AuditCategory;
+import com.algoprep.identity.application.dto.audit.CategoryCount;
+import com.algoprep.identity.application.ports.in.audit.GetAuditCategoryBreakdownUseCase;
+import com.algoprep.identity.domain.model.audit.AuditActionCatalog;
+import com.algoprep.identity.domain.model.audit.AuditCategory;
 import com.algoprep.identity.domain.ports.out.AuditLogReadRepository;
 import java.util.EnumMap;
 import java.util.List;

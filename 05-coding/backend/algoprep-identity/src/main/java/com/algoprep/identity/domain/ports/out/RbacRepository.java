@@ -1,9 +1,9 @@
 package com.algoprep.identity.domain.ports.out;
 
-import com.algoprep.identity.domain.model.CatalogEntry;
-import com.algoprep.identity.domain.model.PermissionCell;
-import com.algoprep.identity.domain.model.RbacRole;
-import com.algoprep.identity.domain.model.RoleListItem;
+import com.algoprep.identity.domain.model.rbac.CatalogEntry;
+import com.algoprep.identity.domain.model.rbac.PermissionCell;
+import com.algoprep.identity.domain.model.rbac.RbacRole;
+import com.algoprep.identity.domain.model.rbac.RoleListItem;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;

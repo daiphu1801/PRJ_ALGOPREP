@@ -1,4 +1,4 @@
-package com.algoprep.identity.domain.model;
+package com.algoprep.identity.domain.model.classes;
 
 import java.time.LocalDate;
 import java.util.List;

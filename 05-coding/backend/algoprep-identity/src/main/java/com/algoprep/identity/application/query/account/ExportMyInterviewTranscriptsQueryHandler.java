@@ -1,9 +1,9 @@
-package com.algoprep.identity.application.query;
+package com.algoprep.identity.application.query.account;
 
 import com.algoprep.common.exception.RateLimitExceededException;
 import com.algoprep.common.exception.ServiceUnavailableException;
-import com.algoprep.identity.application.dto.InterviewTranscriptExport;
-import com.algoprep.identity.application.ports.in.ExportMyInterviewTranscriptsUseCase;
+import com.algoprep.identity.application.dto.account.InterviewTranscriptExport;
+import com.algoprep.identity.application.ports.in.account.ExportMyInterviewTranscriptsUseCase;
 import com.algoprep.identity.application.ports.out.ExportRateLimitPort;
 import com.algoprep.identity.application.ports.out.InterviewTranscriptExportPort;
 import com.algoprep.identity.domain.exception.IdentityErrorCodes;

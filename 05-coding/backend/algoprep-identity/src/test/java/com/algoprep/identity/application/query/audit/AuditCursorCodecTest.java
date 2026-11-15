@@ -1,12 +1,12 @@
-package com.algoprep.identity.application.query;
+package com.algoprep.identity.application.query.audit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.algoprep.common.exception.AlgoPrepException;
-import com.algoprep.identity.domain.model.AuditCategory;
-import com.algoprep.identity.domain.model.AuditLogCursor;
-import com.algoprep.identity.domain.model.AuditLogFilter;
+import com.algoprep.identity.domain.model.audit.AuditCategory;
+import com.algoprep.identity.domain.model.audit.AuditLogCursor;
+import com.algoprep.identity.domain.model.audit.AuditLogFilter;
 import java.time.Instant;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;

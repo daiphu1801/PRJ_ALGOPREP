@@ -1,9 +1,9 @@
-package com.algoprep.identity.application.query;
+package com.algoprep.identity.application.query.classes;
 
 import com.algoprep.common.exception.ResourceNotFoundException;
-import com.algoprep.identity.application.ports.in.GetMyClassUseCase;
+import com.algoprep.identity.application.ports.in.classes.GetMyClassUseCase;
 import com.algoprep.identity.domain.exception.IdentityErrorCodes;
-import com.algoprep.identity.domain.model.MyClass;
+import com.algoprep.identity.domain.model.classes.MyClass;
 import com.algoprep.identity.domain.ports.out.StudentClassRepository;
 import java.util.Optional;
 import java.util.UUID;

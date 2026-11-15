@@ -1,14 +1,14 @@
 package com.algoprep.identity.presentation.controller;
 
-import com.algoprep.identity.application.dto.CreateUserAccountCommand;
-import com.algoprep.identity.application.dto.ListUsersQuery;
-import com.algoprep.identity.application.ports.in.CreateUserAccountUseCase;
-import com.algoprep.identity.application.ports.in.GetRoleDistributionUseCase;
-import com.algoprep.identity.application.ports.in.GetUserManagementStatsUseCase;
-import com.algoprep.identity.application.ports.in.ListUsersUseCase;
-import com.algoprep.identity.domain.model.AdminUserItem;
-import com.algoprep.identity.domain.model.AdminUserPage;
-import com.algoprep.identity.domain.model.UserGroupShare;
+import com.algoprep.identity.application.dto.admin.CreateUserAccountCommand;
+import com.algoprep.identity.application.dto.admin.ListUsersQuery;
+import com.algoprep.identity.application.ports.in.admin.CreateUserAccountUseCase;
+import com.algoprep.identity.application.ports.in.admin.GetRoleDistributionUseCase;
+import com.algoprep.identity.application.ports.in.admin.GetUserManagementStatsUseCase;
+import com.algoprep.identity.application.ports.in.admin.ListUsersUseCase;
+import com.algoprep.identity.domain.model.admin.AdminUserItem;
+import com.algoprep.identity.domain.model.admin.AdminUserPage;
+import com.algoprep.identity.domain.model.admin.UserGroupShare;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.http.HttpStatus;

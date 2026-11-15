@@ -1,6 +1,6 @@
 package com.algoprep.identity.infrastructure.messaging;
 
-import com.algoprep.identity.domain.model.CompletedSolutionReview;
+import com.algoprep.identity.domain.model.progress.CompletedSolutionReview;
 import java.time.Instant;
 import java.util.UUID;
 import tools.jackson.databind.JsonNode;

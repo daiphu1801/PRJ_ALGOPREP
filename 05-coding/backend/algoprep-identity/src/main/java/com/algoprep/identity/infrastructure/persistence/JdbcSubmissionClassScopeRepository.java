@@ -1,6 +1,6 @@
 package com.algoprep.identity.infrastructure.persistence;
 
-import com.algoprep.identity.domain.model.SubmissionClassScope;
+import com.algoprep.identity.domain.model.classes.SubmissionClassScope;
 import com.algoprep.identity.domain.ports.out.SubmissionClassScopeRepository;
 import java.time.OffsetDateTime;
 import java.util.List;

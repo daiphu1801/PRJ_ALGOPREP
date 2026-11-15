@@ -1,4 +1,4 @@
-package com.algoprep.identity.domain.model;
+package com.algoprep.identity.domain.model.admin;
 
 import java.util.List;
 import java.util.Set;

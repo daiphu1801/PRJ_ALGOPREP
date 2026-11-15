@@ -1,9 +1,9 @@
-package com.algoprep.identity.domain.model;
+package com.algoprep.identity.domain.model.classes;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.algoprep.identity.domain.model.StudentMetrics.AssignmentOutcome;
-import com.algoprep.identity.domain.model.StudentMetrics.WeekPoint;
+import com.algoprep.identity.domain.model.classes.StudentMetrics.AssignmentOutcome;
+import com.algoprep.identity.domain.model.classes.StudentMetrics.WeekPoint;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;

@@ -1,9 +1,9 @@
-package com.algoprep.identity.application.query;
+package com.algoprep.identity.application.query.account;
 
 import com.algoprep.common.exception.UnauthenticatedException;
-import com.algoprep.identity.application.ports.in.GetMySettingsUseCase;
+import com.algoprep.identity.application.ports.in.account.GetMySettingsUseCase;
 import com.algoprep.identity.domain.exception.IdentityErrorCodes;
-import com.algoprep.identity.domain.model.MySettings;
+import com.algoprep.identity.domain.model.account.MySettings;
 import com.algoprep.identity.domain.ports.out.MySettingsRepository;
 import java.util.UUID;
 import org.springframework.stereotype.Service;

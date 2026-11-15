@@ -1,6 +1,6 @@
 package com.algoprep.identity.domain.ports.out;
 
-import com.algoprep.identity.domain.model.StoredRefreshToken;
+import com.algoprep.identity.domain.model.auth.StoredRefreshToken;
 import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;

@@ -1,6 +1,6 @@
-package com.algoprep.identity.application.ports.in;
+package com.algoprep.identity.application.ports.in.auth;
 
-import com.algoprep.identity.application.dto.RefreshResult;
+import com.algoprep.identity.application.dto.auth.RefreshResult;
 
 /** Endpoint #3: rotate a refresh token and issue a new access token (DD BR-02). */
 public interface RefreshSessionUseCase {

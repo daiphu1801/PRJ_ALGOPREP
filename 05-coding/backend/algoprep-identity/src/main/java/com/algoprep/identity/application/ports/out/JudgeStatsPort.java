@@ -1,13 +1,13 @@
 package com.algoprep.identity.application.ports.out;
 
-import com.algoprep.identity.domain.model.AdminSubmissionBlocks.Days;
-import com.algoprep.identity.domain.model.AdminSubmissionBlocks.Languages;
-import com.algoprep.identity.domain.model.AdminSubmissionBlocks.LevelCount;
-import com.algoprep.identity.domain.model.AdminSubmissionBlocks.LevelScope;
-import com.algoprep.identity.domain.model.AdminSubmissionBlocks.Months;
-import com.algoprep.identity.domain.model.AdminSubmissionBlocks.ProblemCount;
-import com.algoprep.identity.domain.model.AdminSubmissionBlocks.Verdicts;
-import com.algoprep.identity.domain.model.StatSummary;
+import com.algoprep.identity.domain.model.admin.AdminSubmissionBlocks.Days;
+import com.algoprep.identity.domain.model.admin.AdminSubmissionBlocks.Languages;
+import com.algoprep.identity.domain.model.admin.AdminSubmissionBlocks.LevelCount;
+import com.algoprep.identity.domain.model.admin.AdminSubmissionBlocks.LevelScope;
+import com.algoprep.identity.domain.model.admin.AdminSubmissionBlocks.Months;
+import com.algoprep.identity.domain.model.admin.AdminSubmissionBlocks.ProblemCount;
+import com.algoprep.identity.domain.model.admin.AdminSubmissionBlocks.Verdicts;
+import com.algoprep.identity.domain.model.admin.StatSummary;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;

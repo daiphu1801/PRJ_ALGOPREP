@@ -1,6 +1,6 @@
 package com.algoprep.identity.domain.ports.out;
 
-import com.algoprep.identity.domain.model.AuditEntry;
+import com.algoprep.identity.domain.model.audit.AuditEntry;
 
 /**
  * Appends one row to {@code identity.system_audit_logs} (DD BR-24).

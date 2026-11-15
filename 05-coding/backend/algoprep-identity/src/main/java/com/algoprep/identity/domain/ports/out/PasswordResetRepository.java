@@ -1,6 +1,6 @@
 package com.algoprep.identity.domain.ports.out;
 
-import com.algoprep.identity.domain.model.PasswordResetAccount;
+import com.algoprep.identity.domain.model.password.PasswordResetAccount;
 import java.util.Optional;
 import java.util.UUID;
 

@@ -1,7 +1,7 @@
-package com.algoprep.identity.application.ports.in;
+package com.algoprep.identity.application.ports.in.admin;
 
-import com.algoprep.identity.application.dto.ChangeUserRoleCommand;
-import com.algoprep.identity.domain.model.AdminUserItem;
+import com.algoprep.identity.application.dto.admin.ChangeUserRoleCommand;
+import com.algoprep.identity.domain.model.admin.AdminUserItem;
 
 /** Moves an account to another role (#36, BR-15). */
 public interface ChangeUserRoleUseCase {

@@ -1,14 +1,15 @@
-package com.algoprep.identity.application.command;
+package com.algoprep.identity.application.command.admin;
 
 import com.algoprep.common.exception.DomainRuleViolationException;
 import com.algoprep.common.exception.ResourceNotFoundException;
-import com.algoprep.identity.application.dto.ChangeUserRoleCommand;
-import com.algoprep.identity.application.ports.in.ChangeUserRoleUseCase;
+import com.algoprep.identity.application.command.RbacAuditJson;
+import com.algoprep.identity.application.dto.admin.ChangeUserRoleCommand;
+import com.algoprep.identity.application.ports.in.admin.ChangeUserRoleUseCase;
 import com.algoprep.identity.domain.exception.IdentityErrorCodes;
 import com.algoprep.identity.domain.exception.RbacErrorCodes;
-import com.algoprep.identity.domain.model.AdminUserItem;
-import com.algoprep.identity.domain.model.AuditEntry;
-import com.algoprep.identity.domain.model.RbacRole;
+import com.algoprep.identity.domain.model.admin.AdminUserItem;
+import com.algoprep.identity.domain.model.audit.AuditEntry;
+import com.algoprep.identity.domain.model.rbac.RbacRole;
 import com.algoprep.identity.domain.ports.out.AdminUserRepository;
 import com.algoprep.identity.domain.ports.out.AuditLogPort;
 import com.algoprep.identity.domain.ports.out.RbacRepository;

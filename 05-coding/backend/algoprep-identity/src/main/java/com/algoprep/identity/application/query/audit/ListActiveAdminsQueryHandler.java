@@ -1,7 +1,7 @@
-package com.algoprep.identity.application.query;
+package com.algoprep.identity.application.query.audit;
 
-import com.algoprep.identity.application.ports.in.ListActiveAdminsUseCase;
-import com.algoprep.identity.domain.model.ActiveAdmin;
+import com.algoprep.identity.application.ports.in.audit.ListActiveAdminsUseCase;
+import com.algoprep.identity.domain.model.audit.ActiveAdmin;
 import com.algoprep.identity.domain.ports.out.AuditLogReadRepository;
 import java.util.List;
 import org.springframework.stereotype.Service;

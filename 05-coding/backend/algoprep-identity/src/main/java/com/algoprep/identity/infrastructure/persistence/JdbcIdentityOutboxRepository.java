@@ -1,6 +1,6 @@
 package com.algoprep.identity.infrastructure.persistence;
 
-import com.algoprep.identity.domain.model.OutboxEvent;
+import com.algoprep.identity.domain.model.outbox.OutboxEvent;
 import com.algoprep.identity.domain.ports.out.IdentityOutboxRepository;
 import java.util.List;
 import java.util.UUID;

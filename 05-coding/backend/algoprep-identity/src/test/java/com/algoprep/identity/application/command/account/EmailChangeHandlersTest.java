@@ -1,4 +1,4 @@
-package com.algoprep.identity.application.command;
+package com.algoprep.identity.application.command.account;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -10,14 +10,15 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.algoprep.common.exception.AlgoPrepException;
-import com.algoprep.identity.application.dto.ConfirmEmailChangeCommand;
-import com.algoprep.identity.application.dto.EmailChangeIssueResult;
-import com.algoprep.identity.application.dto.PendingEmailChange;
-import com.algoprep.identity.application.dto.RequestEmailChangeCommand;
+import com.algoprep.identity.application.command.RegistrationValidation;
+import com.algoprep.identity.application.dto.account.ConfirmEmailChangeCommand;
+import com.algoprep.identity.application.dto.account.EmailChangeIssueResult;
+import com.algoprep.identity.application.dto.account.PendingEmailChange;
+import com.algoprep.identity.application.dto.account.RequestEmailChangeCommand;
 import com.algoprep.identity.application.ports.out.EmailChangeOtpPort;
 import com.algoprep.identity.application.ports.out.EmailPort;
-import com.algoprep.identity.domain.model.AuditEntry;
-import com.algoprep.identity.domain.model.MyProfile;
+import com.algoprep.identity.domain.model.account.MyProfile;
+import com.algoprep.identity.domain.model.audit.AuditEntry;
 import com.algoprep.identity.domain.ports.out.AuditLogPort;
 import com.algoprep.identity.domain.ports.out.MyProfileRepository;
 import jakarta.validation.Validation;

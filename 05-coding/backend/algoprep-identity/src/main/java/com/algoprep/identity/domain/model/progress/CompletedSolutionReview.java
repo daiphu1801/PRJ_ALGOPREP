@@ -1,4 +1,4 @@
-package com.algoprep.identity.domain.model;
+package com.algoprep.identity.domain.model.progress;
 
 import java.time.Instant;
 import java.util.UUID;

@@ -1,7 +1,7 @@
-package com.algoprep.identity.application.command;
+package com.algoprep.identity.application.command.classes;
 
-import com.algoprep.identity.application.ports.in.GenerateClassInviteCodeUseCase;
-import com.algoprep.identity.domain.model.ClassInviteCode;
+import com.algoprep.identity.application.ports.in.classes.GenerateClassInviteCodeUseCase;
+import com.algoprep.identity.domain.model.classes.ClassInviteCode;
 import com.algoprep.identity.domain.ports.out.InstructorClassRepository;
 import java.util.UUID;
 import org.springframework.stereotype.Service;

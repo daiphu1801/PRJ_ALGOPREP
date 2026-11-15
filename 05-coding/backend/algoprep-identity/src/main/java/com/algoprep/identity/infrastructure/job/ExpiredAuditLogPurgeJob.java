@@ -1,6 +1,6 @@
 package com.algoprep.identity.infrastructure.job;
 
-import com.algoprep.identity.application.ports.in.PurgeExpiredAuditLogsUseCase;
+import com.algoprep.identity.application.ports.in.audit.PurgeExpiredAuditLogsUseCase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;

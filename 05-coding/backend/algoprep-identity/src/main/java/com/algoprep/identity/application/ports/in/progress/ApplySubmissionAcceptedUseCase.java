@@ -1,6 +1,6 @@
-package com.algoprep.identity.application.ports.in;
+package com.algoprep.identity.application.ports.in.progress;
 
-import com.algoprep.identity.domain.model.AcceptedSubmission;
+import com.algoprep.identity.domain.model.progress.AcceptedSubmission;
 
 /** Adds one "submission accepted" entry to the activity feed, once per event id. */
 public interface ApplySubmissionAcceptedUseCase {

@@ -1,9 +1,9 @@
 package com.algoprep.identity.infrastructure.persistence;
 
-import com.algoprep.identity.domain.model.ClassInviteCode;
-import com.algoprep.identity.domain.model.ClassRosterEntry;
-import com.algoprep.identity.domain.model.InstructorClass;
-import com.algoprep.identity.domain.model.ScheduleSpec;
+import com.algoprep.identity.domain.model.classes.ClassInviteCode;
+import com.algoprep.identity.domain.model.classes.ClassRosterEntry;
+import com.algoprep.identity.domain.model.classes.InstructorClass;
+import com.algoprep.identity.domain.model.classes.ScheduleSpec;
 import com.algoprep.identity.domain.ports.out.InstructorClassRepository;
 import java.time.Instant;
 import java.time.OffsetDateTime;

@@ -1,6 +1,6 @@
-package com.algoprep.identity.application.ports.in;
+package com.algoprep.identity.application.ports.in.account;
 
-import com.algoprep.identity.domain.model.MyProfile;
+import com.algoprep.identity.domain.model.account.MyProfile;
 import java.util.UUID;
 
 /** Loads the caller's own profile (#9). */

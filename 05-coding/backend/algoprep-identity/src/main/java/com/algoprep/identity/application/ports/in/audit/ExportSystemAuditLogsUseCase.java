@@ -1,7 +1,7 @@
-package com.algoprep.identity.application.ports.in;
+package com.algoprep.identity.application.ports.in.audit;
 
-import com.algoprep.identity.application.dto.AuditExport;
-import com.algoprep.identity.application.dto.ExportAuditLogsQuery;
+import com.algoprep.identity.application.dto.audit.AuditExport;
+import com.algoprep.identity.application.dto.audit.ExportAuditLogsQuery;
 
 /**
  * Validates an export request, records the export itself in the log, and returns the rows to stream

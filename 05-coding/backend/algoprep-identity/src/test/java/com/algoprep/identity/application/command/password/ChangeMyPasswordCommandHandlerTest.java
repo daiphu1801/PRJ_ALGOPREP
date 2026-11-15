@@ -1,4 +1,4 @@
-package com.algoprep.identity.application.command;
+package com.algoprep.identity.application.command.password;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -11,15 +11,16 @@ import static org.mockito.Mockito.when;
 
 import com.algoprep.common.exception.AlgoPrepException;
 import com.algoprep.common.exception.UnauthenticatedException;
-import com.algoprep.identity.application.dto.ChangeMyPasswordCommand;
+import com.algoprep.identity.application.command.RegistrationValidation;
+import com.algoprep.identity.application.dto.password.ChangeMyPasswordCommand;
 import com.algoprep.identity.application.ports.out.EmailPort;
 import com.algoprep.identity.application.ports.out.LoginAttemptPort;
 import com.algoprep.identity.application.ports.out.PasswordHasherPort;
-import com.algoprep.identity.domain.model.AuditEntry;
 import com.algoprep.identity.domain.model.BaseCategory;
-import com.algoprep.identity.domain.model.PasswordChangeAccount;
 import com.algoprep.identity.domain.model.UserAccount;
 import com.algoprep.identity.domain.model.UserStatus;
+import com.algoprep.identity.domain.model.audit.AuditEntry;
+import com.algoprep.identity.domain.model.password.PasswordChangeAccount;
 import com.algoprep.identity.domain.ports.out.AuditLogPort;
 import com.algoprep.identity.domain.ports.out.PasswordChangeRepository;
 import jakarta.validation.Validation;

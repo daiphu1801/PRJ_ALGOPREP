@@ -1,4 +1,4 @@
-package com.algoprep.identity.application.query;
+package com.algoprep.identity.application.query.audit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -7,8 +7,8 @@ import static org.mockito.Mockito.when;
 
 import com.algoprep.common.domain.ports.out.ClockPort;
 import com.algoprep.common.exception.AlgoPrepException;
-import com.algoprep.identity.domain.model.AuditCategory;
-import com.algoprep.identity.domain.model.AuditLogFilter;
+import com.algoprep.identity.domain.model.audit.AuditCategory;
+import com.algoprep.identity.domain.model.audit.AuditLogFilter;
 import com.algoprep.identity.domain.ports.out.AuditLogReadRepository;
 import java.time.Instant;
 import org.junit.jupiter.api.Test;

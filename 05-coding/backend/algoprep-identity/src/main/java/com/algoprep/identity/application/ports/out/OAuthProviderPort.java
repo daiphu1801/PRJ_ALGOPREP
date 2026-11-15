@@ -1,7 +1,7 @@
 package com.algoprep.identity.application.ports.out;
 
-import com.algoprep.identity.domain.model.OAuthProfile;
-import com.algoprep.identity.domain.model.OAuthProvider;
+import com.algoprep.identity.domain.model.auth.OAuthProfile;
+import com.algoprep.identity.domain.model.auth.OAuthProvider;
 import java.util.Optional;
 
 /**

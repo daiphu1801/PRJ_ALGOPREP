@@ -1,4 +1,4 @@
-package com.algoprep.identity.application.command;
+package com.algoprep.identity.application.command.rbac;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -11,8 +11,8 @@ import static org.mockito.Mockito.when;
 
 import com.algoprep.common.exception.AlgoPrepException;
 import com.algoprep.common.exception.ServiceUnavailableException;
-import com.algoprep.identity.domain.model.AuditEntry;
-import com.algoprep.identity.domain.model.RbacRole;
+import com.algoprep.identity.domain.model.audit.AuditEntry;
+import com.algoprep.identity.domain.model.rbac.RbacRole;
 import com.algoprep.identity.domain.ports.out.AuditLogPort;
 import com.algoprep.identity.domain.ports.out.RbacRepository;
 import java.util.Optional;

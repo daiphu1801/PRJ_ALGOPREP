@@ -1,11 +1,11 @@
 package com.algoprep.identity.presentation.controller;
 
-import com.algoprep.identity.application.dto.JoinClassByCodeCommand;
-import com.algoprep.identity.application.ports.in.GetMyClassUseCase;
-import com.algoprep.identity.application.ports.in.JoinClassByCodeUseCase;
-import com.algoprep.identity.application.ports.in.ListMyClassesUseCase;
-import com.algoprep.identity.domain.model.ClassRef;
-import com.algoprep.identity.domain.model.MyClass;
+import com.algoprep.identity.application.dto.classes.JoinClassByCodeCommand;
+import com.algoprep.identity.application.ports.in.classes.GetMyClassUseCase;
+import com.algoprep.identity.application.ports.in.classes.JoinClassByCodeUseCase;
+import com.algoprep.identity.application.ports.in.classes.ListMyClassesUseCase;
+import com.algoprep.identity.domain.model.classes.ClassRef;
+import com.algoprep.identity.domain.model.classes.MyClass;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.security.access.prepost.PreAuthorize;

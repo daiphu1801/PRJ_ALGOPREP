@@ -1,4 +1,4 @@
-package com.algoprep.identity.application.command;
+package com.algoprep.identity.application.command.account;
 
 import com.algoprep.common.exception.RateLimitExceededException;
 import com.algoprep.identity.application.ports.out.EmailChangeOtpPort;

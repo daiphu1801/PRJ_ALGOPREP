@@ -1,4 +1,4 @@
-package com.algoprep.identity.application.dto;
+package com.algoprep.identity.application.dto.admin;
 
 import java.util.UUID;
 

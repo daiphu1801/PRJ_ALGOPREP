@@ -1,11 +1,11 @@
-package com.algoprep.identity.application.query;
+package com.algoprep.identity.application.query.classes;
 
 import com.algoprep.common.exception.ResourceNotFoundException;
-import com.algoprep.identity.application.ports.in.ListClassRosterUseCase;
+import com.algoprep.identity.application.ports.in.classes.ListClassRosterUseCase;
 import com.algoprep.identity.domain.exception.IdentityErrorCodes;
-import com.algoprep.identity.domain.model.ClassRosterEntry;
-import com.algoprep.identity.domain.model.ClassStudentRow;
-import com.algoprep.identity.domain.model.InstructorClass;
+import com.algoprep.identity.domain.model.classes.ClassRosterEntry;
+import com.algoprep.identity.domain.model.classes.ClassStudentRow;
+import com.algoprep.identity.domain.model.classes.InstructorClass;
 import com.algoprep.identity.domain.ports.out.InstructorClassRepository;
 import java.util.List;
 import java.util.UUID;

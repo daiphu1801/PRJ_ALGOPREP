@@ -1,6 +1,6 @@
 package com.algoprep.identity.presentation.controller;
 
-import com.algoprep.identity.application.ports.in.DeleteMyAccountUseCase;
+import com.algoprep.identity.application.ports.in.account.DeleteMyAccountUseCase;
 import java.util.UUID;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;

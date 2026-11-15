@@ -1,4 +1,4 @@
-package com.algoprep.identity.application.dto;
+package com.algoprep.identity.application.dto.audit;
 
 import java.util.Iterator;
 import java.util.List;

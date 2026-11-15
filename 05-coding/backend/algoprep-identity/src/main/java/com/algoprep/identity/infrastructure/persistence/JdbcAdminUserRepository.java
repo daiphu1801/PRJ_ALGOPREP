@@ -1,7 +1,7 @@
 package com.algoprep.identity.infrastructure.persistence;
 
-import com.algoprep.identity.domain.model.AdminUserItem;
-import com.algoprep.identity.domain.model.AdminUserPage;
+import com.algoprep.identity.domain.model.admin.AdminUserItem;
+import com.algoprep.identity.domain.model.admin.AdminUserPage;
 import com.algoprep.identity.domain.ports.out.AdminUserRepository;
 import java.time.Instant;
 import java.time.OffsetDateTime;

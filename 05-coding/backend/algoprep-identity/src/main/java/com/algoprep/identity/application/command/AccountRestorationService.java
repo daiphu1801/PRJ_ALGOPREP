@@ -1,10 +1,10 @@
 package com.algoprep.identity.application.command;
 
 import com.algoprep.identity.application.ports.out.RestorationTicketPort;
-import com.algoprep.identity.domain.model.RestorableAccount;
-import com.algoprep.identity.domain.model.RestorationGrant;
-import com.algoprep.identity.domain.model.RestorationTicket;
-import com.algoprep.identity.domain.model.RestorationTicketSecrets;
+import com.algoprep.identity.domain.model.account.RestorableAccount;
+import com.algoprep.identity.domain.model.account.RestorationGrant;
+import com.algoprep.identity.domain.model.account.RestorationTicket;
+import com.algoprep.identity.domain.model.account.RestorationTicketSecrets;
 import com.algoprep.identity.domain.ports.out.AccountRestorationRepository;
 import java.util.Optional;
 import java.util.UUID;
@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 /** Called only after credential verification; OAuth can reuse this after provider verification. */
 @Service
-class AccountRestorationService {
+public class AccountRestorationService {
   private final AccountRestorationRepository accounts;
   private final RestorationTicketPort tickets;
 

@@ -1,7 +1,7 @@
 package com.algoprep.identity.infrastructure.security;
 
 import com.algoprep.common.domain.ports.out.ClockPort;
-import com.algoprep.identity.application.dto.IssuedAccessToken;
+import com.algoprep.identity.application.dto.auth.IssuedAccessToken;
 import com.algoprep.identity.application.ports.out.AccessTokenPort;
 import com.algoprep.identity.domain.model.BaseCategory;
 import java.time.Duration;

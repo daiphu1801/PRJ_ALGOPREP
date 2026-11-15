@@ -1,10 +1,10 @@
-package com.algoprep.identity.application.query;
+package com.algoprep.identity.application.query.audit;
 
-import com.algoprep.identity.application.dto.AuditLogItem;
-import com.algoprep.identity.domain.model.AuditActionCatalog;
-import com.algoprep.identity.domain.model.AuditActionInfo;
-import com.algoprep.identity.domain.model.AuditLogCursor;
-import com.algoprep.identity.domain.model.AuditLogRow;
+import com.algoprep.identity.application.dto.audit.AuditLogItem;
+import com.algoprep.identity.domain.model.audit.AuditActionCatalog;
+import com.algoprep.identity.domain.model.audit.AuditActionInfo;
+import com.algoprep.identity.domain.model.audit.AuditLogCursor;
+import com.algoprep.identity.domain.model.audit.AuditLogRow;
 
 /**
  * The single mapping layer from a stored row to what leaves the server, shared by search, export

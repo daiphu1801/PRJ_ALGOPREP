@@ -1,7 +1,7 @@
-package com.algoprep.identity.application.command;
+package com.algoprep.identity.application.command.audit;
 
-import com.algoprep.identity.application.ports.in.RecordSystemAuditUseCase;
-import com.algoprep.identity.domain.model.AuditEntry;
+import com.algoprep.identity.application.ports.in.audit.RecordSystemAuditUseCase;
+import com.algoprep.identity.domain.model.audit.AuditEntry;
 import com.algoprep.identity.domain.ports.out.AuditLogPort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

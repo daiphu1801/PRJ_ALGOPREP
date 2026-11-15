@@ -1,9 +1,9 @@
 package com.algoprep.identity.domain.ports.out;
 
-import com.algoprep.identity.domain.model.ActiveAdmin;
-import com.algoprep.identity.domain.model.AuditLogCursor;
-import com.algoprep.identity.domain.model.AuditLogFilter;
-import com.algoprep.identity.domain.model.AuditLogRow;
+import com.algoprep.identity.domain.model.audit.ActiveAdmin;
+import com.algoprep.identity.domain.model.audit.AuditLogCursor;
+import com.algoprep.identity.domain.model.audit.AuditLogFilter;
+import com.algoprep.identity.domain.model.audit.AuditLogRow;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;

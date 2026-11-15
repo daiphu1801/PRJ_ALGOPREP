@@ -3,8 +3,8 @@ package com.algoprep.identity.infrastructure.persistence;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import com.algoprep.identity.domain.model.CatalogEntry;
-import com.algoprep.identity.domain.model.RbacRole;
+import com.algoprep.identity.domain.model.rbac.CatalogEntry;
+import com.algoprep.identity.domain.model.rbac.RbacRole;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.UUID;

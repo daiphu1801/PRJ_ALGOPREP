@@ -1,7 +1,7 @@
 package com.algoprep.identity.application.ports.out;
 
-import com.algoprep.identity.domain.model.AdminSubmissionBlocks.LevelRef;
-import com.algoprep.identity.domain.model.AdminSubmissionBlocks.PublishedProblem;
+import com.algoprep.identity.domain.model.admin.AdminSubmissionBlocks.LevelRef;
+import com.algoprep.identity.domain.model.admin.AdminSubmissionBlocks.PublishedProblem;
 import java.util.List;
 
 /**

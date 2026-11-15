@@ -1,6 +1,6 @@
-package com.algoprep.identity.application.command;
+package com.algoprep.identity.application.command.auth;
 
-import com.algoprep.identity.application.ports.in.PurgeRefreshTokensUseCase;
+import com.algoprep.identity.application.ports.in.auth.PurgeRefreshTokensUseCase;
 import com.algoprep.identity.domain.ports.out.RefreshTokenRepository;
 import org.springframework.stereotype.Service;
 

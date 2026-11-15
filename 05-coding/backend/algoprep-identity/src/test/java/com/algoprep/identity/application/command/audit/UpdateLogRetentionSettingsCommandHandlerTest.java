@@ -1,4 +1,4 @@
-package com.algoprep.identity.application.command;
+package com.algoprep.identity.application.command.audit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -9,10 +9,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.algoprep.common.exception.AlgoPrepException;
-import com.algoprep.identity.application.dto.UpdateLogRetentionCommand;
-import com.algoprep.identity.domain.model.AuditEntry;
-import com.algoprep.identity.domain.model.ExpiredLogPolicy;
-import com.algoprep.identity.domain.model.LogRetentionSettings;
+import com.algoprep.identity.application.dto.audit.UpdateLogRetentionCommand;
+import com.algoprep.identity.domain.model.audit.AuditEntry;
+import com.algoprep.identity.domain.model.audit.ExpiredLogPolicy;
+import com.algoprep.identity.domain.model.audit.LogRetentionSettings;
 import com.algoprep.identity.domain.ports.out.AuditLogPort;
 import com.algoprep.identity.domain.ports.out.LogRetentionRepository;
 import java.util.UUID;

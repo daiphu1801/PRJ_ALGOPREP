@@ -1,10 +1,10 @@
 package com.algoprep.identity.presentation.controller;
 
-import com.algoprep.identity.application.dto.LoginResult;
-import com.algoprep.identity.application.dto.OAuthStart;
 import com.algoprep.identity.application.dto.UserSummary;
-import com.algoprep.identity.application.ports.in.CompleteOAuthLoginUseCase;
-import com.algoprep.identity.application.ports.in.StartOAuthLoginUseCase;
+import com.algoprep.identity.application.dto.auth.LoginResult;
+import com.algoprep.identity.application.dto.auth.OAuthStart;
+import com.algoprep.identity.application.ports.in.auth.CompleteOAuthLoginUseCase;
+import com.algoprep.identity.application.ports.in.auth.StartOAuthLoginUseCase;
 import java.time.Duration;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;

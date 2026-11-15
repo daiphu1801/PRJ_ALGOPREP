@@ -1,12 +1,12 @@
 package com.algoprep.identity.presentation.controller;
 
-import com.algoprep.identity.application.ports.in.GenerateClassInviteCodeUseCase;
-import com.algoprep.identity.application.ports.in.ListClassInviteCodesUseCase;
-import com.algoprep.identity.application.ports.in.ListClassRosterUseCase;
-import com.algoprep.identity.application.ports.in.RemoveStudentFromClassUseCase;
-import com.algoprep.identity.domain.model.ClassInviteCode;
-import com.algoprep.identity.domain.model.ClassRosterEntry;
-import com.algoprep.identity.domain.model.ClassStudentRow;
+import com.algoprep.identity.application.ports.in.classes.GenerateClassInviteCodeUseCase;
+import com.algoprep.identity.application.ports.in.classes.ListClassInviteCodesUseCase;
+import com.algoprep.identity.application.ports.in.classes.ListClassRosterUseCase;
+import com.algoprep.identity.application.ports.in.classes.RemoveStudentFromClassUseCase;
+import com.algoprep.identity.domain.model.classes.ClassInviteCode;
+import com.algoprep.identity.domain.model.classes.ClassRosterEntry;
+import com.algoprep.identity.domain.model.classes.ClassStudentRow;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.http.HttpStatus;

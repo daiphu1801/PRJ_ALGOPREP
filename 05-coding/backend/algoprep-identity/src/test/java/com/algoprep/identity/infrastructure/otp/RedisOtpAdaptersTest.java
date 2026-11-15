@@ -9,8 +9,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.algoprep.identity.application.dto.EmailChangeIssueResult;
-import com.algoprep.identity.domain.model.PasswordResetChallenge;
+import com.algoprep.identity.application.dto.account.EmailChangeIssueResult;
+import com.algoprep.identity.domain.model.password.PasswordResetChallenge;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;

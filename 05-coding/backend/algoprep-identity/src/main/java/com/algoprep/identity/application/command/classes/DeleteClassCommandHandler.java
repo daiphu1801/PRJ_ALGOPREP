@@ -1,7 +1,7 @@
-package com.algoprep.identity.application.command;
+package com.algoprep.identity.application.command.classes;
 
 import com.algoprep.common.domain.ports.out.ClockPort;
-import com.algoprep.identity.application.ports.in.DeleteClassUseCase;
+import com.algoprep.identity.application.ports.in.classes.DeleteClassUseCase;
 import com.algoprep.identity.domain.ports.out.ClassEventPort;
 import com.algoprep.identity.domain.ports.out.InstructorClassRepository;
 import java.util.UUID;

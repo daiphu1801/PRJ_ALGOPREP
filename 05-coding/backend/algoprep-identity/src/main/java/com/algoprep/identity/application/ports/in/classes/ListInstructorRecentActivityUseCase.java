@@ -1,6 +1,6 @@
-package com.algoprep.identity.application.ports.in;
+package com.algoprep.identity.application.ports.in.classes;
 
-import com.algoprep.identity.domain.model.ClassActivityItem;
+import com.algoprep.identity.domain.model.classes.ClassActivityItem;
 import java.util.List;
 import java.util.UUID;
 

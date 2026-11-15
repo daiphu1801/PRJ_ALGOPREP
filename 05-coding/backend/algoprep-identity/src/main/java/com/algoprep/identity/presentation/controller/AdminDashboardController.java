@@ -1,8 +1,8 @@
 package com.algoprep.identity.presentation.controller;
 
-import com.algoprep.identity.application.ports.in.GetAdminDashboardUseCase;
-import com.algoprep.identity.domain.model.StatSummary;
-import com.algoprep.identity.domain.model.UserRetentionGroup;
+import com.algoprep.identity.application.ports.in.admin.GetAdminDashboardUseCase;
+import com.algoprep.identity.domain.model.admin.StatSummary;
+import com.algoprep.identity.domain.model.admin.UserRetentionGroup;
 import java.util.List;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;

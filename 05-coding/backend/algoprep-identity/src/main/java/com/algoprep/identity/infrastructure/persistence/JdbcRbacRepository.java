@@ -1,10 +1,10 @@
 package com.algoprep.identity.infrastructure.persistence;
 
 import com.algoprep.common.domain.ports.out.IdGeneratorPort;
-import com.algoprep.identity.domain.model.CatalogEntry;
-import com.algoprep.identity.domain.model.PermissionCell;
-import com.algoprep.identity.domain.model.RbacRole;
-import com.algoprep.identity.domain.model.RoleListItem;
+import com.algoprep.identity.domain.model.rbac.CatalogEntry;
+import com.algoprep.identity.domain.model.rbac.PermissionCell;
+import com.algoprep.identity.domain.model.rbac.RbacRole;
+import com.algoprep.identity.domain.model.rbac.RoleListItem;
 import com.algoprep.identity.domain.ports.out.RbacRepository;
 import java.sql.ResultSet;
 import java.sql.SQLException;

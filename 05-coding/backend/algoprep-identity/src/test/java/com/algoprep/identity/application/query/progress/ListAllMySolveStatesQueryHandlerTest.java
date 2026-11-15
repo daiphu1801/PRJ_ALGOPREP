@@ -1,10 +1,10 @@
-package com.algoprep.identity.application.query;
+package com.algoprep.identity.application.query.progress;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import com.algoprep.identity.domain.model.SolveState;
+import com.algoprep.identity.domain.model.progress.SolveState;
 import com.algoprep.identity.domain.ports.out.MyProgressReadRepository;
 import java.util.Map;
 import java.util.UUID;

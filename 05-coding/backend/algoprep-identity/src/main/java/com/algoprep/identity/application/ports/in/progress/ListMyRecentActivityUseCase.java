@@ -1,6 +1,6 @@
-package com.algoprep.identity.application.ports.in;
+package com.algoprep.identity.application.ports.in.progress;
 
-import com.algoprep.identity.domain.model.ActivityEntry;
+import com.algoprep.identity.domain.model.progress.ActivityEntry;
 import java.util.List;
 import java.util.UUID;
 

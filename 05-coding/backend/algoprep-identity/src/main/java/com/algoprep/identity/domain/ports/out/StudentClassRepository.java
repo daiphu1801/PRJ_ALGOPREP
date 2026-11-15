@@ -1,7 +1,7 @@
 package com.algoprep.identity.domain.ports.out;
 
-import com.algoprep.identity.domain.model.ClassRef;
-import com.algoprep.identity.domain.model.MyClass;
+import com.algoprep.identity.domain.model.classes.ClassRef;
+import com.algoprep.identity.domain.model.classes.MyClass;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;

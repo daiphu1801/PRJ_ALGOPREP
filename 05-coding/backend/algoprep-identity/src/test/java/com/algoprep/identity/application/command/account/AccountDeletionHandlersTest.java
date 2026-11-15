@@ -1,4 +1,4 @@
-package com.algoprep.identity.application.command;
+package com.algoprep.identity.application.command.account;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -12,8 +12,8 @@ import static org.mockito.Mockito.when;
 
 import com.algoprep.common.exception.AlgoPrepException;
 import com.algoprep.common.exception.UnauthenticatedException;
-import com.algoprep.identity.domain.model.AuditEntry;
-import com.algoprep.identity.domain.model.MyProfile;
+import com.algoprep.identity.domain.model.account.MyProfile;
+import com.algoprep.identity.domain.model.audit.AuditEntry;
 import com.algoprep.identity.domain.ports.out.AccountLifecycleRepository;
 import com.algoprep.identity.domain.ports.out.AuditLogPort;
 import com.algoprep.identity.domain.ports.out.MyProfileRepository;

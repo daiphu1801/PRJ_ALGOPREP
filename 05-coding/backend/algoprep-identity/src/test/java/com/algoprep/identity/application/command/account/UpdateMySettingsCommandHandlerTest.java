@@ -1,4 +1,4 @@
-package com.algoprep.identity.application.command;
+package com.algoprep.identity.application.command.account;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -10,8 +10,8 @@ import static org.mockito.Mockito.when;
 
 import com.algoprep.common.exception.AlgoPrepException;
 import com.algoprep.common.exception.UnauthenticatedException;
-import com.algoprep.identity.application.dto.UpdateMySettingsCommand;
-import com.algoprep.identity.domain.model.MySettings;
+import com.algoprep.identity.application.dto.account.UpdateMySettingsCommand;
+import com.algoprep.identity.domain.model.account.MySettings;
 import com.algoprep.identity.domain.ports.out.MySettingsRepository;
 import java.util.Optional;
 import java.util.UUID;

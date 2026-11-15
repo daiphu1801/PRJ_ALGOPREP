@@ -1,6 +1,6 @@
 package com.algoprep.identity.domain.ports.out;
 
-import com.algoprep.identity.domain.model.OutboxEvent;
+import com.algoprep.identity.domain.model.outbox.OutboxEvent;
 import java.util.List;
 import java.util.UUID;
 

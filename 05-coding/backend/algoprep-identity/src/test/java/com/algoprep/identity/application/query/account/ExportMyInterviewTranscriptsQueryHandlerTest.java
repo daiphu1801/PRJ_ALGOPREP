@@ -1,4 +1,4 @@
-package com.algoprep.identity.application.query;
+package com.algoprep.identity.application.query.account;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -10,7 +10,7 @@ import static org.mockito.Mockito.when;
 
 import com.algoprep.common.exception.RateLimitExceededException;
 import com.algoprep.common.exception.ServiceUnavailableException;
-import com.algoprep.identity.application.dto.InterviewTranscriptExport;
+import com.algoprep.identity.application.dto.account.InterviewTranscriptExport;
 import com.algoprep.identity.application.ports.out.ExportRateLimitPort;
 import com.algoprep.identity.application.ports.out.InterviewTranscriptExportPort;
 import java.util.List;

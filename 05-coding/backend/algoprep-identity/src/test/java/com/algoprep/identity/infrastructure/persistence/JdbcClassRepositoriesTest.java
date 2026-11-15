@@ -2,7 +2,7 @@ package com.algoprep.identity.infrastructure.persistence;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.algoprep.identity.domain.model.ScheduleSpec;
+import com.algoprep.identity.domain.model.classes.ScheduleSpec;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Map;

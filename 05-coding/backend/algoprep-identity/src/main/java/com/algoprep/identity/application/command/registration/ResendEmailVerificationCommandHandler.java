@@ -1,6 +1,7 @@
-package com.algoprep.identity.application.command;
+package com.algoprep.identity.application.command.registration;
 
-import com.algoprep.identity.application.ports.in.ResendEmailVerificationUseCase;
+import com.algoprep.identity.application.command.RegistrationValidation;
+import com.algoprep.identity.application.ports.in.registration.ResendEmailVerificationUseCase;
 import com.algoprep.identity.domain.model.UserStatus;
 import com.algoprep.identity.domain.ports.out.RegistrationRepository;
 import org.springframework.stereotype.Service;

@@ -1,6 +1,6 @@
-package com.algoprep.identity.application.ports.in;
+package com.algoprep.identity.application.ports.in.account;
 
-import com.algoprep.identity.application.dto.InterviewTranscriptExport;
+import com.algoprep.identity.application.dto.account.InterviewTranscriptExport;
 import java.util.UUID;
 
 /** Exports the caller's own interview conversations, once per five minutes (#17). */

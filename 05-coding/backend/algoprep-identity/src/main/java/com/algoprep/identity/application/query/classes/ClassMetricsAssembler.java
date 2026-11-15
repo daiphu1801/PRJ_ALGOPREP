@@ -1,4 +1,4 @@
-package com.algoprep.identity.application.query;
+package com.algoprep.identity.application.query.classes;
 
 import com.algoprep.common.domain.ports.out.ClockPort;
 import com.algoprep.common.exception.ResourceNotFoundException;
@@ -6,12 +6,12 @@ import com.algoprep.common.exception.ServiceUnavailableException;
 import com.algoprep.identity.application.ports.out.ClassAssignmentLookupPort;
 import com.algoprep.identity.application.ports.out.ClassMetricsPort;
 import com.algoprep.identity.domain.exception.IdentityErrorCodes;
-import com.algoprep.identity.domain.model.ClassProblemWindow;
-import com.algoprep.identity.domain.model.ClassProgressRules;
-import com.algoprep.identity.domain.model.ClassRosterEntry;
-import com.algoprep.identity.domain.model.ClassStudentRow;
-import com.algoprep.identity.domain.model.InstructorClass;
-import com.algoprep.identity.domain.model.StudentMetrics;
+import com.algoprep.identity.domain.model.classes.ClassProblemWindow;
+import com.algoprep.identity.domain.model.classes.ClassProgressRules;
+import com.algoprep.identity.domain.model.classes.ClassRosterEntry;
+import com.algoprep.identity.domain.model.classes.ClassStudentRow;
+import com.algoprep.identity.domain.model.classes.InstructorClass;
+import com.algoprep.identity.domain.model.classes.StudentMetrics;
 import com.algoprep.identity.domain.ports.out.InstructorClassRepository;
 import java.time.Instant;
 import java.util.Collection;

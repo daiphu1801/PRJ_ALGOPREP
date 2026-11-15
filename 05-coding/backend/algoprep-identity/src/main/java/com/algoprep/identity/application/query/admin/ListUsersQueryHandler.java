@@ -1,10 +1,10 @@
-package com.algoprep.identity.application.query;
+package com.algoprep.identity.application.query.admin;
 
 import com.algoprep.common.exception.InvalidRequestException;
-import com.algoprep.identity.application.dto.ListUsersQuery;
-import com.algoprep.identity.application.ports.in.ListUsersUseCase;
+import com.algoprep.identity.application.dto.admin.ListUsersQuery;
+import com.algoprep.identity.application.ports.in.admin.ListUsersUseCase;
 import com.algoprep.identity.domain.exception.IdentityErrorCodes;
-import com.algoprep.identity.domain.model.AdminUserPage;
+import com.algoprep.identity.domain.model.admin.AdminUserPage;
 import com.algoprep.identity.domain.ports.out.AdminUserRepository;
 import java.util.Set;
 import org.springframework.stereotype.Service;

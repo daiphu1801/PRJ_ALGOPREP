@@ -1,6 +1,6 @@
-package com.algoprep.identity.application.dto;
+package com.algoprep.identity.application.dto.audit;
 
-import com.algoprep.identity.domain.model.AuditLogCursor;
+import com.algoprep.identity.domain.model.audit.AuditLogCursor;
 import java.util.List;
 
 /**

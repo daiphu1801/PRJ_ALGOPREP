@@ -1,4 +1,4 @@
-package com.algoprep.identity.application.query;
+package com.algoprep.identity.application.query.progress;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -12,10 +12,10 @@ import static org.mockito.Mockito.when;
 import com.algoprep.common.domain.ports.out.ClockPort;
 import com.algoprep.common.exception.DomainRuleViolationException;
 import com.algoprep.identity.domain.exception.IdentityErrorCodes;
-import com.algoprep.identity.domain.model.ActivityCalendar;
-import com.algoprep.identity.domain.model.MyProgressSummary;
-import com.algoprep.identity.domain.model.ProgressCounters;
-import com.algoprep.identity.domain.model.SolveState;
+import com.algoprep.identity.domain.model.progress.ActivityCalendar;
+import com.algoprep.identity.domain.model.progress.MyProgressSummary;
+import com.algoprep.identity.domain.model.progress.ProgressCounters;
+import com.algoprep.identity.domain.model.progress.SolveState;
 import com.algoprep.identity.domain.ports.out.MyProgressReadRepository;
 import java.time.Instant;
 import java.time.LocalDate;

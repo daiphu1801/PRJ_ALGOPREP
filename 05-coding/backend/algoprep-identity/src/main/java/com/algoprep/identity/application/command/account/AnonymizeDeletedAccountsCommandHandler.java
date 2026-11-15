@@ -1,6 +1,6 @@
-package com.algoprep.identity.application.command;
+package com.algoprep.identity.application.command.account;
 
-import com.algoprep.identity.application.ports.in.AnonymizeDeletedAccountsUseCase;
+import com.algoprep.identity.application.ports.in.account.AnonymizeDeletedAccountsUseCase;
 import com.algoprep.identity.domain.ports.out.AccountLifecycleRepository;
 import org.springframework.stereotype.Service;
 

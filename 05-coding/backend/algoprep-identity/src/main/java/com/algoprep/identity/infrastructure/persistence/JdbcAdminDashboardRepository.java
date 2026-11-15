@@ -1,6 +1,6 @@
 package com.algoprep.identity.infrastructure.persistence;
 
-import com.algoprep.identity.domain.model.UserRetentionGroup;
+import com.algoprep.identity.domain.model.admin.UserRetentionGroup;
 import com.algoprep.identity.domain.ports.out.AdminDashboardRepository;
 import java.util.List;
 import org.springframework.beans.factory.ObjectProvider;

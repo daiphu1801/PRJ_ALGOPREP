@@ -1,7 +1,7 @@
 package com.algoprep.identity.infrastructure.job;
 
-import com.algoprep.identity.application.ports.in.CleanIdentityOutboxUseCase;
-import com.algoprep.identity.application.ports.in.RelayIdentityOutboxUseCase;
+import com.algoprep.identity.application.ports.in.outbox.CleanIdentityOutboxUseCase;
+import com.algoprep.identity.application.ports.in.outbox.RelayIdentityOutboxUseCase;
 import java.util.concurrent.TimeUnit;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.Scheduled;

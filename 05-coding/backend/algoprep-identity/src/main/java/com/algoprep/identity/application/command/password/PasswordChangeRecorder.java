@@ -1,7 +1,7 @@
-package com.algoprep.identity.application.command;
+package com.algoprep.identity.application.command.password;
 
 import com.algoprep.identity.application.ports.out.EmailPort;
-import com.algoprep.identity.domain.model.AuditEntry;
+import com.algoprep.identity.domain.model.audit.AuditEntry;
 import com.algoprep.identity.domain.ports.out.AuditLogPort;
 import java.util.UUID;
 import org.slf4j.Logger;

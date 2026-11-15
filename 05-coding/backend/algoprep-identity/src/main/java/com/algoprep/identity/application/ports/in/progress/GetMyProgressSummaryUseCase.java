@@ -1,6 +1,6 @@
-package com.algoprep.identity.application.ports.in;
+package com.algoprep.identity.application.ports.in.progress;
 
-import com.algoprep.identity.domain.model.MyProgressSummary;
+import com.algoprep.identity.domain.model.progress.MyProgressSummary;
 import java.util.UUID;
 
 /** Personal progress read #47. */

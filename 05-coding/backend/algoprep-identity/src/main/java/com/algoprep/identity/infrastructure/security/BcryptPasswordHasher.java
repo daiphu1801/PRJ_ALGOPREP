@@ -1,7 +1,7 @@
 package com.algoprep.identity.infrastructure.security;
 
 import com.algoprep.identity.application.ports.out.PasswordHasherPort;
-import com.algoprep.identity.domain.model.PasswordPolicy;
+import com.algoprep.identity.domain.model.password.PasswordPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 

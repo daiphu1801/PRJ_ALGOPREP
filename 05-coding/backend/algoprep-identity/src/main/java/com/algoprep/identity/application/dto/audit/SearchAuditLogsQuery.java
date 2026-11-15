@@ -1,4 +1,4 @@
-package com.algoprep.identity.application.dto;
+package com.algoprep.identity.application.dto.audit;
 
 /**
  * Raw, unvalidated parameters of #39; the handler validates them (DD validation section 12).

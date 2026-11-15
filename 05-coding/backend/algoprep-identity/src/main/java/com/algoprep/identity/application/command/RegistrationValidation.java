@@ -2,8 +2,8 @@ package com.algoprep.identity.application.command;
 
 import com.algoprep.common.exception.DomainRuleViolationException;
 import com.algoprep.common.exception.InvalidRequestException;
-import com.algoprep.identity.application.dto.RegisterCommand;
-import com.algoprep.identity.domain.model.PasswordPolicy;
+import com.algoprep.identity.application.dto.registration.RegisterCommand;
+import com.algoprep.identity.domain.model.password.PasswordPolicy;
 import jakarta.validation.Validator;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -13,16 +13,16 @@ import org.springframework.stereotype.Component;
 
 /** Validation from DD F1 sections 1, 3 and 5; messages never echo input values. */
 @Component
-class RegistrationValidation {
+public class RegistrationValidation {
   private final Validator validator;
 
-  RegistrationValidation(Validator validator) {
+  public RegistrationValidation(Validator validator) {
     this.validator = validator;
   }
 
   private record EmailInput(@NotBlank @Email @Size(max = 254) String email) {}
 
-  String email(String value) {
+  public String email(String value) {
     String normalized = value == null ? "" : value.trim().toLowerCase(Locale.ROOT);
     if (!validator.validate(new EmailInput(normalized)).isEmpty()) {
       throw new InvalidRequestException("IDT-400", "A valid email is required");
@@ -30,7 +30,7 @@ class RegistrationValidation {
     return normalized;
   }
 
-  RegisterCommand registration(RegisterCommand input) {
+  public RegisterCommand registration(RegisterCommand input) {
     String email = email(input.email());
     String name = displayName(input.displayName());
     String password = password(input.password(), email, name);
@@ -38,14 +38,14 @@ class RegistrationValidation {
   }
 
   /** Trimmed 2 to 100 characters, shared by registration and profile edit. */
-  String displayName(String value) {
+  public String displayName(String value) {
     String name = value == null ? "" : value.trim();
     require(name.length() >= 2, "IDT-V19", "Display name is too short");
     require(name.length() <= 100, "IDT-V20", "Display name is too long");
     return name;
   }
 
-  String password(String value, String email, String displayName) {
+  public String password(String value, String email, String displayName) {
     String password = value == null ? "" : value;
     require(password.length() >= 8, "IDT-V01", "Password is too short");
     require(PasswordPolicy.fitsBcrypt(password), "IDT-V02", "Password exceeds 72 UTF-8 bytes");

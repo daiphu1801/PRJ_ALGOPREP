@@ -1,13 +1,13 @@
-package com.algoprep.identity.application.command;
+package com.algoprep.identity.application.command.auth;
 
 import com.algoprep.common.exception.InvalidRequestException;
 import com.algoprep.common.exception.ServiceUnavailableException;
-import com.algoprep.identity.application.dto.OAuthStart;
-import com.algoprep.identity.application.ports.in.StartOAuthLoginUseCase;
+import com.algoprep.identity.application.dto.auth.OAuthStart;
+import com.algoprep.identity.application.ports.in.auth.StartOAuthLoginUseCase;
 import com.algoprep.identity.application.ports.out.OAuthProviderPort;
 import com.algoprep.identity.application.ports.out.OAuthStatePort;
 import com.algoprep.identity.domain.exception.IdentityErrorCodes;
-import com.algoprep.identity.domain.model.OAuthProvider;
+import com.algoprep.identity.domain.model.auth.OAuthProvider;
 import java.security.SecureRandom;
 import java.util.Base64;
 import org.springframework.stereotype.Service;

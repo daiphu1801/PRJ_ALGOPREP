@@ -1,4 +1,4 @@
-package com.algoprep.identity.application.dto;
+package com.algoprep.identity.application.dto.rbac;
 
 import java.util.UUID;
 

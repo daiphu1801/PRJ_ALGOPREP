@@ -1,11 +1,12 @@
-package com.algoprep.identity.application.command;
+package com.algoprep.identity.application.command.admin;
 
 import com.algoprep.common.domain.ports.out.IdGeneratorPort;
 import com.algoprep.common.exception.DomainRuleViolationException;
-import com.algoprep.identity.application.dto.CreateUserAccountCommand;
+import com.algoprep.identity.application.command.RegistrationValidation;
+import com.algoprep.identity.application.dto.admin.CreateUserAccountCommand;
 import com.algoprep.identity.application.ports.out.PasswordHasherPort;
 import com.algoprep.identity.domain.exception.IdentityErrorCodes;
-import com.algoprep.identity.domain.model.RbacRole;
+import com.algoprep.identity.domain.model.rbac.RbacRole;
 import com.algoprep.identity.domain.ports.out.RbacRepository;
 import java.util.Optional;
 import java.util.UUID;

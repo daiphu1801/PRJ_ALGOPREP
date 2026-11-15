@@ -1,15 +1,15 @@
-package com.algoprep.identity.application.query;
+package com.algoprep.identity.application.query.audit;
 
 import com.algoprep.common.exception.InvalidRequestException;
-import com.algoprep.identity.application.dto.AuditExport;
-import com.algoprep.identity.application.dto.AuditLogItem;
-import com.algoprep.identity.application.dto.ExportAuditLogsQuery;
-import com.algoprep.identity.application.ports.in.ExportSystemAuditLogsUseCase;
+import com.algoprep.identity.application.dto.audit.AuditExport;
+import com.algoprep.identity.application.dto.audit.AuditLogItem;
+import com.algoprep.identity.application.dto.audit.ExportAuditLogsQuery;
+import com.algoprep.identity.application.ports.in.audit.ExportSystemAuditLogsUseCase;
 import com.algoprep.identity.domain.exception.IdentityErrorCodes;
-import com.algoprep.identity.domain.model.AuditEntry;
-import com.algoprep.identity.domain.model.AuditLogCursor;
-import com.algoprep.identity.domain.model.AuditLogFilter;
-import com.algoprep.identity.domain.model.AuditLogRow;
+import com.algoprep.identity.domain.model.audit.AuditEntry;
+import com.algoprep.identity.domain.model.audit.AuditLogCursor;
+import com.algoprep.identity.domain.model.audit.AuditLogFilter;
+import com.algoprep.identity.domain.model.audit.AuditLogRow;
 import com.algoprep.identity.domain.ports.out.AuditLogPort;
 import com.algoprep.identity.domain.ports.out.AuditLogReadRepository;
 import java.time.ZoneOffset;

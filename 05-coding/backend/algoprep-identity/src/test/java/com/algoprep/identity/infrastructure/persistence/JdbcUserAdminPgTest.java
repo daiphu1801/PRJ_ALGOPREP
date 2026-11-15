@@ -2,8 +2,8 @@ package com.algoprep.identity.infrastructure.persistence;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.algoprep.identity.domain.model.AdminUserItem;
-import com.algoprep.identity.domain.model.StoredRefreshToken;
+import com.algoprep.identity.domain.model.admin.AdminUserItem;
+import com.algoprep.identity.domain.model.auth.StoredRefreshToken;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;

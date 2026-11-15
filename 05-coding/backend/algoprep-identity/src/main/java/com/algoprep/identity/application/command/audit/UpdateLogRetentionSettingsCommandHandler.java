@@ -1,12 +1,12 @@
-package com.algoprep.identity.application.command;
+package com.algoprep.identity.application.command.audit;
 
 import com.algoprep.common.exception.DomainRuleViolationException;
-import com.algoprep.identity.application.dto.UpdateLogRetentionCommand;
-import com.algoprep.identity.application.ports.in.UpdateLogRetentionSettingsUseCase;
+import com.algoprep.identity.application.dto.audit.UpdateLogRetentionCommand;
+import com.algoprep.identity.application.ports.in.audit.UpdateLogRetentionSettingsUseCase;
 import com.algoprep.identity.domain.exception.IdentityErrorCodes;
-import com.algoprep.identity.domain.model.AuditEntry;
-import com.algoprep.identity.domain.model.ExpiredLogPolicy;
-import com.algoprep.identity.domain.model.LogRetentionSettings;
+import com.algoprep.identity.domain.model.audit.AuditEntry;
+import com.algoprep.identity.domain.model.audit.ExpiredLogPolicy;
+import com.algoprep.identity.domain.model.audit.LogRetentionSettings;
 import com.algoprep.identity.domain.ports.out.AuditLogPort;
 import com.algoprep.identity.domain.ports.out.LogRetentionRepository;
 import org.springframework.stereotype.Service;

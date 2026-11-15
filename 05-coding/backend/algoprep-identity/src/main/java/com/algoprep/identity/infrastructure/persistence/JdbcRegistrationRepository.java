@@ -1,7 +1,7 @@
 package com.algoprep.identity.infrastructure.persistence;
 
-import com.algoprep.identity.domain.model.RegistrationAccount;
 import com.algoprep.identity.domain.model.UserAccount;
+import com.algoprep.identity.domain.model.registration.RegistrationAccount;
 import com.algoprep.identity.domain.ports.out.RegistrationRepository;
 import com.algoprep.identity.domain.ports.out.UserAccountRepository;
 import java.util.Optional;

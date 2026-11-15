@@ -1,6 +1,6 @@
 package com.algoprep.identity.infrastructure.messaging;
 
-import com.algoprep.identity.application.ports.in.ApplyProblemAssignedToClassUseCase;
+import com.algoprep.identity.application.ports.in.classes.ApplyProblemAssignedToClassUseCase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.AmqpRejectAndDontRequeueException;

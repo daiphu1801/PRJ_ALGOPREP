@@ -1,10 +1,10 @@
-package com.algoprep.identity.application.query;
+package com.algoprep.identity.application.query.classes;
 
-import com.algoprep.identity.application.ports.in.GetClassProgressUseCase;
-import com.algoprep.identity.domain.model.ClassMetricViews.ClassProgress;
-import com.algoprep.identity.domain.model.ClassProgressRules;
-import com.algoprep.identity.domain.model.ClassStudentRow;
-import com.algoprep.identity.domain.model.ClassStudentStatus;
+import com.algoprep.identity.application.ports.in.classes.GetClassProgressUseCase;
+import com.algoprep.identity.domain.model.classes.ClassMetricViews.ClassProgress;
+import com.algoprep.identity.domain.model.classes.ClassProgressRules;
+import com.algoprep.identity.domain.model.classes.ClassStudentRow;
+import com.algoprep.identity.domain.model.classes.ClassStudentStatus;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;

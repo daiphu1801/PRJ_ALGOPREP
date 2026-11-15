@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.algoprep.identity.domain.exception.OAuthCodeRejectedException;
-import com.algoprep.identity.domain.model.OAuthProvider;
+import com.algoprep.identity.domain.model.auth.OAuthProvider;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 import java.io.IOException;

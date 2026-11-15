@@ -1,4 +1,4 @@
-package com.algoprep.identity.application.dto;
+package com.algoprep.identity.application.dto.audit;
 
 /**
  * Actions of one display group in the last seven days (#65).

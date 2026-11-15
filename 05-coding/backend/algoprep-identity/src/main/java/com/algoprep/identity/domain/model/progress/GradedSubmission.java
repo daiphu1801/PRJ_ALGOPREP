@@ -1,4 +1,4 @@
-package com.algoprep.identity.domain.model;
+package com.algoprep.identity.domain.model.progress;
 
 import java.math.BigDecimal;
 import java.time.Instant;

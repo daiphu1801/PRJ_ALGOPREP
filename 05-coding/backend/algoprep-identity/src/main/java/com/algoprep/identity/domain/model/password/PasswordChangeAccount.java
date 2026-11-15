@@ -1,4 +1,6 @@
-package com.algoprep.identity.domain.model;
+package com.algoprep.identity.domain.model.password;
+
+import com.algoprep.identity.domain.model.UserAccount;
 
 /**
  * A locked account for BR-06.

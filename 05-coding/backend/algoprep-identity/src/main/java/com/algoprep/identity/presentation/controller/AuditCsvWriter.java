@@ -1,6 +1,6 @@
 package com.algoprep.identity.presentation.controller;
 
-import com.algoprep.identity.application.dto.AuditExport;
+import com.algoprep.identity.application.dto.audit.AuditExport;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;

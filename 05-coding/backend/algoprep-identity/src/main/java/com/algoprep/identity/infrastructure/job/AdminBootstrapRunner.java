@@ -1,6 +1,6 @@
 package com.algoprep.identity.infrastructure.job;
 
-import com.algoprep.identity.application.ports.in.BootstrapFirstAdminUseCase;
+import com.algoprep.identity.application.ports.in.admin.BootstrapFirstAdminUseCase;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;

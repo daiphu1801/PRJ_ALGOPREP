@@ -1,14 +1,14 @@
-package com.algoprep.identity.application.query;
+package com.algoprep.identity.application.query.classes;
 
 import com.algoprep.common.exception.InvalidRequestException;
-import com.algoprep.identity.application.dto.InstructorStudentsQuery;
-import com.algoprep.identity.application.ports.in.ListInstructorStudentsUseCase;
+import com.algoprep.identity.application.dto.classes.InstructorStudentsQuery;
+import com.algoprep.identity.application.ports.in.classes.ListInstructorStudentsUseCase;
 import com.algoprep.identity.domain.exception.IdentityErrorCodes;
-import com.algoprep.identity.domain.model.ClassMetricViews.StudentPage;
-import com.algoprep.identity.domain.model.ClassProblemWindow;
-import com.algoprep.identity.domain.model.ClassRosterEntry;
-import com.algoprep.identity.domain.model.ClassStudentRow;
-import com.algoprep.identity.domain.model.InstructorClass;
+import com.algoprep.identity.domain.model.classes.ClassMetricViews.StudentPage;
+import com.algoprep.identity.domain.model.classes.ClassProblemWindow;
+import com.algoprep.identity.domain.model.classes.ClassRosterEntry;
+import com.algoprep.identity.domain.model.classes.ClassStudentRow;
+import com.algoprep.identity.domain.model.classes.InstructorClass;
 import com.algoprep.identity.domain.ports.out.InstructorClassRepository;
 import java.time.Instant;
 import java.util.ArrayList;

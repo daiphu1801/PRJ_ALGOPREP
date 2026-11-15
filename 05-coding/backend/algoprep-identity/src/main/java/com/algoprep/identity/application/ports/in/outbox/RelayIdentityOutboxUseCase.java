@@ -1,4 +1,4 @@
-package com.algoprep.identity.application.ports.in;
+package com.algoprep.identity.application.ports.in.outbox;
 
 public interface RelayIdentityOutboxUseCase {
   /** JOB-ID-OUTBOX-01. Returns the number of rows attempted. */

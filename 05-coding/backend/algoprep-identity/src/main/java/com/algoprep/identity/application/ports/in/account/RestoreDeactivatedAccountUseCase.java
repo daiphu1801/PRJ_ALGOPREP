@@ -1,6 +1,6 @@
-package com.algoprep.identity.application.ports.in;
+package com.algoprep.identity.application.ports.in.account;
 
-import com.algoprep.identity.application.dto.RestoreAccountCommand;
+import com.algoprep.identity.application.dto.account.RestoreAccountCommand;
 
 /** Cancels self-deactivation without issuing a session (#61). */
 public interface RestoreDeactivatedAccountUseCase {

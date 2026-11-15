@@ -1,15 +1,15 @@
 package com.algoprep.identity.presentation.controller;
 
-import com.algoprep.identity.application.dto.CreateClassCommand;
-import com.algoprep.identity.application.dto.CreatedClass;
-import com.algoprep.identity.application.dto.UpdateClassCommand;
-import com.algoprep.identity.application.ports.in.CreateClassUseCase;
-import com.algoprep.identity.application.ports.in.DeleteClassUseCase;
-import com.algoprep.identity.application.ports.in.ListInstructorClassesUseCase;
-import com.algoprep.identity.application.ports.in.UpdateClassUseCase;
-import com.algoprep.identity.domain.model.ClassInviteCode;
-import com.algoprep.identity.domain.model.InstructorClass;
-import com.algoprep.identity.domain.model.ScheduleSpec;
+import com.algoprep.identity.application.dto.classes.CreateClassCommand;
+import com.algoprep.identity.application.dto.classes.CreatedClass;
+import com.algoprep.identity.application.dto.classes.UpdateClassCommand;
+import com.algoprep.identity.application.ports.in.classes.CreateClassUseCase;
+import com.algoprep.identity.application.ports.in.classes.DeleteClassUseCase;
+import com.algoprep.identity.application.ports.in.classes.ListInstructorClassesUseCase;
+import com.algoprep.identity.application.ports.in.classes.UpdateClassUseCase;
+import com.algoprep.identity.domain.model.classes.ClassInviteCode;
+import com.algoprep.identity.domain.model.classes.InstructorClass;
+import com.algoprep.identity.domain.model.classes.ScheduleSpec;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.http.HttpStatus;

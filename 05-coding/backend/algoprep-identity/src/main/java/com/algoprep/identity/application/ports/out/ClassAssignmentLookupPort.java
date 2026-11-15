@@ -1,6 +1,6 @@
 package com.algoprep.identity.application.ports.out;
 
-import com.algoprep.identity.domain.model.ClassProblemWindow;
+import com.algoprep.identity.domain.model.classes.ClassProblemWindow;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;

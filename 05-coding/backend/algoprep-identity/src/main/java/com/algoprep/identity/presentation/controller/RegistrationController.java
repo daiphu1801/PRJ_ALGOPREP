@@ -1,11 +1,11 @@
 package com.algoprep.identity.presentation.controller;
 
-import com.algoprep.identity.application.dto.RegisterCommand;
-import com.algoprep.identity.application.dto.RegistrationResponse;
-import com.algoprep.identity.application.dto.VerifyEmailCommand;
-import com.algoprep.identity.application.ports.in.RegisterUseCase;
-import com.algoprep.identity.application.ports.in.ResendEmailVerificationUseCase;
-import com.algoprep.identity.application.ports.in.VerifyEmailUseCase;
+import com.algoprep.identity.application.dto.registration.RegisterCommand;
+import com.algoprep.identity.application.dto.registration.RegistrationResponse;
+import com.algoprep.identity.application.dto.registration.VerifyEmailCommand;
+import com.algoprep.identity.application.ports.in.registration.RegisterUseCase;
+import com.algoprep.identity.application.ports.in.registration.ResendEmailVerificationUseCase;
+import com.algoprep.identity.application.ports.in.registration.VerifyEmailUseCase;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

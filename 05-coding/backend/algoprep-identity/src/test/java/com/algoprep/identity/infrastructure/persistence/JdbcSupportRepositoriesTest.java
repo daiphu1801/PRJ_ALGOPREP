@@ -4,12 +4,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import com.algoprep.identity.domain.model.AuditEntry;
 import com.algoprep.identity.domain.model.BaseCategory;
-import com.algoprep.identity.domain.model.RegistrationAccount;
-import com.algoprep.identity.domain.model.RestorationGrant;
 import com.algoprep.identity.domain.model.UserAccount;
 import com.algoprep.identity.domain.model.UserStatus;
+import com.algoprep.identity.domain.model.account.RestorationGrant;
+import com.algoprep.identity.domain.model.audit.AuditEntry;
+import com.algoprep.identity.domain.model.registration.RegistrationAccount;
 import com.algoprep.identity.domain.ports.out.UserAccountRepository;
 import java.sql.Timestamp;
 import java.time.Instant;

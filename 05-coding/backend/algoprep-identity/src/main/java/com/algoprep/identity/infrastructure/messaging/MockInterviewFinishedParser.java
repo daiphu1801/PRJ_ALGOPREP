@@ -1,6 +1,6 @@
 package com.algoprep.identity.infrastructure.messaging;
 
-import com.algoprep.identity.domain.model.FinishedMockInterview;
+import com.algoprep.identity.domain.model.progress.FinishedMockInterview;
 import java.time.Instant;
 import java.util.UUID;
 import tools.jackson.databind.JsonNode;

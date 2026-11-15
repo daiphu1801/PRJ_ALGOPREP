@@ -1,12 +1,13 @@
-package com.algoprep.identity.application.command;
+package com.algoprep.identity.application.command.registration;
 
 import com.algoprep.common.domain.ports.out.IdGeneratorPort;
 import com.algoprep.common.exception.ResourceConflictException;
-import com.algoprep.identity.application.dto.RegisterCommand;
-import com.algoprep.identity.application.dto.RegistrationResponse;
-import com.algoprep.identity.application.ports.in.RegisterUseCase;
+import com.algoprep.identity.application.command.RegistrationValidation;
+import com.algoprep.identity.application.dto.registration.RegisterCommand;
+import com.algoprep.identity.application.dto.registration.RegistrationResponse;
+import com.algoprep.identity.application.ports.in.registration.RegisterUseCase;
 import com.algoprep.identity.application.ports.out.PasswordHasherPort;
-import com.algoprep.identity.domain.model.RegistrationAccount;
+import com.algoprep.identity.domain.model.registration.RegistrationAccount;
 import com.algoprep.identity.domain.ports.out.RegistrationRepository;
 import java.util.UUID;
 import org.springframework.stereotype.Service;

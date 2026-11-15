@@ -1,6 +1,6 @@
 package com.algoprep.identity.domain.ports.out;
 
-import com.algoprep.identity.domain.model.GradedSubmission;
+import com.algoprep.identity.domain.model.progress.GradedSubmission;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.UUID;

@@ -1,7 +1,7 @@
-package com.algoprep.identity.application.ports.in;
+package com.algoprep.identity.application.ports.in.classes;
 
-import com.algoprep.identity.application.dto.UpdateClassCommand;
-import com.algoprep.identity.domain.model.InstructorClass;
+import com.algoprep.identity.application.dto.classes.UpdateClassCommand;
+import com.algoprep.identity.domain.model.classes.InstructorClass;
 
 /** Edits name, description and schedule of an owned class (#21). */
 public interface UpdateClassUseCase {

@@ -1,4 +1,4 @@
-package com.algoprep.identity.domain.model;
+package com.algoprep.identity.domain.model.classes;
 
 /**
  * The five labels of BR-10, in the order they are tested: the first label whose condition holds

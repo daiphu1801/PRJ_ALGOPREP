@@ -1,4 +1,4 @@
-package com.algoprep.identity.application.dto;
+package com.algoprep.identity.application.dto.account;
 
 /** Outcome of issuing an e-mail change code. */
 public enum EmailChangeIssueResult {

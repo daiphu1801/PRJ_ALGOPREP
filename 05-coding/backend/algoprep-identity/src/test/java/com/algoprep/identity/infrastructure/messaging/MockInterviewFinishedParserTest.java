@@ -3,7 +3,7 @@ package com.algoprep.identity.infrastructure.messaging;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import com.algoprep.identity.domain.model.FinishedMockInterview;
+import com.algoprep.identity.domain.model.progress.FinishedMockInterview;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.UUID;

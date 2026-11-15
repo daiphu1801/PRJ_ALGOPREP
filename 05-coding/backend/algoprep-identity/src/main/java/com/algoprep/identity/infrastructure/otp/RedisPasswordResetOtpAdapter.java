@@ -1,7 +1,7 @@
 package com.algoprep.identity.infrastructure.otp;
 
 import com.algoprep.identity.application.ports.out.PasswordResetOtpPort;
-import com.algoprep.identity.domain.model.PasswordResetChallenge;
+import com.algoprep.identity.domain.model.password.PasswordResetChallenge;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;

@@ -1,17 +1,17 @@
 package com.algoprep.identity.presentation.controller;
 
 import com.algoprep.common.exception.ResourceNotFoundException;
-import com.algoprep.identity.application.dto.CreateRoleCommand;
-import com.algoprep.identity.application.dto.UpdateRolePermissionCommand;
-import com.algoprep.identity.application.ports.in.CreateRoleUseCase;
-import com.algoprep.identity.application.ports.in.DeleteRoleUseCase;
-import com.algoprep.identity.application.ports.in.GetPermissionMatrixUseCase;
-import com.algoprep.identity.application.ports.in.ListRolesUseCase;
-import com.algoprep.identity.application.ports.in.UpdateRolePermissionUseCase;
+import com.algoprep.identity.application.dto.rbac.CreateRoleCommand;
+import com.algoprep.identity.application.dto.rbac.UpdateRolePermissionCommand;
+import com.algoprep.identity.application.ports.in.rbac.CreateRoleUseCase;
+import com.algoprep.identity.application.ports.in.rbac.DeleteRoleUseCase;
+import com.algoprep.identity.application.ports.in.rbac.GetPermissionMatrixUseCase;
+import com.algoprep.identity.application.ports.in.rbac.ListRolesUseCase;
+import com.algoprep.identity.application.ports.in.rbac.UpdateRolePermissionUseCase;
 import com.algoprep.identity.domain.exception.RbacErrorCodes;
-import com.algoprep.identity.domain.model.PermissionChange;
-import com.algoprep.identity.domain.model.PermissionMatrix;
-import com.algoprep.identity.domain.model.RoleListItem;
+import com.algoprep.identity.domain.model.rbac.PermissionChange;
+import com.algoprep.identity.domain.model.rbac.PermissionMatrix;
+import com.algoprep.identity.domain.model.rbac.RoleListItem;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.http.HttpStatus;

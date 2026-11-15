@@ -1,10 +1,11 @@
-package com.algoprep.identity.application.command;
+package com.algoprep.identity.application.command.password;
 
-import com.algoprep.identity.application.dto.ResetPasswordCommand;
-import com.algoprep.identity.application.ports.in.ResetPasswordUseCase;
+import com.algoprep.identity.application.command.RegistrationValidation;
+import com.algoprep.identity.application.dto.password.ResetPasswordCommand;
+import com.algoprep.identity.application.ports.in.password.ResetPasswordUseCase;
 import com.algoprep.identity.application.ports.out.PasswordHasherPort;
-import com.algoprep.identity.domain.model.AuditEntry;
-import com.algoprep.identity.domain.model.PasswordResetAccount;
+import com.algoprep.identity.domain.model.audit.AuditEntry;
+import com.algoprep.identity.domain.model.password.PasswordResetAccount;
 import com.algoprep.identity.domain.ports.out.AuditLogPort;
 import com.algoprep.identity.domain.ports.out.PasswordResetRepository;
 import java.time.Instant;

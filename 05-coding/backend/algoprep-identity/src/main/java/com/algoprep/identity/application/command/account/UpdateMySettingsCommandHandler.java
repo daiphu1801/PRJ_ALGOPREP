@@ -1,11 +1,11 @@
-package com.algoprep.identity.application.command;
+package com.algoprep.identity.application.command.account;
 
 import com.algoprep.common.exception.DomainRuleViolationException;
 import com.algoprep.common.exception.UnauthenticatedException;
-import com.algoprep.identity.application.dto.UpdateMySettingsCommand;
-import com.algoprep.identity.application.ports.in.UpdateMySettingsUseCase;
+import com.algoprep.identity.application.dto.account.UpdateMySettingsCommand;
+import com.algoprep.identity.application.ports.in.account.UpdateMySettingsUseCase;
 import com.algoprep.identity.domain.exception.IdentityErrorCodes;
-import com.algoprep.identity.domain.model.MySettings;
+import com.algoprep.identity.domain.model.account.MySettings;
 import com.algoprep.identity.domain.ports.out.MySettingsRepository;
 import java.util.Set;
 import org.springframework.stereotype.Service;

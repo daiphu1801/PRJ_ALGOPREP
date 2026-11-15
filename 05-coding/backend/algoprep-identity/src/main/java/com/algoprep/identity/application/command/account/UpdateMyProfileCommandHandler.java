@@ -1,12 +1,13 @@
-package com.algoprep.identity.application.command;
+package com.algoprep.identity.application.command.account;
 
 import com.algoprep.common.exception.DomainRuleViolationException;
 import com.algoprep.common.exception.UnauthenticatedException;
-import com.algoprep.identity.application.dto.UpdateMyProfileCommand;
-import com.algoprep.identity.application.ports.in.UpdateMyProfileUseCase;
+import com.algoprep.identity.application.command.RegistrationValidation;
+import com.algoprep.identity.application.dto.account.UpdateMyProfileCommand;
+import com.algoprep.identity.application.ports.in.account.UpdateMyProfileUseCase;
 import com.algoprep.identity.domain.exception.IdentityErrorCodes;
-import com.algoprep.identity.domain.model.MyProfile;
-import com.algoprep.identity.domain.model.ProfileFields;
+import com.algoprep.identity.domain.model.account.MyProfile;
+import com.algoprep.identity.domain.model.account.ProfileFields;
 import com.algoprep.identity.domain.ports.out.MyProfileRepository;
 import java.util.regex.Pattern;
 import org.springframework.stereotype.Service;

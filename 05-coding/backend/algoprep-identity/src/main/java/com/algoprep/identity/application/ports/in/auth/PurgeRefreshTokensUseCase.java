@@ -1,4 +1,4 @@
-package com.algoprep.identity.application.ports.in;
+package com.algoprep.identity.application.ports.in.auth;
 
 /** Removes refresh tokens that are dead and old enough to be useless for any statistic. */
 public interface PurgeRefreshTokensUseCase {

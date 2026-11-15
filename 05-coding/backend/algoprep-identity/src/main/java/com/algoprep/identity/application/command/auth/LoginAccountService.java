@@ -1,7 +1,8 @@
-package com.algoprep.identity.application.command;
+package com.algoprep.identity.application.command.auth;
 
 import com.algoprep.common.domain.ports.out.ClockPort;
 import com.algoprep.common.exception.PermissionDeniedException;
+import com.algoprep.identity.application.command.AccountRestorationService;
 import com.algoprep.identity.domain.exception.AccountDeactivatedException;
 import com.algoprep.identity.domain.exception.IdentityErrorCodes;
 import com.algoprep.identity.domain.model.UserAccount;

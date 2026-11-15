@@ -1,6 +1,6 @@
-package com.algoprep.identity.application.ports.in;
+package com.algoprep.identity.application.ports.in.classes;
 
-import com.algoprep.identity.domain.model.ClassMetricViews.AttentionStudent;
+import com.algoprep.identity.domain.model.classes.ClassMetricViews.AttentionStudent;
 import java.util.List;
 import java.util.UUID;
 

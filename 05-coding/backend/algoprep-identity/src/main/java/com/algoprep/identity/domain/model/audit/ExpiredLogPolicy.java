@@ -1,4 +1,4 @@
-package com.algoprep.identity.domain.model;
+package com.algoprep.identity.domain.model.audit;
 
 /** What the purge job does with audit rows older than the retention (DD api F1 section 0.7.1). */
 public enum ExpiredLogPolicy {

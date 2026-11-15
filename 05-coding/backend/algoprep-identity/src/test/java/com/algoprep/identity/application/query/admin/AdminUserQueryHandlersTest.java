@@ -1,4 +1,4 @@
-package com.algoprep.identity.application.query;
+package com.algoprep.identity.application.query.admin;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -10,8 +10,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.algoprep.common.exception.AlgoPrepException;
-import com.algoprep.identity.application.dto.ListUsersQuery;
-import com.algoprep.identity.domain.model.UserGroupShare;
+import com.algoprep.identity.application.dto.admin.ListUsersQuery;
+import com.algoprep.identity.domain.model.admin.UserGroupShare;
 import com.algoprep.identity.domain.ports.out.AdminUserRepository;
 import java.util.LinkedHashMap;
 import java.util.List;

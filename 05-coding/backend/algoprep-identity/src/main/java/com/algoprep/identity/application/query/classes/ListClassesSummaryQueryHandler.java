@@ -1,11 +1,11 @@
-package com.algoprep.identity.application.query;
+package com.algoprep.identity.application.query.classes;
 
-import com.algoprep.identity.application.ports.in.ListClassesSummaryUseCase;
-import com.algoprep.identity.domain.model.ClassMetricViews.ClassCard;
-import com.algoprep.identity.domain.model.ClassMetricViews.ClassesSummary;
-import com.algoprep.identity.domain.model.ClassProgressRules;
-import com.algoprep.identity.domain.model.ClassStudentRow;
-import com.algoprep.identity.domain.model.ClassStudentStatus;
+import com.algoprep.identity.application.ports.in.classes.ListClassesSummaryUseCase;
+import com.algoprep.identity.domain.model.classes.ClassMetricViews.ClassCard;
+import com.algoprep.identity.domain.model.classes.ClassMetricViews.ClassesSummary;
+import com.algoprep.identity.domain.model.classes.ClassProgressRules;
+import com.algoprep.identity.domain.model.classes.ClassStudentRow;
+import com.algoprep.identity.domain.model.classes.ClassStudentStatus;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;

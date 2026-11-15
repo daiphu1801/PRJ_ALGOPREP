@@ -1,4 +1,4 @@
-package com.algoprep.identity.domain.model;
+package com.algoprep.identity.domain.model.admin;
 
 /**
  * One of the four exclusive groups of #63.

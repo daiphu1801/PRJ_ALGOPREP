@@ -1,6 +1,6 @@
-package com.algoprep.identity.application.ports.in;
+package com.algoprep.identity.application.ports.in.progress;
 
-import com.algoprep.identity.domain.model.FinishedMockInterview;
+import com.algoprep.identity.domain.model.progress.FinishedMockInterview;
 
 /** Adds one "mock interview finished" entry to the activity feed, once per event id. */
 public interface ApplyMockInterviewFinishedUseCase {

@@ -1,7 +1,7 @@
 package com.algoprep.identity.infrastructure.persistence;
 
-import com.algoprep.identity.domain.model.ExpiredLogPolicy;
-import com.algoprep.identity.domain.model.LogRetentionSettings;
+import com.algoprep.identity.domain.model.audit.ExpiredLogPolicy;
+import com.algoprep.identity.domain.model.audit.LogRetentionSettings;
 import com.algoprep.identity.domain.ports.out.LogRetentionRepository;
 import java.util.HashMap;
 import java.util.Map;

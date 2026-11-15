@@ -1,4 +1,4 @@
-package com.algoprep.identity.application.ports.in;
+package com.algoprep.identity.application.ports.in.account;
 
 /** Anonymises self-deleted accounts after the 30 day grace period (JOB-ID-02). */
 public interface AnonymizeDeletedAccountsUseCase {

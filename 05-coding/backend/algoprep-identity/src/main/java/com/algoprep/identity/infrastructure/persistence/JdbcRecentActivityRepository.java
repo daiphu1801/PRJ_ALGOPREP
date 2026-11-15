@@ -1,6 +1,6 @@
 package com.algoprep.identity.infrastructure.persistence;
 
-import com.algoprep.identity.domain.model.ActivityEntry;
+import com.algoprep.identity.domain.model.progress.ActivityEntry;
 import com.algoprep.identity.domain.ports.out.RecentActivityRepository;
 import java.sql.Timestamp;
 import java.time.Instant;

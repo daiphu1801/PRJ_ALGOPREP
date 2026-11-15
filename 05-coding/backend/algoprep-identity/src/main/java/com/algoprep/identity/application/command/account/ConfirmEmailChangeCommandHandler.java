@@ -1,11 +1,11 @@
-package com.algoprep.identity.application.command;
+package com.algoprep.identity.application.command.account;
 
 import com.algoprep.common.exception.DomainRuleViolationException;
 import com.algoprep.common.exception.ResourceConflictException;
-import com.algoprep.identity.application.dto.ConfirmEmailChangeCommand;
-import com.algoprep.identity.application.ports.in.ConfirmEmailChangeUseCase;
+import com.algoprep.identity.application.dto.account.ConfirmEmailChangeCommand;
+import com.algoprep.identity.application.ports.in.account.ConfirmEmailChangeUseCase;
 import com.algoprep.identity.domain.exception.IdentityErrorCodes;
-import com.algoprep.identity.domain.model.AuditEntry;
+import com.algoprep.identity.domain.model.audit.AuditEntry;
 import com.algoprep.identity.domain.ports.out.AuditLogPort;
 import com.algoprep.identity.domain.ports.out.MyProfileRepository;
 import java.util.UUID;

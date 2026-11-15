@@ -1,4 +1,4 @@
-package com.algoprep.identity.application.query;
+package com.algoprep.identity.application.query.classes;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -7,7 +7,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import com.algoprep.common.exception.AlgoPrepException;
-import com.algoprep.identity.domain.model.MyClass;
+import com.algoprep.identity.domain.model.classes.MyClass;
 import com.algoprep.identity.domain.ports.out.StudentClassRepository;
 import java.time.Instant;
 import java.util.List;

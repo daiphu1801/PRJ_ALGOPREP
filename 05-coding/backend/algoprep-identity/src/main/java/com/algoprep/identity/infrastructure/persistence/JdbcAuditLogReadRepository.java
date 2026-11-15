@@ -1,11 +1,11 @@
 package com.algoprep.identity.infrastructure.persistence;
 
-import com.algoprep.identity.domain.model.ActionMatch;
-import com.algoprep.identity.domain.model.ActiveAdmin;
-import com.algoprep.identity.domain.model.AuditActionCatalog;
-import com.algoprep.identity.domain.model.AuditLogCursor;
-import com.algoprep.identity.domain.model.AuditLogFilter;
-import com.algoprep.identity.domain.model.AuditLogRow;
+import com.algoprep.identity.domain.model.audit.ActionMatch;
+import com.algoprep.identity.domain.model.audit.ActiveAdmin;
+import com.algoprep.identity.domain.model.audit.AuditActionCatalog;
+import com.algoprep.identity.domain.model.audit.AuditLogCursor;
+import com.algoprep.identity.domain.model.audit.AuditLogFilter;
+import com.algoprep.identity.domain.model.audit.AuditLogRow;
 import com.algoprep.identity.domain.ports.out.AuditLogReadRepository;
 import java.sql.ResultSet;
 import java.sql.SQLException;

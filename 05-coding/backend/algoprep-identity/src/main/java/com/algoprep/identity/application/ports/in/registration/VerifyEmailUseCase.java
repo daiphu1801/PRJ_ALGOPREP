@@ -1,6 +1,6 @@
-package com.algoprep.identity.application.ports.in;
+package com.algoprep.identity.application.ports.in.registration;
 
-import com.algoprep.identity.application.dto.VerifyEmailCommand;
+import com.algoprep.identity.application.dto.registration.VerifyEmailCommand;
 
 /** Email confirmation, endpoint #53. */
 public interface VerifyEmailUseCase {

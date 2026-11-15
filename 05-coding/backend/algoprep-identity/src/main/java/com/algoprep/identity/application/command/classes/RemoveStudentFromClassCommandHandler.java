@@ -1,6 +1,6 @@
-package com.algoprep.identity.application.command;
+package com.algoprep.identity.application.command.classes;
 
-import com.algoprep.identity.application.ports.in.RemoveStudentFromClassUseCase;
+import com.algoprep.identity.application.ports.in.classes.RemoveStudentFromClassUseCase;
 import com.algoprep.identity.domain.ports.out.ClassEventPort;
 import com.algoprep.identity.domain.ports.out.InstructorClassRepository;
 import java.time.Instant;

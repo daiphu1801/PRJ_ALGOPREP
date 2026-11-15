@@ -1,6 +1,6 @@
-package com.algoprep.identity.application.ports.in;
+package com.algoprep.identity.application.ports.in.password;
 
-import com.algoprep.identity.application.dto.ChangeMyPasswordCommand;
+import com.algoprep.identity.application.dto.password.ChangeMyPasswordCommand;
 
 /** Changes the caller's password and revokes their other sessions (#13, BR-06). */
 public interface ChangeMyPasswordUseCase {

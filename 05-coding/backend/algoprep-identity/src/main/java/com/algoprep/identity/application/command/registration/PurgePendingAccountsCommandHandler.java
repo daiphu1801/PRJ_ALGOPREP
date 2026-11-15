@@ -1,6 +1,6 @@
-package com.algoprep.identity.application.command;
+package com.algoprep.identity.application.command.registration;
 
-import com.algoprep.identity.application.ports.in.PurgePendingAccountsUseCase;
+import com.algoprep.identity.application.ports.in.registration.PurgePendingAccountsUseCase;
 import com.algoprep.identity.domain.ports.out.AccountLifecycleRepository;
 import java.time.Duration;
 import org.springframework.beans.factory.annotation.Value;

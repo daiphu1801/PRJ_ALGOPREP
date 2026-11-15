@@ -1,8 +1,8 @@
-package com.algoprep.identity.application.query;
+package com.algoprep.identity.application.query.classes;
 
-import com.algoprep.identity.application.ports.in.ListClassAttentionStudentsUseCase;
-import com.algoprep.identity.domain.model.ClassMetricViews.AttentionStudent;
-import com.algoprep.identity.domain.model.ClassProgressRules;
+import com.algoprep.identity.application.ports.in.classes.ListClassAttentionStudentsUseCase;
+import com.algoprep.identity.domain.model.classes.ClassMetricViews.AttentionStudent;
+import com.algoprep.identity.domain.model.classes.ClassProgressRules;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.stereotype.Service;

@@ -1,6 +1,6 @@
 package com.algoprep.identity.application.ports.out;
 
-import com.algoprep.identity.application.dto.InterviewTranscriptExport;
+import com.algoprep.identity.application.dto.account.InterviewTranscriptExport;
 import java.util.UUID;
 
 /**

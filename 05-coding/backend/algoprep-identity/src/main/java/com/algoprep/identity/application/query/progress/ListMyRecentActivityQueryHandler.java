@@ -1,8 +1,8 @@
-package com.algoprep.identity.application.query;
+package com.algoprep.identity.application.query.progress;
 
 import com.algoprep.common.domain.ports.out.ClockPort;
-import com.algoprep.identity.application.ports.in.ListMyRecentActivityUseCase;
-import com.algoprep.identity.domain.model.ActivityEntry;
+import com.algoprep.identity.application.ports.in.progress.ListMyRecentActivityUseCase;
+import com.algoprep.identity.domain.model.progress.ActivityEntry;
 import com.algoprep.identity.domain.ports.out.MyProgressReadRepository;
 import java.time.Duration;
 import java.util.List;

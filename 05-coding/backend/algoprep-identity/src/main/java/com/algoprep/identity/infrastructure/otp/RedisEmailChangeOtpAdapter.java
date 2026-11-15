@@ -1,6 +1,6 @@
 package com.algoprep.identity.infrastructure.otp;
 
-import com.algoprep.identity.application.dto.EmailChangeIssueResult;
+import com.algoprep.identity.application.dto.account.EmailChangeIssueResult;
 import com.algoprep.identity.application.ports.out.EmailChangeOtpPort;
 import java.util.List;
 import java.util.Optional;

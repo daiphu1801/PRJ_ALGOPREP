@@ -1,10 +1,10 @@
-package com.algoprep.identity.application.command;
+package com.algoprep.identity.application.command.classes;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.algoprep.common.exception.AlgoPrepException;
-import com.algoprep.identity.domain.model.ScheduleSpec;
+import com.algoprep.identity.domain.model.classes.ScheduleSpec;
 import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.Test;

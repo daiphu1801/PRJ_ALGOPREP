@@ -1,6 +1,6 @@
 package com.algoprep.identity.infrastructure.persistence;
 
-import com.algoprep.identity.domain.model.PasswordChangeAccount;
+import com.algoprep.identity.domain.model.password.PasswordChangeAccount;
 import com.algoprep.identity.domain.ports.out.PasswordChangeRepository;
 import com.algoprep.identity.domain.ports.out.UserAccountRepository;
 import java.util.Optional;

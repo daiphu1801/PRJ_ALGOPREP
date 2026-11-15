@@ -1,7 +1,7 @@
-package com.algoprep.identity.application.query;
+package com.algoprep.identity.application.query.classes;
 
-import com.algoprep.identity.application.ports.in.ListMyClassesUseCase;
-import com.algoprep.identity.domain.model.MyClass;
+import com.algoprep.identity.application.ports.in.classes.ListMyClassesUseCase;
+import com.algoprep.identity.domain.model.classes.MyClass;
 import com.algoprep.identity.domain.ports.out.StudentClassRepository;
 import java.util.List;
 import java.util.UUID;

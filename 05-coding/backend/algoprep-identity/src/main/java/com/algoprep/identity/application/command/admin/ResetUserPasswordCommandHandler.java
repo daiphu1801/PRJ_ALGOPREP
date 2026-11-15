@@ -1,12 +1,13 @@
-package com.algoprep.identity.application.command;
+package com.algoprep.identity.application.command.admin;
 
 import com.algoprep.common.exception.DomainRuleViolationException;
-import com.algoprep.identity.application.ports.in.ResetUserPasswordUseCase;
+import com.algoprep.identity.application.command.RbacAuditJson;
+import com.algoprep.identity.application.ports.in.admin.ResetUserPasswordUseCase;
 import com.algoprep.identity.application.ports.out.EmailPort;
 import com.algoprep.identity.application.ports.out.PasswordHasherPort;
 import com.algoprep.identity.domain.exception.IdentityErrorCodes;
-import com.algoprep.identity.domain.model.AdminUserItem;
-import com.algoprep.identity.domain.model.AuditEntry;
+import com.algoprep.identity.domain.model.admin.AdminUserItem;
+import com.algoprep.identity.domain.model.audit.AuditEntry;
 import com.algoprep.identity.domain.ports.out.AdminUserRepository;
 import com.algoprep.identity.domain.ports.out.AuditLogPort;
 import java.util.UUID;

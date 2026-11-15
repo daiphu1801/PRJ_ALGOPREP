@@ -1,7 +1,7 @@
 package com.algoprep.identity.domain.ports.out;
 
-import com.algoprep.identity.domain.model.MyProfile;
-import com.algoprep.identity.domain.model.ProfileFields;
+import com.algoprep.identity.domain.model.account.MyProfile;
+import com.algoprep.identity.domain.model.account.ProfileFields;
 import java.util.Optional;
 import java.util.UUID;
 

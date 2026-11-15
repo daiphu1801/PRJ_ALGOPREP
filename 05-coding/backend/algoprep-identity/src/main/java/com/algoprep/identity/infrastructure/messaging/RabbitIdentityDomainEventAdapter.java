@@ -1,7 +1,7 @@
 package com.algoprep.identity.infrastructure.messaging;
 
 import com.algoprep.identity.application.ports.out.IdentityDomainEventPort;
-import com.algoprep.identity.domain.model.OutboxEvent;
+import com.algoprep.identity.domain.model.outbox.OutboxEvent;
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.ConnectionFactory;
 import java.nio.charset.StandardCharsets;

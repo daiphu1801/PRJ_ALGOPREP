@@ -1,6 +1,6 @@
 package com.algoprep.identity.infrastructure.persistence;
 
-import com.algoprep.identity.domain.model.GradedSubmission;
+import com.algoprep.identity.domain.model.progress.GradedSubmission;
 import com.algoprep.identity.domain.ports.out.SubmissionStatsRepository;
 import java.math.BigDecimal;
 import java.time.LocalDate;

@@ -1,6 +1,6 @@
-package com.algoprep.identity.application.ports.in;
+package com.algoprep.identity.application.ports.in.classes;
 
-import com.algoprep.identity.domain.model.ClassProblemAssignment;
+import com.algoprep.identity.domain.model.classes.ClassProblemAssignment;
 
 /** Adds one "problem assigned to the class" entry to the activity feed, once per event id. */
 public interface ApplyProblemAssignedToClassUseCase {

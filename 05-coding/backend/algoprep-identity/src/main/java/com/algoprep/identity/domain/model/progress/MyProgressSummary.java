@@ -1,4 +1,4 @@
-package com.algoprep.identity.domain.model;
+package com.algoprep.identity.domain.model.progress;
 
 /**
  * Counters of #47. {@code acceptanceRatePercent} is null when no submission is eligible, and {@code

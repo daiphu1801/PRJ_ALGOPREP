@@ -1,7 +1,7 @@
 package com.algoprep.identity.presentation.controller;
 
-import com.algoprep.identity.application.dto.ChangeMyPasswordCommand;
-import com.algoprep.identity.application.ports.in.ChangeMyPasswordUseCase;
+import com.algoprep.identity.application.dto.password.ChangeMyPasswordCommand;
+import com.algoprep.identity.application.ports.in.password.ChangeMyPasswordUseCase;
 import java.util.UUID;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;

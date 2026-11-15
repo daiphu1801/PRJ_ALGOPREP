@@ -1,4 +1,4 @@
-package com.algoprep.identity.application.ports.in;
+package com.algoprep.identity.application.ports.in.admin;
 
 import java.util.Collection;
 import java.util.Map;

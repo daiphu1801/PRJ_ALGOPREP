@@ -1,14 +1,14 @@
 package com.algoprep.identity.presentation.controller;
 
 import com.algoprep.common.exception.InvalidRequestException;
-import com.algoprep.identity.application.dto.AuditExport;
-import com.algoprep.identity.application.dto.InterviewTranscriptExport;
-import com.algoprep.identity.application.dto.PersonalDataExport;
-import com.algoprep.identity.application.dto.SubmissionExport;
-import com.algoprep.identity.application.ports.in.ExportMyInterviewTranscriptsUseCase;
-import com.algoprep.identity.application.ports.in.ExportMyProfileDataUseCase;
-import com.algoprep.identity.application.ports.in.ExportMySubmissionsUseCase;
-import com.algoprep.identity.domain.model.MySettings;
+import com.algoprep.identity.application.dto.account.InterviewTranscriptExport;
+import com.algoprep.identity.application.dto.account.PersonalDataExport;
+import com.algoprep.identity.application.dto.account.SubmissionExport;
+import com.algoprep.identity.application.dto.audit.AuditExport;
+import com.algoprep.identity.application.ports.in.account.ExportMyInterviewTranscriptsUseCase;
+import com.algoprep.identity.application.ports.in.account.ExportMyProfileDataUseCase;
+import com.algoprep.identity.application.ports.in.account.ExportMySubmissionsUseCase;
+import com.algoprep.identity.domain.model.account.MySettings;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UncheckedIOException;

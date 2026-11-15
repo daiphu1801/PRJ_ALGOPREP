@@ -2,17 +2,17 @@ package com.algoprep.identity.infrastructure.persistence;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.algoprep.identity.domain.model.ActivityEntry;
 import com.algoprep.identity.domain.model.BaseCategory;
-import com.algoprep.identity.domain.model.ExpiredLogPolicy;
-import com.algoprep.identity.domain.model.GradedSubmission;
-import com.algoprep.identity.domain.model.LogRetentionSettings;
-import com.algoprep.identity.domain.model.MySettings;
-import com.algoprep.identity.domain.model.OAuthProvider;
-import com.algoprep.identity.domain.model.ProfileFields;
-import com.algoprep.identity.domain.model.SolveState;
-import com.algoprep.identity.domain.model.StoredRefreshToken;
 import com.algoprep.identity.domain.model.UserStatus;
+import com.algoprep.identity.domain.model.account.MySettings;
+import com.algoprep.identity.domain.model.account.ProfileFields;
+import com.algoprep.identity.domain.model.audit.ExpiredLogPolicy;
+import com.algoprep.identity.domain.model.audit.LogRetentionSettings;
+import com.algoprep.identity.domain.model.auth.OAuthProvider;
+import com.algoprep.identity.domain.model.auth.StoredRefreshToken;
+import com.algoprep.identity.domain.model.progress.ActivityEntry;
+import com.algoprep.identity.domain.model.progress.GradedSubmission;
+import com.algoprep.identity.domain.model.progress.SolveState;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.Duration;

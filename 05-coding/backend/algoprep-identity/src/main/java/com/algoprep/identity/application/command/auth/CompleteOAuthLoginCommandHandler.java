@@ -1,14 +1,14 @@
-package com.algoprep.identity.application.command;
+package com.algoprep.identity.application.command.auth;
 
 import com.algoprep.common.exception.InvalidRequestException;
-import com.algoprep.identity.application.dto.LoginResult;
 import com.algoprep.identity.application.dto.UserSummary;
-import com.algoprep.identity.application.ports.in.CompleteOAuthLoginUseCase;
+import com.algoprep.identity.application.dto.auth.LoginResult;
+import com.algoprep.identity.application.ports.in.auth.CompleteOAuthLoginUseCase;
 import com.algoprep.identity.domain.exception.IdentityErrorCodes;
-import com.algoprep.identity.domain.model.OAuthProfile;
-import com.algoprep.identity.domain.model.OAuthProvider;
 import com.algoprep.identity.domain.model.UserAccount;
 import com.algoprep.identity.domain.model.UserStatus;
+import com.algoprep.identity.domain.model.auth.OAuthProfile;
+import com.algoprep.identity.domain.model.auth.OAuthProvider;
 import com.algoprep.identity.domain.ports.out.OAuthAccountRepository;
 import com.algoprep.identity.domain.ports.out.UserAccountRepository;
 import java.util.UUID;

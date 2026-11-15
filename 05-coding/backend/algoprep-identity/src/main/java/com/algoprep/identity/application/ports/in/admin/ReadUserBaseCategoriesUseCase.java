@@ -1,4 +1,4 @@
-package com.algoprep.identity.application.ports.in;
+package com.algoprep.identity.application.ports.in.admin;
 
 import com.algoprep.identity.domain.model.BaseCategory;
 import java.util.Collection;

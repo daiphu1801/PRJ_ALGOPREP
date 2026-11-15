@@ -1,4 +1,4 @@
-package com.algoprep.identity.application.query;
+package com.algoprep.identity.application.query.account;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -6,7 +6,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.algoprep.common.exception.UnauthenticatedException;
-import com.algoprep.identity.domain.model.MyProfile;
+import com.algoprep.identity.domain.model.account.MyProfile;
 import com.algoprep.identity.domain.ports.out.MyProfileRepository;
 import java.time.Instant;
 import java.util.List;

@@ -1,4 +1,4 @@
-package com.algoprep.identity.application.command;
+package com.algoprep.identity.application.command.admin;
 
 import java.security.SecureRandom;
 import org.springframework.stereotype.Component;

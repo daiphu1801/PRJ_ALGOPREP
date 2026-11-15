@@ -1,6 +1,6 @@
 package com.algoprep.identity.domain.ports.out;
 
-import com.algoprep.identity.domain.model.UserRetentionGroup;
+import com.algoprep.identity.domain.model.admin.UserRetentionGroup;
 import java.util.List;
 
 /** Read-only numbers behind the identity cards of the admin overview (#41, #42, #73). */

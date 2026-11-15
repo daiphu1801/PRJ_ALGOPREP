@@ -1,6 +1,6 @@
 package com.algoprep.identity.infrastructure.persistence;
 
-import com.algoprep.identity.domain.model.StoredRefreshToken;
+import com.algoprep.identity.domain.model.auth.StoredRefreshToken;
 import com.algoprep.identity.domain.ports.out.RefreshTokenRepository;
 import java.sql.Timestamp;
 import java.time.Instant;

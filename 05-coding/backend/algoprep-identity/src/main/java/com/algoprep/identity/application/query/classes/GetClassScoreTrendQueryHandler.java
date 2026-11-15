@@ -1,11 +1,11 @@
-package com.algoprep.identity.application.query;
+package com.algoprep.identity.application.query.classes;
 
-import com.algoprep.identity.application.ports.in.GetClassScoreTrendUseCase;
-import com.algoprep.identity.domain.model.ClassMetricViews.ScoreTrend;
-import com.algoprep.identity.domain.model.ClassMetricViews.TrendPoint;
-import com.algoprep.identity.domain.model.ClassProgressRules;
-import com.algoprep.identity.domain.model.ClassStudentRow;
-import com.algoprep.identity.domain.model.StudentMetrics;
+import com.algoprep.identity.application.ports.in.classes.GetClassScoreTrendUseCase;
+import com.algoprep.identity.domain.model.classes.ClassMetricViews.ScoreTrend;
+import com.algoprep.identity.domain.model.classes.ClassMetricViews.TrendPoint;
+import com.algoprep.identity.domain.model.classes.ClassProgressRules;
+import com.algoprep.identity.domain.model.classes.ClassStudentRow;
+import com.algoprep.identity.domain.model.classes.StudentMetrics;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;

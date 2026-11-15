@@ -1,4 +1,4 @@
-package com.algoprep.identity.application.command;
+package com.algoprep.identity.application.command.auth;
 
 import com.algoprep.common.exception.DomainRuleViolationException;
 import com.algoprep.common.exception.ServiceUnavailableException;
@@ -7,8 +7,8 @@ import com.algoprep.identity.application.ports.out.OAuthProviderPort;
 import com.algoprep.identity.application.ports.out.OAuthStatePort;
 import com.algoprep.identity.domain.exception.IdentityErrorCodes;
 import com.algoprep.identity.domain.exception.OAuthCodeRejectedException;
-import com.algoprep.identity.domain.model.OAuthProfile;
-import com.algoprep.identity.domain.model.OAuthProvider;
+import com.algoprep.identity.domain.model.auth.OAuthProfile;
+import com.algoprep.identity.domain.model.auth.OAuthProvider;
 import org.springframework.stereotype.Component;
 
 /**

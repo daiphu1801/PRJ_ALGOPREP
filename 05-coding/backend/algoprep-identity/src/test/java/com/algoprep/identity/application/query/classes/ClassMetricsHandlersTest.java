@@ -1,4 +1,4 @@
-package com.algoprep.identity.application.query;
+package com.algoprep.identity.application.query.classes;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -10,16 +10,16 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.algoprep.common.exception.AlgoPrepException;
-import com.algoprep.identity.application.dto.InstructorStudentsQuery;
+import com.algoprep.identity.application.dto.classes.InstructorStudentsQuery;
 import com.algoprep.identity.application.ports.out.ClassAssignmentLookupPort;
 import com.algoprep.identity.application.ports.out.ClassMetricsPort;
-import com.algoprep.identity.domain.model.ClassProblemWindow;
-import com.algoprep.identity.domain.model.ClassRosterEntry;
-import com.algoprep.identity.domain.model.ClassStudentStatus;
-import com.algoprep.identity.domain.model.InstructorClass;
-import com.algoprep.identity.domain.model.StudentMetrics;
-import com.algoprep.identity.domain.model.StudentMetrics.AssignmentOutcome;
-import com.algoprep.identity.domain.model.StudentMetrics.WeekPoint;
+import com.algoprep.identity.domain.model.classes.ClassProblemWindow;
+import com.algoprep.identity.domain.model.classes.ClassRosterEntry;
+import com.algoprep.identity.domain.model.classes.ClassStudentStatus;
+import com.algoprep.identity.domain.model.classes.InstructorClass;
+import com.algoprep.identity.domain.model.classes.StudentMetrics;
+import com.algoprep.identity.domain.model.classes.StudentMetrics.AssignmentOutcome;
+import com.algoprep.identity.domain.model.classes.StudentMetrics.WeekPoint;
 import com.algoprep.identity.domain.ports.out.InstructorClassRepository;
 import java.math.BigDecimal;
 import java.time.Instant;

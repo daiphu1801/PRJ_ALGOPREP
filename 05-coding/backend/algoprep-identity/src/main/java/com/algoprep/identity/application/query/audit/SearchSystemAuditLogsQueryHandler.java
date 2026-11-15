@@ -1,12 +1,12 @@
-package com.algoprep.identity.application.query;
+package com.algoprep.identity.application.query.audit;
 
-import com.algoprep.identity.application.dto.AuditLogItem;
-import com.algoprep.identity.application.dto.AuditLogPageResult;
-import com.algoprep.identity.application.dto.SearchAuditLogsQuery;
-import com.algoprep.identity.application.ports.in.SearchSystemAuditLogsUseCase;
-import com.algoprep.identity.domain.model.AuditLogCursor;
-import com.algoprep.identity.domain.model.AuditLogFilter;
-import com.algoprep.identity.domain.model.AuditLogRow;
+import com.algoprep.identity.application.dto.audit.AuditLogItem;
+import com.algoprep.identity.application.dto.audit.AuditLogPageResult;
+import com.algoprep.identity.application.dto.audit.SearchAuditLogsQuery;
+import com.algoprep.identity.application.ports.in.audit.SearchSystemAuditLogsUseCase;
+import com.algoprep.identity.domain.model.audit.AuditLogCursor;
+import com.algoprep.identity.domain.model.audit.AuditLogFilter;
+import com.algoprep.identity.domain.model.audit.AuditLogRow;
 import com.algoprep.identity.domain.ports.out.AuditLogReadRepository;
 import java.util.List;
 import org.springframework.stereotype.Service;

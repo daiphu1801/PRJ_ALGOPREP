@@ -1,4 +1,4 @@
-package com.algoprep.identity.domain.model;
+package com.algoprep.identity.domain.model.progress;
 
 /** Raw stored counters behind #47; the rate is derived by the handler, not stored. */
 public record ProgressCounters(

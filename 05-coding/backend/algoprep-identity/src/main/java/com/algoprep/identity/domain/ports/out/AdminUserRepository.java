@@ -1,7 +1,7 @@
 package com.algoprep.identity.domain.ports.out;
 
-import com.algoprep.identity.domain.model.AdminUserItem;
-import com.algoprep.identity.domain.model.AdminUserPage;
+import com.algoprep.identity.domain.model.admin.AdminUserItem;
+import com.algoprep.identity.domain.model.admin.AdminUserPage;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;

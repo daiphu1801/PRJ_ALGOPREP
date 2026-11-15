@@ -1,6 +1,6 @@
 package com.algoprep.identity.infrastructure.messaging;
 
-import com.algoprep.identity.domain.model.ClassProblemAssignment;
+import com.algoprep.identity.domain.model.classes.ClassProblemAssignment;
 import java.time.Instant;
 import java.util.UUID;
 import tools.jackson.databind.JsonNode;

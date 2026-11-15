@@ -1,4 +1,4 @@
-package com.algoprep.identity.domain.model;
+package com.algoprep.identity.domain.model.progress;
 
 /** Personal state of one problem; a problem the user never submitted has no state at all. */
 public enum SolveState {

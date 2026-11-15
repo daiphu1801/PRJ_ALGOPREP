@@ -1,7 +1,7 @@
-package com.algoprep.identity.application.command;
+package com.algoprep.identity.application.command.progress;
 
-import com.algoprep.identity.application.ports.in.ApplySubmissionGradedUseCase;
-import com.algoprep.identity.domain.model.GradedSubmission;
+import com.algoprep.identity.application.ports.in.progress.ApplySubmissionGradedUseCase;
+import com.algoprep.identity.domain.model.progress.GradedSubmission;
 import com.algoprep.identity.domain.ports.out.ProcessedEventRepository;
 import com.algoprep.identity.domain.ports.out.SubmissionStatsRepository;
 import java.math.BigDecimal;

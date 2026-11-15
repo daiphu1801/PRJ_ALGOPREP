@@ -1,6 +1,6 @@
 package com.algoprep.identity.domain.ports.out;
 
-import com.algoprep.identity.domain.model.LogRetentionSettings;
+import com.algoprep.identity.domain.model.audit.LogRetentionSettings;
 import java.util.UUID;
 
 /**

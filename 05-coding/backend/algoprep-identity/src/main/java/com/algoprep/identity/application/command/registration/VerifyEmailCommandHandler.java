@@ -1,8 +1,9 @@
-package com.algoprep.identity.application.command;
+package com.algoprep.identity.application.command.registration;
 
 import com.algoprep.common.exception.DomainRuleViolationException;
-import com.algoprep.identity.application.dto.VerifyEmailCommand;
-import com.algoprep.identity.application.ports.in.VerifyEmailUseCase;
+import com.algoprep.identity.application.command.RegistrationValidation;
+import com.algoprep.identity.application.dto.registration.VerifyEmailCommand;
+import com.algoprep.identity.application.ports.in.registration.VerifyEmailUseCase;
 import com.algoprep.identity.domain.model.UserAccount;
 import com.algoprep.identity.domain.model.UserStatus;
 import com.algoprep.identity.domain.ports.out.RegistrationRepository;

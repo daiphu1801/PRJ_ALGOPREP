@@ -1,10 +1,10 @@
-package com.algoprep.identity.application.query;
+package com.algoprep.identity.application.query.classes;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import com.algoprep.identity.domain.model.SubmissionClassScope;
+import com.algoprep.identity.domain.model.classes.SubmissionClassScope;
 import com.algoprep.identity.domain.ports.out.SubmissionClassScopeRepository;
 import java.util.List;
 import java.util.UUID;

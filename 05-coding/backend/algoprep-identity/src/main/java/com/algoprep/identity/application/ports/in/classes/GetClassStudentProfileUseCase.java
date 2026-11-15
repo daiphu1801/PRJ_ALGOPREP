@@ -1,6 +1,6 @@
-package com.algoprep.identity.application.ports.in;
+package com.algoprep.identity.application.ports.in.classes;
 
-import com.algoprep.identity.domain.model.ClassStudentRow;
+import com.algoprep.identity.domain.model.classes.ClassStudentRow;
 import java.util.UUID;
 
 /** One active student of an owned class with the judge figures (#28). */

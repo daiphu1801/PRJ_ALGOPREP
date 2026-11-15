@@ -1,15 +1,15 @@
 package com.algoprep.identity.presentation.controller;
 
-import com.algoprep.identity.application.dto.AuditExport;
-import com.algoprep.identity.application.dto.AuditLogPageResult;
-import com.algoprep.identity.application.dto.CategoryCount;
-import com.algoprep.identity.application.dto.ExportAuditLogsQuery;
-import com.algoprep.identity.application.dto.SearchAuditLogsQuery;
-import com.algoprep.identity.application.ports.in.ExportSystemAuditLogsUseCase;
-import com.algoprep.identity.application.ports.in.GetAuditCategoryBreakdownUseCase;
-import com.algoprep.identity.application.ports.in.ListActiveAdminsUseCase;
-import com.algoprep.identity.application.ports.in.SearchSystemAuditLogsUseCase;
-import com.algoprep.identity.domain.model.ActiveAdmin;
+import com.algoprep.identity.application.dto.audit.AuditExport;
+import com.algoprep.identity.application.dto.audit.AuditLogPageResult;
+import com.algoprep.identity.application.dto.audit.CategoryCount;
+import com.algoprep.identity.application.dto.audit.ExportAuditLogsQuery;
+import com.algoprep.identity.application.dto.audit.SearchAuditLogsQuery;
+import com.algoprep.identity.application.ports.in.audit.ExportSystemAuditLogsUseCase;
+import com.algoprep.identity.application.ports.in.audit.GetAuditCategoryBreakdownUseCase;
+import com.algoprep.identity.application.ports.in.audit.ListActiveAdminsUseCase;
+import com.algoprep.identity.application.ports.in.audit.SearchSystemAuditLogsUseCase;
+import com.algoprep.identity.domain.model.audit.ActiveAdmin;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;

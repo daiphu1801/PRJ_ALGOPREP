@@ -1,4 +1,4 @@
-package com.algoprep.identity.application.dto;
+package com.algoprep.identity.application.dto.password;
 
 /** No OTP value in diagnostics. */
 public record VerifyPasswordResetOtpCommand(String email, String otp) {

@@ -1,4 +1,4 @@
-package com.algoprep.identity.application.ports.in;
+package com.algoprep.identity.application.ports.in.registration;
 
 /**
  * Removes self-registered accounts that never confirmed their e-mail, so an address cannot be held

@@ -2,7 +2,7 @@ package com.algoprep.identity.infrastructure.persistence;
 
 import com.algoprep.common.domain.ports.out.ClockPort;
 import com.algoprep.common.domain.ports.out.IdGeneratorPort;
-import com.algoprep.identity.domain.model.AuditEntry;
+import com.algoprep.identity.domain.model.audit.AuditEntry;
 import com.algoprep.identity.domain.ports.out.AuditLogPort;
 import java.sql.Timestamp;
 import java.sql.Types;

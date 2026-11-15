@@ -1,10 +1,10 @@
 package com.algoprep.identity.presentation.controller;
 
-import com.algoprep.identity.application.dto.ConfirmEmailChangeCommand;
-import com.algoprep.identity.application.dto.PendingEmailChange;
-import com.algoprep.identity.application.dto.RequestEmailChangeCommand;
-import com.algoprep.identity.application.ports.in.ConfirmEmailChangeUseCase;
-import com.algoprep.identity.application.ports.in.RequestEmailChangeUseCase;
+import com.algoprep.identity.application.dto.account.ConfirmEmailChangeCommand;
+import com.algoprep.identity.application.dto.account.PendingEmailChange;
+import com.algoprep.identity.application.dto.account.RequestEmailChangeCommand;
+import com.algoprep.identity.application.ports.in.account.ConfirmEmailChangeUseCase;
+import com.algoprep.identity.application.ports.in.account.RequestEmailChangeUseCase;
 import java.util.UUID;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;

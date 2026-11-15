@@ -1,6 +1,6 @@
-package com.algoprep.identity.application.ports.in;
+package com.algoprep.identity.application.ports.in.progress;
 
-import com.algoprep.identity.domain.model.SolveState;
+import com.algoprep.identity.domain.model.progress.SolveState;
 import java.util.Map;
 import java.util.UUID;
 

@@ -5,8 +5,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.algoprep.common.exception.DomainRuleViolationException;
 import com.algoprep.common.exception.InvalidRequestException;
-import com.algoprep.identity.application.dto.RegisterCommand;
-import com.algoprep.identity.application.dto.VerifyEmailCommand;
+import com.algoprep.identity.application.dto.registration.RegisterCommand;
+import com.algoprep.identity.application.dto.registration.VerifyEmailCommand;
 import jakarta.validation.Validation;
 import jakarta.validation.ValidatorFactory;
 import org.junit.jupiter.api.AfterAll;

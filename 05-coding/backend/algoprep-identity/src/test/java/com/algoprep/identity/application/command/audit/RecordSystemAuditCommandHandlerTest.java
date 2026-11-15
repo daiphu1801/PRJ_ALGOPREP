@@ -1,11 +1,11 @@
-package com.algoprep.identity.application.command;
+package com.algoprep.identity.application.command.audit;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-import com.algoprep.identity.domain.model.AuditEntry;
+import com.algoprep.identity.domain.model.audit.AuditEntry;
 import com.algoprep.identity.domain.ports.out.AuditLogPort;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;

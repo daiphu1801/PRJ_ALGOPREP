@@ -1,4 +1,4 @@
-package com.algoprep.identity.application.ports.in;
+package com.algoprep.identity.application.ports.in.audit;
 
 /** JOB-ID-05: removes audit rows older than the retention, as the policy allows (BR-20). */
 public interface PurgeExpiredAuditLogsUseCase {

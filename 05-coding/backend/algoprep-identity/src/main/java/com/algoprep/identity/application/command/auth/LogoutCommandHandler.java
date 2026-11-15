@@ -1,8 +1,8 @@
-package com.algoprep.identity.application.command;
+package com.algoprep.identity.application.command.auth;
 
 import com.algoprep.common.domain.ports.out.ClockPort;
-import com.algoprep.identity.application.ports.in.LogoutUseCase;
-import com.algoprep.identity.domain.model.RefreshTokenSecrets;
+import com.algoprep.identity.application.ports.in.auth.LogoutUseCase;
+import com.algoprep.identity.domain.model.auth.RefreshTokenSecrets;
 import com.algoprep.identity.domain.ports.out.RefreshTokenRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

@@ -1,12 +1,12 @@
-package com.algoprep.identity.application.ports.in;
+package com.algoprep.identity.application.ports.in.admin;
 
-import com.algoprep.identity.domain.model.AdminSubmissionBlocks.Days;
-import com.algoprep.identity.domain.model.AdminSubmissionBlocks.Difficulty;
-import com.algoprep.identity.domain.model.AdminSubmissionBlocks.Languages;
-import com.algoprep.identity.domain.model.AdminSubmissionBlocks.Months;
-import com.algoprep.identity.domain.model.AdminSubmissionBlocks.TopProblems;
-import com.algoprep.identity.domain.model.AdminSubmissionBlocks.Verdicts;
-import com.algoprep.identity.domain.model.StatSummary;
+import com.algoprep.identity.domain.model.admin.AdminSubmissionBlocks.Days;
+import com.algoprep.identity.domain.model.admin.AdminSubmissionBlocks.Difficulty;
+import com.algoprep.identity.domain.model.admin.AdminSubmissionBlocks.Languages;
+import com.algoprep.identity.domain.model.admin.AdminSubmissionBlocks.Months;
+import com.algoprep.identity.domain.model.admin.AdminSubmissionBlocks.TopProblems;
+import com.algoprep.identity.domain.model.admin.AdminSubmissionBlocks.Verdicts;
+import com.algoprep.identity.domain.model.admin.StatSummary;
 
 /**
  * The judge-backed blocks of the admin overview (DD api F1 section 0.8.5): #43 and #67 to #72. Each

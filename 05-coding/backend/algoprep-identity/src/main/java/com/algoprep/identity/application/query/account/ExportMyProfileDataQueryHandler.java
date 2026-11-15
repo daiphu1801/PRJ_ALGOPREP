@@ -1,9 +1,9 @@
-package com.algoprep.identity.application.query;
+package com.algoprep.identity.application.query.account;
 
 import com.algoprep.common.exception.RateLimitExceededException;
 import com.algoprep.common.exception.UnauthenticatedException;
-import com.algoprep.identity.application.dto.PersonalDataExport;
-import com.algoprep.identity.application.ports.in.ExportMyProfileDataUseCase;
+import com.algoprep.identity.application.dto.account.PersonalDataExport;
+import com.algoprep.identity.application.ports.in.account.ExportMyProfileDataUseCase;
 import com.algoprep.identity.application.ports.out.ExportRateLimitPort;
 import com.algoprep.identity.domain.exception.IdentityErrorCodes;
 import com.algoprep.identity.domain.ports.out.MyProfileRepository;

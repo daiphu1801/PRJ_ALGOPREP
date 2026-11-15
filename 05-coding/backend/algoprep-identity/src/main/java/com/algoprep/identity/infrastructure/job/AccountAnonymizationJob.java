@@ -1,6 +1,6 @@
 package com.algoprep.identity.infrastructure.job;
 
-import com.algoprep.identity.application.ports.in.AnonymizeDeletedAccountsUseCase;
+import com.algoprep.identity.application.ports.in.account.AnonymizeDeletedAccountsUseCase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;

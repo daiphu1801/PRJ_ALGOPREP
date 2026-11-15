@@ -1,4 +1,4 @@
-package com.algoprep.identity.application.command;
+package com.algoprep.identity.application.command.admin;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
@@ -12,6 +12,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import com.algoprep.common.domain.ports.out.IdGeneratorPort;
+import com.algoprep.identity.application.command.RegistrationValidation;
 import com.algoprep.identity.application.ports.out.PasswordHasherPort;
 import com.algoprep.identity.domain.ports.out.AdminBootstrapRepository;
 import jakarta.validation.Validation;

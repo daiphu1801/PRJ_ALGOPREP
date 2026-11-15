@@ -1,6 +1,6 @@
 package com.algoprep.identity.infrastructure.persistence;
 
-import com.algoprep.identity.domain.model.PasswordResetAccount;
+import com.algoprep.identity.domain.model.password.PasswordResetAccount;
 import com.algoprep.identity.domain.ports.out.PasswordResetRepository;
 import com.algoprep.identity.domain.ports.out.UserAccountRepository;
 import java.sql.Timestamp;

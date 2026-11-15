@@ -1,4 +1,4 @@
-package com.algoprep.identity.application.command;
+package com.algoprep.identity.application.command.auth;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -16,10 +16,10 @@ import com.algoprep.identity.application.ports.out.OAuthProviderPort;
 import com.algoprep.identity.application.ports.out.OAuthStatePort;
 import com.algoprep.identity.domain.exception.OAuthCodeRejectedException;
 import com.algoprep.identity.domain.model.BaseCategory;
-import com.algoprep.identity.domain.model.OAuthProfile;
-import com.algoprep.identity.domain.model.OAuthProvider;
 import com.algoprep.identity.domain.model.UserAccount;
 import com.algoprep.identity.domain.model.UserStatus;
+import com.algoprep.identity.domain.model.auth.OAuthProfile;
+import com.algoprep.identity.domain.model.auth.OAuthProvider;
 import com.algoprep.identity.domain.ports.out.OAuthAccountRepository;
 import com.algoprep.identity.domain.ports.out.UserAccountRepository;
 import java.util.Optional;
@@ -136,7 +136,7 @@ class OAuthLoginHandlersTest {
     var issued = mock(SessionIssuer.Session.class);
     when(issued.rawRefreshToken()).thenReturn("raw");
     when(issued.accessToken())
-        .thenReturn(mock(com.algoprep.identity.application.dto.IssuedAccessToken.class));
+        .thenReturn(mock(com.algoprep.identity.application.dto.auth.IssuedAccessToken.class));
     when(sessions.openNewFamily(any())).thenReturn(issued);
   }
 

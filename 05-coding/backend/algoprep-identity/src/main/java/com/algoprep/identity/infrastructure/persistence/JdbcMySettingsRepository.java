@@ -1,6 +1,6 @@
 package com.algoprep.identity.infrastructure.persistence;
 
-import com.algoprep.identity.domain.model.MySettings;
+import com.algoprep.identity.domain.model.account.MySettings;
 import com.algoprep.identity.domain.ports.out.MySettingsRepository;
 import java.util.Optional;
 import java.util.UUID;

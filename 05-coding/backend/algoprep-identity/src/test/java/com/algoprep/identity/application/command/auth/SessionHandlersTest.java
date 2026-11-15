@@ -1,4 +1,4 @@
-package com.algoprep.identity.application.command;
+package com.algoprep.identity.application.command.auth;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -13,16 +13,16 @@ import static org.mockito.Mockito.when;
 import com.algoprep.common.domain.ports.out.ClockPort;
 import com.algoprep.common.domain.ports.out.IdGeneratorPort;
 import com.algoprep.common.exception.UnauthenticatedException;
-import com.algoprep.identity.application.dto.IssuedAccessToken;
-import com.algoprep.identity.application.dto.RefreshResult;
+import com.algoprep.identity.application.dto.auth.IssuedAccessToken;
+import com.algoprep.identity.application.dto.auth.RefreshResult;
 import com.algoprep.identity.application.ports.out.AccessTokenPort;
 import com.algoprep.identity.domain.exception.IdentityErrorCodes;
-import com.algoprep.identity.domain.model.AuditEntry;
 import com.algoprep.identity.domain.model.BaseCategory;
-import com.algoprep.identity.domain.model.RefreshTokenSecrets;
-import com.algoprep.identity.domain.model.StoredRefreshToken;
 import com.algoprep.identity.domain.model.UserAccount;
 import com.algoprep.identity.domain.model.UserStatus;
+import com.algoprep.identity.domain.model.audit.AuditEntry;
+import com.algoprep.identity.domain.model.auth.RefreshTokenSecrets;
+import com.algoprep.identity.domain.model.auth.StoredRefreshToken;
 import com.algoprep.identity.domain.ports.out.AuditLogPort;
 import com.algoprep.identity.domain.ports.out.RefreshTokenRepository;
 import com.algoprep.identity.domain.ports.out.UserAccountRepository;

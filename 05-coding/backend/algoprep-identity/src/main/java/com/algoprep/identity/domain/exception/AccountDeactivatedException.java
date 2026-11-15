@@ -2,7 +2,7 @@ package com.algoprep.identity.domain.exception;
 
 import com.algoprep.common.exception.ClientErrorDetails;
 import com.algoprep.common.exception.PermissionDeniedException;
-import com.algoprep.identity.domain.model.RestorationTicket;
+import com.algoprep.identity.domain.model.account.RestorationTicket;
 import java.util.Map;
 
 /** The message is safe for logging; the optional ticket belongs only in the response details. */

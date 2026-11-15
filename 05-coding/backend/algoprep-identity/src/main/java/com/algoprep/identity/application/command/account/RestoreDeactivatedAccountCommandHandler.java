@@ -1,12 +1,12 @@
-package com.algoprep.identity.application.command;
+package com.algoprep.identity.application.command.account;
 
 import com.algoprep.common.exception.UnauthenticatedException;
-import com.algoprep.identity.application.dto.RestoreAccountCommand;
-import com.algoprep.identity.application.ports.in.RestoreDeactivatedAccountUseCase;
+import com.algoprep.identity.application.dto.account.RestoreAccountCommand;
+import com.algoprep.identity.application.ports.in.account.RestoreDeactivatedAccountUseCase;
 import com.algoprep.identity.application.ports.out.RestorationTicketPort;
-import com.algoprep.identity.domain.model.RestorableAccount;
-import com.algoprep.identity.domain.model.RestorationGrant;
-import com.algoprep.identity.domain.model.RestorationTicketSecrets;
+import com.algoprep.identity.domain.model.account.RestorableAccount;
+import com.algoprep.identity.domain.model.account.RestorationGrant;
+import com.algoprep.identity.domain.model.account.RestorationTicketSecrets;
 import com.algoprep.identity.domain.ports.out.AccountRestorationRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

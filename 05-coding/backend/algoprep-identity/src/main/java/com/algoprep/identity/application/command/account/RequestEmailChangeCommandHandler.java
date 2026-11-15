@@ -1,12 +1,13 @@
-package com.algoprep.identity.application.command;
+package com.algoprep.identity.application.command.account;
 
 import com.algoprep.common.exception.ResourceConflictException;
 import com.algoprep.common.exception.UnauthenticatedException;
-import com.algoprep.identity.application.dto.PendingEmailChange;
-import com.algoprep.identity.application.dto.RequestEmailChangeCommand;
-import com.algoprep.identity.application.ports.in.RequestEmailChangeUseCase;
+import com.algoprep.identity.application.command.RegistrationValidation;
+import com.algoprep.identity.application.dto.account.PendingEmailChange;
+import com.algoprep.identity.application.dto.account.RequestEmailChangeCommand;
+import com.algoprep.identity.application.ports.in.account.RequestEmailChangeUseCase;
 import com.algoprep.identity.domain.exception.IdentityErrorCodes;
-import com.algoprep.identity.domain.model.MyProfile;
+import com.algoprep.identity.domain.model.account.MyProfile;
 import com.algoprep.identity.domain.ports.out.MyProfileRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

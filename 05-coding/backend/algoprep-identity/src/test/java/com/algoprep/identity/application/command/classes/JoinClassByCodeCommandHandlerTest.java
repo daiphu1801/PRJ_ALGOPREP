@@ -1,4 +1,4 @@
-package com.algoprep.identity.application.command;
+package com.algoprep.identity.application.command.classes;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -9,9 +9,9 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import com.algoprep.common.exception.AlgoPrepException;
-import com.algoprep.identity.application.dto.JoinClassByCodeCommand;
+import com.algoprep.identity.application.dto.classes.JoinClassByCodeCommand;
 import com.algoprep.identity.application.ports.out.JoinAttemptLimitPort;
-import com.algoprep.identity.domain.model.ClassRef;
+import com.algoprep.identity.domain.model.classes.ClassRef;
 import com.algoprep.identity.domain.ports.out.StudentClassRepository;
 import java.util.Optional;
 import java.util.UUID;

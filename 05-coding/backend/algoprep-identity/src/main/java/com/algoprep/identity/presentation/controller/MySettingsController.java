@@ -1,9 +1,9 @@
 package com.algoprep.identity.presentation.controller;
 
-import com.algoprep.identity.application.dto.UpdateMySettingsCommand;
-import com.algoprep.identity.application.ports.in.GetMySettingsUseCase;
-import com.algoprep.identity.application.ports.in.UpdateMySettingsUseCase;
-import com.algoprep.identity.domain.model.MySettings;
+import com.algoprep.identity.application.dto.account.UpdateMySettingsCommand;
+import com.algoprep.identity.application.ports.in.account.GetMySettingsUseCase;
+import com.algoprep.identity.application.ports.in.account.UpdateMySettingsUseCase;
+import com.algoprep.identity.domain.model.account.MySettings;
 import java.util.UUID;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;

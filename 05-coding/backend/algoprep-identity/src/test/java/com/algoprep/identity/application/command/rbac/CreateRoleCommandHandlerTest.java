@@ -1,4 +1,4 @@
-package com.algoprep.identity.application.command;
+package com.algoprep.identity.application.command.rbac;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -10,10 +10,10 @@ import static org.mockito.Mockito.when;
 
 import com.algoprep.common.domain.ports.out.IdGeneratorPort;
 import com.algoprep.common.exception.AlgoPrepException;
-import com.algoprep.identity.application.dto.CreateRoleCommand;
-import com.algoprep.identity.domain.model.AuditEntry;
-import com.algoprep.identity.domain.model.RbacRole;
-import com.algoprep.identity.domain.model.RoleListItem;
+import com.algoprep.identity.application.dto.rbac.CreateRoleCommand;
+import com.algoprep.identity.domain.model.audit.AuditEntry;
+import com.algoprep.identity.domain.model.rbac.RbacRole;
+import com.algoprep.identity.domain.model.rbac.RoleListItem;
 import com.algoprep.identity.domain.ports.out.AuditLogPort;
 import com.algoprep.identity.domain.ports.out.RbacRepository;
 import java.util.UUID;

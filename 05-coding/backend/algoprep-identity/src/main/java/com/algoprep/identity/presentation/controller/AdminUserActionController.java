@@ -1,13 +1,13 @@
 package com.algoprep.identity.presentation.controller;
 
 import com.algoprep.common.exception.ResourceNotFoundException;
-import com.algoprep.identity.application.dto.ChangeUserRoleCommand;
-import com.algoprep.identity.application.dto.ChangeUserStatusCommand;
-import com.algoprep.identity.application.ports.in.ChangeUserRoleUseCase;
-import com.algoprep.identity.application.ports.in.ChangeUserStatusUseCase;
-import com.algoprep.identity.application.ports.in.ResetUserPasswordUseCase;
+import com.algoprep.identity.application.dto.admin.ChangeUserRoleCommand;
+import com.algoprep.identity.application.dto.admin.ChangeUserStatusCommand;
+import com.algoprep.identity.application.ports.in.admin.ChangeUserRoleUseCase;
+import com.algoprep.identity.application.ports.in.admin.ChangeUserStatusUseCase;
+import com.algoprep.identity.application.ports.in.admin.ResetUserPasswordUseCase;
 import com.algoprep.identity.domain.exception.IdentityErrorCodes;
-import com.algoprep.identity.domain.model.AdminUserItem;
+import com.algoprep.identity.domain.model.admin.AdminUserItem;
 import java.util.UUID;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;

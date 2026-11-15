@@ -1,4 +1,4 @@
-package com.algoprep.identity.domain.model;
+package com.algoprep.identity.domain.model.audit;
 
 /**
  * Audit log retention (BD 1.13).

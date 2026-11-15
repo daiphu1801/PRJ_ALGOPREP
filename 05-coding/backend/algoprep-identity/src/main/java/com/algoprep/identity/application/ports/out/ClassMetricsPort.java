@@ -1,8 +1,8 @@
 package com.algoprep.identity.application.ports.out;
 
-import com.algoprep.identity.domain.model.ClassProblemWindow;
-import com.algoprep.identity.domain.model.ClassRosterEntry;
-import com.algoprep.identity.domain.model.StudentMetrics;
+import com.algoprep.identity.domain.model.classes.ClassProblemWindow;
+import com.algoprep.identity.domain.model.classes.ClassRosterEntry;
+import com.algoprep.identity.domain.model.classes.StudentMetrics;
 import java.util.List;
 import java.util.UUID;
 

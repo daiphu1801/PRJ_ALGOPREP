@@ -1,10 +1,10 @@
 package com.algoprep.identity.presentation.controller;
 
-import com.algoprep.identity.application.dto.ResetPasswordCommand;
-import com.algoprep.identity.application.dto.VerifyPasswordResetOtpCommand;
-import com.algoprep.identity.application.ports.in.ForgotPasswordUseCase;
-import com.algoprep.identity.application.ports.in.ResetPasswordUseCase;
-import com.algoprep.identity.application.ports.in.VerifyPasswordResetOtpUseCase;
+import com.algoprep.identity.application.dto.password.ResetPasswordCommand;
+import com.algoprep.identity.application.dto.password.VerifyPasswordResetOtpCommand;
+import com.algoprep.identity.application.ports.in.password.ForgotPasswordUseCase;
+import com.algoprep.identity.application.ports.in.password.ResetPasswordUseCase;
+import com.algoprep.identity.application.ports.in.password.VerifyPasswordResetOtpUseCase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.mail.MailException;

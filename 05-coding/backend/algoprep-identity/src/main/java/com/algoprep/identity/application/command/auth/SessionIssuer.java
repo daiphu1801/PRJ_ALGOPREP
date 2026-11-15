@@ -1,12 +1,12 @@
-package com.algoprep.identity.application.command;
+package com.algoprep.identity.application.command.auth;
 
 import com.algoprep.common.domain.ports.out.ClockPort;
 import com.algoprep.common.domain.ports.out.IdGeneratorPort;
-import com.algoprep.identity.application.dto.IssuedAccessToken;
+import com.algoprep.identity.application.dto.auth.IssuedAccessToken;
 import com.algoprep.identity.application.ports.out.AccessTokenPort;
-import com.algoprep.identity.domain.model.RefreshTokenSecrets;
-import com.algoprep.identity.domain.model.StoredRefreshToken;
 import com.algoprep.identity.domain.model.UserAccount;
+import com.algoprep.identity.domain.model.auth.RefreshTokenSecrets;
+import com.algoprep.identity.domain.model.auth.StoredRefreshToken;
 import com.algoprep.identity.domain.ports.out.RefreshTokenRepository;
 import java.time.Duration;
 import java.time.Instant;

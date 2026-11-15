@@ -1,6 +1,6 @@
-package com.algoprep.identity.application.query;
+package com.algoprep.identity.application.query.admin;
 
-import com.algoprep.identity.application.ports.in.ReadUserBaseCategoriesUseCase;
+import com.algoprep.identity.application.ports.in.admin.ReadUserBaseCategoriesUseCase;
 import com.algoprep.identity.domain.model.BaseCategory;
 import com.algoprep.identity.domain.ports.out.UserBaseCategoriesRepository;
 import java.util.Collection;

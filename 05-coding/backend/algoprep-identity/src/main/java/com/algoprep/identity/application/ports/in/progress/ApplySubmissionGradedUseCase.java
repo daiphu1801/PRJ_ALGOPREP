@@ -1,6 +1,6 @@
-package com.algoprep.identity.application.ports.in;
+package com.algoprep.identity.application.ports.in.progress;
 
-import com.algoprep.identity.domain.model.GradedSubmission;
+import com.algoprep.identity.domain.model.progress.GradedSubmission;
 
 /** Applies one {@code SubmissionGraded} event to the F1 read models, once per event id. */
 public interface ApplySubmissionGradedUseCase {

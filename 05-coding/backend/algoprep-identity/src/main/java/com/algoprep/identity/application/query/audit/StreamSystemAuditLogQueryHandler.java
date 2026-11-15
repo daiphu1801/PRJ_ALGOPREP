@@ -1,11 +1,11 @@
-package com.algoprep.identity.application.query;
+package com.algoprep.identity.application.query.audit;
 
-import com.algoprep.identity.application.dto.AuditLogItem;
-import com.algoprep.identity.application.dto.AuditStreamBatch;
-import com.algoprep.identity.application.dto.AuditStreamRequest;
-import com.algoprep.identity.application.ports.in.StreamSystemAuditLogUseCase;
-import com.algoprep.identity.domain.model.AuditLogCursor;
-import com.algoprep.identity.domain.model.AuditLogRow;
+import com.algoprep.identity.application.dto.audit.AuditLogItem;
+import com.algoprep.identity.application.dto.audit.AuditStreamBatch;
+import com.algoprep.identity.application.dto.audit.AuditStreamRequest;
+import com.algoprep.identity.application.ports.in.audit.StreamSystemAuditLogUseCase;
+import com.algoprep.identity.domain.model.audit.AuditLogCursor;
+import com.algoprep.identity.domain.model.audit.AuditLogRow;
 import com.algoprep.identity.domain.ports.out.AuditLogReadRepository;
 import java.util.List;
 import java.util.Optional;

@@ -1,6 +1,6 @@
-package com.algoprep.identity.application.query;
+package com.algoprep.identity.application.query.admin;
 
-import com.algoprep.identity.application.ports.in.ReadUserDisplayNamesUseCase;
+import com.algoprep.identity.application.ports.in.admin.ReadUserDisplayNamesUseCase;
 import com.algoprep.identity.domain.ports.out.UserDisplayNamesRepository;
 import java.util.Collection;
 import java.util.Map;

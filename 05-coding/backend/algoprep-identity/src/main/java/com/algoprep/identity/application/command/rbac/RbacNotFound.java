@@ -1,4 +1,4 @@
-package com.algoprep.identity.application.command;
+package com.algoprep.identity.application.command.rbac;
 
 import com.algoprep.common.exception.ResourceNotFoundException;
 import com.algoprep.identity.domain.exception.RbacErrorCodes;

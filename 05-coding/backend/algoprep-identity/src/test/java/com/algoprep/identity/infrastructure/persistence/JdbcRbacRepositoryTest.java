@@ -2,7 +2,7 @@ package com.algoprep.identity.infrastructure.persistence;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.algoprep.identity.domain.model.RbacRole;
+import com.algoprep.identity.domain.model.rbac.RbacRole;
 import java.util.Map;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;

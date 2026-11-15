@@ -1,7 +1,8 @@
-package com.algoprep.identity.application.command;
+package com.algoprep.identity.application.command.password;
 
-import com.algoprep.identity.application.dto.VerifyPasswordResetOtpCommand;
-import com.algoprep.identity.application.ports.in.VerifyPasswordResetOtpUseCase;
+import com.algoprep.identity.application.command.RegistrationValidation;
+import com.algoprep.identity.application.dto.password.VerifyPasswordResetOtpCommand;
+import com.algoprep.identity.application.ports.in.password.VerifyPasswordResetOtpUseCase;
 import com.algoprep.identity.domain.ports.out.PasswordResetRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

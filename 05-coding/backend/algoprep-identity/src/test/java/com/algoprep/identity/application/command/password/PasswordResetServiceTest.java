@@ -1,4 +1,4 @@
-package com.algoprep.identity.application.command;
+package com.algoprep.identity.application.command.password;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -11,15 +11,15 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import com.algoprep.common.exception.DomainRuleViolationException;
-import com.algoprep.identity.application.dto.ResetPasswordCommand;
-import com.algoprep.identity.application.dto.VerifyPasswordResetOtpCommand;
+import com.algoprep.identity.application.dto.password.ResetPasswordCommand;
+import com.algoprep.identity.application.dto.password.VerifyPasswordResetOtpCommand;
 import com.algoprep.identity.application.ports.out.EmailPort;
 import com.algoprep.identity.application.ports.out.PasswordResetOtpPort;
 import com.algoprep.identity.domain.model.BaseCategory;
-import com.algoprep.identity.domain.model.PasswordResetAccount;
-import com.algoprep.identity.domain.model.PasswordResetChallenge;
 import com.algoprep.identity.domain.model.UserAccount;
 import com.algoprep.identity.domain.model.UserStatus;
+import com.algoprep.identity.domain.model.password.PasswordResetAccount;
+import com.algoprep.identity.domain.model.password.PasswordResetChallenge;
 import com.algoprep.identity.domain.ports.out.AuditLogPort;
 import java.time.Instant;
 import java.util.Optional;

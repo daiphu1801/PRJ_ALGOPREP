@@ -1,8 +1,8 @@
-package com.algoprep.identity.application.query;
+package com.algoprep.identity.application.query.admin;
 
-import com.algoprep.identity.application.ports.in.GetAdminDashboardUseCase;
-import com.algoprep.identity.domain.model.StatSummary;
-import com.algoprep.identity.domain.model.UserRetentionGroup;
+import com.algoprep.identity.application.ports.in.admin.GetAdminDashboardUseCase;
+import com.algoprep.identity.domain.model.admin.StatSummary;
+import com.algoprep.identity.domain.model.admin.UserRetentionGroup;
 import com.algoprep.identity.domain.ports.out.AdminDashboardRepository;
 import java.util.ArrayList;
 import java.util.List;

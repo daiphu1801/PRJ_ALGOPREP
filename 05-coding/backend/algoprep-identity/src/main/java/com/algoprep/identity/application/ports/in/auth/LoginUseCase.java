@@ -1,7 +1,7 @@
-package com.algoprep.identity.application.ports.in;
+package com.algoprep.identity.application.ports.in.auth;
 
-import com.algoprep.identity.application.dto.LoginCommand;
-import com.algoprep.identity.application.dto.LoginResult;
+import com.algoprep.identity.application.dto.auth.LoginCommand;
+import com.algoprep.identity.application.dto.auth.LoginResult;
 
 /** Endpoints #2 and #49: log in with email and password. */
 public interface LoginUseCase {

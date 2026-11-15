@@ -1,9 +1,9 @@
-package com.algoprep.identity.application.query;
+package com.algoprep.identity.application.query.account;
 
 import com.algoprep.common.exception.RateLimitExceededException;
 import com.algoprep.common.exception.ServiceUnavailableException;
-import com.algoprep.identity.application.dto.SubmissionExport;
-import com.algoprep.identity.application.ports.in.ExportMySubmissionsUseCase;
+import com.algoprep.identity.application.dto.account.SubmissionExport;
+import com.algoprep.identity.application.ports.in.account.ExportMySubmissionsUseCase;
 import com.algoprep.identity.application.ports.out.ExportRateLimitPort;
 import com.algoprep.identity.application.ports.out.SubmissionExportPort;
 import com.algoprep.identity.domain.exception.IdentityErrorCodes;

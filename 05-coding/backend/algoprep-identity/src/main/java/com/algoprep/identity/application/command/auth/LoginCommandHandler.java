@@ -1,12 +1,12 @@
-package com.algoprep.identity.application.command;
+package com.algoprep.identity.application.command.auth;
 
 import com.algoprep.common.exception.PermissionDeniedException;
 import com.algoprep.common.exception.RateLimitExceededException;
 import com.algoprep.common.exception.UnauthenticatedException;
-import com.algoprep.identity.application.dto.LoginCommand;
-import com.algoprep.identity.application.dto.LoginResult;
 import com.algoprep.identity.application.dto.UserSummary;
-import com.algoprep.identity.application.ports.in.LoginUseCase;
+import com.algoprep.identity.application.dto.auth.LoginCommand;
+import com.algoprep.identity.application.dto.auth.LoginResult;
+import com.algoprep.identity.application.ports.in.auth.LoginUseCase;
 import com.algoprep.identity.application.ports.out.LoginAttemptPort;
 import com.algoprep.identity.application.ports.out.PasswordHasherPort;
 import com.algoprep.identity.domain.exception.IdentityErrorCodes;

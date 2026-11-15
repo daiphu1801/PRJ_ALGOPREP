@@ -1,7 +1,7 @@
 package com.algoprep.identity.infrastructure.persistence;
 
-import com.algoprep.identity.domain.model.ClassRef;
-import com.algoprep.identity.domain.model.MyClass;
+import com.algoprep.identity.domain.model.classes.ClassRef;
+import com.algoprep.identity.domain.model.classes.MyClass;
 import com.algoprep.identity.domain.ports.out.StudentClassRepository;
 import java.sql.ResultSet;
 import java.sql.SQLException;

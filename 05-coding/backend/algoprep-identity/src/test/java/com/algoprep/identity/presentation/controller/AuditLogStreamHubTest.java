@@ -9,11 +9,11 @@ import static org.mockito.Mockito.when;
 
 import com.algoprep.common.exception.PermissionDeniedException;
 import com.algoprep.common.exception.RateLimitExceededException;
-import com.algoprep.identity.application.dto.AuditLogItem;
-import com.algoprep.identity.application.dto.AuditStreamBatch;
-import com.algoprep.identity.application.dto.AuditStreamRequest;
-import com.algoprep.identity.application.ports.in.StreamSystemAuditLogUseCase;
-import com.algoprep.identity.domain.model.AuditLogCursor;
+import com.algoprep.identity.application.dto.audit.AuditLogItem;
+import com.algoprep.identity.application.dto.audit.AuditStreamBatch;
+import com.algoprep.identity.application.dto.audit.AuditStreamRequest;
+import com.algoprep.identity.application.ports.in.audit.StreamSystemAuditLogUseCase;
+import com.algoprep.identity.domain.model.audit.AuditLogCursor;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;

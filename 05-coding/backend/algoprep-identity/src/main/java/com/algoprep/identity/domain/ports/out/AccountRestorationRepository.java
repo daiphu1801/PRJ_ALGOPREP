@@ -1,7 +1,7 @@
 package com.algoprep.identity.domain.ports.out;
 
-import com.algoprep.identity.domain.model.RestorableAccount;
-import com.algoprep.identity.domain.model.RestorationGrant;
+import com.algoprep.identity.domain.model.account.RestorableAccount;
+import com.algoprep.identity.domain.model.account.RestorationGrant;
 import java.util.Optional;
 import java.util.UUID;
 

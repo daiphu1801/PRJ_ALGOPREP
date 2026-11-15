@@ -1,7 +1,7 @@
 package com.algoprep.identity.presentation.controller;
 
-import com.algoprep.identity.application.dto.RestoreAccountCommand;
-import com.algoprep.identity.application.ports.in.RestoreDeactivatedAccountUseCase;
+import com.algoprep.identity.application.dto.account.RestoreAccountCommand;
+import com.algoprep.identity.application.ports.in.account.RestoreDeactivatedAccountUseCase;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;

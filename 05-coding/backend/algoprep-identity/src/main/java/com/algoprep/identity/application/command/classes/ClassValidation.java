@@ -1,7 +1,7 @@
-package com.algoprep.identity.application.command;
+package com.algoprep.identity.application.command.classes;
 
 import com.algoprep.common.exception.DomainRuleViolationException;
-import com.algoprep.identity.domain.model.ScheduleSpec;
+import com.algoprep.identity.domain.model.classes.ScheduleSpec;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;

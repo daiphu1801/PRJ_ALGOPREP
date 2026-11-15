@@ -1,6 +1,6 @@
 package com.algoprep.identity.domain.ports.out;
 
-import com.algoprep.identity.domain.model.SubmissionClassScope;
+import com.algoprep.identity.domain.model.classes.SubmissionClassScope;
 import java.util.List;
 import java.util.UUID;
 

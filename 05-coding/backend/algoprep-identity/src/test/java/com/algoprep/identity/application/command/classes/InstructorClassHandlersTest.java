@@ -1,4 +1,4 @@
-package com.algoprep.identity.application.command;
+package com.algoprep.identity.application.command.classes;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -14,12 +14,12 @@ import static org.mockito.Mockito.when;
 import com.algoprep.common.domain.ports.out.ClockPort;
 import com.algoprep.common.domain.ports.out.IdGeneratorPort;
 import com.algoprep.common.exception.AlgoPrepException;
-import com.algoprep.identity.application.dto.CreateClassCommand;
-import com.algoprep.identity.application.dto.CreatedClass;
-import com.algoprep.identity.application.dto.UpdateClassCommand;
-import com.algoprep.identity.domain.model.ClassInviteCode;
-import com.algoprep.identity.domain.model.InstructorClass;
-import com.algoprep.identity.domain.model.ScheduleSpec;
+import com.algoprep.identity.application.dto.classes.CreateClassCommand;
+import com.algoprep.identity.application.dto.classes.CreatedClass;
+import com.algoprep.identity.application.dto.classes.UpdateClassCommand;
+import com.algoprep.identity.domain.model.classes.ClassInviteCode;
+import com.algoprep.identity.domain.model.classes.InstructorClass;
+import com.algoprep.identity.domain.model.classes.ScheduleSpec;
 import com.algoprep.identity.domain.ports.out.ClassEventPort;
 import com.algoprep.identity.domain.ports.out.InstructorClassRepository;
 import java.time.Instant;

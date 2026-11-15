@@ -1,5 +1,7 @@
-package com.algoprep.identity.domain.model;
+package com.algoprep.identity.domain.model.password;
 
+import com.algoprep.identity.domain.model.UserAccount;
+import com.algoprep.identity.domain.model.UserStatus;
 import java.time.Instant;
 
 /** Account snapshot read under a user row lock, with timestamps from the PostgreSQL clock. */

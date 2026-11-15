@@ -1,7 +1,7 @@
-package com.algoprep.identity.application.query;
+package com.algoprep.identity.application.query.audit;
 
-import com.algoprep.identity.application.ports.in.GetLogRetentionSettingsUseCase;
-import com.algoprep.identity.domain.model.LogRetentionSettings;
+import com.algoprep.identity.application.ports.in.audit.GetLogRetentionSettingsUseCase;
+import com.algoprep.identity.domain.model.audit.LogRetentionSettings;
 import com.algoprep.identity.domain.ports.out.LogRetentionRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
