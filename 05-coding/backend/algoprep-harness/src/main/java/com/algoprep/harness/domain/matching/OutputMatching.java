@@ -4,6 +4,7 @@ import com.algoprep.common.exception.DomainRuleViolationException;
 import com.algoprep.common.functionspec.MatchingStrategy;
 import com.algoprep.common.functionspec.TypeKind;
 import com.algoprep.common.functionspec.TypeNode;
+import com.algoprep.common.text.EdgeTrim;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -45,7 +46,7 @@ public final class OutputMatching {
     return String.join(
         "\n",
         Arrays.stream(value.split("\n", -1))
-            .map(line -> line.replaceAll("^[ \\t]+|[ \\t]+$", "").replaceAll("[ \\t]+", " "))
+            .map(line -> EdgeTrim.edges(line, " \t").replaceAll("[ \\t]+", " "))
             .toList());
   }
 

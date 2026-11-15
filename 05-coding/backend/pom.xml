@@ -75,9 +75,11 @@
       Việc CHẶN được bật THEO TỪNG MODULE bằng cách ghi đè property này thành true trong pom của
       module đó, đúng lúc module có class nghiệp vụ đầu tiên trong domain/ hoặc application/.
       Đây là lộ trình bật chặn, KHÔNG phải hạ ngưỡng — ngưỡng vẫn là 80%.
+      2026-11-15 (plan 261114-1645): chặn đã bật cho MỌI module và ngưỡng nâng lên 90%; không còn
+      loại trừ nào trong báo cáo (mọi module đo được từ 95,7% trở lên khi nâng ngưỡng).
     -->
-    <jacoco.haltOnFailure>false</jacoco.haltOnFailure>
-    <jacoco.line.minimum>0.80</jacoco.line.minimum>
+    <jacoco.haltOnFailure>true</jacoco.haltOnFailure>
+    <jacoco.line.minimum>0.90</jacoco.line.minimum>
   </properties>
 
   <dependencyManagement>
@@ -245,18 +247,15 @@
         </executions>
       </plugin>
 
-      <!-- Cổng 4: độ bao phủ. Chính bộ `excludes` ở mức plugin là cách hiện thực "80% cho tầng
-           application và domain": infrastructure và presentation bị loại khỏi bundle, nên con số
-           báo ra CHÍNH LÀ con số của domain + application. -->
+      <!-- Coverage gate. Since 2026-11-14 (owner decision, plan 261114-1645) NO production code is
+           excluded from coverage: infrastructure, presentation, config and *Application classes are
+           measured like the rest, so the number matches what Sonar reports. Only package-info
+           (no executable code) stays out. -->
       <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
         <configuration>
           <excludes>
-            <exclude>**/infrastructure/**</exclude>
-            <exclude>**/presentation/**</exclude>
-            <exclude>**/config/**</exclude>
-            <exclude>**/*Application.class</exclude>
             <exclude>**/package-info.class</exclude>
           </excludes>
         </configuration>

@@ -157,6 +157,9 @@ class WrapperBehaviorFixturesTest {
     Files.writeString(directory.resolve("expected.txt"), behavior.output(), StandardCharsets.UTF_8);
     Files.writeString(
         directory.resolve("exit.txt"), Integer.toString(behavior.exit()), StandardCharsets.UTF_8);
+    assertThat(directory.resolve(program.sourceFileName())).isNotEmptyFile();
+    assertThat(Files.readString(directory.resolve("expected.txt"), StandardCharsets.UTF_8))
+        .isEqualTo(behavior.output());
   }
 
   @ParameterizedTest

@@ -4,6 +4,7 @@ import com.algoprep.common.exception.DomainRuleViolationException;
 import com.algoprep.common.functionspec.FunctionSpecDraft;
 import com.algoprep.common.functionspec.FunctionSpecEvaluator;
 import com.algoprep.common.functionspec.MatchingStrategy;
+import com.algoprep.common.text.EdgeTrim;
 import com.algoprep.harness.application.dto.MatchOutputCommand;
 import com.algoprep.harness.application.dto.MatchResult;
 import com.algoprep.harness.application.dto.MatchSpec;
@@ -108,7 +109,7 @@ public final class MatchOutputMatcher implements MatchOutputUseCase {
   }
 
   private static String normalize(String value) {
-    return newlines(value).replaceFirst("\n+$", "");
+    return EdgeTrim.trailing(newlines(value), "\n");
   }
 
   private static String newlines(String value) {

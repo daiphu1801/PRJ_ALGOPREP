@@ -1,6 +1,7 @@
 package com.algoprep.aireview.infrastructure.llm;
 
 import com.algoprep.aireview.domain.ports.out.LlmProviderPort;
+import com.algoprep.common.text.EdgeTrim;
 import java.time.Duration;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.openai.OpenAiChatModel;
@@ -46,7 +47,7 @@ class LlmProviderConfiguration {
    * The OpenAI SDK appends {@code /chat/completions}; OpenRouter serves it under {@code /api/v1}.
    */
   static String sdkBaseUrl(String configured) {
-    String base = configured == null ? "" : configured.strip().replaceAll("/+$", "");
+    String base = configured == null ? "" : EdgeTrim.trailing(configured.strip(), "/");
     return base.endsWith("/v1") ? base : base + "/v1";
   }
 }

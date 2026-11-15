@@ -140,7 +140,7 @@ class SubmissionStompFlowTest {
   void invalidOrMissingJwtGetsOnlyGenericErrorThenClose(String token) throws Exception {
     try (var wire = StompWireClient.open(port)) {
       wire.connect(token);
-      wire.deniedAndClosed();
+      assertThat(wire.deniedAndClosed()).contains("Request denied");
     }
   }
 
@@ -154,7 +154,7 @@ class SubmissionStompFlowTest {
             + token.substring(signature + 1);
     try (var wire = StompWireClient.open(port)) {
       wire.connect(forged);
-      wire.deniedAndClosed();
+      assertThat(wire.deniedAndClosed()).contains("Request denied");
     }
   }
 
@@ -177,7 +177,7 @@ class SubmissionStompFlowTest {
     Account a = account("STUDENT");
     try (var wire = StompWireClient.open(port)) {
       wire.connect(signed(a.id(), Instant.now().minusSeconds(1)));
-      wire.deniedAndClosed();
+      assertThat(wire.deniedAndClosed()).contains("Request denied");
     }
   }
 
@@ -190,7 +190,7 @@ class SubmissionStompFlowTest {
         a.id());
     try (var wire = StompWireClient.open(port)) {
       wire.connect(a.token());
-      wire.deniedAndClosed();
+      assertThat(wire.deniedAndClosed()).contains("Request denied");
     }
   }
 

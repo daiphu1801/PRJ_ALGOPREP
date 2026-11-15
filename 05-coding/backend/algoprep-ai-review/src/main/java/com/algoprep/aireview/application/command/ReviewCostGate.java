@@ -37,10 +37,11 @@ class ReviewCostGate {
         gate.reserve(
             userId, FeatureCode.SOLUTION_REVIEW, limits.reviewPerHour(), limits.cooldownSeconds());
     if (reservation.outcome() == GateOutcome.COOLDOWN) {
-      throw AiRateLimitedException.cooldown(reservation.retryAfterSeconds());
+      throw AiRateLimitedException.coolingDown(reservation.retryAfterSeconds());
     }
     if (reservation.outcome() == GateOutcome.QUOTA_EXCEEDED) {
-      throw AiRateLimitedException.quota(limits.reviewPerHour(), reservation.retryAfterSeconds());
+      throw AiRateLimitedException.quotaExceeded(
+          limits.reviewPerHour(), reservation.retryAfterSeconds());
     }
     return reservation;
   }

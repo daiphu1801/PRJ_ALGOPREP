@@ -1,5 +1,6 @@
 package com.algoprep.problembank.domain.model;
 
+import com.algoprep.common.text.EdgeTrim;
 import java.text.Normalizer;
 import java.util.Locale;
 
@@ -14,8 +15,8 @@ public final class ProblemCode {
             .replace('đ', 'd')
             .replace('Đ', 'D')
             .toUpperCase(Locale.ROOT)
-            .replaceAll("[^A-Z0-9]+", "-")
-            .replaceAll("^-|-$", "");
+            .replaceAll("[^A-Z0-9]+", "-");
+    base = EdgeTrim.edges(base, "-");
     if (base.isEmpty()) {
       base = "PROBLEM";
     }

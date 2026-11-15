@@ -1,5 +1,6 @@
 package com.algoprep.interviewbank.domain.model;
 
+import com.algoprep.common.text.EdgeTrim;
 import java.text.Normalizer;
 import java.util.Locale;
 
@@ -15,18 +16,19 @@ public final class CatalogSlug {
    */
   public static String create(String displayName, CatalogKind kind, int attempt) {
     String base =
-        Normalizer.normalize(displayName, Normalizer.Form.NFD)
-            .replaceAll("\\p{M}+", "")
-            .replace('đ', 'd')
-            .replace('Đ', 'D')
-            .toUpperCase(Locale.ROOT)
-            .replaceAll("[^A-Z0-9]+", "_")
-            .replaceAll("^_+|_+$", "");
+        EdgeTrim.edges(
+            Normalizer.normalize(displayName, Normalizer.Form.NFD)
+                .replaceAll("\\p{M}+", "")
+                .replace('đ', 'd')
+                .replace('Đ', 'D')
+                .toUpperCase(Locale.ROOT)
+                .replaceAll("[^A-Z0-9]+", "_"),
+            "_");
     if (base.isEmpty()) {
       base = kind.name();
     }
     if (base.length() > MAX_BASE) {
-      base = base.substring(0, MAX_BASE).replaceAll("_+$", "");
+      base = EdgeTrim.trailing(base.substring(0, MAX_BASE), "_");
     }
     String suffix = attempt <= 1 ? "" : "_" + attempt;
     return base.substring(0, Math.min(base.length(), MAX_LENGTH - suffix.length())) + suffix;

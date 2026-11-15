@@ -43,8 +43,8 @@ public final class NameConventions {
     }
     String separated =
         rawName
-            .replaceAll("([A-Z]+)([A-Z][a-z])", "$1_$2")
-            .replaceAll("([a-z0-9])([A-Z])", "$1_$2");
+            .replaceAll("(?<=[A-Z])(?=[A-Z][a-z])", "_")
+            .replaceAll("(?<=[a-z0-9])(?=[A-Z])", "_");
     var words =
         Arrays.stream(separated.split("_+"))
             .filter(s -> !s.isEmpty())

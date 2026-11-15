@@ -107,7 +107,10 @@ class GenerateTestcaseScriptCommandHandler implements GenerateTestcaseScriptUseC
               template.responseSchemaVersion(),
               TestcaseScriptSchema.JSON),
           new CallOptions(
-              template.modelId(), CallOptions.DEFAULT_MAX_TOKENS, TOTAL_TIMEOUT, TOTAL_TIMEOUT));
+              template.modelId(),
+              CallOptions.GENERATE_TESTCASE_MAX_TOKENS,
+              TOTAL_TIMEOUT,
+              TOTAL_TIMEOUT));
     } catch (AiProviderUnavailableException | AiInvalidResponseException failure) {
       throw failure;
     } catch (RuntimeException failure) {

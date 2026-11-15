@@ -1,5 +1,6 @@
 package com.algoprep.identity.infrastructure.oauth;
 
+import com.algoprep.common.text.EdgeTrim;
 import com.algoprep.identity.application.ports.out.OAuthProviderPort;
 import com.algoprep.identity.domain.exception.OAuthCodeRejectedException;
 import com.algoprep.identity.domain.model.OAuthProfile;
@@ -179,7 +180,7 @@ class HttpOAuthProviderAdapter implements OAuthProviderPort {
   private String redirectUri(OAuthProvider provider) {
     String base =
         environment.getProperty("algoprep.oauth.redirect-base-url", "http://localhost:3000");
-    return base.replaceAll("/+$", "") + "/auth/callback/" + provider.path();
+    return EdgeTrim.trailing(base, "/") + "/auth/callback/" + provider.path();
   }
 
   private static String defaultAuthorize(OAuthProvider provider) {

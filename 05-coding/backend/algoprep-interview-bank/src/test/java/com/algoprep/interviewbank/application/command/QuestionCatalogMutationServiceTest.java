@@ -2,6 +2,7 @@ package com.algoprep.interviewbank.application.command;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -41,10 +42,9 @@ class QuestionCatalogMutationServiceTest {
   }
 
   private static String codeOf(Runnable call) {
-    var captured = new AlgoPrepException[1];
-    assertThatThrownBy(call::run)
-        .isInstanceOfSatisfying(AlgoPrepException.class, e -> captured[0] = e);
-    return captured[0].errorCode();
+    Throwable thrown = catchThrowable(call::run);
+    assertThat(thrown).isInstanceOf(AlgoPrepException.class);
+    return ((AlgoPrepException) thrown).errorCode();
   }
 
   private InterviewAuditEntry audited() {

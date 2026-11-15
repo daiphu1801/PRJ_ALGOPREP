@@ -100,6 +100,8 @@ class GenerateTestcaseScriptCommandHandlerTest {
     var options = ArgumentCaptor.forClass(CallOptions.class);
     verify(llm).completeStructured(any(), any(), any(), any(), options.capture());
     assertThat(options.getValue().totalTimeout().toSeconds()).isEqualTo(120);
+    // Finding F-01: reasoning models need more than the default 4096 output tokens here.
+    assertThat(options.getValue().maxTokens()).isEqualTo(CallOptions.GENERATE_TESTCASE_MAX_TOKENS);
     assertThat(out.tokensUsed()).isZero();
     assertThat(out.modelId()).isEqualTo("model-x");
   }

@@ -140,7 +140,7 @@ class SolutionReviewControllerTest {
   @Test
   void adviceAddsRetryAfterAndMaps502() {
     var advice = new SolutionReviewErrorAdvice();
-    var limited = advice.rateLimited(AiRateLimitedException.quota(10, 321));
+    var limited = advice.rateLimited(AiRateLimitedException.quotaExceeded(10, 321));
     assertThat(limited.getStatusCode()).isEqualTo(HttpStatus.TOO_MANY_REQUESTS);
     assertThat(limited.getHeaders().getFirst("Retry-After")).isEqualTo("321");
     assertThat(limited.getBody().getProperties())

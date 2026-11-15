@@ -79,7 +79,7 @@ class PromptTemplateController {
 
   record History(List<HistoryItem> items) {}
 
-  private static Item item(PromptTemplate t, int maxTokens) {
+  private static Item item(PromptTemplate t) {
     ResponseGuards g = t.content().guards();
     return new Item(
         t.id(),
@@ -90,14 +90,14 @@ class PromptTemplateController {
         t.content().modelId(),
         g == null ? null : new Guards(g.citeLines(), g.answerInVietnamese(), g.noFullSolution()),
         t.responseSchemaVersion(),
-        maxTokens,
+        com.algoprep.aireview.domain.model.CallOptions.maxTokensFor(t.featureCode()),
         t.publishedAt(),
         t.createdAt());
   }
 
   private static Items items(PromptTemplateList result) {
     return new Items(
-        result.items().stream().map(t -> item(t, result.maxTokens())).toList(),
+        result.items().stream().map(PromptTemplateController::item).toList(),
         result.modelOptions());
   }
 
@@ -138,7 +138,7 @@ class PromptTemplateController {
         save.save(
             new SavePromptDraftCommand(
                 UUID.fromString(caller.getToken().getSubject()), feature, content));
-    return item(saved, com.algoprep.aireview.domain.model.CallOptions.DEFAULT_MAX_TOKENS);
+    return item(saved);
   }
 
   @PostMapping("/publish")

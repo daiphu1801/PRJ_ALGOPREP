@@ -26,7 +26,7 @@ public final class AiRateLimitedException extends RateLimitExceededException
     this.limit = limit;
   }
 
-  public static AiRateLimitedException quota(int limit, long retryAfterSeconds) {
+  public static AiRateLimitedException quotaExceeded(int limit, long retryAfterSeconds) {
     return new AiRateLimitedException(
         QUOTA, "Hourly review quota exceeded", retryAfterSeconds, limit);
   }
@@ -36,7 +36,7 @@ public final class AiRateLimitedException extends RateLimitExceededException
         INTERVIEW_QUOTA, "Hourly interview quota exceeded", retryAfterSeconds, limit);
   }
 
-  public static AiRateLimitedException cooldown(long retryAfterSeconds) {
+  public static AiRateLimitedException coolingDown(long retryAfterSeconds) {
     return new AiRateLimitedException(COOLDOWN, "Still in cooldown", retryAfterSeconds, null);
   }
 

@@ -67,6 +67,7 @@ class SubmissionAdmissionValidationTest {
                         field == 2 ? null : "EDITOR",
                         null)),
         "JDG-V0" + (field + 3));
+    verifyNoInteractions(f.repository, f.problems);
   }
 
   @ParameterizedTest

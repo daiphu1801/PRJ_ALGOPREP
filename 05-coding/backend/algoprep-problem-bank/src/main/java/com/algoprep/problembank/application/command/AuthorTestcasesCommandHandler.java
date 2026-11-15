@@ -150,7 +150,7 @@ class AuthorTestcasesCommandHandler implements AuthorTestcasesUseCase {
   public TestcaseMutationResults.Ordered reorder(TestcaseCommands.Reorder command) {
     var problem = support.lock(command.scope(), command.problemId());
     List<UUID> wanted = command.orderedIds();
-    if (wanted == null || wanted.contains(null)) {
+    if (wanted == null || wanted.stream().anyMatch(java.util.Objects::isNull)) {
       throw new InvalidRequestException("PRB-001", "orderedIds is required");
     }
     List<UUID> current = testcases.lockOrder(problem.id());

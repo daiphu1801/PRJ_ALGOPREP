@@ -68,9 +68,11 @@ final class StompWireClient implements WebSocket.Listener, AutoCloseable {
     return frame;
   }
 
-  void deniedAndClosed() throws Exception {
-    assertThat(next()).isEqualTo("ERROR\nmessage:Request denied\ncontent-length:0\n\n");
+  String deniedAndClosed() throws Exception {
+    String frame = next();
+    assertThat(frame).isEqualTo("ERROR\nmessage:Request denied\ncontent-length:0\n\n");
     assertThat(closed.get(5, TimeUnit.SECONDS)).isNotNull();
+    return frame;
   }
 
   void noMessage() throws Exception {

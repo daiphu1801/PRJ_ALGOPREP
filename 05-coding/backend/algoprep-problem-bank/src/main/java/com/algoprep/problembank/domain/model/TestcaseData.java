@@ -21,6 +21,23 @@ public record TestcaseData(
   }
 
   @Override
+  public boolean equals(Object other) {
+    return other instanceof TestcaseData that
+        && position == that.position
+        && java.util.Objects.equals(testcaseId, that.testcaseId)
+        && java.util.Objects.equals(visibility, that.visibility)
+        && java.util.Arrays.equals(input, that.input)
+        && java.util.Arrays.equals(expectedOutput, that.expectedOutput);
+  }
+
+  @Override
+  public int hashCode() {
+    int result = java.util.Objects.hash(testcaseId, visibility, position);
+    result = 31 * result + java.util.Arrays.hashCode(input);
+    return 31 * result + java.util.Arrays.hashCode(expectedOutput);
+  }
+
+  @Override
   public String toString() {
     return "TestcaseData[testcaseId="
         + testcaseId

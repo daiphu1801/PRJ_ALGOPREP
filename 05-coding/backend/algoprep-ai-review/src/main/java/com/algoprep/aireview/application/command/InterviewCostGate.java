@@ -39,7 +39,7 @@ class InterviewCostGate {
             limits.interviewPerHour(),
             limits.cooldownSeconds());
     if (reservation.outcome() == GateOutcome.COOLDOWN) {
-      throw AiRateLimitedException.cooldown(reservation.retryAfterSeconds());
+      throw AiRateLimitedException.coolingDown(reservation.retryAfterSeconds());
     }
     if (reservation.outcome() == GateOutcome.QUOTA_EXCEEDED) {
       throw AiRateLimitedException.interviewQuota(

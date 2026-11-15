@@ -32,17 +32,17 @@ class ModelPriceController {
 
   private final ListModelPricesUseCase list;
   private final CreateModelPriceUseCase create;
-  private final UpdateModelPriceUseCase update;
+  private final UpdateModelPriceUseCase updateUseCase;
   private final DeleteModelPriceUseCase delete;
 
   ModelPriceController(
       ListModelPricesUseCase list,
       CreateModelPriceUseCase create,
-      UpdateModelPriceUseCase update,
+      UpdateModelPriceUseCase updateUseCase,
       DeleteModelPriceUseCase delete) {
     this.list = list;
     this.create = create;
-    this.update = update;
+    this.updateUseCase = updateUseCase;
     this.delete = delete;
   }
 
@@ -72,7 +72,7 @@ class ModelPriceController {
   Item update(@PathVariable String priceId, @RequestBody JsonNode body) {
     UUID id = BudgetRequests.priceId(priceId);
     BudgetRequests.PricePatch patch = BudgetRequests.pricePatch(body);
-    return item(update.update(id, patch.modelName(), patch.usdPerMillionTokens()));
+    return item(updateUseCase.update(id, patch.modelName(), patch.usdPerMillionTokens()));
   }
 
   @DeleteMapping("/{priceId}")
