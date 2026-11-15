@@ -27,7 +27,7 @@ import org.testcontainers.postgresql.PostgreSQLContainer;
  * plain UUIDs without foreign keys (BD F2 section 1), so no stand-in tables for the identity
  * context are needed. The module's own migrations are applied from the classpath in version order.
  */
-abstract class PostgresTestBase {
+public abstract class PostgresTestBase {
   protected static final UUID EASY = UUID.fromString("20000000-0000-4000-8000-000000000001");
   protected static final UUID MEDIUM = UUID.fromString("20000000-0000-4000-8000-000000000002");
   protected static final UUID HARD = UUID.fromString("20000000-0000-4000-8000-000000000003");

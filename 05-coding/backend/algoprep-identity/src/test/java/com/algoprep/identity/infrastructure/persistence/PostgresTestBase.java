@@ -36,7 +36,8 @@ abstract class PostgresTestBase {
     "V1.001__init.sql",
     "V1.002__processed_domain_events.sql",
     "V1.003__class_event_outbox.sql",
-    "V1.004__instructor_interview_bank_grant.sql"
+    "V1.004__instructor_interview_bank_grant.sql",
+    "V1.005__session_revocations.sql"
   };
 
   static {

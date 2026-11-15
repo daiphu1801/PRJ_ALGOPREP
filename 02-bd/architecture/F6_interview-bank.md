@@ -336,3 +336,12 @@ tắc `bd-generation` "không phải module nào cũng cần cả 4 file, không
 - `02-bd/security/F1_identity.md` mục 2 — nguyên tắc "quyền sở hữu dữ liệu tách khỏi RBAC theo role".
 - `07-review/rd_drift_repair_260909.md` mục 3.1 — ba rubric độc lập trong hệ thống, F6-13 là rubric thứ ba.
 - `06-plan/260912-1055-bd-rollout-order.md` — thứ tự triển khai BD, module cuối cùng của trục module.
+
+## Lịch sử sửa đổi
+
+Bảng: Lịch sử sửa đổi BD kiến trúc `interview-bank`.
+
+| Ngày | Nội dung | Căn cứ |
+| :--- | :--- | :--- |
+| 2026-09-12 | BD lần đầu | `06-plan/260912-1055-bd-rollout-order.md` |
+| 2026-11-15 | Thêm mục 1.1: quy ước gom package `domain/model` thành bốn nhóm `question`, `study`, `practice`, `feedback`; lớp dùng chung ở lại package cha; không giữ `package-info.java` | `06-plan/261114-1645-sonarqube-clear-coverage-90.md` mục 12 |

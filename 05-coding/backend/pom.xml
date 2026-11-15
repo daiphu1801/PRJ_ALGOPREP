@@ -30,10 +30,10 @@
   <description>AlgoPrep backend — POM cha của modular monolith</description>
 
   <!--
-    Khai đủ tám module ngay (DEC-2026-0901-backend-base-architecture điểm 2).
-    Năm module chưa tới lượt chỉ có pom.xml và package-info.java từng tầng, không có class
-    nghiệp vụ. Thứ tự dưới đây là thứ tự DỰNG theo 01-rd/system/SYS0101_backend_architecture.md mục 2;
-    thứ tự build thật do Maven tự suy ra từ phụ thuộc.
+    Khai đủ tám module (DEC-2026-0901-backend-base-architecture điểm 2). Tới 2026-11-15 cả tám
+    module đã có mã nghiệp vụ; không còn module nào chỉ có khung. Thứ tự dưới đây là thứ tự DỰNG
+    theo 01-rd/system/SYS0101_backend_architecture.md mục 2; thứ tự build thật do Maven tự suy ra
+    từ phụ thuộc.
   -->
   <modules>
     <module>algoprep-common</module>
@@ -248,17 +248,12 @@
       </plugin>
 
       <!-- Coverage gate. Since 2026-11-14 (owner decision, plan 261114-1645) NO production code is
-           excluded from coverage: infrastructure, presentation, config and *Application classes are
-           measured like the rest, so the number matches what Sonar reports. Only package-info
-           (no executable code) stays out. -->
+           excluded from coverage: every class, including infrastructure, presentation, config and
+           *Application, is measured like the rest, so the number matches what Sonar reports.
+           There are no package-info.java files left to exclude either. -->
       <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
-        <configuration>
-          <excludes>
-            <exclude>**/package-info.class</exclude>
-          </excludes>
-        </configuration>
         <executions>
           <execution>
             <id>jacoco-prepare-agent</id>
