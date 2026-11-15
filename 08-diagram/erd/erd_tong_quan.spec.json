@@ -294,7 +294,7 @@
       }
     ],
     "notes": [
-      "Mọi schema đều tham chiếu identity.users (user_id, author_id, created_by, updated_by, assigned_by); 21 liên kết này không vẽ để hình đỡ rối, xem ERD từng schema."
+      "hình chỉ vẽ 41 trên 67 bảng tiêu biểu; không vẽ bảng danh mục, bảng nối, bảng outbox và bảng hạ tầng. Schema harness không có bảng."
     ]
   }
 }
