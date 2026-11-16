@@ -57,7 +57,7 @@ Bảng 1.1: Slice của màn.
 | entities | `entities/submission/api/queries.ts` | `useSubmissionDetail(id, area)` | Có, mock [SoT: ES api/queries.ts:29-41] |
 | entities | `entities/submission/api/progress.ts` | Hook tiến trình `useSubmissionProgress` cho một `submissionId` (đọc ảnh chụp, hẹn đọc lại 5 giây khi `PENDING`); **dùng chung với DD-PD BR-SC-05** | Có, `useSubmissionProgress` ở `05-coding/frontend/src/entities/submission/api/progress.ts:38` (sửa 2026-11-16: bản trước ghi nhầm tên file `use-submission-progress.ts`, "Chưa có") |
 | entities | `entities/submission/ui/queue-notice.tsx` | Thành phần chung `QueueNotice` của dòng hàng đợi F4-14, nhận `queue` và hàm dịch khoá; tái dùng `NoticeTile` của `shared/ui`; dùng chung với `USR0102` (OQ-8) | Có, `05-coding/frontend/src/entities/submission/ui/queue-notice.tsx:11` |
-| entities | `entities/submission/model/progress-reducer.ts` | Hàm thuần áp bản tin theo `seq` | Chưa có |
+| entities | `entities/submission/model/progress-reducer.ts` | Hàm thuần áp bản tin theo `seq` | Chưa tách thành file riêng; logic áp `seq` hiện nằm trong `05-coding/frontend/src/entities/submission/api/progress.ts:77-80,143` (kiểm 2026-11-16) |
 | entities | `entities/submission/model/types.ts` | Kiểu `SubmissionDetail`, `SubmissionTestcaseResult` | Có, cần thêm trường (Bảng 1.2) [SoT: ES model/types.ts:33-68] |
 | entities | `entities/problem/api/queries.ts` | `useSampleTestcases(problemId)` để lấy input và kết quả mong đợi của Sample | Chưa có |
 | entities | `entities/submission/model/origin.ts` | `parseSubmissionOrigin` cho `from` (A2) | Có [SoT: ES model/origin.ts:4-10] |
@@ -86,8 +86,8 @@ Bảng 2.1: Sự kiện BD, endpoint theo ID, hook, trạng thái nối. Hiện 
 | EVT-1 (A1) | F4 mục 8 `GetSubmissionDetail` | `useSubmissionDetail(id, "student")` | mock [SoT: ES api/queries.ts:29-41] |
 | EVT-1 (A2) | F4 mục 14 `GetSubmissionDetail` biến thể giảng viên | `useSubmissionDetail(id, "instructor")` | mock |
 | EVT-4 (mở rộng testcase mẫu) | F2 mục 8 `GetProblemSampleTestcases` | `useSampleTestcases(problemId)`, **gọi lười** ở lần mở rộng đầu tiên | chưa có |
-| EVT-1, EVT-9 | F4 mục 2 kênh `/user/queue/submissions` (W1) | `useSubmissionProgress` (đăng ký) | chưa có |
-| EVT-1, EVT-9 | F4 mục 9 `GET /submissions/{submissionId}/progress` | `useSubmissionProgress` (ảnh chụp, nối lại, dự phòng) | chưa có |
+| EVT-1, EVT-9 | F4 mục 2 kênh `/user/queue/submissions` (W1) | `useSubmissionProgress` (đăng ký) | có, `05-coding/frontend/src/entities/submission/api/progress.ts:125` (`subscribeJudge`, `/user/queue/submissions`); kiểm 2026-11-16 |
+| EVT-1, EVT-9 | F4 mục 9 `GET /submissions/{submissionId}/progress` | `useSubmissionProgress` (ảnh chụp, nối lại, dự phòng) | có, `05-coding/frontend/src/entities/submission/api/progress.ts:69` (`GET .../progress`); kiểm 2026-11-16 |
 | EVT-10 | F4 mục 9 `GET /submissions/{submissionId}/progress`, trường `queue` (F4-14) | `useSubmissionProgress` (hook tiến trình dùng chung, hiện ở `05-coding/frontend/src/entities/submission/api/progress.ts:38`) | đã dựng FE 2026-11-16 (`05-coding/frontend/src/entities/submission/api/progress.ts:73-76`) |
 | EVT-2, 3, 6, 7, 8 | không gọi API | `next/link` | không áp dụng |
 | EVT-5 | không gọi API (Clipboard) | state màn | không áp dụng |

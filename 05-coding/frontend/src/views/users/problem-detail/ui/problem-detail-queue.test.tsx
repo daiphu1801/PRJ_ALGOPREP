@@ -133,6 +133,10 @@ describe("ProblemDetailView queue notice (PD-AC-14)", () => {
     );
     expect(screen.getByText(/0 đạt/)).toBeInTheDocument();
     expect(screen.queryByText(/không đạt/)).not.toBeInTheDocument();
+    // The status badge stays neutral until a final verdict exists (not the red negative style).
+    const badge = screen.getByText(/Đang chờ · 0\/\d+/);
+    expect(badge.className).toContain("surface-hover");
+    expect(badge.className).not.toContain("admin-negative");
   });
 
   it("shows only the count when the estimate is null", async () => {

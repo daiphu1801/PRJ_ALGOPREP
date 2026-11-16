@@ -61,7 +61,7 @@ Bảng 1.1: Slice của màn.
 | entities | `entities/problem/model/workspace-draft.ts` | Khoá và ghi nháp `localStorage` | Có [SoT: BD:395] |
 | entities | `entities/submission/api/progress.ts` | Hook tiến trình `useSubmissionProgress` cho một `submissionId` (BR-SC-06); **dùng chung với `USR0201`** | Có, `05-coding/frontend/src/entities/submission/api/progress.ts:38` (sửa 2026-11-16: bản trước ghi nhầm tên file `use-submission-progress.ts`, "Chưa có") |
 | entities | `entities/submission/ui/queue-notice.tsx` | Thành phần chung `QueueNotice` của dòng hàng đợi F4-14; tái dùng `NoticeTile` của `shared/ui`; dùng chung với `USR0201` (OQ-12) | Có, `05-coding/frontend/src/entities/submission/ui/queue-notice.tsx:11` |
-| entities | `entities/submission/model/progress-reducer.ts` | Hàm thuần áp bản tin theo `seq` (F4:138-144) | Chưa có |
+| entities | `entities/submission/model/progress-reducer.ts` | Hàm thuần áp bản tin theo `seq` (F4:138-144) | Chưa tách thành file riêng; logic áp `seq` hiện nằm trong `05-coding/frontend/src/entities/submission/api/progress.ts:77-80,143` (kiểm 2026-11-16) |
 | shared | `shared/realtime/stomp-client.ts` | Khách STOMP (kết nối, đăng ký, nối lại có lùi), không biết nghiệp vụ | Chưa có [SoT: `05-coding/frontend/src/shared/realtime/README.md:6-9`] |
 | shared | `shared/api` (`useErrorMessage`) | Dịch `error.code` sang chuỗi i18n | Chưa có, comment đã hẹn [SoT: `05-coding/frontend/src/shared/api/api-error.ts:1-3`] |
 
@@ -91,8 +91,8 @@ Bảng 2.1: Sự kiện, endpoint, hook.
 | EVT-1 | F5 mục 6 `GetMySolutionReviewQuickInsight` | `useSolutionReviewQuickInsight` (query **riêng**, BD Sheet 7.1 NO 21) | mock (`solutionReview`) |
 | EVT-10 | F4 mục 5 `RunSampleTestcases` | `useRunSampleTestcases` | mock [SoT: EP api/queries.ts:70-74] |
 | EVT-11 | F4 mục 6 `CreateSubmission` | `useCreateSubmission` | mock [SoT: EP api/queries.ts:79-83] |
-| EVT-11, 12 | F4 mục 2 kênh `/user/queue/submissions` (W1) | `useSubmissionProgress` (đăng ký) | chưa có |
-| EVT-11, 12 | F4 mục 9 `GET /submissions/{submissionId}/progress` (ảnh chụp) | `useSubmissionProgress` (nối lại, dự phòng) | chưa có |
+| EVT-11, 12 | F4 mục 2 kênh `/user/queue/submissions` (W1) | `useSubmissionProgress` (đăng ký) | có, `05-coding/frontend/src/entities/submission/api/progress.ts:125` (`subscribeJudge`, `/user/queue/submissions`); kiểm 2026-11-16 |
+| EVT-11, 12 | F4 mục 9 `GET /submissions/{submissionId}/progress` (ảnh chụp) | `useSubmissionProgress` (nối lại, dự phòng) | có, `05-coding/frontend/src/entities/submission/api/progress.ts:69` (`GET .../progress`); kiểm 2026-11-16 |
 | EVT-23 | F4 mục 9 `GET /submissions/{submissionId}/progress`, trường `queue` (F4-14) | `useSubmissionProgress` (hook tiến trình dùng chung, hiện ở `05-coding/frontend/src/entities/submission/api/progress.ts:38`) | đã dựng FE 2026-11-16 (`05-coding/frontend/src/entities/submission/api/progress.ts:73-76`) |
 | EVT-15 | F2 mục 12 `ToggleMyProblemBookmark` | `useToggleBookmark` | **chưa gọi gì**, state cục bộ [SoT: PV:291-301] |
 | EVT-16, EVT-17, EVT-18, EVT-19, EVT-22 | không gọi API; EVT-17/18 mở F5 ở màn đích, không tự kích hoạt | điều hướng `next/link` | không áp dụng |
@@ -334,7 +334,7 @@ Bảng 7.1: Điểm kiểm thử.
 | T-PD-31 | Normal | Sau Submit `201` `PENDING` với `queue = { ahead: 18, estimatedWaitSeconds: 9 }`: bảng kết quả hiện dòng đủ cả hai số; `estimatedWaitSeconds = null` chỉ hiện số bài; `ahead = 0` hiện "sắp đến lượt bạn"; Run Code không hiện dòng này | Vitest | PD-AC-14, F4 AC-78, AC-79 |
 | T-PD-32 | Normal | `PENDING`: đọc lại ảnh chụp mỗi 5 giây (giả đồng hồ); `STATUS_CHANGED` đọc ngay; rời `PENDING` thì huỷ hẹn giờ, ẩn dòng, dải ô tô dần | Vitest (giả đồng hồ) | PD-AC-14 |
 | T-PD-33 | Abnormal | Một lần đọc ảnh chụp lỗi khi `PENDING`: giữ dòng cũ, không toast, chu kỳ sau đọc lại; `queue = null` ẩn dòng; không ảnh hưởng 10 lần hỏi của lúc mất kênh | Vitest | PD-AC-14, F4 AC-80 |
-| T-PD-34 | Normal | F-01: Submit `201` còn `PENDING`, đóng hộp thoại: bảng Console hiện "0 đạt", **không** có chữ "không đạt". Test `does not report untouched testcases as failed while PENDING (F-01)` ở `05-coding/frontend/src/views/users/problem-detail/ui/problem-detail-queue.test.tsx:125` (test chỉ kiểm dòng tóm tắt; kiểu huy hiệu trung tính **không có test**, chỉ có ảnh chụp trình duyệt thật ở `06-plan/reports/261116-0200-f4-14-browser-check-f01-sau-sua/report.md`; trạng thái `JUDGING` không có ảnh, chỉ dùng chung hàm `isUnfinished`) | Vitest | PD-AC-14 `[SoT: Suy luận]` (F-01 là hành vi cùng bảng kết quả `PENDING`, chưa có `PD-AC` riêng) |
+| T-PD-34 | Normal | F-01: Submit `201` còn `PENDING`, đóng hộp thoại: bảng Console hiện "0 đạt", **không** có chữ "không đạt". Test `does not report untouched testcases as failed while PENDING (F-01)` ở `05-coding/frontend/src/views/users/problem-detail/ui/problem-detail-queue.test.tsx:125` (test kiểm cả dòng tóm tắt và kiểu huy hiệu trung tính: lớp `surface-hover`, không có `admin-negative`; đã kiểm bằng đột biến `isUnfinished`, test bị bắt; thêm 2026-11-16. Ảnh chụp trình duyệt thật ở `06-plan/reports/261116-0200-f4-14-browser-check-f01-sau-sua/report.md`; trạng thái `JUDGING` không có ảnh, chỉ dùng chung hàm `isUnfinished`) | Vitest | PD-AC-14 `[SoT: Suy luận]` (F-01 là hành vi cùng bảng kết quả `PENDING`, chưa có `PD-AC` riêng) |
 
 ## 8. Nợ prototype và câu hỏi mở
 
