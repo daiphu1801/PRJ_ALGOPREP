@@ -34,6 +34,7 @@ domain/application.
   go-judge thật trong container tạm. Probe: `python handoff/f3-toolchain-guard/probe.py` từ repo
   root, sau NodeSourceRendererTest. Script tự tạo container loopback, dọn fileId rồi xóa container.
 - Từ 2026-11-07 (`DEC-2026-1107-go-judge-toolchain-image-in-compose`), service `algoprep-go-judge` trong `docker-compose.yml` build từ Dockerfile này và chạy image toolchain trên cổng 5050.
+- Từ 2026-11-15 (`DEC-2026-1115-cpp-precompiled-header`), Dockerfile build sẵn `bits/stdc++.h.gch` với đúng cờ `-std=c++20 -O2` để biên dịch wrapper C++ nhanh hơn (1,61 giây xuống 0,74 giây khi rảnh). Cờ trong `ToolchainProfile.java` phải giữ nguyên, nếu đổi cờ thì g++ bỏ `.gch` mà không báo lỗi. Đổi phiên bản g++ thì build lại image. Báo cáo: `06-plan/reports/261115-2330-f4-c3-pch/report.md`.
 - GoJudgeAdapter/F4 orchestration, P2 đầy đủ và round-trip bảng kiểu chưa có. Báo cáo:
   `06-plan/reports/261101-1735-f3-toolchain-guard-nodes/report.md`.
 

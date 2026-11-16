@@ -98,6 +98,36 @@ class JdbcSubmissionReadRepository implements SubmissionReadRepository {
   }
 
   @Override
+  public long pendingAhead(UUID id) {
+    return jdbc.getObject()
+        .sql(
+            """
+        SELECT count(*) FROM judge.submissions
+        WHERE status='PENDING'
+          AND (submitted_at,id) < (SELECT submitted_at,id FROM judge.submissions WHERE id=:id)
+        """)
+        .param("id", id)
+        .query(Long.class)
+        .single();
+  }
+
+  @Override
+  public long finishedLastMinute() {
+    // updated_at equals finished_at for terminal rows (set together) and uses the
+    // (status, updated_at) index; see DD F4 section 9.4.
+    return jdbc.getObject()
+        .sql(
+            """
+        SELECT count(*) FROM judge.submissions
+        WHERE status IN ('ACCEPTED','WRONG_ANSWER','TIME_LIMIT_EXCEEDED','RUNTIME_ERROR',
+                         'COMPILE_ERROR','SYSTEM_ERROR')
+          AND updated_at >= now() - interval '60 seconds'
+        """)
+        .query(Long.class)
+        .single();
+  }
+
+  @Override
   public List<SubmissionReadState> recent(UUID owner, UUID problem, int limit) {
     return jdbc.getObject()
         .sql(

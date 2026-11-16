@@ -5,6 +5,7 @@ import com.algoprep.judge.application.dto.read.SubmissionReads.History;
 import com.algoprep.judge.application.dto.read.SubmissionReads.Problem;
 import com.algoprep.judge.application.dto.read.SubmissionReads.Progress;
 import com.algoprep.judge.application.dto.read.SubmissionReads.ProgressCase;
+import com.algoprep.judge.application.dto.read.SubmissionReads.QueueInfo;
 import com.algoprep.judge.application.dto.read.SubmissionReads.Summary;
 import com.algoprep.judge.application.dto.read.SubmissionReads.Testcase;
 import com.algoprep.judge.application.dto.read.SubmissionReads.TestcaseDetail;
@@ -19,10 +20,16 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
 class SubmissionReadProjection {
+  private static final Logger LOG = LoggerFactory.getLogger(SubmissionReadProjection.class);
+  private static final long WINDOW_SECONDS = 60;
+  private static final long MIN_SAMPLES = 3;
+  private static final long MAX_WAIT_SECONDS = 3600;
   private final SubmissionReadRepository repository;
   private final ProblemSummaryReadPort problems;
 
@@ -129,7 +136,30 @@ class SubmissionReadProjection {
         (int) cases.stream().filter(c -> c.verdict().equals("AC")).count(),
         cases.stream().map(c -> new ProgressCase(c.order(), c.verdict())).toList(),
         s.scored() ? s.score() : null,
-        failing);
+        failing,
+        s.status().equals("PENDING") ? queue(s) : null);
+  }
+
+  private QueueInfo queue(SubmissionReadState s) {
+    try {
+      long ahead = repository.pendingAhead(s.id());
+      return new QueueInfo(
+          (int) Math.min(ahead, Integer.MAX_VALUE),
+          ahead == 0 ? null : estimate(ahead, repository.finishedLastMinute()));
+    } catch (RuntimeException failure) {
+      // Degrade gracefully: the rest of the snapshot stays valid (F4-14).
+      LOG.warn("Queue position unavailable: {}", failure.getClass().getSimpleName());
+      return null;
+    }
+  }
+
+  /** ceil(ahead / (finished / 60)) capped at 3600; null when fewer than 3 finished samples. */
+  static Integer estimate(long ahead, long finishedLast60s) {
+    if (ahead <= 0 || finishedLast60s < MIN_SAMPLES) {
+      return null;
+    }
+    long seconds = (ahead * WINDOW_SECONDS + finishedLast60s - 1) / finishedLast60s;
+    return (int) Math.min(MAX_WAIT_SECONDS, seconds);
   }
 
   Map<UUID, Problem> summaries(Set<UUID> ids) {

@@ -614,7 +614,12 @@
       "summaryPassed": "{n} passed",
       "summaryFailed": "{n} failed",
       "btnDetail": "View details",
-      "progressSlow": "Updates are delayed. Open the result page or reload to check the latest status."
+      "progressSlow": "Updates are delayed. Open the result page or reload to check the latest status.",
+      "queue": {
+        "waiting": "Waiting to be judged: {ahead} submission(s) ahead of you",
+        "waitingWithEstimate": "Waiting to be judged: {ahead} submission(s) ahead, about {seconds} seconds estimated",
+        "aboutToStart": "Waiting to be judged: you are next"
+      }
     },
     "verdict": {
       "accepted": "Accepted",
@@ -2296,6 +2301,11 @@
       "needAccepted": "Available once this submission is Accepted."
     },
     "progressSlow": "Updates are delayed. Reload to check the latest status.",
+    "queue": {
+      "waiting": "Waiting to be judged: {ahead} submission(s) ahead of you",
+      "waitingWithEstimate": "Waiting to be judged: {ahead} submission(s) ahead, about {seconds} seconds estimated",
+      "aboutToStart": "Waiting to be judged: you are next"
+    },
     "testcaseUnavailable": "Testcase details are no longer available for this submission."
   },
   "mySubmissions": {

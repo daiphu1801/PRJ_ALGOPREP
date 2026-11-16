@@ -19,6 +19,12 @@ public interface SubmissionReadRepository {
 
   boolean stderrEnabled();
 
+  /** PENDING submissions ordered before the given one by (submitted_at, id); count only. */
+  long pendingAhead(UUID id);
+
+  /** Submissions that reached a terminal status within the last 60 seconds (database clock). */
+  long finishedLastMinute();
+
   List<SubmissionReadState> recent(UUID owner, UUID problem, int limit);
 
   long count(UUID owner, String verdict, String language, Set<UUID> problems);

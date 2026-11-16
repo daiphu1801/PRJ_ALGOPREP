@@ -47,7 +47,11 @@ import {
   type WrapperMode,
 } from "@/entities/problem";
 import { useReviewQuickInsight } from "@/entities/solution-review";
-import { useSubmissionProgress } from "@/entities/submission";
+import {
+  QueueNotice,
+  useSubmissionProgress,
+  type JudgeQueue,
+} from "@/entities/submission";
 import { isMockMode } from "@/shared/api";
 import { useApiErrorMessage, useLocale, useT } from "@/shared/i18n";
 import { formatDateVN } from "@/shared/lib";
@@ -80,6 +84,10 @@ const PREFS_STORAGE_KEY = "algoprep-workspace-prefs";
 type Tab = "statement" | "submissions" | "review";
 type ConsoleTab = "testcase" | "result";
 type UploadedFile = { name: string; size: number; content: string };
+
+// Until the final verdict, "total - passed" counts testcases that were never judged, so it must not read as failed.
+const isUnfinished = (verdict: string) =>
+  verdict === "pending" || verdict === "compiling" || verdict === "running";
 
 function byteLength(text: string) {
   return new TextEncoder().encode(text).byteLength;
@@ -163,10 +171,12 @@ function Workspace({
   const [submitAttempt, setSubmitAttempt] = useState(0);
   const [result, setResult] = useState<SubmissionRunResult | null>(null);
   const [progressIssue, setProgressIssue] = useState<string | null>(null);
+  const [queue, setQueue] = useState<JudgeQueue | null>(null);
   const [trackingId, setTrackingId] = useState<string | undefined>();
   useSubmissionProgress(trackingId, {
     progress: (progress) => {
       setProgressIssue(null);
+      setQueue(progress.status === "PENDING" ? (progress.queue ?? null) : null);
       setResult(
         (previous) =>
           previous && {
@@ -184,6 +194,7 @@ function Workspace({
     finished: (detail) => {
       setTrackingId(undefined);
       setRunning(false);
+      setQueue(null);
       setResult({
         submissionId: detail.submissionId,
         overallVerdict: overallVerdict[detail.status] ?? "systemError",
@@ -789,6 +800,13 @@ function Workspace({
   const consolePane = (
     <Card className="flex min-h-0 flex-1 flex-col px-3 py-2.5">
       {progressIssue ? <p role="status">{progressIssue}</p> : null}
+      {!dialog && trackingId && result?.overallVerdict === "pending" ? (
+        <QueueNotice
+          queue={queue}
+          t={(key, values) => t(`console.queue.${key}`, values)}
+          className="mb-2"
+        />
+      ) : null}
       <div className="mb-2 flex shrink-0 flex-wrap items-center justify-between gap-2">
         <SegmentedTabs
           label={t("console.tabsLabel")}
@@ -802,7 +820,11 @@ function Workspace({
         {consoleTab === "result" && result ? (
           <Badge
             variant={
-              result.overallVerdict === "accepted" ? "success" : "negative"
+              result.overallVerdict === "accepted"
+                ? "success"
+                : isUnfinished(result.overallVerdict)
+                  ? "neutral"
+                  : "negative"
             }
           >
             {t(`verdict.${result.overallVerdict}`)} · {result.passedCount}/
@@ -869,14 +891,18 @@ function Workspace({
               <span className="font-semibold text-[var(--color-success)]">
                 {t("console.summaryPassed", { n: result.passedCount })}
               </span>
-              {" · "}
-              <span
-                className={`font-semibold ${result.totalCount - result.passedCount > 0 ? "text-[var(--color-admin-negative)]" : ""}`}
-              >
-                {t("console.summaryFailed", {
-                  n: result.totalCount - result.passedCount,
-                })}
-              </span>
+              {isUnfinished(result.overallVerdict) ? null : (
+                <>
+                  {" · "}
+                  <span
+                    className={`font-semibold ${result.totalCount - result.passedCount > 0 ? "text-[var(--color-admin-negative)]" : ""}`}
+                  >
+                    {t("console.summaryFailed", {
+                      n: result.totalCount - result.passedCount,
+                    })}
+                  </span>
+                </>
+              )}
             </p>
             <p className="text-[11.5px] text-[var(--color-text-muted)]">
               {t("console.metrics", {
@@ -1004,6 +1030,9 @@ function Workspace({
           running={running}
           sampleRun={sampleRun}
           progressIssue={progressIssue}
+          queue={
+            trackingId && result?.overallVerdict === "pending" ? queue : null
+          }
           result={result}
           onClose={() => setDialog(null)}
         />

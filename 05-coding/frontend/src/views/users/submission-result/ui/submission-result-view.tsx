@@ -23,6 +23,8 @@ import {
 import {
   useSubmissionDetail,
   useSubmissionProgress,
+  QueueNotice,
+  type JudgeQueue,
   SUBMISSION_STATUS_VARIANT,
   type SubmissionDetail,
   type SubmissionTestcaseResult,
@@ -96,6 +98,7 @@ export function SubmissionResultView({
   const submission = detailQuery.data;
   const queryClient = useQueryClient();
   const [progressIssue, setProgressIssue] = useState(false);
+  const [queue, setQueue] = useState<JudgeQueue | null>(null);
   useSubmissionProgress(
     !isInstructor &&
       submission &&
@@ -103,7 +106,8 @@ export function SubmissionResultView({
       ? submissionId
       : undefined,
     {
-      progress: () => {
+      progress: (progress) => {
+        setQueue(progress.queue ?? null);
         void queryClient.invalidateQueries({
           queryKey: ["submission", "detail", area, submissionId],
         });
@@ -161,6 +165,13 @@ export function SubmissionResultView({
   return (
     <div className={isInstructor ? "flex flex-col p-6" : "p-6"}>
       {progressIssue ? <p role="status">{t("progressSlow")}</p> : null}
+      {!isInstructor && submission.status === "PENDING" ? (
+        <QueueNotice
+          queue={queue ?? submission.queue}
+          t={(key, values) => t(`queue.${key}`, values)}
+          className="mb-4"
+        />
+      ) : null}
       {submission.testcaseDetailsAvailable === false && !isCompileError ? (
         <p>{t("testcaseUnavailable")}</p>
       ) : null}

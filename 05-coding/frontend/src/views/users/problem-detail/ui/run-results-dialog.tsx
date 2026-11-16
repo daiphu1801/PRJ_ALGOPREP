@@ -8,6 +8,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import type { SampleRunResult, SubmissionRunResult } from "@/entities/problem";
+import { QueueNotice, type JudgeQueue } from "@/entities/submission";
 import { useT } from "@/shared/i18n";
 import { Badge, Button, Modal } from "@/shared/ui";
 
@@ -18,6 +19,8 @@ type Props = {
   result: SubmissionRunResult | null;
   onClose: () => void;
   progressIssue?: string | null;
+  /** F4-14: set only while the tracked Submit is PENDING. */
+  queue?: JudgeQueue | null;
 };
 
 export function RunResultsDialog({
@@ -27,6 +30,7 @@ export function RunResultsDialog({
   result,
   onClose,
   progressIssue,
+  queue,
 }: Props) {
   const t = useT("problemDetail");
   const [picked, setPicked] = useState<number | null>(null);
@@ -61,6 +65,13 @@ export function RunResultsDialog({
       }
     >
       {progressIssue ? <p role="status">{progressIssue}</p> : null}
+      {mode === "submit" ? (
+        <QueueNotice
+          queue={queue}
+          t={(key, values) => t(`console.queue.${key}`, values)}
+          className="mb-2"
+        />
+      ) : null}
       {mode === "run" ? (
         sampleRun?.compileErrorMessage ? (
           <pre className="whitespace-pre-wrap break-words">
@@ -154,7 +165,13 @@ export function RunResultsDialog({
           <div className="flex flex-wrap items-center gap-2">
             <Badge
               variant={
-                result.overallVerdict === "accepted" ? "success" : "negative"
+                result.overallVerdict === "accepted"
+                  ? "success"
+                  : ["pending", "compiling", "running"].includes(
+                        result.overallVerdict,
+                      )
+                    ? "neutral"
+                    : "negative"
               }
             >
               {t(`verdict.${result.overallVerdict}`)} · {result.passedCount}/

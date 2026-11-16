@@ -105,6 +105,43 @@ class JdbcReadModelsPgTest extends PostgresTestBase {
   }
 
   @Test
+  void pendingAheadOrdersBySubmittedAtThenIdAndCountsOnlyPending() {
+    // T-PG-05, T-PG-09, AC-78
+    var repo = new JdbcSubmissionReadRepository(provider());
+    var first = submission(user, problem, "PENDING", ago(Duration.ofMinutes(10)));
+    var second = submission(other, problem, "PENDING", ago(Duration.ofMinutes(5)));
+    submission(user, problem2, "JUDGING", ago(Duration.ofMinutes(20)));
+    submission(user, problem2, "ACCEPTED", ago(Duration.ofMinutes(30)));
+    var third = submission(user, problem2, "PENDING", ago(Duration.ofMinutes(1)));
+    assertThat(repo.pendingAhead(first)).isZero();
+    assertThat(repo.pendingAhead(second)).isEqualTo(1);
+    assertThat(repo.pendingAhead(third)).isEqualTo(2);
+    var tieA = submission(user, problem, "PENDING", ago(Duration.ofSeconds(30)));
+    var tieB = submission(other, problem, "PENDING", ago(Duration.ofSeconds(30)));
+    // PostgreSQL orders uuid bytes unsigned, which matches the canonical string order.
+    var lower = tieA.toString().compareTo(tieB.toString()) < 0 ? tieA : tieB;
+    var higher = lower.equals(tieA) ? tieB : tieA;
+    assertThat(repo.pendingAhead(lower)).isEqualTo(3);
+    assertThat(repo.pendingAhead(higher)).isEqualTo(4);
+  }
+
+  @Test
+  void finishedLastMinuteCountsTerminalRowsInsideTheWindowOnly() {
+    // T-PG-05, T-PG-07, T-PG-13, AC-79
+    var repo = new JdbcSubmissionReadRepository(provider());
+    assertThat(repo.finishedLastMinute()).isZero();
+    var recent = Instant.now();
+    submission(user, problem, "ACCEPTED", "JAVA", recent, recent);
+    submission(user, problem, "WRONG_ANSWER", "JAVA", recent, recent);
+    submission(user, problem, "SYSTEM_ERROR", "JAVA", recent, recent);
+    submission(user, problem, "PENDING", "JAVA", recent, recent);
+    submission(user, problem, "JUDGING", "JAVA", recent, recent);
+    submission(
+        user, problem, "ACCEPTED", "JAVA", ago(Duration.ofMinutes(5)), ago(Duration.ofMinutes(5)));
+    assertThat(repo.finishedLastMinute()).isEqualTo(3);
+  }
+
+  @Test
   void historyFiltersCountAndOrderNewestFirstWithOffset() {
     var repo = new JdbcSubmissionReadRepository(provider());
     var oldest = submission(user, problem, "ACCEPTED", "JAVA", ago(Duration.ofHours(3)), now);

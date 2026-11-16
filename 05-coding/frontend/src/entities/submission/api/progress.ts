@@ -3,6 +3,10 @@ import { useQueryClient } from "@tanstack/react-query";
 import { api, isMockMode } from "@/shared/api";
 import { subscribeJudge } from "@/shared/api/stomp";
 
+import type { JudgeQueue } from "../model/types";
+export type { JudgeQueue };
+// Matches the 5 s re-read of DD F4 section 2.5 step 6.
+const PENDING_POLL_MS = 5000;
 export type JudgeProgress = {
   submissionId: string;
   status: string;
@@ -12,6 +16,7 @@ export type JudgeProgress = {
   completedCount: number;
   passedCount: number;
   testcases: { order: number; verdict: string }[];
+  queue?: JudgeQueue | null;
 };
 export type JudgeResult = {
   submissionId: string;
@@ -49,6 +54,8 @@ export function useSubmissionProgress(
     let attempts = 0;
     let lastMessage = 0;
     let timer: ReturnType<typeof setTimeout>;
+    let pendingTimer: ReturnType<typeof setTimeout>;
+    let pending = false;
     let stopSocket = () => {};
     const path = `/judge/submissions/${encodeURIComponent(submissionId)}`;
     async function snapshot() {
@@ -61,7 +68,15 @@ export function useSubmissionProgress(
       try {
         const value = await api.get<JudgeProgress>(`${path}/progress`);
         if (disposed || final || value.submissionId !== submissionId) return;
-        if (value.isFinal || value.seq > seq) {
+        pending = !value.isFinal && value.status === "PENDING";
+        clearTimeout(pendingTimer);
+        if (pending) pendingTimer = setTimeout(() => void snapshot(), PENDING_POLL_MS);
+        // The queue hint changes while seq stays put, so an equal seq is still applied for PENDING.
+        if (
+          value.isFinal ||
+          value.seq > seq ||
+          (pending && value.seq === seq)
+        ) {
           seq = Math.max(seq, value.seq);
           if (!value.isFinal) latest.current.progress(value);
         }
@@ -70,6 +85,7 @@ export function useSubmissionProgress(
           if (disposed) return;
           final = true;
           clearTimeout(timer);
+          clearTimeout(pendingTimer);
           stopSocket();
           latest.current.finished(detail);
           void queryClient.invalidateQueries({ queryKey: ["submission"] });
@@ -78,7 +94,13 @@ export function useSubmissionProgress(
           });
         }
       } catch (error) {
-        if (!disposed) latest.current.error(error);
+        if (!disposed) {
+          // A failed read while PENDING keeps the old line and retries next cycle, no error shown.
+          if (pending) {
+            clearTimeout(pendingTimer);
+            pendingTimer = setTimeout(() => void snapshot(), PENDING_POLL_MS);
+          } else latest.current.error(error);
+        }
       } finally {
         busy = false;
         if (rerun && !disposed && !final) {
@@ -95,7 +117,8 @@ export function useSubmissionProgress(
           return;
         }
         attempts++;
-        void snapshot();
+        // While PENDING the 5 s timer does the reading; this tick only counts toward "slow".
+        if (!pending) void snapshot();
       }
       timer = setTimeout(tick, 3000);
     };
@@ -128,6 +151,7 @@ export function useSubmissionProgress(
     return () => {
       disposed = true;
       clearTimeout(timer);
+      clearTimeout(pendingTimer);
       stopSocket();
     };
   }, [submissionId, queryClient]);

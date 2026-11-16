@@ -614,7 +614,12 @@
       "summaryPassed": "{n} đạt",
       "summaryFailed": "{n} không đạt",
       "btnDetail": "Xem chi tiết",
-      "progressSlow": "Cập nhật đang chậm. Bạn có thể mở trang kết quả hoặc tải lại để xem trạng thái mới nhất."
+      "progressSlow": "Cập nhật đang chậm. Bạn có thể mở trang kết quả hoặc tải lại để xem trạng thái mới nhất.",
+      "queue": {
+        "waiting": "Đang chờ chấm: phía trước còn {ahead} bài",
+        "waitingWithEstimate": "Đang chờ chấm: phía trước còn {ahead} bài, ước tính khoảng {seconds} giây",
+        "aboutToStart": "Đang chờ chấm: sắp đến lượt bạn"
+      }
     },
     "verdict": {
       "accepted": "Accepted",
@@ -2296,6 +2301,11 @@
       "needAccepted": "Tính năng chỉ mở khi bài nộp đạt Accepted."
     },
     "progressSlow": "Cập nhật đang chậm. Tải lại để xem trạng thái mới nhất.",
+    "queue": {
+      "waiting": "Đang chờ chấm: phía trước còn {ahead} bài",
+      "waitingWithEstimate": "Đang chờ chấm: phía trước còn {ahead} bài, ước tính khoảng {seconds} giây",
+      "aboutToStart": "Đang chờ chấm: sắp đến lượt bạn"
+    },
     "testcaseUnavailable": "Chi tiết testcase không còn khả dụng cho bài nộp này."
   },
   "mySubmissions": {

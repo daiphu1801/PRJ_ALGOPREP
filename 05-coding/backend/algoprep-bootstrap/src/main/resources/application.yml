@@ -47,6 +47,10 @@ spring:
 
 server:
   port: 8080
+  tomcat:
+    # Listen queue length. The default of 100 refused a few connections when 120 clients connected at once
+    # (DEC-2026-1115-tomcat-accept-count-1024). Rollback: delete this line to return to the Tomcat default.
+    accept-count: 1024
   # Tra loi 404 co cau truc thay vi trang loi HTML mac dinh cua Tomcat.
   error:
     whitelabel:

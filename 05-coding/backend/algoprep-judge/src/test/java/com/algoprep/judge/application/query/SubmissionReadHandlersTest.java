@@ -172,6 +172,99 @@ class SubmissionReadHandlersTest {
         .isEmpty();
   }
 
+  // ---- F4-14 queue info: T-PG-05..13, AC-78..80 ----
+
+  @Test
+  void pendingProgressCarriesAheadAndEstimateFromThroughput() {
+    // T-PG-05, AC-78: 18 ahead, 120 finished in 60 s (2 per second) gives 9 s.
+    when(repository.owned(id, owner))
+        .thenReturn(Optional.of(state("PENDING", "STANDARD_IO", false)));
+    when(repository.cases(id)).thenReturn(List.of());
+    when(repository.pendingAhead(id)).thenReturn(18L);
+    when(repository.finishedLastMinute()).thenReturn(120L);
+    var queue = owned.getProgress(owner, id).queue();
+    assertThat(queue.ahead()).isEqualTo(18);
+    assertThat(queue.estimatedWaitSeconds()).isEqualTo(9);
+  }
+
+  @Test
+  void aheadZeroSkipsEstimateAndThroughputQuery() {
+    // T-PG-06, AC-78
+    when(repository.cases(id)).thenReturn(List.of());
+    when(repository.pendingAhead(id)).thenReturn(0L);
+    var queue = projection.progress(state("PENDING", "STANDARD_IO", false)).queue();
+    assertThat(queue.ahead()).isZero();
+    assertThat(queue.estimatedWaitSeconds()).isNull();
+    verify(repository, org.mockito.Mockito.never()).finishedLastMinute();
+  }
+
+  @Test
+  void estimateNeedsThreeSamplesRoundsUpAndCapsAtOneHour() {
+    // T-PG-07, T-PG-08, AC-79
+    assertThat(SubmissionReadProjection.estimate(18, 2)).isNull();
+    assertThat(SubmissionReadProjection.estimate(18, 3)).isEqualTo(360);
+    assertThat(SubmissionReadProjection.estimate(1, 120)).isEqualTo(1);
+    assertThat(SubmissionReadProjection.estimate(7, 60)).isEqualTo(7);
+    assertThat(SubmissionReadProjection.estimate(5, 7)).isEqualTo(43);
+    assertThat(SubmissionReadProjection.estimate(5000, 3)).isEqualTo(3600);
+    assertThat(SubmissionReadProjection.estimate(18, 0)).isNull();
+    assertThat(SubmissionReadProjection.estimate(0, 100)).isNull();
+  }
+
+  @Test
+  void pausedQueueGivesAheadWithoutEstimate() {
+    // T-PG-13, AC-79: nothing finished in the window
+    when(repository.cases(id)).thenReturn(List.of());
+    when(repository.pendingAhead(id)).thenReturn(4L);
+    when(repository.finishedLastMinute()).thenReturn(0L);
+    var queue = projection.progress(state("PENDING", "STANDARD_IO", false)).queue();
+    assertThat(queue.ahead()).isEqualTo(4);
+    assertThat(queue.estimatedWaitSeconds()).isNull();
+  }
+
+  @ParameterizedTest
+  @ValueSource(
+      strings = {
+        "COMPILING",
+        "JUDGING",
+        "ACCEPTED",
+        "WRONG_ANSWER",
+        "TIME_LIMIT_EXCEEDED",
+        "RUNTIME_ERROR",
+        "COMPILE_ERROR",
+        "SYSTEM_ERROR"
+      })
+  void nonPendingStatusHasNoQueueAndRunsNoQueueQuery(String status) {
+    // T-PG-10, AC-80
+    when(repository.cases(id)).thenReturn(List.of());
+    assertThat(projection.progress(state(status, "STANDARD_IO", false)).queue()).isNull();
+    verify(repository, org.mockito.Mockito.never()).pendingAhead(any());
+    verify(repository, org.mockito.Mockito.never()).finishedLastMinute();
+  }
+
+  @Test
+  void queueFailureReturnsNullQueueAndKeepsTheRestOfTheSnapshot() {
+    // T-PG-11, AC-80
+    when(repository.cases(id)).thenReturn(List.of());
+    when(repository.pendingAhead(id)).thenThrow(new IllegalStateException("private SQL"));
+    var progress = projection.progress(state("PENDING", "STANDARD_IO", false));
+    assertThat(progress.queue()).isNull();
+    assertThat(progress.status()).isEqualTo("PENDING");
+    assertThat(progress.seq()).isZero();
+    assertThat(progress.testcases()).isEmpty();
+    org.mockito.Mockito.doReturn(2L).when(repository).pendingAhead(id);
+    when(repository.finishedLastMinute()).thenThrow(new IllegalStateException("timeout"));
+    assertThat(projection.progress(state("PENDING", "STANDARD_IO", false)).queue()).isNull();
+  }
+
+  @Test
+  void otherUsersPendingSubmissionIsNotFoundAndNoQueueQueryRuns() {
+    // T-PG-12, AC-80
+    when(repository.owned(id, owner)).thenReturn(Optional.empty());
+    assertThatThrownBy(() -> owned.getProgress(owner, id)).satisfies(e -> code(e, "JDG-110"));
+    verify(repository, org.mockito.Mockito.never()).pendingAhead(any());
+  }
+
   @Test
   void historiesClampPageNormalizeFiltersAndUseBatchSummaries() {
     var handler = new ReadMySubmissionHistoryQueryHandler(repository, projection, problems);

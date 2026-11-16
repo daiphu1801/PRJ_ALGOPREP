@@ -198,7 +198,7 @@ services:
       - -http-addr=0.0.0.0:5050
       - -grpc-addr=0.0.0.0:5051
       - -monitor-addr=0.0.0.0:5052
-      - -parallelism=${GO_JUDGE_PARALLELISM:-4}
+      - -parallelism=${GO_JUDGE_PARALLELISM:-8}
       - -output-limit=67108864
       - -silent=false
       # Mo /metrics o cong monitor cho Prometheus scrape (05-coding/monitoring/prometheus.yml).

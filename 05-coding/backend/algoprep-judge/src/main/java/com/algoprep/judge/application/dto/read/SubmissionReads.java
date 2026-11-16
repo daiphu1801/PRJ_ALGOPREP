@@ -101,6 +101,9 @@ public final class SubmissionReads {
 
   public record ProgressCase(int order, String verdict) {}
 
+  /** F4-14: count of PENDING submissions ahead plus a rough wait estimate (null when unknown). */
+  public record QueueInfo(int ahead, Integer estimatedWaitSeconds) {}
+
   public record Progress(
       UUID submissionId,
       String status,
@@ -111,7 +114,8 @@ public final class SubmissionReads {
       int passedCount,
       List<ProgressCase> testcases,
       BigDecimal scoreRatio,
-      Integer firstFailingOrder) {
+      Integer firstFailingOrder,
+      QueueInfo queue) {
     public Progress {
       testcases = List.copyOf(testcases);
     }

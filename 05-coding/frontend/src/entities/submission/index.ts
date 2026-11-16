@@ -32,6 +32,8 @@ export {
 export {
   useSubmissionProgress,
   type JudgeProgress,
+  type JudgeQueue,
   type JudgeResult,
 } from "./api/progress";
+export { QueueNotice } from "./ui/queue-notice";
 export { useStudentClassSubmissionHistory } from "./api/class-history";
