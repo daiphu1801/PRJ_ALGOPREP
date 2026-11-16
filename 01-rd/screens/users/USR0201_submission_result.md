@@ -36,6 +36,7 @@ cầu** — không lặp lại đặc tả chức năng đã có ở `01-rd/req/
 | Nộp bài trả `submissionId` ngay, không chờ kết quả chấm | F4-01 | `01-rd/req/F4_judge-orchestration.md` — F4-01 |
 | Gọi `JudgeExecutionPort` từng testcase, chạy hết toàn bộ N testcase (fail-fast đã bỏ) | F4-03 | `01-rd/req/F4_judge-orchestration.md` — F4-03, amendment 2026-08-31, `DEC-2026-0831-partial-score-testcase-ratio` |
 | Điểm tỷ lệ testcase (thang 1đ/bài, không thay verdict) | F4-13 | `01-rd/req/F4_judge-orchestration.md` — F4-13, amendment 2026-08-31, `DEC-2026-0831-partial-score-testcase-ratio` |
+| Hiện số bài đang chờ phía trước và thời gian chờ ước tính khi bài nộp còn `PENDING` (bổ sung 2026-11-15) | F4-14 | `01-rd/req/F4_judge-orchestration.md` — F4-14 |
 | Đẩy trạng thái từng testcase qua WebSocket (STOMP) theo kênh riêng của bài nộp | F4-08 | `01-rd/req/F4_judge-orchestration.md` — F4-08 |
 | Chống rò rỉ testcase ẩn: chỉ trả trạng thái và chỉ số, không trả input/diff chi tiết | F2-08 | `01-rd/req/F2_problem-bank.md` — F2-08 |
 | Ánh xạ lỗi biên dịch về đúng dòng mã người dùng; che giấu hoàn toàn mã harness | F3-11, F3-12 | `01-rd/req/F3_harness.md` — F3-11, F3-12 |
@@ -93,7 +94,10 @@ cầu** — không lặp lại đặc tả chức năng đã có ở `01-rd/req/
 9. **Không có trạng thái "đang chấm" (`PENDING`/`RUNNING`)** — toàn bộ state trong prototype là tĩnh, tính từ
    một `verdict` cho sẵn (`Accepted`/`Wrong Answer`/`Time Limit Exceeded`, dòng 238, 277-278); không có biến
    trạng thái nào mô phỏng việc nhận cập nhật từng testcase qua WebSocket khi bài nộp còn đang chạy — đã
-   chốt ở Câu hỏi mở Q2 (đã đóng): có tự subscribe, chưa dựng vào prototype tĩnh này.
+   chốt ở Câu hỏi mở Q2 (đã đóng): có tự subscribe, chưa dựng vào prototype tĩnh này. **Bổ sung 2026-11-15**
+   (F4-14, chủ dự án): khi bài nộp còn `PENDING`, màn hiện thêm một dòng "Đang chờ chấm: phía trước còn N bài,
+   ước tính khoảng M giây"; khi chưa đủ dữ liệu ước tính thì chỉ hiện số bài phía trước. Đây là yêu cầu mới,
+   chưa có trong prototype tĩnh và **chưa dựng ở bản Next.js** (trạng thái: dự kiến).
 
 Hai chế độ hiển thị không đổi hành vi nghiệp vụ, chỉ đổi văn bản/field: `data-ui-lang="vi|en"` và
 `data-theme="light|dark"` [SoT: 09-layoutBase/Kết quả nộp bài.dc.html:262-271], theo đúng
@@ -142,6 +146,7 @@ Hai chế độ hiển thị không đổi hành vi nghiệp vụ, chỉ đổi 
 | Q3 | ~~Verdict `Compile Error` và `Runtime Error` chưa có trạng thái nào được dựng trong prototype...~~ **ĐÃ CHỐT (phiên 2026-08-25, chốt theo RD):** thêm hai trạng thái verdict mới vào UI thật — `Compile Error` (thay khối "Testcase đầu tiên bị sai" bằng khối "Lỗi biên dịch" hiện thông điệp lỗi + số dòng, ẩn hẳn bảng testcase vì chưa có testcase nào chạy) và `Runtime Error` (giữ bảng testcase, thêm badge mô tả loại lỗi runtime ở testcase gây lỗi, vẫn tuân F2-08 nếu đó là testcase ẩn). **Chưa dựng vào `09-layoutBase/Kết quả nộp bài.dc.html`** (enum verdict vẫn chỉ 3 giá trị) — để lúc build FE Next.js thật. | — | Đã chốt quyết định, chưa dựng prototype. | Đã đóng |
 | Q4 | ~~Chỉ số "Beats"...chưa có mã `Fx-nn` nào mô tả cách tính...~~ **ĐÃ CHỐT (phiên 2026-08-25, chốt theo RD):** đã thêm **F4-12** vào `01-rd/req/F4_judge-orchestration.md` — tính theo runtime, so sánh trong tập bài nộp `Accepted` của cùng bài toán và cùng ngôn ngữ (không so chéo ngôn ngữ), chỉ hiển thị khi verdict là `Accepted` [SoT: 01-rd/req/F4_judge-orchestration.md — F4-12]. | — | Đã thêm mã F4-12 vào `F4_judge-orchestration.md`. | Đã đóng |
 | Q5 | Chủ dự án muốn thêm điểm tỷ lệ testcase (mỗi bài toán tối đa 1đ, chia theo tỷ lệ testcase Pass), hiển thị cho người học — đảo lại phần "Pass/Fail toàn phần + fail-fast, không điểm từng phần" đã chốt 2026-08-24 (`06-plan/PROTOTYPE_DEBT.md` mục 2.6 phần 1). **ĐÃ CHỐT (phiên 2026-08-31, qua hỏi trực tiếp chủ dự án):** bỏ fail-fast (F4-04 hết hiệu lực), thêm mã **F4-13** — điểm tỷ lệ hiển thị thêm cạnh banner verdict, không thay thế verdict `Accepted`/`Wrong Answer` nhị phân (vẫn giữ nguyên mọi phụ thuộc: kích hoạt F5, F1-07, ngưỡng AC&lt;30% của `problem_management`). Không đảo lại quyết định bỏ cột "Điểm"/trọng số ở UI `problem_authoring` — điểm tỷ lệ ở đây tính tự động đều nhau, không cần giảng viên khai báo trọng số. Xem `DEC-2026-0831-partial-score-testcase-ratio`. | — | Đã thêm mã F4-13, sửa F4-03/04, xem mục 3.2 và 3.4. | Đã đóng |
+| Q6 | ~~Thông tin chờ của F4-14 (số bài phía trước, thời gian chờ ước tính): (a) có ẩn thời gian ước tính khi nó vượt một ngưỡng nào đó (ví dụ trên 10 phút) để không làm người học hoang mang không; (b) giảng viên xem trang này ở vùng giảng viên (REQ-18, tải một lần) có cần thấy dòng này không.~~ **ĐÃ CHỐT 2026-11-16 (chủ dự án), theo đề xuất:** (a) không ẩn, máy chủ chỉ chặn trên ở 3600 giây (tiêu chí ponytail bậc 5: có mặc định hợp lý, không thêm ô nhập); (b) giảng viên không thấy dòng này vì vùng giảng viên không realtime (REQ-18). Đã kiểm: `GET /judge/submissions/{id}/progress` với token giảng viên trả `403 JDG-301`; xem `06-plan/reports/261116-0100-f4-14-browser-check/report.md` mục 4 (kiểm gián tiếp: giảng viên tổng hợp chưa phụ trách lớp nào nên không dựng được trang chi tiết với bài `PENDING`). | ~~Chưa có dữ liệu thực tế để chọn ngưỡng; (b) chưa có yêu cầu.~~ | Đã chốt quyết định, không đổi yêu cầu. | Đã đóng |
 
 ---
 
@@ -161,6 +166,7 @@ Hai chế độ hiển thị không đổi hành vi nghiệp vụ, chỉ đổi 
 | REQ-10 | **Cho** testcase gây sai là một testcase ẩn (`Hidden`, F2-06), **khi** tôi xem khối "Testcase đầu tiên bị sai" hoặc bảng "Chi tiết testcase", **thì** tôi chỉ thấy trạng thái (`WA`/`TLE`) và chỉ số thứ tự của testcase đó, không thấy Input, không thấy Expected, không thấy Output của tôi — đã khớp prototype sau khi sửa Câu hỏi mở Q1 | Chức năng (GWT) | [SoT: 01-rd/req/F2_problem-bank.md — F2-08; 09-layoutBase/Kết quả nộp bài.dc.html:148-153, 346-359] |
 | REQ-11 | **Cho** testcase gây sai là một testcase mẫu (`Sample`, F2-05), **khi** tôi xem hai khối trên, **thì** tôi được thấy đầy đủ Input/Expected/Output vì testcase mẫu vốn công khai, không thuộc phạm vi bảo vệ của F2-08 | Chức năng (GWT) | [SoT: 01-rd/req/F2_problem-bank.md — F2-05, F2-06, phân biệt Sample/Hidden] |
 | REQ-12 | **Cho** bài nộp có verdict `Compile Error`, **khi** tôi xem trang kết quả, **thì** tôi thấy lỗi biên dịch được ánh xạ về đúng dòng trong mã tôi đã viết, không lộ bất kỳ dòng mã harness nào (F3-11, F3-12) — trạng thái này chưa có trong prototype, đã chốt ở Câu hỏi mở Q3 (đã đóng): khối "Lỗi biên dịch" thay thế khối "Testcase đầu tiên bị sai" khi verdict là `Compile Error` | Chức năng (GWT) | [SoT: 01-rd/req/F3_harness.md — F3-11, F3-12] |
+| REQ-20 | **Cho** bài nộp của tôi đang `PENDING`, **khi** tôi mở trang kết quả, **thì** tôi thấy số bài nộp đang chờ phía trước và, nếu hệ thống đủ dữ liệu, thời gian chờ ước tính; **khi** bài của tôi rời `PENDING`, **thì** dòng này biến mất và trang hiện tiến độ từng testcase như thường lệ. Con số là gợi ý gần đúng (F4-14) | Chức năng (GWT) | `01-rd/req/F4_judge-orchestration.md` — F4-14; quyết định chủ dự án 2026-11-15 |
 
 ---
 
@@ -199,7 +205,7 @@ Hợp đồng API, request/response và mã lỗi thuộc DD. Luồng dữ liệ
 
 | Loại | Tham chiếu |
 | :--- | :--- |
-| Yêu cầu module | `01-rd/req/F2_problem-bank.md` — F2-08; `01-rd/req/F3_harness.md` — F3-11, F3-12; `01-rd/req/F4_judge-orchestration.md` — F4-01, F4-03, F4-08, F4-12, F4-13 _(Sửa 2026-09-05: bỏ `F4-04` khỏi danh sách — hết hiệu lực theo `DEC-2026-0831-partial-score-testcase-ratio`.)_ |
+| Yêu cầu module | `01-rd/req/F2_problem-bank.md` — F2-08; `01-rd/req/F3_harness.md` — F3-11, F3-12; `01-rd/req/F4_judge-orchestration.md` — F4-01, F4-03, F4-08, F4-12, F4-13, F4-14 _(Sửa 2026-09-05: bỏ `F4-04` khỏi danh sách — hết hiệu lực theo `DEC-2026-0831-partial-score-testcase-ratio`.)_ |
 | User story | `01-rd/req/user_stories/a1_student.md` — `US-A1-04`. |
 | Khảo sát hệ thống | `01-rd/overview/system_survey.md` — mục 7.1 dòng `submission_result`, cùng ghi chú "`problem_detail` và `submission_result` là hai màn riêng, đừng gộp"; mục 7.1 — Bounded Context chạm bởi `submission_result`. |
 | Prototype | `09-layoutBase/Kết quả nộp bài.dc.html`. |

@@ -1,5 +1,7 @@
 # DD API — Module `judge-orchestration` (F4)
 
+**Cập nhật 2026-11-16 — F4-14 (đã có mã backend, chưa nối FE):** mã tại `SubmissionReadProjection.java:143` (`queue`) và `:157` (`estimate`), truy vấn tại `JdbcSubmissionReadRepository.java:101` và `:115` (lọc `updated_at`, theo ghi chú mục 9.4), DTO `SubmissionReads.java:105`. Hợp đồng bên dưới giữ nguyên. Ban đầu (2026-11-15, dự kiến): endpoint #6 (`GET /submissions/{submissionId}/progress`) có thêm đối tượng tuỳ chọn `queue` (số bài đang chờ phía trước và thời gian chờ ước tính), chỉ khác `null` khi `status = PENDING` (mục 9.2, 9.4, 9.5). Không thêm endpoint, không thêm bản tin STOMP, không đổi quyền. Theo quyết định của chủ dự án 2026-11-15, yêu cầu `01-rd/req/F4_judge-orchestration.md` F4-14, BD `02-bd/architecture/F4_judge-orchestration.md` mục 8a, quy tắc `03-dd/logic/F4_judge-orchestration.md` BR-JD-17.
+
 **Cập nhật2026-11-12 — ACCEPT-02:** trần `workerAutoscaleMax` trong queue snapshot đọc `judge.autoscale.max-workers` deployment, mặc định8, phải dương; runtime dùng cùng giá trị và guard pool >= trần+10. Hikari chờ kết nối2000ms; lỗi lấy connection/mở transaction của submission detail/progress trả503 JDG-506 cố định, không SQL/cause. Theo `DEC-2026-1112-f4-worker-scaling-and-db-wait`; không đổi route/response shape hoặc quyền hiện hành.
 
 **Triển khai 2026-11-03, D02m — worker persistence:** năm cổng nội bộ cho
@@ -91,7 +93,7 @@ Bảng 1 liệt kê các nhóm giao tiếp mà DD này đặc tả. Đây là da
 | 3 | REST | `POST /problems/{problemId}/submissions` | `CreateSubmission` | `USR0102` | STUDENT |
 | 4 | REST | `GET /problems/{problemId}/submissions/mine` | `ListMySubmissionsForProblem` | `USR0102`, `USR0104` | STUDENT |
 | 5 | REST | `GET /submissions/{submissionId}` | `GetSubmissionDetail` (A1) | `USR0201` | STUDENT, chủ bài nộp |
-| 6 | REST | `GET /submissions/{submissionId}/progress` | ảnh chụp tiến trình, dự phòng kênh realtime | `USR0102`, `USR0201` | STUDENT, chủ bài nộp |
+| 6 | REST | `GET /submissions/{submissionId}/progress` | ảnh chụp tiến trình, dự phòng kênh realtime; kèm `queue` (hàng đợi) khi `PENDING` (F4-14) | `USR0102`, `USR0201` | STUDENT, chủ bài nộp |
 | 7 | REST | `GET /me/submissions` | `ListMySubmissions` | `USR0202` | STUDENT |
 | 8 | REST | `GET /me/in-progress-problems` | `ListMyUnsolvedRecentProblems` | `USR0101`, `USR0105` | STUDENT |
 | 9 | REST | `GET /me/metrics` | `GetMySubmissionMetrics` | `USR0501`, `USR0601` | STUDENT |
@@ -248,6 +250,8 @@ Broker đơn giản **không lưu bản tin**, nên nối lại không tự nh�
 3. Dựng lại dải ô từ ảnh chụp, rồi áp mọi bản tin có `seq` lớn hơn `seq` của ảnh chụp. Đăng ký trước, gọi REST sau, để không có khoảng hở giữa hai bước.
 4. Ảnh chụp báo `isFinal = true` thì gọi endpoint #5, không cần kênh.
 5. Khi kênh không nối lại được: hỏi lại endpoint #6 theo chu kỳ **3 giây, tối đa 10 lần** (`USR0201` Sheet 9 NO 5); hết 10 lần mà chưa kết thúc thì hiện dòng nhắc cập nhật đang chậm, **không kết luận bài trượt** (`USR0102` EVT-12 dòng 801). Hết bước này người học tải lại trang vẫn thấy trạng thái thật vì nó nằm ở DB.
+
+6. **Khi trạng thái đang biết là `PENDING`** (F4-14): kênh không có bản tin cho `PENDING` (mục 2.3) nên client đọc lại endpoint #6 mỗi **5 giây** để làm tươi `queue`, và dừng khi `status` rời `PENDING`. Bản tin `STATUS_CHANGED` vẫn kích hoạt đọc ngay một ảnh chụp. Chu kỳ 5 giây này **tách biệt** với bước 5 (3 giây, tối đa 10 lần, chỉ khi kênh không nối lại được) và không bị giới hạn 10 lần, vì bài có thể chờ hàng chục giây.
 
 Với `/topic/admin/queue`: ngoài việc nối lại, client dùng REST #13 đến #15 mỗi 15 giây khi kênh rớt hoặc quá 60 giây không có lô mới, và tải lại một lô đầy đủ khi nối lại được (`ADM0401` EVT-4, EVT-5 dòng 641-642).
 
@@ -678,6 +682,16 @@ Các số tổng (`passedCount`, `totalCount`, `scoreRatio`, `runtimeMs`, `memor
 | `completedCount`, `passedCount` | int | đếm từ `submission_testcase_results` |
 | `testcases[]` | array | `{ order, verdict }` của các testcase đã xong; **không có trường nào khác** (cùng giới hạn bản tin) |
 | `scoreRatio`, `firstFailingOrder` | decimal, int | chỉ khi `isFinal` và không phải `COMPILE_ERROR`, `SYSTEM_ERROR` |
+| `queue` | object hoặc null | **F4-14, dự kiến.** Khác `null` **chỉ khi** `status = PENDING`; mọi trạng thái khác, kể cả khi tính hàng đợi lỗi, trả `null`. Gồm hai trường ở Bảng 9.2a |
+
+Bảng 9.2a: Trường của đối tượng `queue` trong `SubmissionProgressDto`.
+
+| Trường | Kiểu | Ghi chú |
+| :--- | :--- | :--- |
+| `queue.ahead` | int, `>= 0` | Số bài nộp `status = PENDING` nộp **trước** bài này, xếp theo `(submitted_at, id)`. Là gợi ý hiển thị gần đúng: RabbitMQ giao gần đúng thứ tự nộp, không bảo đảm. Chỉ là một số đếm, không lộ dữ liệu của người khác |
+| `queue.estimatedWaitSeconds` | int hoặc null | `ceil(ahead / tốc độ chấm)`, chặn trên 3600. `null` khi `ahead = 0` hoặc trong 60 giây gần nhất có dưới 3 bài vào trạng thái cuối (client chỉ hiện số bài). Công thức ở mục 9.4 và `03-dd/logic/F4_judge-orchestration.md` BR-JD-17 |
+
+Ví dụ khi `status = PENDING`: `"queue": { "ahead": 18, "estimatedWaitSeconds": 9 }`; khi chưa đủ mẫu: `"queue": { "ahead": 18, "estimatedWaitSeconds": null }`; khi `status = JUDGING`: `"queue": null`.
 
 ### 9.3 Lỗi
 
@@ -687,6 +701,29 @@ Các số tổng (`passedCount`, `totalCount`, `scoreRatio`, `runtimeMs`, `memor
 
 Một truy vấn `submissions` kèm một truy vấn `submission_testcase_results` (`submission_id, testcase_order`). Không gọi `problem-bank`. Với bài nộp quá 90 ngày, `testcases = []` và `isFinal = true` (không có chi tiết).
 
+**Thông tin hàng đợi (F4-14, dự kiến).** Chỉ chạy khi `status = PENDING`; bài ở trạng thái khác không chạy thêm truy vấn nào. Hai truy vấn nhỏ trên `judge.submissions`, cùng giao dịch với truy vấn chính:
+
+```sql
+-- (1) số bài PENDING nộp trước bài này
+SELECT count(*) AS ahead
+FROM judge.submissions
+WHERE status = 'PENDING'
+  AND (submitted_at, id) < (:submittedAt, :id);
+
+-- (2) số bài vào một trong sáu trạng thái cuối trong 60 giây gần nhất
+SELECT count(*) AS finished_last_60s
+FROM judge.submissions
+WHERE status IN ('ACCEPTED','WRONG_ANSWER','TIME_LIMIT_EXCEEDED',
+                 'RUNTIME_ERROR','COMPILE_ERROR','SYSTEM_ERROR')
+  AND finished_at >= :now - interval '60 seconds';
+```
+
+Công thức: `throughput = finished_last_60s / 60.0` (bài mỗi giây); `estimatedWaitSeconds = min(3600, ceil(ahead / throughput))`; trả `null` khi `ahead = 0` hoặc `finished_last_60s < 3`. Các hằng số 60 giây, 3 mẫu, 3600 giây là **hằng số trong mã**, không vào `application.yml` (ponytail bậc 5). Chỉ mục hiện có `submissions_status_updated_idx (status, updated_at)` (`05-coding/backend/algoprep-judge/src/main/resources/db/migration/judge/V4.001__create_judge_tables.sql:134`) phục vụ lọc `status`; vì câu lệnh kết thúc đặt `finished_at = now(), updated_at = now()` cùng lúc và chỉ chạy khi bài chưa ở trạng thái cuối (`03-dd/logic/F4_judge-orchestration.md` BR-JD-05 bước 6) nên với dòng đã cuối hai cột trùng nhau, có thể lọc theo `updated_at` để đi đúng chỉ mục `[SoT: Suy luận]`; nếu đo thấy chậm thì chọn cột lọc theo kết quả đo. **Không thêm bảng, cột, chỉ mục.**
+
+`ponytail:` không có bộ nhớ đệm, mỗi lần đọc `PENDING` chạy hai truy vấn nhỏ; nếu tải polling đáng kể thì nâng cấp thành bộ nhớ đệm ngắn trong tiến trình (vài giây) cho truy vấn (2), vì kết quả của nó dùng chung cho mọi bài `PENDING`.
+
+**Suy giảm êm:** nếu tính hàng đợi lỗi (SQL lỗi, quá thời gian), use case bắt lỗi, ghi log `WARN` và trả `queue = null`; phần còn lại của DTO giữ nguyên, **không** trả 503. Lỗi đọc chính vẫn theo `JDG-506` như cũ. Quyền không đổi: JWT, `STUDENT`, chỉ chủ bài nộp, ngược lại `404 JDG-110`; truy vấn (1) chỉ đếm, không đọc `user_id` hay nội dung của bài khác.
+
 ### 9.5 Test viewpoints
 
 | ID | Loại | Nội dung |
@@ -695,6 +732,15 @@ Một truy vấn `submissions` kèm một truy vấn `submission_testcase_result
 | T-PG-02 | Security | Chỉ `order` và `verdict` trong `testcases`; không runtime, không output |
 | T-PG-03 | Security | Token người khác: `JDG-110` |
 | T-PG-04 | Normal | Nối lại: ảnh chụp có `seq` bằng `seq` của bản tin cuối đã nhận được thì client không áp trùng |
+| T-PG-05 | Normal | `PENDING`, phía trước có 18 bài `PENDING` nộp sớm hơn và 60 giây qua có 120 bài kết thúc (2 bài mỗi giây): `queue = { ahead: 18, estimatedWaitSeconds: 9 }` |
+| T-PG-06 | Boundary | `PENDING`, `ahead = 0`: `queue = { ahead: 0, estimatedWaitSeconds: null }` |
+| T-PG-07 | Boundary | `PENDING`, 60 giây qua có đúng 2 bài kết thúc: `estimatedWaitSeconds = null`, `ahead` vẫn có; đúng 3 bài kết thúc: có số ước tính |
+| T-PG-08 | Boundary | `ahead` rất lớn, tốc độ rất thấp (ví dụ 5000 bài phía trước, 3 bài mỗi 60 giây): `estimatedWaitSeconds = 3600` (chặn trần) |
+| T-PG-09 | Normal | Hai bài `PENDING` có cùng `submitted_at`: bài có `id` nhỏ hơn được đếm là phía trước bài kia; không bài nào đếm chính nó |
+| T-PG-10 | Normal | Trạng thái `COMPILING`, `JUDGING` và mọi trạng thái cuối: `queue = null`, không chạy truy vấn hàng đợi |
+| T-PG-11 | Abnormal | Truy vấn hàng đợi lỗi giả lập: phản hồi vẫn `200`, `queue = null`, các trường khác (`status`, `seq`, `testcases`) không đổi; không trả 503 |
+| T-PG-12 | Security | Token người khác: `JDG-110` như T-PG-03, kể cả khi bài đang `PENDING`; `queue.ahead` không kèm bất kỳ định danh hay dữ liệu của bài khác |
+| T-PG-13 | Normal | Admin tạm dừng tiêu thụ hàng đợi: không bài nào kết thúc trong 60 giây, `estimatedWaitSeconds = null`, `ahead` vẫn đúng |
 
 ## 10. GET /me/submissions
 

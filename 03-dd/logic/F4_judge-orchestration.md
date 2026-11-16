@@ -1,5 +1,7 @@
 # DD Logic — Module `judge-orchestration` (F4)
 
+**Cập nhật 2026-11-15 — F4-14 (dự kiến, chưa có mã):** thêm BR-JD-17, vị trí trong hàng đợi và thời gian chờ ước tính khi bài nộp còn `PENDING`, hiển thị qua trường `queue` của endpoint #6. Theo quyết định của chủ dự án 2026-11-15.
+
 **Triển khai 2026-11-03, D02m — worker persistence:** năm cổng nội bộ cho
 COMPILING/JUDGING, token, kết quả testcase và finalization chung worker/sweep tương lai.
 REQUIRES_NEW/READ_COMMITTED, heartbeat guarded trước INSERT/consume; giữ pinned version,
@@ -391,6 +393,26 @@ Nguồn: `02-bd/architecture/F4_judge-orchestration.md:155-185`, `DEC-2026-0912-
 - **`SubmissionSnapshotPort.getAccepted`** (cho `ai-review`, mục 26.4 file API; thêm 2026-10-23): đọc `judge.submissions` theo khoá chính; không có dòng thì `SubmissionNotFound`; `status` khác `ACCEPTED` thì `SubmissionNotAccepted`; trả `userId` nhưng **không** so chủ sở hữu (việc đó thuộc `ai-review`, `AIR-302`). Không trả dữ liệu testcase. Endpoint #23 `GET /me/accepted-submissions` (mục 24A) là truy vấn chỉ đọc theo `user_id` của token, không có quy tắc nghiệp vụ nào ngoài lọc `status = 'ACCEPTED'`.
 - **Hai cổng số liệu nộp bài** của BR-JD-13.
 - **Ràng buộc chung**: không cổng nào trả mã nguồn, nội dung testcase hay kết quả từng testcase; không cổng nào cho `identity` hay `problem-bank` ghi vào schema `judge`.
+
+## BR-JD-17 — Vị trí trong hàng đợi và thời gian chờ ước tính khi `PENDING` (F4-14)
+
+> **Trạng thái: dự kiến, chưa có mã** (yêu cầu mới của chủ dự án 2026-11-15; tiêu chí ponytail bậc 1). Không có BR nào trước đó về việc này.
+
+- **Trigger**: dựng `SubmissionProgressDto` (endpoint #6, `03-dd/api/F4_judge-orchestration.md` mục 9) cho một bài có `status = PENDING`. Không chạy ở trạng thái khác, không chạy ở endpoint #5 hay ở vùng giảng viên.
+- **Tiền điều kiện**: người gọi đã qua kiểm quyền của endpoint #6 (JWT, `STUDENT`, chủ bài nộp; sai thì `404 JDG-110`).
+- **Các bước** (cùng giao dịch đọc với truy vấn chính của endpoint #6):
+  1. `ahead = count(*)` trong `judge.submissions` với `status = 'PENDING'` và `(submitted_at, id) < (:submittedAt, :id)` của bài đang xem.
+  2. `finished = count(*)` các bài có `status` thuộc sáu trạng thái cuối và `finished_at >= now() - 60 giây`.
+  3. Nếu `ahead = 0` hoặc `finished < 3` thì `estimatedWaitSeconds = null`. Ngược lại `throughput = finished / 60.0` và `estimatedWaitSeconds = min(3600, ceil(ahead / throughput))`.
+  4. Trả `queue = { ahead, estimatedWaitSeconds }`.
+- **Hằng số trong mã** (không vào `application.yml`, ponytail bậc 5; không thêm trường cấu hình mới): cửa sổ tốc độ **60 giây**, số mẫu tối thiểu **3**, trần **3600 giây**.
+- **Biên**: `ahead = 0` thì không có số ước tính (giao diện hiện "sắp đến lượt bạn"); `finished < 3` thì chỉ có `ahead`; `ahead` lớn kèm tốc độ rất thấp thì chặn ở 3600; `estimatedWaitSeconds` luôn `>= 1` khi khác `null` vì `ahead >= 1` và `ceil` làm tròn lên. Khi Admin tạm dừng tiêu thụ (BR-JD-08) tốc độ về 0 nên ước tính `null`, không chia cho 0.
+- **Tính chất gần đúng**: thứ tự theo `(submitted_at, id)` là **xấp xỉ** thứ tự RabbitMQ giao job (gần FIFO, không bảo đảm), còn tốc độ là trung bình 60 giây gần nhất nên đổi theo tải. Con số là **gợi ý hiển thị**, không phải cam kết, không dùng để quyết định nghiệp vụ nào (không ảnh hưởng chấm, sweep F4-07 hay quyền).
+- **Suy giảm êm**: bất kỳ lỗi nào khi tính (SQL lỗi, quá thời gian) được bắt, ghi log `WARN` không kèm SQL hay nguyên nhân, và trả `queue = null`; phần còn lại của DTO giữ nguyên, không 503.
+- **Quyền riêng tư**: `ahead` chỉ là số đếm; không đọc `user_id`, nội dung hay định danh của bài khác ra ngoài truy vấn đếm.
+- **Không bộ nhớ đệm** (`ponytail:`): mỗi lần đọc chạy hai truy vấn nhỏ; nâng cấp thành bộ nhớ đệm ngắn trong tiến trình cho `finished` nếu tải polling (chu kỳ 5 giây mỗi bài đang chờ) đáng kể.
+- **Dữ liệu**: `judge.submissions`, chỉ mục hiện có `submissions_status_updated_idx (status, updated_at)` (`05-coding/backend/algoprep-judge/src/main/resources/db/migration/judge/V4.001__create_judge_tables.sql:134`); không thêm bảng, cột, chỉ mục.
+- **Hậu điều kiện**: không ghi dữ liệu nào (chỉ đọc), không phát sự kiện, không đổi trạng thái bài nộp.
 
 ## Tham chiếu
 

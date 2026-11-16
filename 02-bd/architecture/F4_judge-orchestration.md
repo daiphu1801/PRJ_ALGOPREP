@@ -407,6 +407,32 @@ Làm tròn tới số nguyên gần nhất (không thập phân) `[SoT: Suy lu�
 nêu, chốt ở DD nếu cần đổi. Rỗng (`—`) cho mọi verdict khác `ACCEPTED` — đúng RD dòng 75. Xem
 `07-review/bd_open_questions_260913.md` mục 2 câu #5.
 
+## 8a. Vị trí trong hàng đợi và thời gian chờ ước tính khi `PENDING` (F4-14)
+
+**Hiện trạng bản dựng (2026-11-16):** backend và FE đều đã có mã; FE nối với máy chủ thật và đã kiểm trong trình duyệt thật 2026-11-16 (`06-plan/reports/261116-0100-f4-14-browser-check/report.md`; ảnh chụp bằng script Playwright, không phải `pnpm e2e`). Phía FE dùng một thành phần chung `05-coding/frontend/src/entities/submission/ui/queue-notice.tsx:11` cho cả `USR0201` và `USR0102`. Phần backend: `05-coding/backend/algoprep-judge/src/main/java/com/algoprep/judge/application/query/SubmissionReadProjection.java:143` (`queue`, bắt lỗi trả `null`, log WARN) và `:157` (`estimate`, hằng số trong mã), hai truy vấn đếm tại `infrastructure/persistence/JdbcSubmissionReadRepository.java:101` và `:115`, DTO `application/dto/read/SubmissionReads.java:105`. Truy vấn tốc độ lọc `updated_at` (cùng chỉ mục `(status, updated_at)`), không thêm migration.
+
+**Nguồn yêu cầu:** `01-rd/req/F4_judge-orchestration.md` F4-14, bổ sung 2026-11-15 theo quyết định của chủ dự án (đo tải: máy demo chấm khoảng 2 bài nộp mỗi giây, một bài có thể nằm ở `PENDING` 40 đến 90 giây). Tiêu chí ponytail bậc 1 (có quyết định của chủ dự án). **Trạng thái: đã dựng (backend và FE), đã kiểm trình duyệt thật 2026-11-16.** Chủ dự án chốt 2026-11-16: không ẩn ước tính khi lớn (chỉ chặn trần 3600 giây, bậc 5) và giảng viên không thấy dòng này (endpoint trả `403 JDG-301` cho token giảng viên; kiểm gián tiếp vì giảng viên tổng hợp chưa phụ trách lớp nào).
+
+Bảng 8a.1 tóm tắt các quyết định kiến trúc của tính năng; mỗi hàng là một câu hỏi thiết kế cùng câu trả lời đã chọn.
+
+| Câu hỏi | Quyết định |
+| :--- | :--- |
+| Hiển thị qua đường nào | **Không thêm endpoint, không thêm bản tin STOMP.** Mở rộng ảnh chụp tiến trình (endpoint #6, `SubmissionProgressDto`) bằng một đối tượng tuỳ chọn `queue`, chỉ khác `null` khi `status = PENDING`. Hợp đồng đầy đủ ở `03-dd/api/F4_judge-orchestration.md` mục 9 (hợp đồng API chỉ định nghĩa một nơi) |
+| Tính ở đâu | Trong chính module `judge-orchestration`, ở use case đọc tiến trình của endpoint #6, qua cổng truy vấn đọc `judge.submissions` mà use case này đã dùng. **Không gọi module khác, không đọc schema khác, không dùng RabbitMQ Management API** `[SoT: Suy luận]`: số liệu lấy từ DB để cùng nguồn với trạng thái bài nộp |
+| Số bài phía trước (`ahead`) | Đếm bài nộp `status = PENDING` có `(submitted_at, id)` nhỏ hơn bài đang xem. **Gần đúng**: RabbitMQ giao gần đúng thứ tự nộp, không bảo đảm; con số là gợi ý hiển thị, không phải cam kết thứ tự chấm |
+| Thời gian chờ ước tính | `ceil(ahead / tốc độ chấm)`, tốc độ = số bài nộp vào một trong sáu trạng thái cuối trong 60 giây gần nhất chia cho 60. Rỗng (`null`) khi dưới 3 bài kết thúc trong cửa sổ đó hoặc `ahead = 0`; chặn trên 3600 giây. Công thức và ngưỡng ở `03-dd/logic/F4_judge-orchestration.md` BR-JD-17 |
+| Dữ liệu và chỉ mục | Bảng `judge.submissions`, chỉ mục `submissions_status_updated_idx (status, updated_at)` đã có (mục 2 của `02-bd/database/F4_judge-orchestration.md`, `V4.001__create_judge_tables.sql:134`). **Không thêm bảng, cột, chỉ mục hay Redis cache** (tiêu chí ponytail bậc 4 và 5) |
+| Hằng số | Cửa sổ 60 giây, ngưỡng 3 mẫu, trần 3600 giây nằm trong mã dưới dạng hằng số, không vào `application.yml` (ponytail bậc 5; không thêm trường cấu hình mới) |
+| Bảo mật | Giữ nguyên quyền của endpoint #6: JWT, `STUDENT`, chỉ chủ bài nộp, ngược lại `JDG-110`. `ahead` chỉ là một số đếm, không lộ dữ liệu của người khác |
+| Khi tính lỗi | Lỗi tính hàng đợi **không làm hỏng** ảnh chụp: trả `queue = null`, phần còn lại của DTO giữ nguyên. Khác với lỗi đọc chính (503 `JDG-506`, không đổi) |
+| Phía client | Khi trạng thái đang biết là `PENDING`, client đọc lại endpoint #6 mỗi 5 giây (STOMP không có bản tin cho `PENDING`, mục 2.3 file DD API); `STATUS_CHANGED` vẫn kích hoạt đọc ngay; dừng khi trạng thái rời `PENDING` |
+
+Bảng 8a.1: Quyết định kiến trúc của F4-14.
+
+**Đánh đổi chấp nhận được:** không có bộ nhớ đệm, mỗi lần đọc chạy hai truy vấn nhỏ (đếm bài chờ phía trước, đếm bài vừa kết thúc). Với quy mô đồ án và chu kỳ 5 giây mỗi bài nộp đang chờ, tải này nhỏ; nếu đo thấy nặng thì thêm bộ nhớ đệm ngắn trong tiến trình (nâng cấp có chủ đích, ghi ở DD). Độ chính xác bị chặn bởi thứ tự gần đúng của RabbitMQ và tốc độ chấm thay đổi theo tải; vì thế giao diện luôn gọi đây là "ước tính khoảng".
+
+**Khi Admin tạm dừng tiêu thụ hàng đợi (F4-10):** các bài `PENDING` đứng yên, tốc độ chấm trong 60 giây tụt về 0 nên ước tính trở thành `null` (dưới 3 mẫu) và client chỉ hiện số bài phía trước. Không cần xử lý riêng `[SoT: Suy luận]`.
+
 ## 9. Việc còn mở — chuyển sang DD
 
 - Tên/chữ ký cụ thể `ProblemGradingSpecPort` (mục 3.2).
@@ -414,6 +440,7 @@ nêu, chốt ở DD nếu cần đổi. Rỗng (`—`) cho mọi verdict khác `
 - ~~Xác nhận công thức F4-12 với chủ dự án~~ — đã đóng 2026-09-13, xem mục 8.
 - Định dạng `RunRequest`/`RunResult` thật (JSON shape gửi/nhận go-judge) — chốt cùng `harness` khi cả hai
   vào DD, vì `harness` là bên tạo payload.
+- Tên cổng truy vấn và chữ ký phương thức đếm của F4-14 (mục 8a); có thêm bộ nhớ đệm ngắn trong tiến trình hay không khi đo tải thấy nặng.
 - Chu kỳ quét sweep 60 giây (mục 5.3) và giới hạn cắt `stderr_snippet` 4KB (mục 7) — số đề xuất, chủ dự án
   xác nhận hoặc đổi số cụ thể.
 - Chữ ký thật của `GetClassStudentSubmissionMetrics` và `GetMySubmissionMetrics` (mục 3.3): tên tham số,
@@ -425,7 +452,7 @@ nêu, chốt ở DD nếu cần đổi. Rỗng (`—`) cho mọi verdict khác `
 
 ## 10. Tham chiếu
 
-- `01-rd/req/F4_judge-orchestration.md` — đặc tả F4-01 → F4-13.
+- `01-rd/req/F4_judge-orchestration.md` — đặc tả F4-01 → F4-14.
 - `.nexa/domain-registry.json` — domain `judge-orchestration`, scope liệt kê bảng dữ liệu dự kiến.
 - `.nexa/control/dependency-map.md` mục 2-4 — hạ tầng, luồng đồng bộ go-judge, thứ tự build (stage 2 cùng
   `harness`).
@@ -531,3 +558,5 @@ Bảng 11.1: Lịch sử sửa đổi BD kiến trúc `judge-orchestration`.
 | :--- | :--- | :--- |
 | 2026-09-12 | BD lần đầu | `06-plan/260912-1055-bd-rollout-order.md` |
 | 2026-11-15 | Thêm mục 1.1: quy ước gom nhóm package theo tính năng, class dùng chung ở lại package cha, bỏ `package-info.java`; cập nhật đường dẫn gói sau khi gom thư mục con | owner duyệt Phase 6, `06-plan/261114-1645-sonarqube-clear-coverage-90.md`, `06-plan/reports/p6-moves-judge.tsv` |
+| 2026-11-15 | Thêm mục 8a: vị trí trong hàng đợi và thời gian chờ ước tính khi `PENDING` (F4-14), mở rộng ảnh chụp tiến trình endpoint #6, trạng thái dự kiến | quyết định chủ dự án 2026-11-15, `01-rd/req/F4_judge-orchestration.md` F4-14 |
+| 2026-11-16 | Mục 8a: đổi trạng thái từ dự kiến sang đã dựng (backend và FE), thêm bằng chứng kiểm trình duyệt thật và hai quyết định đã chốt (không ẩn ước tính lớn; giảng viên không thấy dòng này) | quyết định chủ dự án 2026-11-16, `06-plan/reports/261116-0100-f4-14-browser-check/report.md` |

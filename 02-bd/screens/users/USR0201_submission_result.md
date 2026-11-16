@@ -54,11 +54,11 @@
 | Tên vật lý (slug) | `submission_result` |
 | Trục tài liệu | Màn hình (`02-bd/screens/`) |
 | Actor | A1 (`STUDENT`); A2 (`INSTRUCTOR`) ở chế độ chỉ đọc, xem mục "Vùng giảng viên (A2)" |
-| Phiên bản | V0.12 |
+| Phiên bản | V0.14 |
 | Người tạo | Nhóm phát triển AlgoPrep |
 | Ngày tạo | 2026/09/22 |
 | Người cập nhật | Claude |
-| Ngày cập nhật | 2026/10/24 |
+| Ngày cập nhật | 2026/11/16 |
 
 ---
 
@@ -79,6 +79,8 @@
 | V0.10 | Sheet 3 (Làm lại bài, breadcrumb, sơ đồ), 4 (4.4), 6 (NO 3, NO 8), Hiện trạng bản dựng vùng học viên (2026-10-20) | Đồng bộ bản dựng 2026/10/20 theo `DEC-2026-1020-student-workspace-split-and-password-in-settings`: vùng học viên đổi sang hai cột (banner và nút hành động ở cột phải dính khi cuộn); "Làm lại" đi `/workspace/{slug}`; tên bài ở breadcrumb đi trang đọc đề `USR0104`; ghi nhận mock bài nộp dùng mã danh mục; route Phỏng vấn giả lập sửa BD theo code (`/submissions/{id}/interview`). Chưa duyệt hình | 2026/10/21 | Claude |
 | V0.11 | Sheet 5 (Khu vực D NO 3, 8, 9, 10), Sheet 7 (dòng `[Nguồn]`), Câu hỏi mở Q4 | Sửa 2026-10-22 đồng bộ DB (JD-15 và trích dẫn): (1) Khu vực D NO 10 ghi rõ DB lưu tối đa 4096 ký tự còn màn hiển thị 2000 ký tự (hai số cố ý khác nhau, `02-bd/database/F4_judge-orchestration.md:60`), và `actual_output_snippet` chỉ ghi cho testcase `SAMPLE`, `HIDDEN` luôn `NULL`; (2) đọc lại số dòng trích dẫn: `submission_testcase_results` dịch +4 (ví dụ `testcase_order` `:51` thành `:55`), cột `problem.testcases` `visibility`/`input_*`/`expected_output_*` trước đó trỏ nhầm vào vùng `problem_levels` nay sửa thành `:142`, `:143-145`, `:146-148`, `identity.class_enrollments` thành `:118-140`. Không đổi quyết định, không đổi RD | 2026/10/22 | Claude |
 | V0.12 | Sheet 1, 3 (Làm lại bài, breadcrumb), 8 (EVT-3, EVT-8) | Sửa 2026-10-24 theo `DEC-2026-1024-dd-screens-users-core-contract-changes`: mọi route dùng khoá bài là `problemId` (UUID), không phải slug: "Làm lại" đi `/workspace/{problem_id}`, tên bài ở breadcrumb đi `/problems/{problem_id}` (các API đều nhận UUID; route theo slug cần cột và endpoint mới mà RD không đòi). Dòng "Hiện trạng bản dựng" cũ (V0.10) giữ nguyên làm lịch sử: bản dựng còn dùng `problemSlug`, là nợ prototype. Không đổi RD, không đổi code | 2026/10/24 | Claude |
+| V0.13 | Sheet 5 (Khu vực B NO 6), 6 (Khu vực B NO 6), 7.1 (STT 9), 7.2 (STT 6), 7.3 (NO 4), 8 (EVT-10), 9 (NO 8, 9), Hiện trạng bản dựng (kế hoạch 2026-11-15), Câu hỏi mở (Q6), Tham chiếu | Thêm dòng "đang chờ chấm" khi bài nộp còn `PENDING`: số bài phía trước và thời gian chờ ước tính (F4-14), lấy từ trường `queue` của ảnh chụp tiến trình (DD F4 mục 9). Yêu cầu mới của chủ dự án 2026-11-15, **chưa dựng** ở bản Next.js (trạng thái: dự kiến) | 2026-11-15 | Claude |
+| V0.14 | Sheet 1 (phiên bản), 5 (Khu vực B NO 6), 6 (Khu vực B NO 6), Hiện trạng bản dựng (hàng 1 đến 4), Câu hỏi mở (đóng Q6), Tham chiếu | Đồng bộ F4-14 đã dựng và đã kiểm trình duyệt thật 2026-11-16: (1) chốt vị trí dòng hàng đợi ở **đầu trang, trên breadcrumb** (`submission-result-view.tsx:168-174`), không trong banner vì banner chỉ có khi đã có verdict; (2) đóng Q6 theo quyết định chủ dự án 2026-11-16: không ẩn ước tính lớn (trần 3600 giây ở máy chủ, ponytail bậc 5), giảng viên không thấy dòng (kiểm gián tiếp); (3) thêm hàng Hiện trạng 4 cho khu giảng viên; (4) thành phần dùng chung `entities/submission/ui/queue-notice.tsx` (đã chốt ở DD OQ-8). Chưa duyệt hình | 2026-11-16 | Claude |
 
 ---
 
@@ -284,6 +286,7 @@ Từ 2026-10-20, vùng học viên bố cục **hai cột**: cột trái gồm b
 | | 3 | Điểm số tỷ lệ | `submissionResult.verdict.lblScore` | `judge.submissions` | `passed_testcase_count`, `total_testcase_count`, `score_ratio` | Badge | String | 20 | Có | O | - | `{passed}/{total}` | Điểm đạt theo tỷ lệ testcase F4-13<br>[Công thức] `score_ratio = passed_testcase_count / total_testcase_count`, `NULL` khi `COMPILE_ERROR`/`SYSTEM_ERROR` — hiển thị `-` [Nguồn: 02-bd/database/F4_judge-orchestration.md:25-27]<br>[EVT liên quan] - |
 | | 4 | Dòng mô tả phụ | `submissionResult.verdict.lblSubtitle` | `judge.submissions` | `passed_testcase_count`, `total_testcase_count`, `submitted_at` | Label | String | 150 | Có | O | - | - | Thông tin chi tiết kết quả và thời gian nộp<br>[Công thức] Ghép số testcase đạt/tổng và `submitted_at` [Nguồn: 02-bd/database/F4_judge-orchestration.md:25-26,31]<br>[EVT liên quan] - |
 | | 5 | Badge Độ khó bài | `submissionResult.verdict.badgeDifficulty` | `problem.problem_levels` | `display_name` | Badge | String | 20 | Có | O | - | Nhãn `display_name` | Độ khó bài toán<br>[Nguồn giá trị] Cột `problem_levels.display_name` qua `problems.level_id`, **đọc từ dữ liệu** do ADMIN quản lý, không còn ánh xạ cứng enum; ba mức khởi tạo giữ màu badge cũ, mức mới màu trung tính `DEC-2026-1001-admin-configurable-settings` mục (7) [Nguồn: 02-bd/database/F2_problem-bank.md mục `problem_levels`]<br>[EVT liên quan] - |
+| | 6 | Dòng hàng đợi | `submissionResult.verdict.lblQueue` | `judge.submissions` | `status`, `submitted_at`, `id` (đếm bài `PENDING` có `(submitted_at, id)` nhỏ hơn; đếm bài vào trạng thái cuối trong 60 giây gần nhất) | Label | String | 120 | Không | O | - | `Đang chờ chấm: phía trước còn {ahead} bài, ước tính khoảng {estimatedWaitSeconds} giây`; khi không có ước tính: `Đang chờ chấm: phía trước còn {ahead} bài`; khi `ahead = 0`: `Đang chờ chấm: sắp đến lượt bạn` | Chỉ hiển thị khi `status = PENDING` (F4-14)<br>[Công thức] Giá trị lấy từ `SubmissionProgressDto.queue` (`ahead`, `estimatedWaitSeconds`), tính ở máy chủ, không lưu cột riêng; công thức ở `03-dd/logic/F4_judge-orchestration.md` BR-JD-17. Đây là gợi ý gần đúng nên văn bản luôn nói "ước tính khoảng"; ước tính không bị ẩn khi lớn, máy chủ chỉ chặn trần 3600 giây (Q6, đã chốt 2026-11-16)<br>[Vị trí] Dòng hiện ở **đầu trang, trên breadcrumb**, không nằm trong banner: banner chỉ có khi đã có verdict, còn bài `PENDING` thì chưa có (`05-coding/frontend/src/views/users/submission-result/ui/submission-result-view.tsx:168-174`)<br>[Trạng thái] **Đã dựng** (FE và BE); đã kiểm trình duyệt thật 2026-11-16<br>[EVT liên quan] EVT-10 |
 
 ### Khu vực C — Dòng chỉ số vận hành (Run Stats)
 
@@ -360,6 +363,7 @@ Từ 2026-10-20, vùng học viên bố cục **hai cột**: cột trái gồm b
 | 3 | Điểm số tỷ lệ | Có | Không | [Điều kiện hiển thị] Luôn hiển thị cho mọi verdict sau khi chấm xong (F4-13).<br>[Điều kiện kích hoạt] Không áp dụng.<br>[Tự động đặt] Tính toán từ tỷ lệ số testcase đạt. |
 | 4 | Dòng mô tả phụ | Có | Không | [Điều kiện hiển thị] Luôn hiển thị.<br>[Điều kiện kích hoạt] Không áp dụng.<br>[Tự động đặt] Cập nhật số testcase đạt/tổng và mốc thời gian nộp. |
 | 5 | Badge Độ khó bài | Có | Không | [Điều kiện hiển thị] Luôn hiển thị.<br>[Điều kiện kích hoạt] Không áp dụng.<br>[Tự động đặt] - |
+| 6 | Dòng hàng đợi | Có điều kiện | Không | [Điều kiện hiển thị] Chỉ khi `status = PENDING` và `queue` khác `null`; rời `PENDING` thì ẩn ngay.<br>[Điều kiện kích hoạt] Không áp dụng.<br>[Tự động đặt] Làm tươi mỗi 5 giây qua ảnh chụp tiến trình (EVT-10); `ahead = 0` hiện "sắp đến lượt bạn"; `estimatedWaitSeconds = null` chỉ hiện số bài phía trước.<br>[Vùng giảng viên] Không hiện (Q6, đã chốt 2026-11-16). |
 
 ### Khu vực C: Dòng chỉ số vận hành
 
@@ -422,6 +426,7 @@ Từ 2026-10-20, vùng học viên bố cục **hai cột**: cột trái gồm b
 | 6 | `submissionResult.code.editorViewer` | String | `SubmissionDetailDto.sourceCode` | O | Đổ vào Monaco Editor |
 | 7 | `submissionResult.code.boxCompileError` | String | `SubmissionDetailDto.errorMessage` | O | Đổ vào khối log lỗi biên dịch |
 | 8 | `submissionResult.testcase.col.verdict` | String | `SubmissionTestcaseResultDto.status` | O | Nhận qua REST hoặc kênh STOMP |
+| 9 | `submissionResult.verdict.lblQueue` | String | `SubmissionProgressDto.queue.ahead`, `SubmissionProgressDto.queue.estimatedWaitSeconds` | O | Chỉ khi `status = PENDING`; `queue = null` thì ẩn dòng. `estimatedWaitSeconds = null` thì chỉ hiện `ahead` (F4-14) |
 
 ### 7.2. Truy cập bảng dữ liệu
 
@@ -432,6 +437,7 @@ Từ 2026-10-20, vùng học viên bố cục **hai cột**: cột trái gồm b
 | 3 | `problem.problems` | - | Có | - | - | `id = :problemId` |
 | 4 | `problem.testcases` | - | Có | - | - | `problem_id = :problemId AND is_sample = true ORDER BY order_index ASC` |
 | 5 | `problem.problem_levels` | - | Có | - | - | Qua join `problems.level_id` để lấy `display_name`; màn không ghi, ADMIN quản lý độ khó ở `SHR0201` |
+| 6 | `judge.submissions` (truy vấn hàng đợi, F4-14) | - | Có | - | - | Chỉ khi `status = PENDING`: (a) `status = 'PENDING' AND (submitted_at, id) < (:submittedAt, :id)` để đếm bài phía trước; (b) bài có `status` thuộc sáu trạng thái cuối và `finished_at` trong 60 giây gần nhất để tính tốc độ chấm. Dùng chỉ mục `submissions_status_updated_idx`, không thêm chỉ mục |
 
 ### 7.3. Danh sách endpoint [Nội bộ]
 
@@ -443,6 +449,7 @@ Từ 2026-10-20, vùng học viên bố cục **hai cột**: cột trái gồm b
 | 1 | `GetSubmissionDetail` | Lấy chi tiết toàn bộ bài nộp và danh sách kết quả testcase | `judge-orchestration` |
 | 2 | `SubscribeSubmissionRealtime` | Kênh realtime (STOMP) đẩy kết quả từng testcase và verdict cuối cùng, theo F4-08. Đích `/user/queue/submissions`; interceptor kiểm quyền sở hữu bài nộp trước khi đẩy (Q1) | `judge-orchestration` |
 | 3 | `GetProblemSampleTestcases` | Lấy dữ liệu testcase Mẫu để hiển thị đối chiếu trong bảng kết quả | `problem-bank` |
+| 4 | `GetSubmissionProgress` (ảnh chụp tiến trình, endpoint #6 của F4) | Ngoài việc nối lại kênh realtime, trả thêm `queue` (số bài phía trước, thời gian chờ ước tính) khi bài nộp còn `PENDING`; màn đọc lại mỗi 5 giây trong lúc `PENDING` (F4-14) | `judge-orchestration` |
 
 ---
 
@@ -459,6 +466,7 @@ Từ 2026-10-20, vùng học viên bố cục **hai cột**: cột trái gồm b
 | 7 | Điều hướng | Bấm Phỏng vấn giả lập | Bấm nút Phỏng vấn giả lập AI. | Có | Không | - | [Các bước]<br>1. Kiểm tra verdict = `ACCEPTED`.<br>2. Điều hướng sang `mock_interview` (`USR0302`) kèm `submission_id`. |
 | 8 | Điều hướng | Bấm Làm lại bài | Bấm nút Làm lại bài. | Có | Không | - | [Các bước]<br>1. Điều hướng về `problem_detail` (`USR0102`, `/workspace/{problem_id}`) của bài toán tương ứng để mở lại Workspace. |
 | 9 | Realtime | Nhận event testcase xong | Nhận bản tin STOMP cập nhật tiến độ từ máy chủ. | Không | Không | - | [Các bước]<br>1. Cập nhật trạng thái dòng testcase tương ứng trong bảng.<br>2. Tăng số đếm testcase hoàn thành.<br>3. Nếu `isCompleted = true`, cập nhật verdict tổng và đóng kết nối WebSocket. |
+| 10 | Realtime | Làm tươi thông tin hàng đợi khi `PENDING` | Trong lúc trạng thái đang biết là `PENDING`, đọc lại ảnh chụp tiến trình mỗi 5 giây (STOMP không có bản tin cho `PENDING`). | Không | Có | `GetSubmissionProgress` | [Các bước]<br>1. Khi trạng thái là `PENDING`, đặt chu kỳ 5 giây gọi `GetSubmissionProgress`.<br>2. Cập nhật dòng hàng đợi (Khu vực B NO 6) từ `queue`.<br>3. Bản tin `STATUS_CHANGED` (EVT-9) vẫn kích hoạt đọc ngay một ảnh chụp.<br>4. Khi trạng thái rời `PENDING`, dừng chu kỳ và ẩn dòng hàng đợi.<br>[Khi lỗi] Lần đọc lỗi thì giữ nguyên dòng cũ và thử lại ở chu kỳ sau; không hiện lỗi. **Dự kiến, chưa dựng** (F4-14). |
 
 ---
 
@@ -473,6 +481,8 @@ Từ 2026-10-20, vùng học viên bố cục **hai cột**: cột trái gồm b
 | 5 | Kiểm nghiệp vụ | Xử lý đứt kết nối WebSocket | [Nội dung kiểm] Nếu kênh STOMP mất kết nối trong khi bài nộp đang `JUDGING`, chuyển sang cơ chế Polling REST mỗi 3 giây tối đa 10 lần.<br>[Nơi thực thi] Màn hình.<br>[Tiêu điểm] Trạng thái chấm. | Cảnh báo | Không có thông báo | Đảm bảo học viên không bị treo giao diện khi kết nối realtime chập chờn. | EVT-9 | 1 |
 | 6 | Kiểm nghiệp vụ | Beats thiếu dữ liệu so sánh | [Nội dung kiểm] Verdict `ACCEPTED` nhưng hệ thống có dưới 10 bài nộp `Accepted` cùng bài, cùng ngôn ngữ thì thẻ Beats in "Chưa đủ dữ liệu so sánh", không in số %.<br>[Nơi thực thi] Máy chủ (trả `beatsPercent = null`) và màn hình (hằng `BEATS_MIN_ACCEPTED`).<br>[Tiêu điểm] Thẻ Beats. | Cảnh báo | Chưa có mã thông báo | Tránh % nhảy giật hoặc 100% gây hiểu lầm khi bài mới xuất bản (Q2). Ponytail bậc 5 | EVT-1 | 2 |
 | 7 | Kiểm quyền | Kênh realtime chỉ của chủ bài nộp | [Nội dung kiểm] Kênh `/user/queue/submissions` chỉ nhận bản tin của bài nộp thuộc người dùng đang kết nối; interceptor kiểm quyền sở hữu khi đăng ký và khi đẩy bản tin, không cho nghe `submission_id` của người khác.<br>[Nơi thực thi] Máy chủ, interceptor WebSocket.<br>[Tiêu điểm] Kênh realtime. | Lỗi | Không có thông báo | Q1 đã chốt, ponytail bậc 6 (bảo mật). Prototype chưa có STOMP thật | EVT-9 | 2 |
+| 8 | Kiểm nghiệp vụ | Thông tin hàng đợi chỉ khi `PENDING` | [Nội dung kiểm] `queue` chỉ khác `null` khi `status = PENDING`; `ahead` là số nguyên không âm; `estimatedWaitSeconds` là `null` hoặc số nguyên trong `[1, 3600]`. Quá 3600 giây thì chặn ở 3600.<br>[Nơi thực thi] Máy chủ (trả `queue`) và màn hình (ẩn dòng khi `queue = null`).<br>[Tiêu điểm] Dòng hàng đợi. | Cảnh báo | Không có thông báo | F4-14; con số chỉ là gợi ý, không dùng để quyết định nghiệp vụ nào. **Dự kiến** | EVT-10 | 1 |
+| 9 | Kiểm quyền | Không lộ dữ liệu người khác qua hàng đợi | [Nội dung kiểm] `ahead` chỉ là một số đếm; không trả định danh, bài toán hay mã nguồn của bài nộp khác; quyền xem giữ như NO 2 (chỉ chủ bài nộp, ngược lại 404 `JDG-110`).<br>[Nơi thực thi] Máy chủ tầng dịch vụ.<br>[Tiêu điểm] Dòng hàng đợi. | Lỗi | Mã lỗi trong phản hồi | F4-14; ponytail bậc 6 (bảo mật). **Dự kiến** | EVT-10 | 2 |
 
 ---
 
@@ -609,6 +619,19 @@ Bản dựng prototype sau đợt chỉnh giao diện ngày 2026/10/20, theo `DE
 
 ---
 
+## Hiện trạng bản dựng: hàng đợi `PENDING` (F4-14)
+
+Mục này ghi hiện trạng của yêu cầu F4-14 do chủ dự án thêm ngày 2026-11-15. Đến 2026-11-16 cả FE (`05-coding/frontend`) và backend đã dựng, FE đã nối với máy chủ thật và kiểm trong trình duyệt thật (báo cáo `06-plan/reports/261116-0100-f4-14-browser-check/report.md`, ảnh chụp bằng script Playwright, không phải `pnpm e2e`). Khu giảng viên chỉ kiểm gián tiếp, xem hàng 4 của bảng dưới.
+
+| # | Điều dự kiến | Vị trí dự kiến | Thiết kế | Tình trạng |
+| :-: | :--- | :--- | :--- | :--- |
+| 1 | Dòng "Đang chờ chấm: phía trước còn N bài, ước tính khoảng M giây" trong banner khi `PENDING` | `submission-result-view.tsx` (banner), dùng hook tiến trình `05-coding/frontend/src/entities/submission/api/progress.ts` | Sheet 5 Khu vực B NO 6 | **Đã dựng phía FE 2026-11-16** (chưa duyệt hình): `05-coding/frontend/src/views/users/submission-result/ui/submission-result-view.tsx:168-174` dùng `05-coding/frontend/src/entities/submission/ui/queue-notice.tsx:1`; dòng đặt ở **đầu trang**, trên breadcrumb, không nằm trong banner (đã chốt 2026-11-16: banner chỉ có khi đã có verdict, nên Sheet 5 Khu vực B NO 6 ghi vị trí này, không còn là lệch thiết kế); mock `SB-90430`; **đã kiểm trình duyệt thật 2026-11-16** với máy chủ thật (không mock) |
+| 2 | Đọc lại ảnh chụp tiến trình mỗi 5 giây khi `PENDING`, dừng khi rời `PENDING` | `entities/submission/api/progress.ts` | Sheet 8 EVT-10 | **Đã dựng phía FE 2026-11-16**: `05-coding/frontend/src/entities/submission/api/progress.ts:73-76` (hẹn 5 giây, dừng khi rời `PENDING`, lỗi giữ dòng cũ); mock mode không chạy hook |
+| 3 | Trường `queue` trong `SubmissionProgressDto` và hai truy vấn đếm ở máy chủ | `algoprep-judge` | `03-dd/api/F4_judge-orchestration.md` mục 9 | **Đã dựng** (chi tiết file:line ở `02-bd/architecture/F4_judge-orchestration.md` mục 8a); đã kiểm trình duyệt thật 2026-11-16 |
+| 4 | Khu giảng viên không hiện dòng hàng đợi | `submission-result-view.tsx:168` (điều kiện `!isInstructor`) | Sheet 6 Khu vực B NO 6 | Đã dựng. Kiểm **gián tiếp**: token giảng viên gọi `progress` trả `403 JDG-301`, trang giảng viên không dựng `QueueNotice`; giảng viên tổng hợp dùng để kiểm chưa phụ trách lớp nào nên trang chi tiết chỉ trả "Không tìm thấy bài nộp", chưa dựng được bài `PENDING` trong khu này (`06-plan/reports/261116-0100-f4-14-browser-check/report.md` mục 4) |
+
+---
+
 ## Câu hỏi mở
 
 | # | Câu hỏi | Vì sao chưa trả lời được | Đề xuất | Chủ sở hữu |
@@ -618,6 +641,7 @@ Bản dựng prototype sau đợt chỉnh giao diện ngày 2026/10/20, theo `DE
 | Q3 | ~~**Thời gian lưu giữ chi tiết kết quả từng testcase trong DB là bao lâu?**~~ **Đã chốt 2026-10-18 (owner), theo đề xuất.** | ~~Bảng `submission_testcase_results` tăng trưởng nhanh~~ | **Quyết định:** giữ dòng kết quả từng testcase 90 ngày; sau đó chỉ còn verdict tổng ở `submissions`. Ponytail bậc 5 (hằng số). Chỉ tài liệu; việc dọn dữ liệu thuộc BD Database và DD `jobs` `judge-orchestration` | BD Database `judge-orchestration` |
 | Q4 | ~~**Output thực tế của testcase mẫu ("Kết quả thực tế mẫu", Khu vực D NO 10) lấy từ cột nào?**~~ **Đã chốt 2026-10-18 (owner), theo đề xuất.** | ~~`submission_testcase_results` chưa có cột lưu output thực tế~~ | **Quyết định:** thêm cột `submission_testcase_results.actual_output_snippet`, chỉ ghi cho testcase `SAMPLE`. Ponytail bậc 1 (RD yêu cầu hiển thị Output thực tế). Định nghĩa cột do bên sửa tài liệu cơ sở dữ liệu thêm. Code: hộp đã có (`submission-result-view.tsx:444-445`, đọc `sampleActualOutput` của mock, mock lượt `SB-90412` có `[0,1]`); không đổi `entities` | BD Database `judge-orchestration` |
 | Q5 | ~~**Trang kết quả vùng giảng viên biết "màn gọi tới" bằng cách nào, để dựng breadcrumb và sáng đúng mục sidebar (REQ-16 của RD chương 10)?**~~ **Đã đóng.** | ~~Chưa có nguồn nào quy định tham số~~ | **ĐÃ CHỐT 2026-10-14 (DEC-2026-1014-instructor-submissions-list-details):** tham số query `from=submissions\|student\|class` (mặc định danh sách bài nộp), chỉ dùng cho breadcrumb và mục sidebar sáng; không thêm ô nhập. Viết ở mục "Vùng giảng viên (A2)", Chuyển màn [Nguồn: .nexa/control/decision-registry.md:3989-3993] | Chủ dự án |
+| Q6 | ~~**Thông tin hàng đợi của F4-14 có cần ẩn khi ước tính quá lớn không, và giảng viên có thấy dòng này không?**~~ **Đã chốt 2026-11-16 (chủ dự án), theo đề xuất.** | ~~Chưa có số đo thực tế để chọn ngưỡng; vùng giảng viên không realtime (RD chương 10, REQ-18) nên dòng sẽ không tự làm tươi~~ | **Quyết định:** (a) không ẩn, chỉ chặn trần 3600 giây ở máy chủ (ponytail bậc 5); (b) giảng viên không thấy dòng này (vùng giảng viên không realtime). Khớp Q6 của RD `01-rd/screens/users/USR0201_submission_result.md`. Kiểm gián tiếp ở khu giảng viên, xem Hiện trạng hàng 4 | Đã đóng |
 
 ---
 
@@ -625,7 +649,7 @@ Bản dựng prototype sau đợt chỉnh giao diện ngày 2026/10/20, theo `DE
 
 - `01-rd/screens/users/USR0201_submission_result.md` — Yêu cầu màn hình.
 - `09-layoutBase/Kết quả nộp bài.dc.html` — Bằng chứng bố cục prototype.
-- `01-rd/req/F4_judge-orchestration.md` — F4-01, F4-03, F4-08, F4-12, F4-13.
+- `01-rd/req/F4_judge-orchestration.md` — F4-01, F4-03, F4-08, F4-12, F4-13, F4-14 (hàng đợi `PENDING`, đã dựng).
 - `01-rd/req/F2_problem-bank.md` — F2-08.
 - `01-rd/req/F3_harness.md` — F3-11, F3-12, F3-13.
 - `02-bd/_rules/bd-template-9sheet.md` — Quy ước mẫu 9 sheet.

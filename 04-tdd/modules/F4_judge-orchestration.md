@@ -1,5 +1,9 @@
 # Tiêu chí nghiệm thu — Module `judge-orchestration`
 
+**Cập nhật 2026-11-15 — F4-14 (dự kiến, chưa có test):** thêm AC-78, AC-79, AC-80 cho thông tin hàng đợi (số bài phía trước, thời gian chờ ước tính) khi bài nộp còn `PENDING`. Chưa có mã và chưa có test case; trạng thái trong Bảng 1 là "chưa có test".
+
+**Cập nhật 2026-11-16 — F4-14 đã dựng:** backend đạt (cột trạng thái Bảng 1) và FE đã nối; cả hai đã kiểm trong trình duyệt thật với máy chủ thật, báo cáo `06-plan/reports/261116-0100-f4-14-browser-check/report.md` (ảnh chụp bằng script Playwright, không phải `pnpm e2e`). Khu giảng viên chỉ kiểm gián tiếp (token giảng viên gọi `progress` trả `403 JDG-301`; giảng viên tổng hợp chưa phụ trách lớp nào).
+
 **Checkpoint D02m 2026-11-03:** WorkerPersistenceHandlersTest11 + SubmissionFinalizationPolicyTest13,
 WorkerPersistenceFlowTest22 (PG thật, ba mutation), focused verify 338 test đạt.
 AC15–22/25 và AC63/65 có bằng chứng persistence/Outbox từng phần, chưa worker/engine/relay E2E.
@@ -713,6 +717,30 @@ lệnh, timestamp, exit code và cleanup evidence; không cộng test ở lần 
 | **Kết quả mong đợi** | Bằng ngưỡng 20 không tăng. Vượt ngưỡng ở hai lượt liên tiếp mới tăng mục tiêu từ 1 lên 2; mỗi chu kỳ tiếp theo tăng tối đa 1 và không vượt 8. Rỗng bốn lượt liên tiếp (60 giây) mới giảm từng bước, chỉ dừng consumer sau khi bài đang xử lý xong; backlog ở giữa hai điều kiện giữ nguyên mục tiêu. Tạm dừng không nhận bài mới và không tự giảm mục tiêu; tiếp tục thì nhận bài trở lại. Tắt tự mở rộng đưa mục tiêu về 1 bằng cơ chế chờ bài đang chạy xong. Trong hai tiến trình chỉ một giữ khoá leader và điều khiển consumer; mất khoá thì dừng nhận bài mới |
 | **Nguồn** | [SoT: 03-dd/jobs/F4_judge-orchestration.md] JOB-JD-05 |
 
+### AC-78 — Bài nộp đang chờ thấy số bài phía trước và thời gian chờ ước tính
+| Mục | Nội dung |
+| :--- | :--- |
+| **Tiền đề** | Bài nộp A của học viên đang chờ chấm. Phía trước A có 18 bài nộp khác cũng đang chờ (nộp sớm hơn). Trong 60 giây gần nhất hệ thống đã chấm xong 120 bài (khoảng 2 bài mỗi giây) |
+| **Thao tác** | Học viên (chủ bài nộp A) xem tiến trình của A; sau đó chờ tới khi A bắt đầu được chấm và xem lại |
+| **Kết quả mong đợi** | Khi A còn đang chờ, học viên thấy "phía trước còn 18 bài" và thời gian chờ ước tính khoảng 9 giây. Khi A đã bắt đầu được chấm (hoặc đã có kết quả), thông tin chờ không còn, chỉ còn tiến độ từng testcase như thường lệ. Hai bài nộp chờ cùng một thời điểm được xếp thứ tự ổn định: bài này đếm bài kia là phía trước nhưng không bao giờ đếm chính nó |
+| **Nguồn** | [SoT: 01-rd/req/F4_judge-orchestration.md] F4-14; [SoT: 03-dd/api/F4_judge-orchestration.md] mục 9.2, 9.4, T-PG-05, T-PG-09, T-PG-10; [SoT: 03-dd/logic/F4_judge-orchestration.md] BR-JD-17 |
+
+### AC-79 — Ước tính chỉ hiện khi đủ dữ liệu và có trần
+| Mục | Nội dung |
+| :--- | :--- |
+| **Tiền đề** | Bài nộp A đang chờ. Tình huống (a): phía trước A không còn bài nào đang chờ. (b): trong 60 giây gần nhất chỉ có 2 bài được chấm xong. (c): đúng 3 bài chấm xong. (d): phía trước có 5000 bài, tốc độ chỉ khoảng 3 bài mỗi phút. (e): Quản trị viên đang tạm dừng tiêu thụ hàng đợi |
+| **Thao tác** | Học viên xem tiến trình của A trong từng tình huống |
+| **Kết quả mong đợi** | (a) Học viên chỉ biết mình sắp được chấm, không có con số thời gian. (b) Chỉ thấy số bài phía trước, không có thời gian ước tính. (c) Thấy cả số bài phía trước và thời gian ước tính. (d) Thời gian ước tính không vượt 3600 giây (một giờ). (e) Chỉ thấy số bài phía trước, không có thời gian ước tính và không có lỗi. Mọi tình huống đều có chữ "ước tính khoảng" khi có số thời gian: đây là gợi ý, không phải cam kết |
+| **Nguồn** | [SoT: 03-dd/api/F4_judge-orchestration.md] T-PG-06, T-PG-07, T-PG-08, T-PG-13; [SoT: 03-dd/logic/F4_judge-orchestration.md] BR-JD-17 (biên) |
+
+### AC-80 — Thông tin chờ chỉ của chủ bài nộp, không lộ dữ liệu người khác, và lỗi tính toán không làm hỏng trạng thái bài nộp
+| Mục | Nội dung |
+| :--- | :--- |
+| **Tiền đề** | Bài nộp A của học viên 1 đang chờ; học viên 2 cũng có bài nộp đang chờ phía trước A. Một tình huống khác: việc tính hàng đợi gặp lỗi tạm thời |
+| **Thao tác** | Học viên 2 thử xem tiến trình của A; học viên 1 xem tiến trình của A khi việc tính hàng đợi lỗi |
+| **Kết quả mong đợi** | Học viên 2 nhận đúng thông báo "không tìm thấy" như với một bài nộp không tồn tại, không thấy gì về A. Học viên 1 chỉ thấy một con số tổng số bài phía trước, không thấy ai nộp, bài nào hay mã nguồn nào. Khi việc tính lỗi, học viên 1 vẫn thấy trạng thái và tiến độ của A bình thường, chỉ thiếu dòng thông tin chờ; không có thông báo lỗi |
+| **Nguồn** | [SoT: 03-dd/api/F4_judge-orchestration.md] mục 9.4 (suy giảm êm), T-PG-11, T-PG-12; [SoT: 03-dd/logic/F4_judge-orchestration.md] BR-JD-17 |
+
 ## 3. Truy vết
 
 **Bảng 1: Truy vết tiêu chí tới endpoint hoặc luồng (cột "Test case" điền khi có)**
@@ -796,8 +824,11 @@ lệnh, timestamp, exit code và cleanup evidence; không cộng test ở lần 
 | AC-75 | BR-JD-01, BR-JD-03 |  | [TC-F2-AC93-01, TC-F2-AC93-02, TC-F2-AC93-03](../testcases/modules/F2_problem-bank/F2_snapshot_grading.md) | FINAL BE local đạt — PersistedWorkerFlowTest; FE/QA execution riêng |
 | AC-76 | #5, #8, BR-JD-04/11 |  | [TC-F4-AC76-01 đến -03](../testcases/modules/F4_judge-orchestration/F4_verdict_privacy_queue.md), [TC-F4-AC31-01 đến -03](../testcases/modules/F4_judge-orchestration/F4_result_retention_visibility.md) | FINAL BE local đạt — PersistedWorkerFlowTest; FE/QA execution riêng |
 | AC-77 | #17, JOB-JD-05 |  | [TC-F4-AC77-01 đến -10](../testcases/modules/F4_judge-orchestration/F4_worker_autoscale.md) | FINAL policy+HTTP/Rabbit local đạt; rollout nhiều process/default15s riêng |
+| AC-78 | `GET /submissions/{submissionId}/progress` (#6), trường `queue`; BR-JD-17 |  | `SubmissionReadHandlersTest` (T-PG-05, T-PG-06), `JdbcReadModelsPgTest.pendingAheadOrdersBySubmittedAtThenIdAndCountsOnlyPending` (T-PG-05, T-PG-09), `ProgressQueueJsonTest` | Đạt (2026-11-16, `mvn verify -pl algoprep-judge -am`: 577 test, 0 lỗi); kiểm trình duyệt thật 2026-11-16 (`06-plan/reports/261116-0100-f4-14-browser-check/report.md`) |
+| AC-79 | #6, trường `queue`; BR-JD-17 (biên), JOB-JD-05 (tạm dừng) |  | `SubmissionReadHandlersTest.estimateNeedsThreeSamplesRoundsUpAndCapsAtOneHour`, `pausedQueueGivesAheadWithoutEstimate` (T-PG-07, T-PG-08, T-PG-13), `JdbcReadModelsPgTest.finishedLastMinuteCountsTerminalRowsInsideTheWindowOnly` | Đạt (2026-11-16, `mvn verify -pl algoprep-judge -am`: 577 test, 0 lỗi); kiểm trình duyệt thật 2026-11-16 (`06-plan/reports/261116-0100-f4-14-browser-check/report.md`) |
+| AC-80 | #6, trường `queue`; BR-JD-17 (suy giảm êm, quyền riêng tư) | `JDG-110` | `SubmissionReadHandlersTest` (T-PG-10, T-PG-11, T-PG-12), `ProgressQueueJsonTest` (queue null khi không PENDING) | Đạt (2026-11-16, `mvn verify -pl algoprep-judge -am`: 577 test, 0 lỗi); kiểm trình duyệt thật 2026-11-16 (`06-plan/reports/261116-0100-f4-14-browser-check/report.md`) |
 
-Mỗi endpoint trong `03-dd/api/F4_judge-orchestration.md` (24 REST, 2 kênh STOMP, 4 cổng trong tiến trình, 2 sự kiện) có ít nhất một tiêu chí: #1 AC-14; #2 AC-10 đến AC-13; #3 AC-01 đến AC-09; #4 AC-36; #5 AC-30 đến AC-35, AC-71; #6 AC-27, AC-28; #7 AC-37; #8 AC-38; #9 AC-39, AC-40; #10 AC-41 đến AC-44; #11 AC-45; #12 AC-46; #13 AC-48; #14 AC-49; #15 AC-56; #16 AC-50, AC-51; #17 AC-52; #18, #19 AC-53; #20 AC-55; #21 AC-57; #22 AC-58 đến AC-62; W1 AC-25 đến AC-29; W2 (kênh quản trị) AC-48; P1 AC-47; P2 AC-67; P3 AC-66; P4 AC-70; #23 AC-69; #24 AC-72; hai sự kiện AC-63 đến AC-65.
+Mỗi endpoint trong `03-dd/api/F4_judge-orchestration.md` (24 REST, 2 kênh STOMP, 4 cổng trong tiến trình, 2 sự kiện) có ít nhất một tiêu chí: #1 AC-14; #2 AC-10 đến AC-13; #3 AC-01 đến AC-09; #4 AC-36; #5 AC-30 đến AC-35, AC-71; #6 AC-27, AC-28, AC-78 đến AC-80; #7 AC-37; #8 AC-38; #9 AC-39, AC-40; #10 AC-41 đến AC-44; #11 AC-45; #12 AC-46; #13 AC-48; #14 AC-49; #15 AC-56; #16 AC-50, AC-51; #17 AC-52; #18, #19 AC-53; #20 AC-55; #21 AC-57; #22 AC-58 đến AC-62; W1 AC-25 đến AC-29; W2 (kênh quản trị) AC-48; P1 AC-47; P2 AC-67; P3 AC-66; P4 AC-70; #23 AC-69; #24 AC-72; hai sự kiện AC-63 đến AC-65.
 
 ## 4. Chưa chốt
 

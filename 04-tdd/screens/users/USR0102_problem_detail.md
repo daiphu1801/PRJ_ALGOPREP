@@ -118,6 +118,14 @@
 | **Kết quả mong đợi** | Màn báo thời gian chờ theo phản hồi máy chủ, không thêm kết quả chạy giả và không xoá mã hoặc bản nháp. Sau khi hết hạn, người học có thể chạy thử lại; lượt nộp bài vẫn dùng hạn mức riêng. |
 | **Nguồn** | [SoT: 03-dd/screens/users/USR0102_problem_detail.md] T-PD-16A; [SoT: 03-dd/api/F4_judge-orchestration.md] §5 |
 
+### PD-AC-14 — Vừa nộp và còn phải chờ: bảng kết quả cho biết phía trước còn bao nhiêu bài
+| Mục | Nội dung |
+| :--- | :--- |
+| **Tiền đề** | Người học vừa bấm Nộp bài; bài nộp đang chờ chấm, phía trước còn 18 bài đang chờ, hệ thống đủ dữ liệu tốc độ chấm |
+| **Thao tác** | Người học ở lại tab "Kết quả" và chờ tới khi bài bắt đầu được chấm |
+| **Kết quả mong đợi** | Bảng kết quả hiện "Đang chờ chấm: phía trước còn 18 bài, ước tính khoảng 9 giây", số tự cập nhật khoảng mỗi 5 giây không cần tải lại. Chưa đủ dữ liệu thì chỉ hiện số bài phía trước. Ngay khi bài bắt đầu được chấm dòng này biến mất và các ô testcase tô dần như PD-AC-03. Chạy thử (Run Code) không hiện dòng này vì không đi qua hàng đợi chấm. Trong lúc bài chưa có kết quả cuối (đang chờ, đang biên dịch, đang chấm), bảng tóm tắt chỉ báo số testcase đạt, **không** hiện số "không đạt" (vì testcase chưa chấm không phải testcase sai) và nhãn kết quả không tô đỏ (F-01, 2026-11-16, DD `USR0102` BR-SC-12) |
+| **Nguồn** | [SoT: 01-rd/screens/users/USR0102_problem_detail.md] REQ-14; [SoT: 02-bd/screens/users/USR0102_problem_detail.md] Sheet 5 Bảng kết quả NO 12, Sheet 8 EVT-23; [SoT: 04-tdd/modules/F4_judge-orchestration.md] AC-78, AC-79 |
+
 ## 3. Truy vết
 
 Bảng 1 nối tiêu chí của màn tới `AC` module đã phủ phần nghiệp vụ tương ứng và tới điểm kiểm thử ở DD màn (`T-PD-nn`). Cột "Test case" điền khi có.
@@ -139,6 +147,7 @@ Bảng 1 nối tiêu chí của màn tới `AC` module đã phủ phần nghiệ
 | PD-AC-11 | BR-SC-10, `USR0301` EVT-6 | Chưa có điểm kiểm DD riêng | [TC-USR0102-PDAC11-01](../../testcases/screens/users/USR0102_problem_detail.md) | Chưa thực hiện |
 | PD-AC-12 | EVT-20 | T-PD-29 | [TC-USR0102-PDAC12-01](../../testcases/screens/users/USR0102_problem_detail.md) | Chưa thực hiện |
 | PD-AC-13 | `F4 AC-73` | T-PD-16A | [TC-USR0102-PDAC13-01](../../testcases/screens/users/USR0102_problem_detail.md) | Chưa thực hiện |
+| PD-AC-14 | `F4 AC-78`, `AC-79`, `AC-80` | T-PD-31 đến 34 | `queue-notice.test.tsx`, `progress.test.tsx` (mô-đun "PENDING queue polling"), `problem-detail-queue.test.tsx` (PENDING hiện, ước tính null chỉ số bài, COMPILING và rời PENDING không hiện) | FE xong 2026-11-16 (`pnpm check` PASS); backend xong (xem `F4 AC-78` đến `AC-80`); **đã kiểm trình duyệt thật với máy chủ thật 2026-11-16** (`06-plan/reports/261116-0100-f4-14-browser-check/report.md`; ảnh chụp bằng script Playwright, không phải `pnpm e2e`). Kèm F-01 (T-PD-34): chưa có verdict cuối thì ẩn "không đạt" và huy hiệu trung tính; có ảnh trước và sau cho `PENDING` (`06-plan/reports/261116-0200-f4-14-browser-check-f01-sau-sua/report.md`), trạng thái `JUDGING` không có ảnh, chỉ dùng chung hàm `isUnfinished` |
 
 ## 4. Chưa chốt
 

@@ -68,6 +68,9 @@ nhất có thể, không phải chờ toàn bộ chấm xong.
   `submissionId` và không bắt tôi chờ màn hình (F4-01).
 - **Cho** bài nộp đang được chấm, **Khi** một testcase ẩn có kết quả, **Thì** trạng thái testcase đó cập
   nhật trên giao diện của tôi qua WebSocket, không cần tôi tải lại trang (F4-08).
+- **Cho** bài nộp của tôi còn ở trạng thái `PENDING` (đang chờ đến lượt chấm), **Khi** tôi xem kết quả, **Thì** tôi
+  thấy số bài nộp đang chờ phía trước và, nếu đủ dữ liệu, thời gian chờ ước tính; thông tin này biến mất khi bài
+  của tôi bắt đầu được chấm (F4-14, bổ sung 2026-11-15).
 - **Cho** một testcase ẩn sai hoặc lỗi, **Khi** hệ thống ghi nhận, **Thì** các testcase ẩn còn lại **vẫn
   được chạy tiếp** — tôi thấy đủ trạng thái của toàn bộ testcase và một điểm tỷ lệ testcase đạt (F4-13).
   **Sửa 2026-09-05:** tiêu chí này trước ghi ngược lại — "các testcase còn lại không được chạy tiếp

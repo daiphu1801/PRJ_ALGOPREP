@@ -51,6 +51,7 @@ dưới) cho thấy học viên **tự do chọn mô hình mỗi lượt làm b�
 | Ánh xạ lỗi biên dịch về đúng dòng người dùng; che giấu lỗi harness | F3-11, F3-12 | `01-rd/req/F3_harness.md` — F3-11, F3-12 |
 | Nộp bài trả `submissionId` ngay, không chờ; hoặc tải file mã nguồn lên | F4-01 | `01-rd/req/F4_judge-orchestration.md` — F4-01 |
 | Chạy thử với testcase Sample, không ghi nhận tiến độ | F4-02 | `01-rd/req/F4_judge-orchestration.md` — F4-02 |
+| Hiện số bài đang chờ phía trước và thời gian chờ ước tính khi bài nộp còn `PENDING` (bổ sung 2026-11-15) | F4-14 | `01-rd/req/F4_judge-orchestration.md` — F4-14 |
 | Given-When-Then đầy đủ | — | `01-rd/req/user_stories/a1_student.md` (`US-A1-03`) |
 
 Đối chiếu `09-layoutBase/Workspace giải bài.dc.html` [SoT: 09-layoutBase/Workspace giải bài.dc.html], phạm
@@ -83,7 +84,10 @@ vi trên thể hiện qua các khối màn sau:
 7. **Console kết quả** — tab "Testcase" (xem input mẫu theo từng case, dòng 333-350) và tab "Kết quả" (sau
    khi Run/Submit): dải ô màu theo từng testcase, chỉ số thời gian/bộ nhớ, output, và — **chỉ khi
    Accepted** — ba liên kết "Xem kết quả chấm" (`submission_result`), "Phân tích bài giải" (`solution_review`,
-   F5-01), "Phỏng vấn giả lập" (`mock_interview`, F5-09) (dòng 353-379).
+   F5-01), "Phỏng vấn giả lập" (`mock_interview`, F5-09) (dòng 353-379). **Bổ sung 2026-11-15** (F4-14, chủ dự án): tab "Kết quả" có thêm trạng thái **đang chờ chấm**
+   khi bài vừa Submit còn `PENDING`: một dòng "Đang chờ chấm: phía trước còn N bài, ước tính khoảng M giây" (chỉ
+   hiện số bài khi chưa đủ dữ liệu ước tính), biến mất khi bài bắt đầu được chấm. Chưa có trong prototype tĩnh và
+   chưa dựng ở bản Next.js (trạng thái: dự kiến).
 8. **Chưa chạy gì** — thông báo hướng dẫn bấm Run Code (3 testcase mẫu) hoặc Submit (40 testcase ẩn trong dữ
    liệu mẫu) (dòng 380-381).
 
@@ -154,6 +158,7 @@ vi trên thể hiện qua các khối màn sau:
 | REQ-11 | **Cho** tôi đang ở phương thức "Tải file", **Khi** tôi bấm đổi mô hình (Có hàm main / Bọc hàm), **Thì** mô hình đổi ngay nhưng phương thức nhập mã vẫn giữ nguyên "Tải file" — hai lựa chọn độc lập nhau, đổi cái này không reset cái kia | Chức năng (GWT) | [SoT: 09-layoutBase/Workspace giải bài.dc.html:596-608 — `mode` và `inputMethod` là hai biến state tách rời] |
 | REQ-12 | **Cho** tôi chọn một bài ở danh sách bài, bài đã lưu hoặc "Bài ngẫu nhiên", **Khi** bài mở ra, **Thì** tôi thấy trước một **trang tổng quan chỉ-đọc** của bài (đề bài, giới hạn, bài nộp gần đây, tóm tắt Solution Review) và **chưa** vào trình soạn mã; chỉ khi tôi bấm "Giải bài toán" thì hệ thống mở màn này ở `/workspace/{problemId}` | Chức năng (GWT) | [SoT: .nexa/control/decision-registry.md:4239-4250 — `DEC-2026-1020-student-workspace-split-and-password-in-settings`]; `01-rd/screens/users/USR0104_problem_overview.md` |
 | REQ-13 | **Cho** tôi bấm mục "Workspace" trên thanh điều hướng, **Khi** trang mở ra, **Thì** tôi vào trang đầu Workspace để chọn tiếp một bài đang làm dở (hoặc chọn bài khác); hệ thống **không** tự nhảy thẳng vào một bài | Chức năng (GWT) | [SoT: .nexa/control/decision-registry.md:4239-4250 — `DEC-2026-1020-student-workspace-split-and-password-in-settings`]; `01-rd/screens/users/USR0105_workspace_home.md` |
+| REQ-14 | **Cho** bài tôi vừa Submit còn `PENDING`, **Khi** tôi nhìn console kết quả, **Thì** tôi thấy số bài đang chờ phía trước và, nếu đủ dữ liệu, thời gian chờ ước tính; khi bài rời `PENDING` thì dòng này biến mất và console hiện tiến độ từng testcase (F4-14). Con số là gợi ý gần đúng | Chức năng (GWT) | `01-rd/req/F4_judge-orchestration.md` — F4-14; quyết định chủ dự án 2026-11-15 |
 
 ---
 
@@ -192,7 +197,7 @@ Hợp đồng API, request/response và mã lỗi thuộc DD. Luồng dữ liệ
 
 | Loại | Tham chiếu |
 |---|---|
-| Yêu cầu module | `01-rd/req/F2_problem-bank.md` — F2-03; `01-rd/req/F3_harness.md` — F3-01 tới F3-13; `01-rd/req/F4_judge-orchestration.md` — F4-01, F4-02. |
+| Yêu cầu module | `01-rd/req/F2_problem-bank.md` — F2-03; `01-rd/req/F3_harness.md` — F3-01 tới F3-13; `01-rd/req/F4_judge-orchestration.md` — F4-01, F4-02, F4-14. |
 | User story | `01-rd/req/user_stories/a1_student.md` — `US-A1-03`. |
 | Khảo sát hệ thống | `01-rd/overview/system_survey.md` — mục 7.1 dòng `problem_detail`, cùng hai ghi chú ngay dưới bảng: "Màn nặng nhất là `problem_detail`" và "hai màn riêng, đừng gộp" với `submission_result`. |
 | Prototype | `09-layoutBase/Workspace giải bài.dc.html`. |
