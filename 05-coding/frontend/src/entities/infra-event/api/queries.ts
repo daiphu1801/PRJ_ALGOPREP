@@ -3,6 +3,9 @@
 // Data boundary of the infrastructure event log (ADM0404). `useInfraEventFeed` returns the same shape
 // in mock and real mode: mock filters the fixture on the client, real asks the server per filter and
 // pages by cursor, so the screen has a single render tree.
+// Hooks module: marked as a client module so the server page can import INFRA_LEVELS from the same index.
+"use client";
+
 import { useState } from "react";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { isMockMode } from "@/shared/api";
