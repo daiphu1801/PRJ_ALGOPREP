@@ -42,11 +42,11 @@
 | Tên vật lý (slug) | `problem_list` |
 | Trục tài liệu | Màn hình (`02-bd/screens/`) |
 | Actor | A1 (`STUDENT`) |
-| Phiên bản | V1.1 |
+| Phiên bản | V1.3 |
 | Người tạo | Nhóm phát triển AlgoPrep |
 | Ngày tạo | 2026/09/21 |
 | Người cập nhật | Claude |
-| Ngày cập nhật | 2026/10/21 |
+| Ngày cập nhật | 2026/11/06 |
 
 ---
 
@@ -65,6 +65,8 @@
 | V0.9 | Sheet 9 (NO 5) | Owner chốt 2026/10/19 (`DEC-2026-1019-usr-fe-audit-fixes`, chốt nốt câu hỏi mở còn lại sau rà prototype). Chỉ tài liệu, không đổi code, chưa duyệt hình. Bỏ yêu cầu toast khi ô tìm kiếm chạm 100 ký tự: `maxLength` của trình duyệt dừng việc nhập là đủ (owner 2026/10/19, ponytail bậc 3); Sheet 9 dòng độ dài từ khoá đổi `[Tiêu điểm]` còn viền ô, không còn câu thông báo. | 2026/10/19 | Claude |
 | V1.0 | Sheet 3, 4, 5, 6, 7, 8, 9, Câu hỏi mở | Đồng bộ bản dựng 2026/10/20 theo `DEC-2026-1020-student-workspace-split-and-password-in-settings`: `/problems/{id}` thành trang tổng quan chỉ-đọc (`USR0104`, slug `problem_overview`), màn soạn mã (`USR0102`, slug `problem_detail`) chuyển sang `/workspace/{id}`. Sheet 3 tách đích chuyển màn: dòng bảng, "Vào giải", "Bài ngẫu nhiên" và "Bài tập lớp" mở `problem_overview` (`/problems/{id}`); thẻ "Bài đang làm dở" mở `problem_detail` ở `/workspace/{id}`. Bỏ khung `PageHeader`: hàng tiêu đề thường, hai nút "Bài đã lưu" và "Bài ngẫu nhiên" cùng hàng (Sheet 4.4, 4.5, Sheet 5 Khu vực A). Sửa EVT-10, 11, 13, 14. Làm mới số dòng `problem-list-view.tsx` và các trích dẫn schema lệch: `F1_identity.md:111-112` thành `:156`; `F2_problem-bank.md` `:11-29` thành `:11-31`, `:37-39` thành `:55-64`, `:117-128` thành `:170-179`, `:125` thành `:179`, `:138` thành `:192`, `:31-33` thành `:33-35`, `:35-55` thành `:61`, `:41-45` thành `:97-103`; `F5_ai-review.md:44-47` thành `:35-42`; `01-rd/req/F2_problem-bank.md` `:42-43` thành `:46-47`, `:44-56` thành `:48-56`, `:59-62` thành `:61-66`; mock `problem-mocks.ts:206-224` thành `:213-235`. Bỏ trích dẫn `01-rd/req/F2_problem-bank.md:94` (dòng đó nay nói về F2-09, không liên quan Sheet 9). Chưa duyệt hình | 2026/10/20 | Claude |
 | V1.1 | Sheet 3, 4, 5, 8, 9, Câu hỏi mở | Owner chốt 2026/10/21 (USR0105 Q9): khối "Bài đang làm dở" ở cột phải giữ tối đa 3 thẻ, thêm liên kết "Xem tất cả" dưới khối trỏ `/workspace` (`USR0105`), và dùng chung một component `InProgressList` với `USR0105` (đã dựng, ở `entities/problem/ui`, thay phần vẽ thẻ viết thẳng trong view; hình thẻ giữ như cũ). Thêm item `problemList.inProgress.linkViewAll` (Sheet 5, 9), thêm EVT-15 (Sheet 8), thêm nhãn kết quả `pending`, `compiling`, `compileError`, `systemError` vào `problemList.verdict` (Q5 của `USR0104`, 2026/10/21). Đo lại số dòng `file:line` của `problem-list-view.tsx` trên bản mã cuối (mã dịch lệch 1 đến 22 dòng). Không đổi endpoint hay DTO. Chưa duyệt hình | 2026/10/21 | Claude |
+| V1.2 | Sheet 4 (Hiện trạng bản dựng), 5 (Khu vực C NO 5), Câu hỏi mở | Nối màn với API thật (2026-11-06, F2-6 phần 1, **chưa duyệt hình**): bảng `#1`, thanh chủ đề `#3`, "Bài tập lớp" `#4`, "Bài đang làm dở" `F4 #8`, "Bài ngẫu nhiên" `#2`; mock trả cùng hợp đồng. Dòng phụ bài tập lớp chỉ còn "Giao ngày ..." (khớp Q9, bỏ "x / y bài" của mock). Suy giảm không bịa số: trạng thái giải, số đã giải theo chủ đề, số đếm của thẻ bài đang làm dở có thể là `null` và được vẽ đúng là chưa rõ. Chưa nối: nhãn "Đã có Solution Review" (F5 chưa có endpoint). Không đổi RD, DTO hay endpoint | 2026/11/06 | Claude |
+| V1.3 | Sheet 4 (Hiện trạng bản dựng), Sheet 5 (Khu vực C), Sheet 8 | Ba việc nhỏ của bản dựng (**chưa duyệt hình**): (1) bộ lọc, sắp xếp và trang lên URL `?q=&status=&level=&topic=&sort=&dir=&page=`, đọc lại khi tải; giá trị mặc định không vào URL, mặc định sắp xếp vẫn theo độ khó tăng dần (owner xác nhận 2026-11-07); cỡ trang vẫn lưu trong `localStorage`, không vào URL; giá trị lạ trên URL (trạng thái, sắp xếp, trang) rơi về mặc định, mã độ khó hoặc chủ đề lạ vẫn gửi lên máy chủ (`[SoT: Suy luận]`: bảng trống kèm nút bỏ lọc); (2) mỗi nút "Vào giải" có tên truy cập riêng "Vào giải bài {tên bài}" (`aria-label`, khoá `table.btnSolveFor`); (3) khối "Bài đang làm dở" và "Bài tập lớp" ẩn hẳn khi rỗng (cột phải biến mất nếu cả hai rỗng), trạng thái đang tải và lỗi vẫn hiện. Nhãn "Đã có Solution Review" chờ F5, không nằm trong lần này. Mã: `05-coding/frontend/src/views/users/problem-list/ui/problem-list-view.tsx:84-127,285-288,296-300,375-380,505`; route `app/(student)/problems/page.tsx` bọc `Suspense` vì `useSearchParams`. Số dòng trích dẫn ở Bảng hiện trạng 2026-11-06 phía trên đo trước đợt sửa này. Không đổi RD | 2026/11/07 | Claude |
 
 ---
 ## Sheet 3. Sơ đồ chuyển màn
@@ -297,6 +299,10 @@ Bố cục hai cột `minmax(0, 1fr) 268px` (prototype `:127`; bản dựng `pro
 bảng danh sách, cột phải là hai khối phụ cố định bề rộng. Hàng tiêu đề (kèm hai nút hành động, `:265-281`)
 và thanh chủ đề (`:283-322`) nằm **trên** lưới hai cột, chiếm trọn bề ngang; không có dải chỉ số. Giữ nguyên cấu
 trúc này khi dựng Next.js; không quy định màu sắc, khoảng cách hay typography ở BD.
+
+**Cập nhật 2026-11-07 (V1.3):** bước 2 của Sheet 4.1 (bộ lọc nằm trên URL) nay đã dựng, xem hàng V1.3 ở Sheet 2; ghi chú "chưa ghi lên URL" của lần nối API 2026-11-06 hết hiệu lực.
+
+**Hiện trạng bản dựng nối API thật (2026-11-06, F2-6 phần 1, kiểm lúc viết, trích theo tên tệp; chưa duyệt hình):** `problem-list-view.tsx` chạy trên endpoint thật khi `NEXT_PUBLIC_MOCK_DATA=false`; mock trả cùng hợp đồng. Bốn khối đọc riêng, lỗi một khối chỉ báo trong khối đó: bảng `#1` (`useProblemCatalog`: máy chủ lọc, sắp xếp, phân trang; ô tìm trễ 300 ms; trang giữ nguyên khi tải trang kế), thanh chủ đề `#3`, "Bài tập lớp" `#4` (khoá nhóm theo `classId`), "Bài đang làm dở" `F4 #8` (`limit=3`). "Bài ngẫu nhiên" gọi `#2` với đúng bộ lọc đang chọn, máy chủ bốc; tập rỗng thì toast cảnh báo, không chuyển màn. Suy giảm không bịa số: `solveStateAvailable=false` hoặc `solveState=null` thì chấm trạng thái trung tính, nhãn đọc màn hình "Chưa rõ trạng thái", một dòng thông báo trên bảng, bộ lọc trạng thái chưa áp dụng; `solved=null` ở chip chủ đề thì chip chỉ còn `tên (tổng)`; `acRate=null` hiện `-`; thẻ bài đang làm dở chưa có kết quả chỉ in nhãn kết quả; thẻ không có tên bài (`problem=null`) bị bỏ. Chưa làm: nhãn "Đã có Solution Review" (không vẽ, F5 chưa có endpoint), đồng bộ bộ lọc lên URL (Sheet 4.1 bước 2), ẩn cả khối khi rỗng, tên truy cập riêng cho nút "Vào giải". Mặc định sắp xếp vẫn là độ khó tăng dần (DD chọn `code`, xem `03-dd/screens/users/USR0101_problem_list.md` mục 9).
 
 **Hiện trạng bản dựng so với các quyết định 2026-10-18 và 2026-10-20** (đọc lại `problem-list-view.tsx` ngày 2026-10-21; riêng Q8 đã sửa mã ngày 2026-10-18):
 

@@ -1,5 +1,5 @@
 {
-  "_": "Nguồn tiêu chí: 01-rd/req/user_stories/a4_system.md:26; 01-rd/req/user_stories/a4_system.md:28; 01-rd/req/user_stories/a4_system.md:31; 01-rd/req/user_stories/a4_system.md:34; 01-rd/req/user_stories/a4_system.md:37; 01-rd/req/user_stories/a4_system.md:41. Nguồn thiết kế: 03-dd/logic/F4_judge-orchestration.md; 03-dd/api/F4_judge-orchestration.md. [SoT: Suy luận] Tên lớp và chữ ký phương thức là thiết kế đề xuất từ hợp đồng DD vì backend nghiệp vụ chưa hiện thực đầy đủ. Mỗi phương thức ở lớp điều phối nối với đúng một tiêu chí theo thứ tự trong bảng truy vết; không hàm ý một endpoint riêng cho mỗi tiêu chí. Bỏ DTO HTTP, getter/setter, nhánh lỗi chi tiết.",
+  "_": "Nguồn tiêu chí: 01-rd/req/user_stories/a4_system.md:26-41. Nguồn mã nguồn: 05-coding/backend/algoprep-judge/src/main/java/com/algoprep/judge/application/command/WorkerTestcaseCommandHandler.java, FinalizeSubmissionCommandHandler.java và SweepStaleSubmissionsCommandHandler.java.",
   "kind": "class",
   "title": "A4 — Worker chấm bài và phát tiến độ",
   "covers": [
@@ -15,76 +15,84 @@
     "legend": "shared",
     "classes": [
       {
-        "id": "service",
-        "name": "JudgeWorkerService",
+        "id": "caseHandler",
+        "name": "WorkerTestcaseCommandHandler",
         "methods": [
-          "+ acceptAndQueue(command : SubmitCommand) : UUID",
-          "+ executeCase(submissionId : UUID, caseId : UUID) : CaseResult",
-          "+ completeAllCases(submissionId : UUID) : SubmissionResult",
-          "+ publishCaseProgress(result : CaseResult)",
-          "+ recordIdempotently(result : CaseResult)",
-          "+ sweepTimeouts(now : Instant) : int"
+          "+ issue(id : UUID, testcaseId : UUID) : Optional<Token>",
+          "+ record(write : TestcaseWrite) : boolean"
         ]
       },
       {
-        "id": "port1",
-        "name": "SubmissionRepository",
-        "kind": "class",
+        "id": "finalizeHandler",
+        "name": "FinalizeSubmissionCommandHandler",
         "methods": [
-          "+ save(submission : Submission)"
+          "+ finish(command : FinishCommand) : Optional<Finished>"
         ]
       },
       {
-        "id": "port2",
-        "name": "JudgeEnginePort",
+        "id": "sweepHandler",
+        "name": "SweepStaleSubmissionsCommandHandler",
+        "methods": [
+          "+ sweep(now : Instant) : int"
+        ]
+      },
+      {
+        "id": "workerRepo",
+        "name": "SubmissionWorkerRepository",
         "kind": "interface",
+        "methods": [
+          "+ lock(submissionId : UUID) : Optional<SubmissionState>",
+          "+ issue(id : UUID, testcaseId : UUID, token : Token) : boolean",
+          "+ finish(before : SubmissionState, outcome : Outcome) : Finished"
+        ]
+      },
+      {
+        "id": "judgeAdapter",
+        "name": "GoJudgeAdapter",
         "methods": [
           "+ execute(payload : JudgePayload) : JudgeResult"
         ]
       },
       {
-        "id": "port3",
-        "name": "JudgeQueuePort",
+        "id": "progressPort",
+        "name": "SubmissionProgressPort",
         "kind": "interface",
         "methods": [
-          "+ enqueue(submissionId : UUID)"
-        ]
-      },
-      {
-        "id": "port4",
-        "name": "ProgressEventPort",
-        "kind": "interface",
-        "methods": [
-          "+ publish(result : CaseResult)"
+          "+ publish(progress : TestcaseProgress)"
         ]
       }
     ],
     "externals": [],
     "relations": [
       {
-        "from": "service",
-        "to": "port1",
+        "from": "caseHandler",
+        "to": "workerRepo",
         "kind": "dependency"
       },
       {
-        "from": "service",
-        "to": "port2",
+        "from": "caseHandler",
+        "to": "judgeAdapter",
         "kind": "dependency"
       },
       {
-        "from": "service",
-        "to": "port3",
+        "from": "caseHandler",
+        "to": "progressPort",
         "kind": "dependency"
       },
       {
-        "from": "service",
-        "to": "port4",
+        "from": "finalizeHandler",
+        "to": "workerRepo",
+        "kind": "dependency"
+      },
+      {
+        "from": "sweepHandler",
+        "to": "finalizeHandler",
         "kind": "dependency"
       }
     ],
     "notes": [
-      "Chấm hết testcase, tính điểm theo tỷ lệ đạt; ghi idempotent khi message phát lại; timeout sweep kết thúc bài treo.",
-      "[SoT: Suy luận] Tên lớp/phương thức là thiết kế backend từ DD."
+      "WorkerTestcaseCommandHandler chấm từng testcase qua GoJudgeAdapter và đẩy WebSocket qua SubmissionProgressPort.",
+      "FinalizeSubmissionCommandHandler tính tỷ lệ đạt khi hoàn tất toàn bộ testcase; SweepStaleSubmissionsCommandHandler quét dọn bài treo."
     ]
   }
 }

@@ -4,7 +4,7 @@
 // carry the WRONG 4 labels (Kỹ thuật/Giao tiếp/Giải quyết vấn đề/Chất lượng mã). The correct set is
 // Độ rõ ràng/Độ chính xác kỹ thuật/Khả năng phản biện/Nhận thức độ phức tạp at 25/30/25/20%. This
 // test pins the correct labels and asserts the old ones never render again.
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { withTestProviders } from "@/shared/test/render-with-providers";
 import { MockInterviewView } from "./mock-interview-view";
@@ -51,9 +51,10 @@ describe("MockInterviewView", () => {
     fireEvent.click(screen.getByRole("button", { name: "Bắt đầu phiên" }));
 
     // Ending early (H popup) skips straight to the result screen without playing out 12 turns.
-    fireEvent.click(
-      await screen.findByRole("button", { name: "Kết thúc sớm" }),
-    );
+    // The button is locked while the interviewer is still writing (the server refuses complete then).
+    const stop = await screen.findByRole("button", { name: "Kết thúc sớm" });
+    await waitFor(() => expect(stop).toBeEnabled());
+    fireEvent.click(stop);
     fireEvent.click(screen.getByRole("button", { name: "Kết thúc" }));
 
     expect(await screen.findByText(/Độ rõ ràng/)).toBeInTheDocument();

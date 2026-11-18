@@ -8,9 +8,10 @@ export type AppArea = "public" | "student" | "instructor" | "admin";
 
 /**
  * The role REQUIRED to enter each area. This is the single source of truth for that rule —
- * middleware.ts (not built yet, needs 03-dd/api/F1_identity.md) must read this map instead of
- * duplicating it, otherwise the two will drift and an area will end up unguarded without anyone
- * noticing in a diff.
+ * `RoleGate` (widgets/app-shell) reads this map instead of duplicating it, otherwise the two will
+ * drift and an area will end up unguarded without anyone noticing in a diff. There is deliberately
+ * no proxy.ts/middleware.ts: the refresh cookie is not sent to page routes, so a proxy could not
+ * tell who is signed in (decided with the task 7 API merge).
  *
  * SEMANTIC NOTE: this is the role REQUIRED by the area, NOT the role of the currently logged-in
  * user. Real authorization is enforced by the backend; blocking on the client is only UX

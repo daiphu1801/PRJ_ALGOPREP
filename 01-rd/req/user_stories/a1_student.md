@@ -68,6 +68,9 @@ nhất có thể, không phải chờ toàn bộ chấm xong.
   `submissionId` và không bắt tôi chờ màn hình (F4-01).
 - **Cho** bài nộp đang được chấm, **Khi** một testcase ẩn có kết quả, **Thì** trạng thái testcase đó cập
   nhật trên giao diện của tôi qua WebSocket, không cần tôi tải lại trang (F4-08).
+- **Cho** bài nộp của tôi còn ở trạng thái `PENDING` (đang chờ đến lượt chấm), **Khi** tôi xem kết quả, **Thì** tôi
+  thấy số bài nộp đang chờ phía trước và, nếu đủ dữ liệu, thời gian chờ ước tính; thông tin này biến mất khi bài
+  của tôi bắt đầu được chấm (F4-14, bổ sung 2026-11-15).
 - **Cho** một testcase ẩn sai hoặc lỗi, **Khi** hệ thống ghi nhận, **Thì** các testcase ẩn còn lại **vẫn
   được chạy tiếp** — tôi thấy đủ trạng thái của toàn bộ testcase và một điểm tỷ lệ testcase đạt (F4-13).
   **Sửa 2026-09-05:** tiêu chí này trước ghi ngược lại — "các testcase còn lại không được chạy tiếp
@@ -91,6 +94,10 @@ Là **sinh viên**, tôi muốn xem lại quá trình luyện tập của mình 
   được đúng rubric của phiên đó (F1-08).
 - **Cho** thông tin cá nhân của tôi sai hoặc cần cập nhật, **Khi** tôi sửa ở trang hồ sơ, **Thì** thông tin
   mới được lưu (F1-09) `[SoT: Suy luận — README.md không nêu, nhưng đăng ký mà không sửa được gì là thiếu]`.
+- **Cho** tôi muốn có ảnh đại diện riêng, **Khi** tôi chọn một ảnh PNG, JPEG hoặc WebP không quá 512 KB ở trang hồ
+  sơ rồi lưu, **Thì** ảnh mới thay chữ viết tắt ở trang hồ sơ, thanh đầu trang và mọi nơi hiện tên tôi; nếu tôi chọn
+  tệp sai định dạng hoặc quá lớn thì được báo lỗi và ảnh cũ giữ nguyên; nếu tôi xoá ảnh thì mọi nơi trở lại chữ
+  viết tắt (F1-35, `DEC-2026-1117-user-avatar-upload`).
 - **Cho** tôi muốn ngừng sử dụng hệ thống hẳn, **Khi** tôi bấm xoá tài khoản ở khu "danger zone" của trang
   Cài đặt và xác nhận, **Thì** tài khoản chuyển trạng thái `DEACTIVATED` ngay, tôi không đăng nhập lại được
   nữa; sau một khoảng ân hạn, thông tin định danh của tôi (email, tên hiển thị) bị ẩn danh hoá, còn bài nộp,

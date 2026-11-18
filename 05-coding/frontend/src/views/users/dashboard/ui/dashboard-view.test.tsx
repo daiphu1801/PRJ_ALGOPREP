@@ -101,13 +101,17 @@ describe("DashboardView", () => {
     // 30d: 6 sessions in range, the card lists the last 3 (owner D3), each with its own 4 bars.
     expect(await screen.findAllByText(/^Phiên ngày /)).toHaveLength(3);
     expect(screen.getAllByText(/ \/ 10$/).length).toBeGreaterThanOrEqual(3);
-    expect(screen.getAllByRole("progressbar", { name: "Độ rõ ràng" })).toHaveLength(3);
+    expect(
+      screen.getAllByRole("progressbar", { name: "Độ rõ ràng" }),
+    ).toHaveLength(3);
 
     fireEvent.click(screen.getByRole("button", { name: "7 ngày" }));
 
     await waitFor(() =>
       expect(screen.getAllByText(/^Phiên ngày /)).toHaveLength(2),
     );
-    expect(screen.getAllByRole("progressbar", { name: "Độ rõ ràng" })).toHaveLength(2);
+    expect(
+      screen.getAllByRole("progressbar", { name: "Độ rõ ràng" }),
+    ).toHaveLength(2);
   });
 });

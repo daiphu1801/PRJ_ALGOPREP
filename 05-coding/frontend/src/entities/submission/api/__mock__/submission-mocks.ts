@@ -170,6 +170,25 @@ const DETAILS: Record<string, SubmissionDetail> = {
       memoryKb: 16000 + i * 10,
     })),
   },
+
+  // PENDING with a queue hint (F4-14): shows "waiting, N ahead, about M seconds".
+  "SB-90430": {
+    id: "SB-90430",
+    ...PROBLEMS[0]!,
+    language: "PYTHON",
+    submissionMode: "FUNCTION_WRAPPER",
+    status: "PENDING",
+    passedCount: null,
+    totalCount: null,
+    runtimeMs: null,
+    memoryKb: null,
+    beatsPercent: null,
+    submittedAt: "2026-09-25T10:05:00+07:00",
+    sourceCode: "def two_sum(nums, target):\n    pass\n",
+    compileErrorMessage: null,
+    testcases: [],
+    queue: { ahead: 18, estimatedWaitSeconds: 9 },
+  },
 };
 
 // The mock submissions an instructor may read; the

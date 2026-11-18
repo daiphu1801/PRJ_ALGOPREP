@@ -3,7 +3,8 @@
 
 import Link from "next/link";
 import { useRecentSolutionReviews, type RecentSolutionReview } from "../../api";
-import { useT } from "@/shared/i18n";
+import { useLocale, useT } from "@/shared/i18n";
+import { formatDateVN, type DateLocale } from "@/shared/lib";
 import { DashboardBlockState, SeeAllLink } from "@/shared/ui";
 
 /**
@@ -20,6 +21,7 @@ const VERDICT_COLOR: Record<RecentSolutionReview["verdict"], string> = {
 
 export function RecentReviewsBlock() {
   const t = useT("dashboard");
+  const locale = useLocale() as DateLocale;
   const query = useRecentSolutionReviews();
   const reviews = query.data ?? [];
 
@@ -34,9 +36,7 @@ export function RecentReviewsBlock() {
       errorMessage={t("errorAi")}
       retryLabel={t("retry")}
       headingLevel={2}
-      footer={
-        <SeeAllLink href="/submissions">{t("seeAll")}</SeeAllLink>
-      }
+      footer={<SeeAllLink href="/submissions">{t("seeAll")}</SeeAllLink>}
     >
       <div>
         <ul className="flex flex-col gap-3">
@@ -56,7 +56,7 @@ export function RecentReviewsBlock() {
                     {review.problemTitle}
                   </Link>
                   <span className="shrink-0 font-mono text-xs text-[var(--color-text-subtle)]">
-                    {review.reviewedAt}
+                    {formatDateVN(review.reviewedAt, { locale })}
                   </span>
                 </div>
                 <p className="mt-0.5 font-mono text-xs text-[var(--color-text-muted)]">

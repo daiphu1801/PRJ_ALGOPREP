@@ -1,7 +1,7 @@
 {
-  "_": "Nguồn tiêu chí: 01-rd/req/user_stories/a2_instructor.md:173; 01-rd/req/user_stories/a2_instructor.md:178; 01-rd/req/user_stories/a2_instructor.md:184. Nguồn thiết kế: 03-dd/logic/F1_identity.md; 03-dd/api/F1_identity.md; 03-dd/logic/F2_problem-bank.md; 03-dd/api/F2_problem-bank.md. [SoT: Suy luận] Tên lớp và chữ ký phương thức là thiết kế đề xuất từ hợp đồng DD vì backend nghiệp vụ chưa hiện thực đầy đủ. Mỗi phương thức ở lớp điều phối nối với đúng một tiêu chí theo thứ tự trong bảng truy vết; không hàm ý một endpoint riêng cho mỗi tiêu chí. Bỏ DTO HTTP, getter/setter, nhánh lỗi chi tiết.",
+  "_": "Nguon tieu chi: 01-rd/req/user_stories/a2_instructor.md:173-184. Nguon ma nguon: 05-coding/backend/algoprep-identity/src/main/java/com/algoprep/identity/presentation/controller/InstructorActivityController.java, domain/ports/out/InstructorClassRepository.java, algoprep-problem-bank/.../ClassAssignmentController.java. [SoT: Suy luan] InstructorDashboardController la thiet ke de xuat theo DD F1.",
   "kind": "class",
-  "title": "A2 — Tổng quan giảng viên",
+  "title": "A2 — Tong quan giang vien",
   "covers": [
     "F1-30",
     "F2-12"
@@ -10,73 +10,73 @@
     "legend": "shared",
     "classes": [
       {
-        "id": "service",
-        "name": "InstructorDashboardService",
+        "id": "dashCtrl",
+        "name": "InstructorDashboardController",
         "methods": [
-          "+ routeForRole(instructorId : UUID) : DashboardRoute",
-          "+ aggregateClasses(instructorId : UUID) : DashboardMetrics",
-          "+ partialMetrics(instructorId : UUID) : DashboardMetrics"
+          "+ overview(jwt : Jwt) : DashboardOverviewResponse",
+          "+ aggregateClasses(jwt : Jwt) : AggregatedMetricsResponse",
+          "+ partialMetrics(jwt : Jwt) : DashboardOverviewResponse"
         ]
       },
       {
-        "id": "port1",
-        "name": "InstructorClassPort",
-        "kind": "interface",
+        "id": "activityCtrl",
+        "name": "InstructorActivityController",
         "methods": [
-          "+ listMine(instructorId : UUID) : List<Classroom>"
+          "+ recentActivity(jwt : Jwt, classId : String) : Response"
         ]
       },
       {
-        "id": "port2",
-        "name": "ProblemMetricsPort",
+        "id": "classRepo",
+        "name": "InstructorClassRepository",
         "kind": "interface",
         "methods": [
-          "+ forClasses(ids : List<UUID>) : ProblemMetrics"
+          "+ listOwned(instructorId : UUID) : List<InstructorClass>",
+          "+ listActiveRoster(classId : UUID) : List<ClassRosterEntry>"
         ]
       },
       {
-        "id": "port3",
-        "name": "JudgeMetricsPort",
+        "id": "problemPort",
+        "name": "ClassProblemMetricsPort",
         "kind": "interface",
         "methods": [
-          "+ forClasses(ids : List<UUID>) : JudgeMetrics"
+          "+ forClasses(classIds : List<UUID>) : ClassAssignmentSummary"
         ]
       },
       {
-        "id": "port4",
-        "name": "AiMetricsPort",
+        "id": "judgeRepo",
+        "name": "ClassSubmissionMetricsRepository",
         "kind": "interface",
         "methods": [
-          "+ forClasses(ids : List<UUID>) : AiMetrics"
+          "+ find(scope : ClassMetricsScope, now : Instant) : List<ClassMetricSubmission>"
         ]
       }
     ],
     "externals": [],
     "relations": [
       {
-        "from": "service",
-        "to": "port1",
+        "from": "dashCtrl",
+        "to": "classRepo",
         "kind": "dependency"
       },
       {
-        "from": "service",
-        "to": "port2",
+        "from": "dashCtrl",
+        "to": "problemPort",
         "kind": "dependency"
       },
       {
-        "from": "service",
-        "to": "port3",
+        "from": "dashCtrl",
+        "to": "judgeRepo",
         "kind": "dependency"
       },
       {
-        "from": "service",
-        "to": "port4",
+        "from": "dashCtrl",
+        "to": "activityCtrl",
         "kind": "dependency"
       }
     ],
     "notes": [
-      "Mỗi thẻ dùng tổng trên lớp đang phụ trách; khi một nguồn lỗi, trả thẻ còn lại và trạng thái nguồn lỗi.",
-      "[SoT: Suy luận] Tên lớp/phương thức là thiết kế backend từ DD."
+      "Tong hop so lieu tren tat ca cac lop giang vien phu trach.",
+      "Kien truc phan ra giup khi mot nguon du lieu bi loi thi cac khoi con lai van hien thi binh thuong."
     ]
   }
 }

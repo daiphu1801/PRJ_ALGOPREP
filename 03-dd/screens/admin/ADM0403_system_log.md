@@ -7,7 +7,7 @@
 | Actor, route | A3 `ADMIN`; `/admin/system-log` |
 | Nguồn | `01-rd/screens/admin/ADM0403_system_log.md`; `02-bd/screens/admin/ADM0403_system_log.md` Sheet 1–9; [F1](../../api/F1_identity.md) §0.7, BR-16/19/20 |
 | Prototype | `05-coding/frontend/src/views/admin/system-log/ui/admin-system-log-view.tsx` |
-| Phiên bản | V0.1, 2026-10-25; DD màn, Mode B |
+| Phiên bản | V0.2, 2026-11-02 (nối API thật, task #12); V0.1, 2026-10-25; DD màn, Mode B |
 
 ## 1. Bản đồ slice FSD
 
@@ -74,6 +74,16 @@ Dùng `adminSystemLog.*`, `apiError.IDT-*`. Mỗi dòng thời gian đọc theo 
 | LOG-04 | Security | CSV và UI không lộ OTP/token/khoá, A3 đọc không cần quyền sửa | Playwright | TDD màn `LOG-AC-02` |
 | LOG-05 | Normal | EVT-9/12/13 chụp filter, chọn cột và tải CSV | Playwright | TDD màn `LOG-AC-02` |
 | LOG-06 | Boundary | EVT-14–16 giảm hạn hoặc DELETE hỏi lại, ARCHIVE giải thích trạng thái | Playwright | TDD màn `LOG-AC-03` |
+
+**Triển khai 2026-11-02 (task #12, lát 3).** Màn nối API thật ở chế độ `NEXT_PUBLIC_MOCK_DATA=false`; chế độ mock giữ nguyên và dùng cùng một đường mã (mock cũng lọc và phân trang theo con trỏ).
+- **Vị trí mã.** Giữ trong `views/admin/system-log/api/` (tiêu chí ponytail bậc 4: chưa có màn thứ hai dùng), không tách `entities/audit-log` và `features/*` như bảng mục 1. Gồm `real-audit-log.ts` (gọi #39, #40, #64, #65, #51, #52 và ánh xạ DTO), `queries.ts` (`useAuditLog` là truy vấn vô hạn theo con trỏ), `mutations.ts` (`useSaveLogRetention`, `useExportAuditLog`), `live.ts` (`useAuditLive`), `model/filters.ts` (`matchesFilters`). Phần dùng chung đưa lên `shared/`: `shared/api/sse-stream.ts` (SSE qua `fetch`), `api.download` và `api.put` ở `shared/api/client.ts`, `shared/lib/save-blob.ts`, `shared/lib/use-debounced.ts`, và `ParamsDialog` nhận `onSave` trả về promise (lỗi thì giữ hộp thoại và bản nháp).
+- **Lọc và phân trang ở máy chủ.** Từ khoá (chờ 300 ms sau khi ngừng gõ), phân loại, khoảng ngày gửi lên #39; "Tải thêm 50 dòng" gửi `nextCursor` của trang trước. Khoảng ngày ngược không gọi máy chủ và hiện trạng thái rỗng. Không có tổng số dòng (máy chủ không trả số giả), nên nhãn chân danh sách chỉ ghi số dòng đã tải. **Lệch BR-SC-01:** bộ lọc giữ trong trạng thái màn, không đặt ở URL (tiêu chí ponytail bậc 3 và bậc 1: không ai dùng liên kết lọc sẵn khi demo, không nguồn yêu cầu); nợ nếu sau này cần chia sẻ liên kết.
+- **Câu nội dung.** Dựng từ `actionType` và `safeParams` bằng khoá `adminSystemLog.action.<TYPE>` (16 loại hiện có, vi và en); loại chưa có khoá hiện "Hành động <mã>". Mã hiển thị là 7 ký tự đầu UUID, khoá thật vẫn là UUID. Dòng khoá tài khoản (`USER_LOCKED`) hiện thêm lý do từ `safeParams.reason`. Giờ đọc theo UTC+7 cố định.
+- **Luồng trực tiếp (#66).** Mở khi công tắc bật, bằng `fetch` kèm Bearer; tự nối lại có lùi thời gian, gửi `Last-Event-ID`, làm mới token một lần khi gặp 401. Dòng mới chỉ thêm vào đầu trang một khi khớp bộ lọc hiện tại (`matchesFilters` làm giống máy chủ: email người thực hiện, mã sự kiện theo tiền tố, tên dịch vụ) và khử trùng theo UUID. Sự kiện `resync`, hoặc nối lại thành công sau khi rớt, làm mới danh sách. Khi rớt hiện "Đang nối lại luồng trực tiếp"; bị từ chối (`IDT-447`, `IDT-449`) báo toast, không thử lại. Dòng mới được đọc qua `aria-live=polite` thành một câu tổng. **Chưa làm:** cắt số dòng tối đa đang xem (nợ, ponytail bậc 3), không có luồng ở chế độ mock.
+- **Xuất CSV (#40).** Tệp do máy chủ stream; màn nhận về Blob rồi lưu, tên tệp `audit-logs-YYYYMMDD-HHmm.csv` do client đặt (giờ UTC+7). Gửi `Accept-Language` theo ngôn ngữ giao diện. Lỗi (`IDT-443`, `IDT-444`, `IDT-447`) giữ hộp thoại và bộ lọc, toast nêu lý do, không lưu tệp rỗng. Thời hạn lưu trong kiểm tra ngày lấy từ #51.
+- **Lưu trữ (#51, #52).** Đọc khi mở màn, nhãn chân trang và hộp thoại dùng giá trị máy chủ; lưu xong màn chỉ hiện giá trị máy chủ trả về. Thiếu ô `SYSTEM_AUDIT_LOG:UPDATE` thì máy chủ trả `IDT-445`, màn toast và giữ hộp thoại (màn chưa biết quyền của người xem nên chưa vô hiệu nút trước, nợ). `ARCHIVE` chọn được kèm dòng giải thích chưa nén và chưa xoá (BR-SC-02).
+- **Proxy.** Lớp rewrite của Next.js nén gzip cho trình duyệt và giữ sự kiện SSE trong bộ đệm nén; backend #66 nay trả `Cache-Control: no-store, no-transform` (DD api F1 mục 0.7.2).
+- Kiểm chứng: `pnpm check` 129 file 737 test; `e2e/admin-system-log-real.spec.ts` trên backend và frontend thật.
 
 ## 8. Nợ prototype và câu hỏi mở
 

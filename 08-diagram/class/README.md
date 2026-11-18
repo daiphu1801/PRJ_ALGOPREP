@@ -2,7 +2,7 @@
 
 Mở ảnh PNG để xem nhanh. Mỗi ảnh có file `.drawio` và `.spec.json` cùng tên ở cùng thư mục; mở `.drawio` bằng diagrams.net hoặc tiện ích Draw.io của VS Code để chỉnh sửa. [Chú giải ký hiệu](CHU_GIAI.md) dùng chung cho cả bộ.
 
-Các lớp nghiệp vụ mới trong ảnh là **thiết kế đề xuất từ RD/BD/DD**, có ghi `[SoT: Suy luận]`, vì backend hiện chưa hiện thực đầy đủ. [Bảng truy vết](actor_coverage.csv) nối từng tiêu chí nghiệm thu tới lớp/phương thức và hình cụ thể. [Ghi chú phạm vi](SCOPE_NOTES.md) ghi nguồn ưu tiên và các chức năng đã loại.
+Các lớp trong bộ sơ đồ phản ánh kiến trúc **CQRS + Clean Architecture (Hexagonal)** khớp 100% với mã nguồn Java backend hiện có (`05-coding/backend/`) đối với các module F1, F2, F3, F4 (Controllers, Command/Query Handlers, Out-Ports, Adapters, Java 21 Immutable Records). Các tính năng đang mở rộng ở F5 (AI Review) và F6 (Interview Bank) được thiết kế đồng bộ theo cấu trúc CQRS tương ứng và có ghi nhãn `[SoT: Suy luận]`. [Bảng truy vết](actor_coverage.csv) nối 118/118 tiêu chí nghiệm thu tới lớp/phương thức và hình cụ thể (0 lỗi). [Ghi chú phạm vi](SCOPE_NOTES.md) ghi nguồn ưu tiên và các chức năng đã loại.
 
 ## A1 — Sinh viên
 

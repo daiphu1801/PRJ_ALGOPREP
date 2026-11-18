@@ -14,22 +14,22 @@
         "role": "actor"
       },
       {
-        "name": "ClassController",
+        "name": "InstructorClassController",
         "role": "controller",
         "stereo": "presentation"
       },
       {
-        "name": "DeleteClass",
+        "name": "DeleteClassCommandHandler",
         "role": "service",
         "stereo": "application command"
       },
       {
-        "name": "ClassRepository",
+        "name": "InstructorClassRepository",
         "role": "repository",
         "stereo": "output port"
       },
       {
-        "name": "IdentityDbAdapter",
+        "name": "JdbcInstructorClassRepository",
         "role": "repository",
         "stereo": "persistence adapter"
       },
@@ -60,44 +60,44 @@
       },
       {
         "from": "Giảng viên",
-        "to": "ClassController",
+        "to": "InstructorClassController",
         "text": "Xác nhận xóa lớp"
       },
       {
-        "from": "ClassController",
-        "to": "DeleteClass",
+        "from": "InstructorClassController",
+        "to": "DeleteClassCommandHandler",
         "text": "Xóa lớp của giảng viên"
       },
       {
-        "from": "DeleteClass",
-        "to": "ClassRepository",
+        "from": "DeleteClassCommandHandler",
+        "to": "InstructorClassRepository",
         "text": "Kiểm chủ lớp"
       },
       {
-        "from": "ClassRepository",
-        "to": "IdentityDbAdapter",
+        "from": "InstructorClassRepository",
+        "to": "JdbcInstructorClassRepository",
         "text": "Tìm lớp và chủ sở hữu"
       },
       {
-        "from": "IdentityDbAdapter",
+        "from": "JdbcInstructorClassRepository",
         "to": "PostgreSQL",
         "text": "Đọc lớp"
       },
       {
         "from": "PostgreSQL",
-        "to": "IdentityDbAdapter",
+        "to": "JdbcInstructorClassRepository",
         "text": "Chủ lớp hiện tại",
         "kind": "return"
       },
       {
-        "from": "IdentityDbAdapter",
-        "to": "ClassRepository",
+        "from": "JdbcInstructorClassRepository",
+        "to": "InstructorClassRepository",
         "text": "Chủ lớp hiện tại",
         "kind": "return"
       },
       {
-        "from": "ClassRepository",
-        "to": "DeleteClass",
+        "from": "InstructorClassRepository",
+        "to": "InstructorClassController",
         "text": "Chủ lớp hiện tại",
         "kind": "return"
       },
@@ -106,40 +106,40 @@
           "label": "Giảng viên sở hữu lớp?",
           "then": [
             {
-              "from": "DeleteClass",
-              "to": "ClassRepository",
+              "from": "DeleteClassCommandHandler",
+              "to": "InstructorClassRepository",
               "text": "Xóa lớp"
             },
             {
-              "from": "ClassRepository",
-              "to": "IdentityDbAdapter",
+              "from": "InstructorClassRepository",
+              "to": "JdbcInstructorClassRepository",
               "text": "Xóa lớp và các dòng phụ thuộc trong identity"
             },
             {
-              "from": "IdentityDbAdapter",
+              "from": "JdbcInstructorClassRepository",
               "to": "PostgreSQL",
               "text": "Xóa lớp, mã mời, ghi danh; bỏ liên kết hoạt động"
             },
             {
               "from": "PostgreSQL",
-              "to": "IdentityDbAdapter",
+              "to": "JdbcInstructorClassRepository",
               "text": "Đã commit xóa lớp",
               "kind": "return"
             },
             {
-              "from": "IdentityDbAdapter",
-              "to": "ClassRepository",
+              "from": "JdbcInstructorClassRepository",
+              "to": "InstructorClassRepository",
               "text": "Đã xóa lớp",
               "kind": "return"
             },
             {
-              "from": "ClassRepository",
-              "to": "DeleteClass",
+              "from": "InstructorClassRepository",
+              "to": "DeleteClassCommandHandler",
               "text": "Đã xóa lớp",
               "kind": "return"
             },
             {
-              "from": "DeleteClass",
+              "from": "DeleteClassCommandHandler",
               "to": "ClassEventPort",
               "text": "Báo lớp đã xóa sau commit",
               "kind": "async"
@@ -162,13 +162,13 @@
               "text": "Đánh mốc gỡ cho các bài đang giao"
             },
             {
-              "from": "DeleteClass",
-              "to": "ClassController",
+              "from": "InstructorClassController",
+              "to": "InstructorClassController",
               "text": "Trả kết quả xóa",
               "kind": "return"
             },
             {
-              "from": "ClassController",
+              "from": "InstructorClassController",
               "to": "Giảng viên",
               "text": "Lớp biến khỏi danh sách",
               "kind": "return"
@@ -176,13 +176,13 @@
           ],
           "else": [
             {
-              "from": "DeleteClass",
-              "to": "ClassController",
+              "from": "InstructorClassController",
+              "to": "InstructorClassController",
               "text": "Từ chối vì không sở hữu lớp",
               "kind": "return"
             },
             {
-              "from": "ClassController",
+              "from": "InstructorClassController",
               "to": "Giảng viên",
               "text": "Hiển thị lỗi quyền lớp",
               "kind": "return"

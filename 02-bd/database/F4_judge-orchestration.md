@@ -270,3 +270,6 @@ Bảng 8.1: Nullability và CHECK theo bảng.
 Lý do giữ nullable ở `submissions`: `spec_version` chưa biết trước khi worker prepare; `total_testcase_count` chỉ có khi vào `JUDGING`; `score_ratio` để `NULL` cho `COMPILE_ERROR` và `SYSTEM_ERROR`; `finished_at` chỉ có ở trạng thái cuối. Mối quan hệ `status` với `failure_reason` và `finished_at` được ép bằng CHECK vì mọi đường kết thúc đều đi qua cùng một hàm `finalizeSubmission` (`03-dd/logic/F4_judge-orchestration.md` BR-JD-05). `SYSTEM_ERROR` vẫn được giữ `passed_testcase_count` và `total_testcase_count` từng phần, nên không có CHECK nào cấm điều đó.
 
 **Seed (migration `V4.002`):** `language_configs` ba dòng: `JAVA` thời gian `2.00` bộ nhớ `2.00`; `CPP` `1.00` và `1.00`; `PYTHON` `3.00` và `1.00`; cả ba `enabled = true`. Bốn bảng singleton một dòng `id = 1` với mọi giá trị mặc định ở mục 1.7 đến 1.10. Mọi dòng seed có `updated_by = NULL`. Không seed `submissions` và các bảng còn lại.
+
+
+D02v: cache judge:classmetrics TTL900 giây đã triển khai; key băm cả students/enrollment và assignments/assignment windows, classId/weekCount/current ISO week. Redis lỗi/JSON hỏng tính DB; không có bảng snapshot tuần hoặc migration mới. SQL chỉ đọc judge.submissions.

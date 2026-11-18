@@ -1,0 +1,7 @@
+from typing import List
+
+{{NODE_COMMENTS}}
+class Solution:
+    {{DECLARATION}}
+        # Write your solution here
+        {{DEFAULT_RETURN}}

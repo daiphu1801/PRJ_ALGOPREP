@@ -1,0 +1,9 @@
+# Combine local,worker,outbox,maintenance for the current local deployment.
+judge:
+  maintenance:
+    enabled: true
+    timeout-seconds: 300
+    sweep-delay-ms: 60000
+    sweep-batch-size: 200
+    retention-days: 90
+    cleanup-batch-size: 5000

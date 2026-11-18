@@ -305,7 +305,7 @@ F2 ghi sự kiện miền trong **cùng giao dịch** với thay đổi bài, te
 | `published_at` | TIMESTAMPTZ nullable | Chỉ điền sau publisher confirm |
 | `publish_attempts` | INT NOT NULL DEFAULT 0 CHECK (`publish_attempts >= 0`) | Tăng sau mỗi lần thử |
 
-Index một phần `outbox_events(created_at, id) WHERE published_at IS NULL` cho relay. Dòng đã publish giữ 90 ngày rồi job dọn; dòng chưa publish không xoá theo tuổi. Consumer khử trùng theo `eventId` hoặc phiên bản tự nhiên của loại sự kiện. [DD F2 Q-17]
+Cập nhật V2.004: thêm `last_attempted_at TIMESTAMPTZ NULL`; mỗi lần thử ghi thời điểm và tăng `publish_attempts`. Index một phần `outbox_events(COALESCE(last_attempted_at,created_at),created_at,id) WHERE published_at IS NULL` cho relay; retry xoay vòng, không chặn tin chưa thử (`DEC-2026-1111-f2-outbox-retry-fairness`). Dòng đã publish giữ 90 ngày rồi job dọn; dòng chưa publish không xoá theo tuổi. Consumer khử trùng theo `eventId` hoặc phiên bản tự nhiên của loại sự kiện. [DD F2 Q-17]
 
 ## 2. Chỉ mục (index) đáng chú ý
 
@@ -326,7 +326,9 @@ Index một phần `outbox_events(created_at, id) WHERE published_at IS NULL` ch
 
 | Key | TTL | Dùng cho |
 | :--- | :--- | :--- |
-| `problem:list:<filterHash>` | 60 giây (đề xuất, `[SoT: Suy luận]`) | Cache trang danh sách bài toán đã lọc/phân trang — `dependency-map.md` xác nhận có Redis cache cho `problem-bank` nhưng không nêu TTL |
+| `problem:list:v<DB epoch>:<SHA-256(filter,paging)>` | 60 giây | Trang không có trạng thái riêng người dùng; có status filter thì đọc origin |
+| `problem:summary:v<DB epoch>` | 60 giây | Tổng kho theo chủ đề/độ khó, dùng chung |
+| `problem:solvestate:<userId>` | 60 giây | Chỉ kết quả thành công từ F1; không cache lỗi thành rỗng |
 | `problem:spec:<problemId>` | Invalidate chủ động khi dòng `problem_specs` đổi (gồm chữ ký hàm đã gộp, mục 1.4; sửa 2026-10-22 phase 2) | Cache đặc tả hàm để `harness` (qua outbound port) đọc một dòng thay vì join nhiều bảng mỗi lần sinh mã |
 
 ## 4. Migration — thứ tự tạo bảng
@@ -394,3 +396,9 @@ Bảng 7.2: Seed initial duy nhất, ADMIN quản lý sau migration; không dùn
 | topics | 20000000-0000-4000-8000-000000000106 | QUY-HOACH-DONG | Quy hoạch động | 6 |
 
 problem_bank_settings seed đúng một dòng id=1, max_ai_generations_per_problem=2, updated_by=NULL, updated_at=now(). Không seed bài, testcase, thẻ, bookmark, assignment, số liệu, snapshot hoặc event giả. Những bảng đó bắt đầu rỗng.
+
+
+## Bổ sung migration 2026-11-11
+
+- `V2.003__catalog_cache_epoch.sql` thêm bảng thứ 19 `problem.catalog_cache_epoch`: `id SMALLINT PRIMARY KEY CHECK (id=1)`, `version BIGINT NOT NULL DEFAULT 0`, seed duy nhất id=1/version=0. Version tăng cùng giao dịch mutation, DB là nguồn authoritative của cache list/summary. Redis version là mirror sau commit; rollback không đổi epoch visible. Không chứa dữ liệu người học, không đọc chéo schema.
+- `V2.004__outbox_retry_fairness.sql` thêm last_attempted_at và thay partial index pending như mục 1.16. Tin lỗi vẫn pending/cùng eventId; retry xoay vòng tránh starvation. Baseline 18 bảng ở mục 4 giữ để ghi lịch sử V2.001/V2.002, không phải tổng bảng hiện hành.

@@ -38,10 +38,11 @@ prototype thật mà bản mô tả chức năng chung chưa có.
 Đối chiếu `09-layoutBase/Đăng nhập & Đăng ký.dc.html` — đây là hành vi UX thật đã dựng, không phải suy
 diễn [SoT: 09-layoutBase/Đăng nhập & Đăng ký.dc.html:186, 216-279]:
 
-1. **`signup`** (mặc định khi vào lần đầu) — form Tên đăng nhập, Mật khẩu, E-mail, ô đồng ý điều khoản sử
-   dụng, nút "Đăng ký", cụm nút OAuth (Google, GitHub) — dòng 236-238, 246.
-2. **`login`** — form E-mail/Tên đăng nhập, Mật khẩu, ô "Ghi nhớ đăng nhập", liên kết "Quên mật khẩu?", nút
-   "Đăng nhập", cụm nút OAuth — dòng 121-129, 236-238.
+1. **`signup`** (mặc định khi vào lần đầu) — form Họ và tên, Mật khẩu, E-mail, ô đồng ý điều khoản sử
+   dụng, nút "Đăng ký", cụm nút OAuth (Google, GitHub) — dòng 236-238, 246. Đăng ký thành công thì chuyển
+   sang `verify_email` (mục 9), **chưa** đăng nhập. Sửa 2026-10-31 (`DEC-2026-1031-auth-screen-api-alignment`): trước đây ghi "Tên đăng nhập"; hệ thống không có tên đăng nhập, giá trị này là họ và tên hiển thị.
+2. **`login`** — form E-mail, Mật khẩu, liên kết "Quên mật khẩu?", nút "Đăng nhập", cụm nút OAuth — dòng
+   121-129, 236-238. Sửa 2026-10-31 (`DEC-2026-1031-auth-screen-api-alignment`): bỏ "Tên đăng nhập" (đăng nhập chỉ theo e-mail) và ô "Ghi nhớ đăng nhập" (backend không có tham số này, phiên luôn 30 ngày).
 3. **Chuyển đổi `signup` ↔ `login`** qua nút phụ ở panel bên phải, không rời khỏi màn (không có URL riêng
    cho từng chế độ trong prototype) — dòng 159, 272.
 4. **`loading`** — overlay toàn màn hình sau khi bấm nộp, hiện 4 bước tuần tự (Xác thực thông tin → Tải
@@ -60,6 +61,10 @@ diễn [SoT: 09-layoutBase/Đăng nhập & Đăng ký.dc.html:186, 216-279]:
    lại mã" (giới hạn tần suất — F1-17). Sai quá số lần cho phép hoặc hết hạn → báo lỗi, buộc gửi lại mã mới.
 8. **`forgot_reset`** (mới) — sau khi mã hợp lệ, form đặt mật khẩu mới (giống ràng buộc độ dài mật khẩu ở
    `signup`); xong thì quay về `login` để đăng nhập bằng mật khẩu mới, không tự động đăng nhập.
+9. **`verify_email`** (mới 2026-10-31, `DEC-2026-1031-auth-screen-api-alignment`; yêu cầu F1-33 và `DEC-2026-1022-self-register-pending-login-blocked`) — nhập mã 6 chữ số gửi
+   tới e-mail vừa đăng ký, có đếm ngược gửi lại và giới hạn số lần nhập sai, giống `forgot_otp`. Đúng mã thì tài
+   khoản được kích hoạt và quay về `login` với e-mail đã điền, không tự động đăng nhập. Đăng nhập khi chưa xác
+   thực cũng được đưa vào bước này.
 
 Hai chế độ hiển thị **không đổi hành vi nghiệp vụ**, chỉ đổi văn bản/field: `data-ui-lang="vi|en"` (i18n,
 `DEC-2026-0824-i18n-vi-en`) và `data-theme="light|dark"` (theme, `DEC-2026-0824-dark-light-theme`, Light

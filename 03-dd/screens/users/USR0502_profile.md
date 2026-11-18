@@ -4,6 +4,8 @@
 
 ## 0. Thông tin tài liệu
 
+> **Cập nhật 2026-11-17 (`DEC-2026-1117-user-avatar-upload`, BD `USR0502` V1.3):** thêm ảnh đại diện thật: slice `features/edit-my-avatar`, thành phần dùng chung `Avatar` và hook tải ảnh, trạng thái, quy tắc BR-SC-07, kiểm tra phía client, khoá i18n và điểm kiểm thử T-PF-21 đến T-PF-28. Hợp đồng API ở `03-dd/api/F1_identity.md` mục 0.9; màn **không** lặp lại request/response. **Đã dựng 2026-11-17 (chưa duyệt hình, kiểm bằng Vitest):** xem Bảng 1.1 cột "Hiện trạng". Lệch so với DD: hook tạo URL tạm và kiểm tệp ảnh nằm ở `shared/lib` (`useObjectUrl`, `checkImageFile`) theo luật "shared first"; `useUnsavedChangesGuard` được gắn riêng trong `AvatarEditor` (guard của biểu mẫu vẫn chưa có, P3).
+
 Bảng 0.1: Bìa tài liệu.
 
 | Mục | Giá trị |
@@ -24,6 +26,7 @@ Bảng 0.2: Lịch sử sửa.
 | Ver | Mục | Nội dung | Ngày |
 | :--- | :--- | :--- | :--- |
 | V0.1 | Toàn bộ | Tạo mới từ prototype đã dựng, BD V0.9 và DD F1, F5. Chốt hai đường lưu độc lập, vòng đời hộp thoại OTP, nguồn khối "Luyện tập", đối chiếu zod với `validation/F1`; nêu các khoảng trống của F1 (mã lỗi, `phone`) | 2026-10-24 |
+| V0.2 | Mục 2 | 2026-11-12 (M5): ô "Phiên phỏng vấn" của khối luyện tập đọc F5 mục 13 thật qua `useInterviewSummary`; lỗi vẫn in `-`, không toast | 2026-11-12 |
 
 Bảng 0.3: Viết tắt nguồn trích dẫn.
 
@@ -52,13 +55,21 @@ Bảng 1.1: Slice của màn.
 | views | `views/users/profile/ui/{identity-card,account-card,practice-card,security-card}.tsx` | Bốn khối chỉ đọc (danh tính, tài khoản, luyện tập, phương thức đăng nhập) | Có |
 | features | `features/edit-my-profile/` (`personal-info-card`, `email-otp-dialog`, `model/use-edit-profile.ts`) | Biểu mẫu và hộp thoại OTP; sở hữu trạng thái `saved`, `fields`, `dirty`, `emailOtpTarget` [SoT: FEP model/use-edit-profile.ts:51-164] | Có |
 | features | `features/edit-my-profile/model/use-profile-leave-guard.ts` | Gắn `useUnsavedChangesGuard(dirty)` và hộp thoại ba nút cho EVT-15 | Chưa có |
+| features | `features/edit-my-avatar/` (`ui/avatar-editor.tsx`, `model/use-edit-avatar.ts`) | Chọn tệp, kiểm sơ bộ, thu nhỏ, xem trước, Lưu ảnh, Huỷ, Xoá ảnh (BR-SC-07). Sở hữu trạng thái `pending` (ảnh xem trước) | **Đã dựng 2026-11-17** |
+| entities | `entities/user/api/real-avatar.ts` | `uploadMyAvatar(blob)` (F1 #74), `removeMyAvatar()` (F1 #75), `removeUserAvatar(userId)` (F1 #77, dùng ở `ADM0201`), sau `withMockData(mock, real)` | **Đã dựng 2026-11-17** |
+| entities | `entities/user/api/avatar-queries.ts` | `useAvatarUrl(userId, avatarVersion)`: tải ảnh qua F1 #76 bằng API client có bearer, trả URL tạm (`URL.createObjectURL`) và thu hồi khi dọn; khoá cache `["user","avatar",userId,avatarVersion]` | **Đã dựng 2026-11-17** |
+| entities | `entities/user/ui/user-avatar.tsx` | `UserAvatar({ userId, name, avatarVersion, size })`: `avatarVersion` rỗng thì chỉ vẽ chữ viết tắt, không gọi API; có thì gọi `useAvatarUrl` | **Đã dựng 2026-11-17** |
+| shared | `shared/ui/data/avatar.tsx` | `Avatar({ src, name, size, className })` thuần hiển thị: có `src` thì vẽ ảnh tròn, `onError` hoặc không có `src` thì vẽ chữ viết tắt. Không gọi API, không i18n | **Đã dựng 2026-11-17** |
+| shared | `shared/lib/initials.ts` | `initialsOf(name)`: hai ký tự đầu của hai từ cuối, viết hoa; **gom bốn bản sao hiện có** (`entities/class` `initialsOfClassStudent`, `views/admin/user-management`, `views/admin/system-log`, `identity-card.tsx`) | **Đã dựng 2026-11-17** |
+| shared | `shared/lib/downscale-image.ts` | `downscaleToSquare(file, 256)`: giải mã bằng `createImageBitmap`, vẽ canvas 256 x 256 (cắt giữa), xuất `image/webp` chất lượng 0,9, dự phòng `image/jpeg`; nhận hàm tạo canvas qua tham số để kiểm thử được trong jsdom | **Đã dựng 2026-11-17** |
+| shared | `shared/api` (API client) | Thêm `getBlob(path, query)` dùng cùng bearer và cùng xử lý làm mới token như `get`; **kiểm mọi nơi gọi `api.get` trước, giữ nguyên hành vi của chúng** | **Đã dựng 2026-11-17** (`api.getBlob`) |
 | entities | `entities/user/api/queries.ts` | `useMyProfile` (F1 #9) [SoT: EU api/queries.ts:82-89] | Có, mock |
 | entities | `entities/user/api/mutations.ts` | `updateMyProfile` (F1 #10), `requestEmailChange` (F1 #11), `confirmEmailChange` (F1 #12) dạng hàm async thường, đúng quy ước của `entities/auth` [SoT: EU api/mutations.ts:1-5, 32-41] | Có, mock |
 | entities | `entities/user/model/schema.ts` | zod: `profileFormSchema`, `emailChangeSchema`, `emailOtpSchema` [SoT: EU model/schema.ts:28-45, 79-84] | Có |
 | entities | `entities/progress/api/queries.ts` | `useSolveSummary` (F1 #47), `useMyLevelProgress` (F2 §14A), `useInterviewSummary` (F5 mục 13); dùng chung với `USR0601` (DD-DB mục 1) | Có tên mock cũ, đổi theo DD-DB |
 | shared | `Card`, `Skeleton`, `ErrorState`, `Button`, `TextField`, `Modal`, `UnsavedChangesDialog`, `shared/lib` (`toast`, `useUnsavedChangesGuard`, `formatDateVN`), `useErrorMessage` (DD-PD S3) | Dùng lại | Có, trừ `useErrorMessage` |
 
-Không có thành phần mới nào cần nâng lên `shared/`.
+Từ V1.3 có hai thành phần nâng lên `shared/` (`Avatar`, `initialsOf`) vì nhiều màn cần cùng một thứ (hồ sơ, thanh đầu trang, bảng lớp của giảng viên, bảng quản trị), theo luật "shared first"; một phần nâng cấp API client; `UserAvatar` nằm ở `entities/user` vì cần hook gọi F1 #76.
 
 ## 2. API tiêu thụ
 
@@ -69,14 +80,19 @@ Bảng 2.1: Sự kiện BD, endpoint theo ID, hook, trạng thái nối. Hiện 
 | EVT-1 | F1 #9 `GetMyProfile` | `useMyProfile()` | mock |
 | EVT-1 | F1 #47 (tổng lượt nộp) | `useSolveSummary()` | mock |
 | EVT-1 | F2 §14A (số bài đã giải còn xuất bản) | `useMyLevelProgress()` | mock |
-| EVT-1 | F5 mục 13 `GetMyInterviewSummary`, `limit = 1` (chỉ lấy `completedSessionCount`) | `useInterviewSummary("all", 1)` | mock |
+| EVT-1 | F5 mục 13 `GetMyInterviewSummary`, `limit = 1` (chỉ lấy `completedSessionCount`) | `useInterviewSummary("all")` | **thật** (2026-11-12; hook gửi `limit = 3`, ô chỉ đọc `completedSessionCount`) [Nguồn: 05-coding/frontend/src/entities/progress/api/real-interview-summary.ts:23] |
 | EVT-4 | F1 #10 `UpdateMyProfile` | `updateMyProfile(input)` | mock |
 | EVT-5 | F1 #10 rồi F1 #11 `RequestMyEmailChange` (chạy độc lập, BR-SC-01) | `updateMyProfile`, `requestEmailChange` | mock |
 | EVT-6 | F1 #12 `ConfirmMyEmailChange` | `confirmEmailChange(code, newEmail)` | mock |
 | EVT-7 | F1 #11 (cùng endpoint gửi mã, gọi lại) | `requestEmailChange(newEmail)` | mock |
 | EVT-16 | gọi lại đúng query của khối | `query.refetch()` | không áp dụng |
 | EVT-2, EVT-3 (Hoàn tác), EVT-8, EVT-13, EVT-14, EVT-15 | không gọi API | state, `next/link`, `useUnsavedChangesGuard` | không áp dụng |
-| EVT-9 đến EVT-12 | **đã chuyển hoặc bỏ**: mật khẩu sang `USR0503`, "Đổi ảnh" bỏ (BD:637-640) | không áp dụng | không áp dụng |
+| EVT-1 (ảnh) | F1 #76 `GetUserAvatar` cho `userId` của mình, **chỉ khi** `avatarVersion` của #9 khác rỗng | `useAvatarUrl(userId, avatarVersion)` | thật (mock khi `NEXT_PUBLIC_MOCK_DATA`) |
+| EVT-12 | không gọi API (chọn tệp, kiểm, thu nhỏ, xem trước) | `use-edit-avatar` | không áp dụng |
+| EVT-18 | F1 #74 `UploadMyAvatar` | `uploadMyAvatar(blob)` | thật (mock khi `NEXT_PUBLIC_MOCK_DATA`) |
+| EVT-17 | F1 #75 `RemoveMyAvatar` | `removeMyAvatar()` | thật (mock khi `NEXT_PUBLIC_MOCK_DATA`) |
+| EVT-19 | không gọi API (bỏ xem trước) | `use-edit-avatar` | không áp dụng |
+| EVT-9 đến EVT-11 | **đã chuyển**: mật khẩu sang `USR0503` (BD:637-639). EVT-12 được dùng lại cho "Chọn ảnh" từ V1.3 | không áp dụng | không áp dụng |
 
 Điểm khác BD khi nối thật:
 
@@ -84,6 +100,7 @@ Bảng 2.1: Sự kiện BD, endpoint theo ID, hook, trạng thái nối. Hiện 
 2. **Liên kết "Xem tiến độ chi tiết" đi `/dashboard`**, không phải `my_progress` như BD ghi [SoT: BD:392, 641; PRV practice-card.tsx:45]: `USR0501` đã gộp vào `USR0601` (`DEC-2026-0927-student-area-merge-and-shared-shell`). BD cần sửa chữ "my_progress" ở EVT-13 và Sheet 3.
 3. **`passwordChangedAt` và `mustChangePassword`** là hai trường của phản hồi F1 #9 mà màn này **không hiển thị**: một cho `USR0503` (BD:548) và một cho việc chuyển hướng ở khung (F1:44). Màn này chỉ dùng `hasPassword` để vẽ thẻ "Email và mật khẩu" [SoT: BD:547].
 4. Lưu hồ sơ không có endpoint "hồ sơ + email" gộp: F1 #10 loại `email` (`Server bỏ qua role_id/status` [SoT: F1:45]) nên hai đường tách đôi là bắt buộc (BD:607-609).
+5. **Ảnh tải qua API client, không qua thẻ `img` trỏ thẳng URL** (V1.3): thẻ `img` không gửi được bearer token (token nằm trong bộ nhớ), nên `useAvatarUrl` gọi F1 #76 bằng `api.getBlob`, dựng URL tạm và thu hồi khi dọn. Tham số `?v=<avatarVersion>` làm mỗi phiên bản là một URL riêng cho cả HTTP cache lẫn khoá React Query (API mục 0.9.3).
 
 ## 3. Trạng thái màn
 
@@ -120,6 +137,18 @@ Bảng 3.2: Ánh xạ lỗi ghi sang giao diện. Cột "Mã" chỉ có khi F1 �
 | F1 #12 | mã sai, hết hạn, đã dùng | `422 IDT-416`; cùng một câu thông báo, sau 5 lần sai bắt buộc "Gửi lại mã" (BD Sheet 9 NO 9) |
 | F1 #9, #47, F5 mục 13 | `5xx`, mạng | Trạng thái khối theo Bảng 3.1 |
 
+Bảng 3.1: Trạng thái của khối ảnh đại diện (V1.3).
+
+| Trạng thái | Điều kiện | Hiển thị |
+| :--- | :--- | :--- |
+| Không có ảnh | `avatarVersion` rỗng | Chữ viết tắt; nút "Đổi ảnh"; không có "Xoá ảnh"; không gọi F1 #76 |
+| Đang tải ảnh | Có `avatarVersion`, `useAvatarUrl` đang chạy | Chữ viết tắt (không thêm khung chờ), không toast |
+| Tải ảnh lỗi | F1 #76 lỗi (`404`, `503`) hoặc `img` lỗi khi giải mã | Chữ viết tắt, **không toast**; cố tải lại khi `avatarVersion` đổi |
+| Có ảnh | Tải xong | Ảnh tròn; "Đổi ảnh", "Xoá ảnh" |
+| Đã chọn tệp (xem trước) | Chọn tệp hợp lệ, thu nhỏ xong | Bản xem trước thay ảnh; hiện "Lưu ảnh" và "Huỷ"; tính là thay đổi chưa lưu (BR-SC-03) |
+| Đang gửi | Bấm "Lưu ảnh" hoặc xác nhận xoá | Nút đang chạy bị khoá, "Đổi ảnh" khoá |
+| Gửi lỗi | F1 #74 hoặc #75 lỗi | Toast theo mã lỗi; **giữ nguyên** bản xem trước để thử lại hoặc Huỷ; ảnh cũ chưa đổi |
+
 ## 4. Quy tắc đặc thù màn
 
 ### BR-SC-01 Lưu hồ sơ và đổi email là hai đường độc lập
@@ -144,6 +173,7 @@ Bảng 3.2: Ánh xạ lỗi ghi sang giao diện. Cột "Mã" chỉ có khi F1 �
 - **Các bước:** `useUnsavedChangesGuard(dirty)` với `dirty` của biểu mẫu; chặn thì mở hộp thoại ba nút dùng chung `UnsavedChangesDialog` ("Lưu và thoát" / "Thoát không lưu" / "Ở lại"), cùng hộp thoại đã chốt cho `USR0503` (`USR0503` BD Q12) thay cho hộp xác nhận hai nút của BD:643. "Lưu và thoát" chạy BR-SC-01; nếu việc lưu mở hộp thoại OTP thì **ở lại màn** (điều hướng bị huỷ), vì email chưa đổi xong; lưu lỗi thì ở lại.
 - **Hiện trạng:** bản dựng **chưa** gắn khóa này (P3, mục 8) [SoT: FEP ui/personal-info-card.tsx không dùng guard].
 - **Đóng tab:** chỉ có hộp thoại gốc của trình duyệt, không đổi được chữ (ghi chú đầu `useUnsavedChangesGuard`).
+- **Ảnh đã chọn chưa lưu (V1.3, BD EVT-15):** `dirty` của guard là `dirtyForm || pendingAvatar !== null`. Rời màn khi còn ảnh xem trước cũng mở hộp thoại ba nút; "Lưu và thoát" ở trường hợp này gọi `UploadMyAvatar` rồi mới rời, lỗi thì ở lại.
 
 ### BR-SC-04 Khối "Luyện tập" là ba con số độc lập
 
@@ -157,6 +187,17 @@ Bảng 3.2: Ánh xạ lỗi ghi sang giao diện. Cột "Mã" chỉ có khi F1 �
 ### BR-SC-06 Dữ liệu tự khai là dữ liệu
 
 - **Quy tắc:** `displayName`, `schoolOrCompany`, `currentPosition`, `targetPosition` hiện ở thẻ danh tính và ô nhập dưới dạng văn bản thuần (React escape), **không** dùng `dangerouslySetInnerHTML`. Chữ viết tắt avatar là hai chữ cái đầu của hai từ cuối `displayName`, viết hoa, tính ở màn (BD:340); mã người dùng là 8 ký tự đầu của `userId`, viết hoa (BD:379); **không** bao giờ hiện UUID đầy đủ.
+
+### BR-SC-07 Ảnh đại diện: chọn, xem trước, lưu, huỷ, xoá (V1.3)
+
+- **Kích hoạt:** EVT-12, EVT-17, EVT-18, EVT-19 (BD `USR0502` Sheet 8). Hợp đồng ở `03-dd/api/F1_identity.md` mục 0.9; logic máy chủ ở `03-dd/logic/F1_identity.md` BR-25, BR-26.
+- **Chọn (EVT-12):** hộp chọn tệp `accept="image/png,image/jpeg,image/webp"`. Kiểm sơ bộ theo mục 5 (loại, kích thước gốc). Sai thì toast lỗi, **không** vào xem trước, ảnh hiện tại giữ nguyên. Đúng thì `downscaleToSquare` rồi giữ blob kết quả trong `pending`; **chưa gửi gì**. Chọn tệp khác khi đang xem trước thì thay `pending` (thu hồi URL xem trước cũ).
+- **Lưu (EVT-18):** `uploadMyAvatar(pending.blob)`. Thành công: vô hiệu hoá `["user","my-profile"]` (để `avatarVersion` mới về khung và các màn dùng chung), bỏ `pending`, toast thành công. Lỗi: toast theo `apiErrors` (`IDT-V29`, `V30`, `V31`, `V32`, `452`, `511`), giữ `pending`.
+- **Huỷ (EVT-19):** bỏ `pending`, thu hồi URL, không gọi API, không hỏi xác nhận.
+- **Xoá (EVT-17):** `ConfirmDialog` nêu hậu quả (quay về chữ viết tắt ở mọi nơi); xác nhận thì `removeMyAvatar()`. Thành công: vô hiệu hoá `["user","my-profile"]`, toast thành công. Đang có `pending` thì xoá ảnh vẫn bỏ luôn `pending`.
+- **Hai việc độc lập với biểu mẫu:** đổi ảnh **không** đi qua nút "Lưu thay đổi" và không phụ thuộc OTP đổi email; biểu mẫu và ảnh có hai bộ trạng thái riêng, chỉ chung guard rời màn.
+- **Khung chung:** sau khi `avatarVersion` đổi, mọi `UserAvatar` của chính người dùng (thanh đầu trang, lời chào) tải lại theo khoá mới nhờ query hồ sơ bị vô hiệu hoá.
+- **Phiên khác:** khoá cache gồm `userId`; khi token đổi (đăng nhập, đăng xuất) cây giao diện được dựng lại theo `QueryProvider` nên không còn ảnh của phiên trước (kiểm ở kịch bản T-PF-27).
 
 ## 5. Kiểm tra phía client
 
@@ -172,10 +213,14 @@ Bảng 5.1: Trường nhập, zod và quy tắc ở `validation/F1`.
 | `phone` | `z.string().trim().max(20).regex(/^[0-9 +\-()]*$/)` | `IDT-V13`, `VARCHAR(20)`, chỉ chữ số, khoảng trắng và `+ - ( )`, rỗng lưu `NULL` (V1:54) | **Thiếu ô trên giao diện** (P2); schema cần thêm cùng ô |
 | Mã OTP đổi email | `z.string().length(6).regex(/^\d+$/)` | 6 chữ số (V1:43) | Có [SoT: EU model/schema.ts:79-84] |
 | `roleId`, `status` | không có trong schema, **không** gửi | máy chủ bỏ qua (F1:45) | Có |
+| Tệp ảnh khi chọn (V1.3) | `file.type` thuộc `image/png`, `image/jpeg`, `image/webp`; `file.size` tối đa 10 MB (`MAX_RAW_AVATAR_BYTES`, `[SoT: Suy luận]`) | `IDT-V29` định dạng theo byte đầu tệp; kích thước gốc không có ở máy chủ | **Giao diện chặt hơn có chủ ý**: chỉ để báo lỗi sớm và tránh giải mã tệp khổng lồ trong trình duyệt; máy chủ vẫn kiểm lại |
+| Ảnh sau khi thu nhỏ (V1.3) | `blob.size` tối đa 524288 byte (`MAX_AVATAR_BYTES`) | `IDT-V30` 512 KB; `IDT-V31` điểm ảnh tối đa 1024 x 1024 | Có (256 x 256 luôn nằm trong 1024) |
 
 ## 6. i18n và truy cập
 
 **Tiền tố khoá.** `profile.*` ở `messages/vi.json:2603` và `messages/en.json:2603`; mã lỗi API ở `apiError.*` dùng chung. Khoá cần **thêm**: `form.hint`, `form.dirty`, `form.phone`, `form.emailTaken`, `errors.phoneInvalid`, `emailOtp.resend`, `emailOtp.expiresIn`, `emailOtp.expired`, `leaveConfirm.*` (dùng lại chuỗi của `USR0503` nếu có thể), `apiError.IDT-V05`, `apiError.IDT-V07`, `apiError.IDT-V08`, `apiError.IDT-V09`, `apiError.IDT-V13`. Không đặt tên endpoint, mã quyền hay mã lỗi vào nhãn hiển thị. Khoá `profile.passwordDialog.*` còn lại vì `USR0503` dùng lại [SoT: BD:83].
+
+**Khoá i18n thêm ở V1.3 (vi và en):** `profile.avatar.change`, `.remove`, `.save`, `.cancel`, `.previewAlt`, `.previewLabel`, `.fileTypeError`, `.fileTooBigError`, `.removeTitle`, `.removeBody`, `.removeConfirm`, `.uploaded`, `.removed`; mã lỗi ở `apiErrors` dùng chung: `IDT-V29`, `IDT-V30`, `IDT-V31`, `IDT-V32`, `IDT-451`, `IDT-452`, `IDT-511`.
 
 **Truy cập.**
 
@@ -184,6 +229,7 @@ Bảng 5.1: Trường nhập, zod và quy tắc ở `validation/F1`.
 - Thứ tự focus: thẻ danh tính (không focus được), biểu mẫu theo thứ tự trường, "Hoàn tác", "Lưu thay đổi", thẻ phương thức đăng nhập (chỉ đọc), cột phải: liên kết "Xem tiến độ chi tiết", "Cài đặt tài khoản".
 - Thẻ phương thức đăng nhập luôn kèm chữ, không chỉ biểu tượng.
 - Trang cần đúng một `h1` (đã có dạng `sr-only` ở `profile.pageTitle`).
+- **Ảnh đại diện (V1.3):** nút "Đổi ảnh" và "Xoá ảnh" có tên đọc được; ô chọn tệp ẩn có nhãn; ảnh xem trước có `alt` nêu rõ đây là bản xem trước chưa lưu; kết quả Lưu và Xoá báo bằng toast (đã có vùng `aria-live` của toast), không dựa vào đổi hình; chữ viết tắt thay thế vẫn có tên đầy đủ qua `aria-label` của `Avatar`.
 
 ## 7. Điểm kiểm thử
 
@@ -211,6 +257,16 @@ Bảng 7.1: Điểm kiểm thử. "không có AC (trình bày)" là hành vi tr�
 | T-PF-18 | Normal | EVT-16: thử lại một khối chỉ gọi lại query của khối đó | Vitest | TDD màn `PF-AC-01` |
 | T-PF-19 | Security | Trang không có đường nào gửi `user_id`; email, tên của tài khoản khác không hiện được | Vitest | F1 AC-12 |
 | T-PF-20 | Normal | Luồng đầy đủ: sửa tên và email, nhập mã, thấy email mới ở khung và ở `USR0503` | Playwright | F1 AC-13 |
+| T-PF-21 | Normal | EVT-12: chọn tệp hợp lệ hiện bản xem trước thu nhỏ, hiện "Lưu ảnh" và "Huỷ", **không** gọi F1 #74 | Vitest | TDD màn `PF-AC-05` |
+| T-PF-22 | Abnormal | EVT-12: tệp SVG, tệp ngoài ba loại hoặc lớn hơn 10 MB bị chặn, toast, không vào xem trước, ảnh cũ giữ nguyên | Vitest | TDD màn `PF-AC-05` |
+| T-PF-23 | Normal | EVT-18: Lưu gọi F1 #74 đúng một lần với blob đã thu nhỏ, vô hiệu hoá khoá hồ sơ, bỏ xem trước, toast thành công | Vitest | F1 AC-93; TDD màn `PF-AC-05` |
+| T-PF-24 | Abnormal | EVT-18: F1 #74 trả `IDT-V30`, `IDT-452` hoặc `IDT-511`: toast theo mã, **giữ** xem trước, ảnh cũ chưa đổi | Vitest | F1 AC-96, AC-100, AC-101; TDD màn `PF-AC-05` |
+| T-PF-25 | Normal | EVT-19: Huỷ bỏ xem trước, không gọi API, không hỏi xác nhận | Vitest | TDD màn `PF-AC-05` |
+| T-PF-26 | Normal | EVT-17: xoá hỏi xác nhận; xác nhận gọi F1 #75, ảnh về chữ viết tắt; huỷ hộp thoại không gọi API | Vitest | F1 AC-97; TDD màn `PF-AC-06` |
+| T-PF-27 | Security | Đăng xuất rồi đăng nhập người khác: không thấy ảnh của phiên trước; khoá cache có `userId`; thu hồi URL tạm khi dọn | Vitest | TDD màn `PF-AC-06` |
+| T-PF-28 | Boundary | `avatarVersion` rỗng thì `UserAvatar` không gọi F1 #76; F1 #76 lỗi hoặc `img` lỗi thì rơi về chữ viết tắt, không toast; `avatarVersion` đổi thì tải lại | Vitest | F1 AC-98, AC-101; TDD màn `PF-AC-06` |
+| T-PF-29 | Normal | EVT-15: còn ảnh xem trước thì mọi đường rời màn mở hộp thoại ba nút; "Lưu và thoát" gọi F1 #74 trước | Vitest | TDD màn `PF-AC-04` |
+| T-PF-30 | Normal | Luồng đầy đủ trên trình duyệt thật: chọn ảnh, xem trước, Lưu, thấy ảnh ở hồ sơ và thanh đầu trang, tải lại vẫn còn, Xoá về chữ viết tắt | Playwright | F1 AC-93, AC-97; TDD màn `PF-AC-05`, `PF-AC-06` |
 
 ## 8. Nợ prototype và câu hỏi mở
 
@@ -229,6 +285,7 @@ Bảng 8.1: Lệch giữa prototype và thiết kế.
 | P7 | So `emailChanged` có phân biệt hoa thường | Không phân biệt hoa thường | FEP model/use-edit-profile.ts:101 |
 | P8 | Khối luyện tập đọc hook mock tên BD cũ | Đọc `useSolveSummary`, `useMyLevelProgress`, `useInterviewSummary("all", 1)` | PRV practice-card.tsx:14-18 |
 | P9 | Khối B hiện toast nhưng chưa nối `aria-describedby` cho lỗi từng ô | Mục 6 | FEP ui/personal-info-card.tsx |
+| P10 | Avatar chỉ là chữ viết tắt, không có nút đổi ảnh (đúng phạm vi cũ 2026-10-18) | Ảnh thật: BR-SC-07, slice `features/edit-my-avatar`, `Avatar`, `UserAvatar`, `getBlob` (V1.3, `DEC-2026-1117-user-avatar-upload`) | BD:V1.3; `identity-card.tsx` |
 
 **Khoảng trống của F1 cần DD module bổ sung** (DD màn không tự bù):
 

@@ -1,0 +1,30 @@
+# Combine local,worker,outbox for the current single-process deployment.
+judge:
+  outbox:
+    enabled: true
+    fixed-delay-ms: 2000
+problem:
+  outbox:
+    enabled: true
+    relay-delay-ms: 2000
+    batch-size: 100
+    cleanup-delay-hours: 24
+    retention-days: 90
+ai:
+  outbox:
+    enabled: true
+    relay-delay-ms: 2000
+    batch-size: 100
+    cleanup-batch-size: 5000
+    retention-days: 90
+  interview:
+    sweep:
+      enabled: true
+
+identity:
+  outbox:
+    enabled: true
+    relay-delay-ms: 2000
+    batch-size: 100
+    cleanup-delay-hours: 24
+    retention-days: 90

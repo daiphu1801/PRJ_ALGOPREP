@@ -48,11 +48,7 @@ function subscribe(listener: () => void) {
   };
 }
 
-function push(
-  tone: ToastTone,
-  message: string,
-  action?: ToastAction,
-): number {
+function push(tone: ToastTone, message: string, action?: ToastAction): number {
   const text = message.trim();
   if (!text) return -1;
 

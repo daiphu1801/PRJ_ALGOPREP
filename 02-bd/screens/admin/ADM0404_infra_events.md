@@ -36,11 +36,11 @@
 | Tên vật lý (slug) | `admin_infra_events` |
 | Trục tài liệu | Màn hình (`02-bd/screens/`) |
 | Actor | A3 (`ADMIN`) |
-| Phiên bản | V0.4 |
+| Phiên bản | V0.7 |
 | Người tạo | AI |
 | Ngày tạo | 2026/10/10 |
 | Người cập nhật | AI |
-| Ngày cập nhật | 2026/10/22 |
+| Ngày cập nhật | 2026/11/14 |
 
 ---
 
@@ -53,6 +53,8 @@
 | V0.3 | Sheet 5 | Theo báo cáo `06-plan/reports/261014-1054-admin-ux-review/` (B6): mô tả phụ bỏ "AI Gateway, sao lưu" (hai nguồn đã bỏ), nay là "Outbox kẹt, lượt nộp lỗi sandbox"; prototype dựng liên kết "Về hàng đợi chấm" (A NO 3, EVT-5) ở thanh tiêu đề. Dòng chú thích dẫn sang Nhật ký hệ thống vẫn giữ (ngoài item list, ghi nhận). Không đổi spec | 2026-10-14 | Claude |
 | V0.4 | Sheet 4.3, 7 (trích), Câu hỏi mở | Sửa 2026-10-22 đồng bộ DB, `DEC-2026-1022-ai-judge-schema-sync` (JD-09). Chỉ sửa số dòng trích `02-bd/database/F4_judge-orchestration.md` (`:106-120` thành `:117-130`, mục 1.6). DB chưa nêu thời hạn dọn `outbox_events` và chưa nêu nguồn của `message`, nên **không** đổi nội dung mô tả; mở Q5 | 2026/10/22 | Nhóm phát triển AlgoPrep |
 | V0.5 | Câu hỏi mở (Q5) | Sửa 2026-10-22 (đồng bộ DB vòng 2, DEC-2026-1022-db-sync-round2, mục 7). Đóng Q5: DB nay ghi job dọn `outbox_events` đã publish quá 90 ngày (`02-bd/database/F4_judge-orchestration.md` mục 1.6); `message` dựng ở tầng ứng dụng từ `publish_attempts` và `status`, không có cột `message`. Giữ "90 ngày". Nhãn `SANDBOX_FAULT` khớp `failure_reason` do worker ghi (JD-14). Không đổi spec màn | 2026/10/22 | Nhóm phát triển AlgoPrep |
+| V0.6 | Sheet 4, 5 (hiện trạng bản dựng) | Đồng bộ bản dựng **nối backend thật** với bố cục V0.2, **chưa duyệt hình**, không đổi spec. Trước đó màn thật có ô tìm kiếm không giới hạn chiều rộng (chiếm cả hàng), hai ô ngày trần, nút "Làm mới" nằm giữa hàng lọc, mỗi sự kiện là một dòng chữ không màu. Nay: `FilterBar` (ô tìm co giãn, bộ lọc cùng hàng), cụm hai ô ngày 140px (Khu vực B), "Về hàng đợi chấm" và "Làm mới" ở thanh tiêu đề (A NO 3, NO 4), dòng timeline có cột giờ, huy hiệu mức, viền trái theo mức, dịch vụ chữ mono, khung chờ 8 dòng, nút "Xoá bộ lọc" khi rỗng, "Tải thêm 20 dòng" ở chân thẻ. **Khác bản mock, ghi nhận:** bản thật phân trang theo con trỏ và không biết tổng số, nên **không có** số "n / tổng" ở thanh lọc và chân thẻ. [Nguồn: file `real-infra-events.tsx` ở thời điểm đó, đã xoá ở V0.7; 05-coding/frontend/src/views/admin/infra-events/ui/infra-event-parts.tsx] | 2026-11-14 | Claude |
+| V0.7 | Sheet 4, 5 (hiện trạng bản dựng) | **Hợp nhất mock và thật thành một cây hiển thị**, chủ dự án yêu cầu 2026-11-14, không đổi spec. File riêng `real-infra-events.tsx` đã xoá. Nay `admin-infra-events-view.tsx` dùng chung, dữ liệu qua hook `useInfraEventFeed` (`entities/infra-event/api/queries.ts`): mock lọc trên máy khách, thật gọi `readInfraEvents` (`real-infra.ts`) theo bộ lọc và phân trang con trỏ. Số "n / tổng" chỉ hiện ở mock vì máy chủ không trả tổng; nút "Tải thêm" luôn có, tắt khi hết dữ liệu. Ô tìm, ô ngày, dòng timeline dùng chung ở `infra-event-parts.tsx`. [Nguồn: 05-coding/frontend/src/views/admin/infra-events/ui/admin-infra-events-view.tsx; 05-coding/frontend/src/entities/infra-event/api/queries.ts] | 2026-11-14 | Claude |
 
 ---
 

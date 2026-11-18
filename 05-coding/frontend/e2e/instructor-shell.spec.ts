@@ -198,7 +198,7 @@ test("the toolbar user menu shows who is signed in with a sign-out link, and the
   await expect(page.getByRole("menuitem", { name: "Cài đặt" })).toBeVisible();
   await expect(page.getByRole("menuitem", { name: "Thoát" })).toHaveAttribute(
     "href",
-    "/login",
+    "/instructor/login",
   );
   await expect(page.getByText("AlgoPrep Giảng viên · v2.4.1")).toBeVisible();
 });

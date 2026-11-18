@@ -1,11 +1,11 @@
-// PROTOTYPE — no DD yet. See 06-plan/PROTOTYPE_DEBT.md
-//
 // "Nhập CSV" (SHR0301, owner decision 2026-10-08): pick a .csv, validate it row by row against the
-// admin-managed topic and level lists, import the good rows, and list the bad ones with a reason.
-// Nothing is created from a file that fails as a whole (missing column, empty, too many rows).
+// admin-managed topic and level lists, send the good rows to F6 #24 and list the bad ones with a
+// reason. Nothing is created from a file that fails as a whole (missing column, empty, too many rows).
+// The client check only saves a round trip: the server re-checks every row and decides `importedCount`
+// and `skippedRows` (DD SHR0301 BR-SC-02).
 "use client";
 
-import { useRef, useState } from "react";
+import { useState } from "react";
 import {
   CSV_TEMPLATE,
   parseQuestionsCsv,
@@ -13,10 +13,10 @@ import {
   useInterviewTopics,
   type CsvImportParse,
 } from "@/entities/interview-question";
-import { useT } from "@/shared/i18n";
+import { useApiErrorMessage, useT } from "@/shared/i18n";
 import { toast } from "@/shared/lib/toast-store";
-import { Button, Modal } from "@/shared/ui";
-import { useImportQuestions } from "../api";
+import { Button, FilePickerButton, Modal } from "@/shared/ui";
+import { toImportRows, useImportQuestions } from "../api";
 
 type Props = {
   open: boolean;
@@ -25,7 +25,19 @@ type Props = {
   existing: readonly string[];
 };
 
-type Outcome = { parse: CsvImportParse; imported: number };
+type SkippedRow = { line: number; code: string; detail?: string | null };
+type Outcome = {
+  total: number;
+  imported: number;
+  /** Rows rejected by the client check, then by the server, in file order. */
+  skipped: SkippedRow[];
+};
+
+const noRows = (parse: CsvImportParse): Outcome => ({
+  total: parse.total,
+  imported: 0,
+  skipped: parse.errors,
+});
 
 // The BOM makes Excel open the template as UTF-8, so Vietnamese letters survive.
 function downloadTemplate() {
@@ -41,14 +53,15 @@ function downloadTemplate() {
 
 export function CsvImportDialog({ open, onClose, existing }: Props) {
   const t = useT("interviewQuestionManagement");
+  const apiMessage = useApiErrorMessage();
   const topics = useInterviewTopics();
   const levels = useInterviewLevels();
   const importQuestions = useImportQuestions();
-  const input = useRef<HTMLInputElement>(null);
   const [outcome, setOutcome] = useState<Outcome | null>(null);
 
   async function handleFile(file: File) {
-    const parse = parseQuestionsCsv(await file.text(), {
+    const text = await file.text();
+    const parse = parseQuestionsCsv(text, {
       topics,
       levels,
       existing,
@@ -65,16 +78,30 @@ export function CsvImportDialog({ open, onClose, existing }: Props) {
       return;
     }
     if (parse.drafts.length === 0) {
-      setOutcome({ parse, imported: 0 });
+      setOutcome(noRows(parse));
       return;
     }
     try {
-      const created = await importQuestions.mutateAsync(parse.drafts);
-      setOutcome({ parse, imported: created.length });
-      toast.success(t("csvImport.toast", { count: created.length }));
-    } catch {
+      const result = await importQuestions.mutateAsync(
+        toImportRows(text, parse),
+      );
+      setOutcome({
+        total: parse.total,
+        imported: result.importedCount,
+        skipped: [
+          ...parse.errors,
+          ...result.skippedRows.map((row) => ({
+            line: row.line,
+            code: row.reasonCode,
+            detail: row.detail,
+          })),
+        ].sort((left, right) => left.line - right.line),
+      });
+      if (result.importedCount > 0)
+        toast.success(t("csvImport.toast", { count: result.importedCount }));
+    } catch (error) {
       setOutcome(null);
-      toast.error(t("csvImport.failed"));
+      toast.error(apiMessage(error));
     }
   }
 
@@ -102,30 +129,19 @@ export function CsvImportDialog({ open, onClose, existing }: Props) {
           >
             {t("csvImport.close")}
           </Button>
-          <Button
+          <FilePickerButton
             variant="cta"
             size="sm"
             disabled={importQuestions.isPending}
-            onClick={() => input.current?.click()}
+            accept=".csv,text/csv"
+            inputTestId="csv-input"
+            onFiles={([file]) => void handleFile(file!)}
           >
             {outcome ? t("csvImport.chooseAnother") : t("csvImport.choose")}
-          </Button>
+          </FilePickerButton>
         </>
       }
     >
-      <input
-        ref={input}
-        type="file"
-        accept=".csv,text/csv"
-        hidden
-        data-testid="csv-input"
-        onChange={(event) => {
-          const file = event.target.files?.[0];
-          if (file) void handleFile(file);
-          event.target.value = "";
-        }}
-      />
-
       <p>{t("csvImport.hint")}</p>
       <ul className="mt-2 list-disc pl-5">
         <li>{t("csvImport.columns")}</li>
@@ -143,20 +159,20 @@ export function CsvImportDialog({ open, onClose, existing }: Props) {
           <p className="font-semibold text-[var(--color-text)]">
             {t("csvImport.summary", {
               imported: outcome.imported,
-              total: outcome.parse.total,
+              total: outcome.total,
             })}
           </p>
-          {outcome.parse.errors.length > 0 ? (
+          {outcome.skipped.length > 0 ? (
             <ul
               className="mt-2 max-h-48 list-disc overflow-y-auto pl-5"
               aria-label={t("csvImport.errorsLabel")}
             >
-              {outcome.parse.errors.map((error) => (
-                <li key={`${error.line}-${error.code}`}>
+              {outcome.skipped.map((row) => (
+                <li key={`${row.line}-${row.code}`}>
                   {t("csvImport.rowError", {
-                    line: error.line,
-                    reason: t(`csvImport.reason.${error.code}`, {
-                      detail: error.detail ?? "",
+                    line: row.line,
+                    reason: t(`csvImport.reason.${row.code}`, {
+                      detail: row.detail ?? "",
                     }),
                   })}
                 </li>

@@ -19,6 +19,8 @@ export type ChatMessage = {
   role: ChatRole;
   content: string;
   stage: InterviewStage;
+  /** A hint block lives only on the client (the server does not store hints), drawn apart from AI turns. */
+  kind?: "hint";
 };
 
 /** 4 fixed criteria, fixed weights — 02-bd/database/F5_ai-review.md:96-97. */
@@ -43,6 +45,8 @@ export type RubricScore = {
   code: RubricCriterionCode;
   score: number;
   comment: string;
+  /** From the server (`criteria[].weightPercent`); the mock leaves it out and the constant applies. */
+  weightPercent?: number;
 };
 
 export type InterviewResult = {
@@ -62,6 +66,12 @@ export type AcceptedSubmissionOption = {
 export type BankQuestionOption = {
   id: string;
   title: string;
+};
+
+/** First F6 page plus the bank size, so the screen can link to the whole list (DD USR0302 Q-302-1). */
+export type BankQuestionPage = {
+  items: BankQuestionOption[];
+  total: number;
 };
 
 export type MaxTurns = 8 | 12 | 16;

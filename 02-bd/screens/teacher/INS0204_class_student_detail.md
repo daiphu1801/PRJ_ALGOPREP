@@ -66,11 +66,11 @@
 | Tên vật lý (slug) | `class_student_detail` |
 | Trục tài liệu | Màn hình (`02-bd/screens/`) |
 | Actor | A2 (`INSTRUCTOR`) |
-| Phiên bản | V0.21 |
+| Phiên bản | V0.22 |
 | Người tạo | Nhóm phát triển AlgoPrep |
 | Ngày tạo | 2026/09/21 |
 | Người cập nhật | Nhóm phát triển AlgoPrep |
-| Ngày cập nhật | 2026/10/22 |
+| Ngày cập nhật | 2026/11/18 |
 
 ---
 
@@ -101,6 +101,10 @@
 | V0.19 | Sheet 4.4 (hiện trạng bản dựng, hàng "Lịch sử nộp bài") | Dựng prototype trang kết quả của giảng viên (`from=`, breadcrumb, sidebar): nút "Xem kết quả" ở bảng lịch sử nay mang `from=student`. Không đổi yêu cầu, item, EVT hay quyết định thiết kế. **Chưa duyệt hình** | 2026/10/14 | AI |
 | V0.20 | Sheet 4.4 (hàng "Thanh điều hướng bên trái") | Dựng prototype Phase 4-5 (bài giao theo lớp, phân trang 20, from=). Ghi hiện trạng: sidebar sáng mục của màn gọi tới đã dựng qua query `from=` (`from=students` sáng "Danh sách học viên", `from=submissions` sáng "Bài nộp", không có `from` hoặc giá trị lạ thì "Lớp của tôi" theo khớp tiền tố). Hai màn gọi tới (`INS0203`, `INS0206`) đã gắn `from=` vào liên kết tên học viên. Không đổi yêu cầu hay quyết định thiết kế. **Chưa duyệt hình** | 2026/10/18 | AI |
 | V0.21 | Sheet 5 (Khu vực lịch sử nộp bài, cột Kết quả), Câu hỏi mở | Sửa 2026-10-22 (đồng bộ DB vòng 3, DEC-2026-1022-problem-bank-schema-sync): "Bảy trạng thái cuối" sửa thành "Sáu" theo DB (`status` có chín giá trị, ba chưa cuối). Không đổi hành vi màn. Không phát sinh câu hỏi mở mới; các Q còn mở giữ nguyên | 2026/10/22 | Claude |
+| V0.22 | Sheet 4.4 (hiện trạng), 5 (Khu vực B NO 2), 6, 7 (7.1 NO 24, 7.2 NO 7, 7.3 NO 6) | Sửa 2026-11-18 (F1-35, `DEC-2026-1117-user-avatar-upload`, chưa duyệt hình). Owner chốt thêm ảnh học viên vào thẻ "Liên hệ": dòng "Họ tên" hiện ảnh đại diện thật (hoặc chữ viết tắt), đọc `avatarVersion` của F1 #28. | 2026/11/18 | Claude |
+| V0.22 | Sheet 4, 5, 7.1 | Sửa 2026-11-07 (F1-7, nối FE). Hồ sơ và nhãn trạng thái đọc F1 #28; bảng bài đã giao liệt kê bài còn giao của lớp với cột "Kết quả tốt nhất" của chính học viên (tỉ lệ và verdict từ F4 P1), tên bài và chủ đề lấy từ trang đầu của F2 #49 (lớp giao quá 20 bài thì bài ngoài trang đầu hiện "-", nợ). `IDT-414` hiện "không tìm thấy". Chưa duyệt hình. |
+| V0.23 | Sheet 4 (hiện trạng) | Sửa 2026-11-07 (F2-6 phần 3). Chế độ thật không còn gọi danh sách bài không phân trang: `useClassAssignments` tắt (`enabled = isMockMode()`), bảng bài đã giao dùng #28 (`assignmentProgress`) và tên bài từ trang đầu F2 #49. #54 chỉ phục vụ INS0101 (không trả bài theo lớp). Không đổi hợp đồng, chưa duyệt hình | 2026-11-07 | AI |
+| V0.24 | Sheet 4 (hiện trạng) | Sửa 2026-11-07 (nối FE, việc 9). Tên bài, chủ đề, tỉ lệ AC của bảng "Tiến độ bài tập" lấy từ **mọi trang** F2 #49 (`useClassAssignedProblems` lặp `page` tới `totalPages`, gộp), không còn giới hạn trang đầu 20 bài. Lớp có N bài thì tốn ceil(N/20) lần gọi tuần tự; chấp nhận cho demo. Bài không có trong kết quả vẫn hiện "-". Chưa duyệt hình | 2026/11/07 | AI |
 
 ---
 
@@ -418,6 +422,7 @@ Căn cứ suy diễn, theo đúng thứ tự ưu tiên đã dùng:
 | Container nội dung | Khung chung | `max-width: 1320px` căn giữa, các khối xếp dọc [Nguồn: 02-bd/screens/teacher/_shell.md:110-111] |
 | Hàng đầu — tiêu đề | Bản dựng | Nút mũi tên Quay lại ở đầu tiêu đề, tên học viên, tên lớp (liên kết sang `class_detail`); mép phải: nút "Gỡ khỏi lớp" (nút "Xem chấm bài của học viên này" đã bỏ cả ở thiết kế lẫn bản dựng, `DEC-2026-1013-remove-instructor-manual-grading`). Không có avatar chữ cái. Cùng kiểu tiêu đề của `INS0205` [Nguồn: 05-coding/frontend/src/views/teacher/class-student-detail/ui/class-student-detail-view.tsx, `PageHeader leading`] |
 | Hàng hai — hai thẻ cạnh nhau | Bản dựng | Từ 1024px chia hai cột, hẹp hơn xếp chồng. Thẻ trái "Liên hệ": Họ tên, Email (liên kết `mailto:`), Số điện thoại (liên kết `tel:`). Thẻ phải "Học tập": Lớp (liên kết), Trạng thái (badge màu), Chủ đề đã giao (badge "{chủ đề}: {n} bài"). Mỗi dòng có icon. Thay cho dải 4 thẻ số liệu và khối "Theo chủ đề" riêng (`DEC-2026-1013-a2-reads-student-contact`) |
+| Thẻ "Liên hệ" — ảnh đại diện (V0.22) | Bản dựng | Dòng "Họ tên" hiện `UserAvatar` cỡ nhỏ trước tên theo `avatarVersion` của #28; chưa có ảnh hoặc ảnh lỗi thì chữ viết tắt. Chưa duyệt hình; `class-student-detail-real.test.tsx` kiểm có `role=img` tên học viên với chữ viết tắt `TB` khi chưa có ảnh (chưa có ca kiểm ảnh thật) | `05-coding/frontend/src/views/teacher/class-student-detail/ui/class-student-detail-view.tsx:354-359`; `05-coding/frontend/src/entities/class/api/real-class-metrics.ts:145,170` |
 | Hàng ba — bảng "Bài đã giao" | Bản dựng | Cột hiện tại: Bài tập, Chủ đề, AC. Không phân trang. Cột Điểm tốt nhất, Trạng thái theo Sheet 5 Khu vực D chưa dựng |
 | Hàng bốn — bảng "Lịch sử nộp bài" | Bản dựng | Cột: Bài tập, Ngôn ngữ, Trạng thái, Tỉ lệ testcase, Nộp lúc, Xem kết quả. Dữ liệu mock sinh trong view. Từ 2026/10/14 nút "Xem kết quả" mở `/instructor/submissions/{id}?studentId=&classId=&from=student` (khớp Sheet 3 và EVT-9), trang đích dựng breadcrumb `Lớp của tôi / {lớp} / {học viên} / Lượt nộp` và sidebar sáng "Danh sách học viên"; **chưa duyệt hình** [Nguồn: 05-coding/frontend/src/views/teacher/class-student-detail/ui/class-student-detail-view.tsx:218-226] |
 | Popup Xác nhận gỡ học viên | Đề xuất BD | Nội dung "Học viên sẽ rời khỏi lớp. Lịch sử làm bài của học viên trong lớp này vẫn được giữ." (ĐÃ CHỐT 2026-10-14, `DEC-2026-1014-class-leave-details`) (~~cảnh báo xoá thật kèm cascade~~, ĐÃ ĐỔI 2026-10-14, `DEC-2026-1014-keep-learning-history-on-leave`), nút "Gỡ học viên", nút "Huỷ". `[SoT: Suy luận]` — cùng hình thức popup xác nhận mà `class_management` đã dùng cho chính hành vi này [Nguồn: 02-bd/screens/teacher/INS0201_class_management.md:557] |
@@ -467,7 +472,7 @@ Căn cứ suy diễn, theo đúng thứ tự ưu tiên đã dùng:
 | :--- | --: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :-: | :-: | :--- | :--- | :--- |
 | Liên hệ | | | | | | | | | | | | | |
 | | 1 | Tiêu đề thẻ | `classStudentDetail.info.contactTitle` | - | - | Label | String | - | - | O | Liên hệ | - | [Nguồn giá trị] Nhãn tĩnh i18n<br>[EVT liên quan] - |
-| | 2 | Họ tên | `classStudentDetail.info.name` | `identity.users` | `display_name` | Label | String | 100 | - | O | - | - | [Nguồn giá trị] Cột `display_name` [Nguồn: 02-bd/database/F1_identity.md:16]<br>[EVT liên quan] EVT-1 |
+| | 2 | Họ tên (kèm ảnh đại diện hoặc chữ viết tắt) | `classStudentDetail.info.name` | `identity.users`; `identity.user_avatars` | `display_name`; `updated_at` | Label | String | 100 | - | O | Chữ viết tắt | Ảnh tròn nhỏ hoặc hai ký tự in hoa, rồi họ tên | Ảnh đại diện của học viên đứng trước họ tên; chưa có ảnh hoặc ảnh tải lỗi thì hiện chữ viết tắt, không hiện biểu tượng ảnh hỏng (F1-35 mục 2)<br>[Nguồn giá trị] Tên: cột `display_name` [Nguồn: 02-bd/database/F1_identity.md:16]. Ảnh: `ClassStudentProfileDto.avatarVersion` (F1 #28) khác rỗng (mục 7.1 NO 24), tải qua `GetUserAvatar` [Nguồn: 03-dd/api/F1_identity.md mục 0.9.5]<br>[Công thức] Chữ viết tắt: ghép ký tự đầu của hai từ cuối trong `display_name`, viết hoa<br>[EVT liên quan] EVT-1<br>[Hiện trạng bản dựng] Đã dựng 2026-11-18, chưa duyệt hình (`05-coding/frontend/src/views/teacher/class-student-detail/ui/class-student-detail-view.tsx:354-359`)
 | | 3 | Email | `classStudentDetail.info.email` | `identity.users` | `email` | Link | String | 255 | - | O | - | `mailto:` | Bấm mở trình gửi thư; tài khoản đã ẩn danh hoá hiện địa chỉ vô danh [Nguồn: 02-bd/database/F1_identity.md:28-31]<br>[Nguồn giá trị] Cột `email` [Nguồn: 02-bd/database/F1_identity.md:14]<br>[EVT liên quan] EVT-1 |
 | | 4 | Số điện thoại | `classStudentDetail.info.phone` | `identity.users` | `phone` | Link | String | 20 | - | O | `-` | `tel:` | Bấm để gọi; học viên chưa khai thì hiện `-`<br>[Nguồn giá trị] Cột `phone`, nullable, học viên tự khai ở `USR0502` [Nguồn: 02-bd/database/F1_identity.md:20] (`DEC-2026-1013-a2-reads-student-contact`)<br>[EVT liên quan] EVT-1 |
 
@@ -546,7 +551,7 @@ Căn cứ suy diễn, theo đúng thứ tự ưu tiên đã dùng:
 | :--- | --: | :--- | :-: | :--- |
 | Liên hệ | | | | |
 | | 1 | Tiêu đề thẻ | Có | - |
-| | 2 | Họ tên | Có | - |
+| | 2 | Họ tên (kèm ảnh đại diện hoặc chữ viết tắt) | Có | [Điều kiện hiển thị] Ảnh lỗi hoặc chưa có thì chữ viết tắt; việc tải ảnh không chặn họ tên và các mục khác của thẻ. |
 | | 3 | Email | Có | [Điều kiện hiển thị] Rỗng thì hiện `-` không có liên kết (không xảy ra với tài khoản hợp lệ, email là cột bắt buộc). |
 | | 4 | Số điện thoại | Có | [Điều kiện hiển thị] Học viên chưa khai (NULL) thì hiện `-` không có liên kết. |
 
@@ -630,12 +635,13 @@ Căn cứ suy diễn, theo đúng thứ tự ưu tiên đã dùng:
 | 21 | `StudentSubmissionRowDto` | `scoreRatio` | Number | `judge.submissions` | `score_ratio` | Bảng "Điểm tỉ lệ" | Có | [Chuyển đổi] `NULL` thì giao diện hiển thị `-`. |
 | 22 | `StudentSubmissionRowDto` | `submittedAt` | Date | `judge.submissions` | `submitted_at` | Bảng "Nộp lúc" | Có | [Chuyển đổi] Giao diện đổi sang khoảng thời gian tương đối. |
 | 23 | `StudentSubmissionRowDto` | `totalCount`, `pageIndex`, `pageSize` | Number | - | - | "Phân trang" | Có | [Nguồn] Máy chủ trả kèm mỗi trang. |
+| 24 | `ClassStudentProfileDto` | `avatarVersion` | Number | `identity.user_avatars` | `updated_at` | Thẻ "Liên hệ" "Họ tên" (ảnh đại diện) | Có | [Nguồn] Dấu phiên bản ảnh (số nguyên mili giây), rỗng khi chưa có ảnh; phản hồi của `GetClassStudentProfile` (F1 #28), hợp đồng duy nhất ở `03-dd/api/F1_identity.md` mục 0.9.5, không chép lại ở đây<br>[Chuyển đổi] Rỗng thì hiện chữ viết tắt, không gọi tải ảnh; có thì tải `GetUserAvatar`. |
 
 **Ràng buộc bắt buộc cho mọi DTO ở bảng trên**: không DTO nào được chứa `source_code`, `compile_error_message`,
 nội dung testcase, hay bất kỳ dòng nào của `submission_testcase_results`
 [Nguồn: 02-bd/database/F4_judge-orchestration.md:20,24,40-62].
 
-### 7.2 Truy cập bảng dữ liệu (6)
+### 7.2 Truy cập bảng dữ liệu (7)
 
 | NO | Tên logic | Bảng | Repository | CRUD | Mục đích | Ghi chú |
 | --: | :--- | :--- | :--- | :-: | :--- | :--- |
@@ -645,6 +651,7 @@ nội dung testcase, hay bất kỳ dòng nào của `submission_testcase_result
 | 4 | Lượt nộp bài | `judge.submissions` | qua cổng ra `ClassStudentMetricsPort` | R | Số liệu nộp bài trong phạm vi lớp để tính nhãn trạng thái ("Vắng bài", "Cần hỗ trợ"); không còn hiện Điểm TB | `GetClassStudentSubmissionMetrics`: R |
 | 5 | Điểm tốt nhất theo bài | `identity.user_problem_best_score` | `UserProblemBestScoreRepository` | R | Điểm tốt nhất mỗi bài, cờ đã giải; Hoàn thành tính nội bộ cho nhãn trạng thái | `GetClassStudentProfile`: R |
 | 6 | Hoạt động gần đây | `identity.identity_recent_activity` | `IdentityRecentActivityRepository` | R | Không còn dùng từ V0.9 (thẻ "Hoạt động" đã bỏ); DD `identity` gỡ dòng này | - |
+| 7 | Ảnh đại diện | `identity.user_avatars` | `UserAvatarRepository` | R | Đọc `updated_at` để trả `avatarVersion` của học viên; byte ảnh do `GetUserAvatar` đọc riêng [Nguồn: 02-bd/database/F1_identity.md mục 1.16] | `GetClassStudentProfile`: R |
 
 Màn này có **đúng một thao tác ghi** — `U` (đặt `left_at`) trên `class_enrollments` ở dòng NO 2. Mọi dòng còn lại
 chỉ đọc. Không có dữ liệu nào ở module khác bị xoá hay ẩn khi gỡ; sự kiện miền `StudentRemovedFromClass` vẫn được
@@ -667,6 +674,7 @@ module `identity` chốt lại.
 | 3 | `ListClassAssignments` | Cung cấp danh sách bài đã giao cho lớp kèm tên bài và chủ đề | `problem-bank` |
 | 4 | `ListStudentClassSubmissions` | Tải lịch sử nộp bài của một học viên, giới hạn theo tập bài đã giao cho một lớp, có phân trang | `judge-orchestration` |
 | 5 | `GetClassStudentSubmissionMetrics` | Cung cấp chuỗi ngày và chuỗi điểm theo tuần của học viên, phục vụ thẻ "Chuỗi ngày" và nhãn "Cần hỗ trợ" | `judge-orchestration` |
+| 6 | `GetUserAvatar` | Byte ảnh đại diện của học viên ở thẻ "Liên hệ"; dùng lại của `USR0502`, lỗi hoặc rỗng thì rơi về chữ viết tắt [Nguồn: `03-dd/api/F1_identity.md` mục 0.9.5] | `identity` |
 
 Ghi chú ranh giới:
 

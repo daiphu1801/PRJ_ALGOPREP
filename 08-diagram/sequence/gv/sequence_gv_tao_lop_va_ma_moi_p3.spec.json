@@ -2,47 +2,166 @@
   "_": "Thiết kế dự kiến cho F1; trang 3/3 mô tả học viên dùng mã do giảng viên chia sẻ ngoài hệ thống. Nguồn: 03-dd/logic/F1_identity.md BR-09; 03-dd/api/F1_identity.md endpoint #25 và mục 0.4.1; 02-bd/database/F1_identity.md. JoinClassCmd = JoinClassByCodeCommandHandler; InviteRepo = ClassInviteCodeRepository; EnrollmentRepo = ClassEnrollmentRepository; ClassDbAdapter = ClassPersistenceAdapter [SoT: Suy luận]. Cổng Redis giới hạn năm lần nhập sai/15 phút được lược để hình tập trung vào ghi danh, vẫn bắt buộc theo DD. Mã hết hạn/không tồn tại trả lỗi chung. Học viên từng rời vào lại dùng chính dòng ghi danh cũ và giữ joinedAt; đã ở trong lớp thì trả thành công mà không ghi dòng mới.",
   "kind": "sequence",
   "title": "Sơ đồ tuần tự chi tiết - Học viên vào lớp bằng mã (3/3)",
-  "covers": ["F1-23"],
+  "covers": [
+    "F1-23"
+  ],
   "mode": "color",
   "sequence": {
     "detail": true,
     "participants": [
-      {"name": "Học viên", "role": "actor"},
-      {"name": "ClassController", "role": "controller", "stereo": "presentation"},
-      {"name": "JoinClassCmd", "role": "service", "stereo": "application command"},
-      {"name": "InviteRepo", "role": "repository", "stereo": "domain output port"},
-      {"name": "EnrollmentRepo", "role": "repository", "stereo": "domain output port"},
-      {"name": "ClassDbAdapter", "role": "repository", "stereo": "infrastructure"},
-      {"name": "PostgreSQL", "role": "datastore", "stereo": "schema identity"}
+      {
+        "name": "Học viên",
+        "role": "actor"
+      },
+      {
+        "name": "StudentClassController",
+        "role": "controller",
+        "stereo": "presentation"
+      },
+      {
+        "name": "JoinClassByCodeCommandHandler",
+        "role": "service",
+        "stereo": "application command"
+      },
+      {
+        "name": "ClassInviteCodeRepository",
+        "role": "repository",
+        "stereo": "domain output port"
+      },
+      {
+        "name": "ClassMembershipRepository",
+        "role": "repository",
+        "stereo": "domain output port"
+      },
+      {
+        "name": "JdbcInstructorClassRepository",
+        "role": "repository",
+        "stereo": "infrastructure"
+      },
+      {
+        "name": "PostgreSQL",
+        "role": "datastore",
+        "stereo": "schema identity"
+      }
     ],
     "messages": [
-      {"phase": "Giai đoạn 3 - Dùng mã mời để tham gia lớp (F1-23)"},
-      {"from": "Học viên", "to": "ClassController", "text": "Gửi mã mời đã nhận"},
-      {"from": "ClassController", "to": "JoinClassCmd", "text": "Yêu cầu tham gia lớp"},
-      {"from": "JoinClassCmd", "to": "InviteRepo", "text": "Tìm mã còn hiệu lực"},
-      {"from": "InviteRepo", "to": "ClassDbAdapter", "text": "Chuyển yêu cầu tìm mã"},
-      {"from": "ClassDbAdapter", "to": "PostgreSQL", "text": "Đọc mã và hạn dùng"},
-      {"from": "PostgreSQL", "to": "ClassDbAdapter", "text": "Mã hợp lệ hoặc không", "kind": "return"},
-      {"from": "ClassDbAdapter", "to": "InviteRepo", "text": "Kết quả tìm mã", "kind": "return"},
-      {"from": "InviteRepo", "to": "JoinClassCmd", "text": "Lớp tương ứng hoặc không", "kind": "return"},
-      {"alt": {
-        "label": "Mã còn hiệu lực?",
-        "then": [
-          {"from": "JoinClassCmd", "to": "JoinClassCmd", "text": "Mã hợp lệ, tiến hành ghi danh"},
-          {"from": "JoinClassCmd", "to": "EnrollmentRepo", "text": "Ghi danh hoặc khôi phục dòng cũ"},
-          {"from": "EnrollmentRepo", "to": "ClassDbAdapter", "text": "Chuyển yêu cầu ghi danh"},
-          {"from": "ClassDbAdapter", "to": "PostgreSQL", "text": "Thêm mới hoặc kích hoạt lại ghi danh"},
-          {"from": "PostgreSQL", "to": "ClassDbAdapter", "text": "Lớp đã tham gia", "kind": "return"},
-          {"from": "ClassDbAdapter", "to": "EnrollmentRepo", "text": "Lớp đã tham gia", "kind": "return"},
-          {"from": "EnrollmentRepo", "to": "JoinClassCmd", "text": "Lớp đã tham gia", "kind": "return"},
-          {"from": "JoinClassCmd", "to": "ClassController", "text": "Tên và mã lớp", "kind": "return"},
-          {"from": "ClassController", "to": "Học viên", "text": "Báo vào lớp thành công", "kind": "return"}
-        ],
-        "else": [
-          {"from": "JoinClassCmd", "to": "ClassController", "text": "Từ chối, không thay đổi ghi danh", "kind": "return"},
-          {"from": "ClassController", "to": "Học viên", "text": "Báo mã không hợp lệ hoặc hết hạn", "kind": "return"}
-        ]
-      }}
+      {
+        "phase": "Giai đoạn 3 - Dùng mã mời để tham gia lớp (F1-23)"
+      },
+      {
+        "from": "Học viên",
+        "to": "StudentClassController",
+        "text": "Gửi mã mời đã nhận"
+      },
+      {
+        "from": "StudentClassController",
+        "to": "JoinClassByCodeCommandHandler",
+        "text": "Yêu cầu tham gia lớp"
+      },
+      {
+        "from": "JoinClassByCodeCommandHandler",
+        "to": "ClassInviteCodeRepository",
+        "text": "Tìm mã còn hiệu lực"
+      },
+      {
+        "from": "ClassInviteCodeRepository",
+        "to": "JdbcInstructorClassRepository",
+        "text": "Chuyển yêu cầu tìm mã"
+      },
+      {
+        "from": "JdbcInstructorClassRepository",
+        "to": "PostgreSQL",
+        "text": "Đọc mã và hạn dùng"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "JdbcInstructorClassRepository",
+        "text": "Mã hợp lệ hoặc không",
+        "kind": "return"
+      },
+      {
+        "from": "JdbcInstructorClassRepository",
+        "to": "ClassInviteCodeRepository",
+        "text": "Kết quả tìm mã",
+        "kind": "return"
+      },
+      {
+        "from": "ClassInviteCodeRepository",
+        "to": "JoinClassByCodeCommandHandler",
+        "text": "Lớp tương ứng hoặc không",
+        "kind": "return"
+      },
+      {
+        "alt": {
+          "label": "Mã còn hiệu lực?",
+          "then": [
+            {
+              "from": "JoinClassByCodeCommandHandler",
+              "to": "JoinClassByCodeCommandHandler",
+              "text": "Mã hợp lệ, tiến hành ghi danh"
+            },
+            {
+              "from": "JoinClassByCodeCommandHandler",
+              "to": "ClassMembershipRepository",
+              "text": "Ghi danh hoặc khôi phục dòng cũ"
+            },
+            {
+              "from": "ClassMembershipRepository",
+              "to": "JdbcInstructorClassRepository",
+              "text": "Chuyển yêu cầu ghi danh"
+            },
+            {
+              "from": "JdbcInstructorClassRepository",
+              "to": "PostgreSQL",
+              "text": "Thêm mới hoặc kích hoạt lại ghi danh"
+            },
+            {
+              "from": "PostgreSQL",
+              "to": "JdbcInstructorClassRepository",
+              "text": "Lớp đã tham gia",
+              "kind": "return"
+            },
+            {
+              "from": "JdbcInstructorClassRepository",
+              "to": "ClassMembershipRepository",
+              "text": "Lớp đã tham gia",
+              "kind": "return"
+            },
+            {
+              "from": "ClassMembershipRepository",
+              "to": "JoinClassByCodeCommandHandler",
+              "text": "Lớp đã tham gia",
+              "kind": "return"
+            },
+            {
+              "from": "JoinClassByCodeCommandHandler",
+              "to": "StudentClassController",
+              "text": "Tên và mã lớp",
+              "kind": "return"
+            },
+            {
+              "from": "StudentClassController",
+              "to": "Học viên",
+              "text": "Báo vào lớp thành công",
+              "kind": "return"
+            }
+          ],
+          "else": [
+            {
+              "from": "JoinClassByCodeCommandHandler",
+              "to": "StudentClassController",
+              "text": "Từ chối, không thay đổi ghi danh",
+              "kind": "return"
+            },
+            {
+              "from": "StudentClassController",
+              "to": "Học viên",
+              "text": "Báo mã không hợp lệ hoặc hết hạn",
+              "kind": "return"
+            }
+          ]
+        }
+      }
     ]
   }
 }

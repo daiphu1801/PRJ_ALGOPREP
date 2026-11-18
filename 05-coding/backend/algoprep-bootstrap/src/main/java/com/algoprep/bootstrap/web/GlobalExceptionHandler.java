@@ -1,9 +1,16 @@
 package com.algoprep.bootstrap.web;
 
 import com.algoprep.common.exception.AlgoPrepException;
+import com.algoprep.common.exception.ClientErrorDetails;
 import com.algoprep.common.exception.DomainRuleViolationException;
+import com.algoprep.common.exception.InvalidRequestException;
+import com.algoprep.common.exception.PayloadTooLargeException;
 import com.algoprep.common.exception.PermissionDeniedException;
+import com.algoprep.common.exception.RateLimitExceededException;
+import com.algoprep.common.exception.ResourceConflictException;
 import com.algoprep.common.exception.ResourceNotFoundException;
+import com.algoprep.common.exception.ServiceUnavailableException;
+import com.algoprep.common.exception.UnauthenticatedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -11,6 +18,7 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 /**
  * Ánh xạ ngoại lệ nghiệp vụ sang phản hồi HTTP, một chỗ duy nhất cho cả tám module.
@@ -28,9 +36,51 @@ public class GlobalExceptionHandler {
 
   private static final Logger LOG = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
+  @ExceptionHandler(ResourceConflictException.class)
+  public ProblemDetail handleConflict(ResourceConflictException ex) {
+    return toProblemDetail(ex, HttpStatus.CONFLICT);
+  }
+
+  @ExceptionHandler(RateLimitExceededException.class)
+  public ProblemDetail handleRateLimit(RateLimitExceededException ex) {
+    return toProblemDetail(ex, HttpStatus.TOO_MANY_REQUESTS);
+  }
+
+  @ExceptionHandler(PayloadTooLargeException.class)
+  public ProblemDetail handlePayloadTooLarge(PayloadTooLargeException ex) {
+    return toProblemDetail(ex, HttpStatus.CONTENT_TOO_LARGE);
+  }
+
+  /**
+   * The container's multipart limit fired before any controller ran. The only multipart endpoint is
+   * the avatar upload (F1 #74), so this is its {@code IDT-V30} (DD api F1 section 0.9.1).
+   */
+  @ExceptionHandler(MaxUploadSizeExceededException.class)
+  public ProblemDetail handleUploadTooLarge(MaxUploadSizeExceededException ex) {
+    return toProblemDetail(
+        new PayloadTooLargeException("IDT-V30", "The uploaded file is larger than 512 KB"),
+        HttpStatus.CONTENT_TOO_LARGE);
+  }
+
   @ExceptionHandler(ResourceNotFoundException.class)
   public ProblemDetail handleNotFound(ResourceNotFoundException ex) {
     return toProblemDetail(ex, HttpStatus.NOT_FOUND);
+  }
+
+  @ExceptionHandler(UnauthenticatedException.class)
+  public ProblemDetail handleUnauthenticated(UnauthenticatedException ex) {
+    return toProblemDetail(ex, HttpStatus.UNAUTHORIZED);
+  }
+
+  @ExceptionHandler(InvalidRequestException.class)
+  public ProblemDetail handleInvalidRequest(InvalidRequestException ex) {
+    return toProblemDetail(ex, HttpStatus.BAD_REQUEST);
+  }
+
+  @ExceptionHandler(ServiceUnavailableException.class)
+  public ProblemDetail handleServiceUnavailable(ServiceUnavailableException ex) {
+    LOG.error("Dịch vụ phụ thuộc lỗi [{}]", ex.errorCode(), ex);
+    return toProblemDetail(ex, HttpStatus.SERVICE_UNAVAILABLE);
   }
 
   @ExceptionHandler(PermissionDeniedException.class)
@@ -44,13 +94,16 @@ public class GlobalExceptionHandler {
    */
   @ExceptionHandler(DomainRuleViolationException.class)
   public ProblemDetail handleDomainRuleViolation(DomainRuleViolationException ex) {
-    return toProblemDetail(ex, HttpStatus.UNPROCESSABLE_ENTITY);
+    return toProblemDetail(ex, HttpStatus.UNPROCESSABLE_CONTENT);
   }
 
   private ProblemDetail toProblemDetail(AlgoPrepException ex, HttpStatusCode status) {
     LOG.warn("Ngoại lệ nghiệp vụ [{}]: {}", ex.errorCode(), ex.getMessage());
     ProblemDetail problem = ProblemDetail.forStatusAndDetail(status, ex.getMessage());
     problem.setProperty("errorCode", ex.errorCode());
+    if (ex instanceof ClientErrorDetails metadata && !metadata.clientErrorDetails().isEmpty()) {
+      problem.setProperty("details", metadata.clientErrorDetails());
+    }
     return problem;
   }
 }

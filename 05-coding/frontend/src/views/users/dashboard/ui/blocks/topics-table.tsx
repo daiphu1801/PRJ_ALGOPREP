@@ -59,9 +59,7 @@ export function TopicsTable({ range }: { range: ProgressRange }) {
       header: t("topics.colLast"),
       align: "right",
       render: (row) =>
-        row.lastSubmittedAt
-          ? formatDateVN(row.lastSubmittedAt)
-          : "-",
+        row.lastSubmittedAt ? formatDateVN(row.lastSubmittedAt) : "-",
     },
   ];
 

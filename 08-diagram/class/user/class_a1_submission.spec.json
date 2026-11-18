@@ -1,5 +1,5 @@
 {
-  "_": "Nguồn tiêu chí: 01-rd/req/user_stories/a1_student.md:50; 01-rd/req/user_stories/a1_student.md:52; 01-rd/req/user_stories/a1_student.md:54; 01-rd/req/user_stories/a1_student.md:57; 01-rd/req/user_stories/a1_student.md:59; 01-rd/req/user_stories/a1_student.md:67; 01-rd/req/user_stories/a1_student.md:69; 01-rd/req/user_stories/a1_student.md:71; 01-rd/req/user_stories/a1_student.md:78; 01-rd/req/user_stories/a1_student.md:80. Nguồn thiết kế: 03-dd/logic/F2_problem-bank.md; 03-dd/api/F2_problem-bank.md; 03-dd/logic/F3_harness.md; 03-dd/api/F3_harness.md; 03-dd/logic/F4_judge-orchestration.md; 03-dd/api/F4_judge-orchestration.md; 03-dd/logic/F5_ai-review.md; 03-dd/api/F5_ai-review.md. [SoT: Suy luận] Tên lớp và chữ ký phương thức là thiết kế đề xuất từ hợp đồng DD vì backend nghiệp vụ chưa hiện thực đầy đủ. Mỗi phương thức ở lớp điều phối nối với đúng một tiêu chí theo thứ tự trong bảng truy vết; không hàm ý một endpoint riêng cho mỗi tiêu chí. Bỏ DTO HTTP, getter/setter, nhánh lỗi chi tiết.",
+  "_": "Nguồn tiêu chí: 01-rd/req/user_stories/a1_student.md:50-82. Nguồn mã nguồn: 05-coding/backend/algoprep-judge/src/main/java/com/algoprep/judge/presentation/controller/CreateSubmissionController.java, RunSampleController.java, application/command/CreateSubmissionCommandHandler.java và algoprep-harness/src/main/java/com/algoprep/harness/presentation/controller/StarterCodeController.java.",
   "kind": "class",
   "title": "A1 — Chạy thử, nộp bài và xem kết quả",
   "covers": [
@@ -17,80 +17,71 @@
     "legend": "shared",
     "classes": [
       {
-        "id": "service",
-        "name": "StudentSubmissionService",
+        "id": "createController",
+        "name": "CreateSubmissionController",
         "methods": [
-          "+ getStarterCode(problemId : UUID, language : Language) : String",
-          "+ runSample(command : RunSampleCommand) : SampleResult",
-          "+ getSubmissionModels(problemId : UUID) : Set<SubmissionModel>",
-          "+ getSupportedModels(problemId : UUID) : Set<SubmissionModel>",
-          "+ acceptSource(command : SourceCommand) : String",
-          "+ submit(command : SubmitCommand) : UUID",
-          "+ subscribeResults(submissionId : UUID) : ResultStream",
-          "+ getCaseSummaries(submissionId : UUID) : List<CaseSummary>",
-          "+ getPublicResult(submissionId : UUID) : SubmissionResult",
-          "+ getAcceptedActions(submissionId : UUID) : Set<NextAction>"
+          "+ create(caller : JwtAuthenticationToken, problemId : String, body : JsonNode) : Ticket"
         ]
       },
       {
-        "id": "port1",
-        "name": "ProblemSpecReadPort",
-        "kind": "interface",
+        "id": "sampleController",
+        "name": "RunSampleController",
         "methods": [
-          "+ getPublicSpec(problemId : UUID) : ProblemSpec"
+          "+ run(caller : JwtAuthenticationToken, problemId : String, body : JsonNode) : SampleResult"
         ]
       },
       {
-        "id": "port2",
-        "name": "SampleRunPort",
-        "kind": "interface",
+        "id": "starterController",
+        "name": "StarterCodeController",
         "methods": [
-          "+ executeSample(command : RunSampleCommand) : SampleResult"
+          "+ getStarterCode(problemId : UUID, language : Language, model : SubmissionModel) : StarterCodeResult"
         ]
       },
       {
-        "id": "port3",
-        "name": "SubmissionPort",
-        "kind": "interface",
+        "id": "submitHandler",
+        "name": "CreateSubmissionCommandHandler",
         "methods": [
-          "+ enqueue(command : SubmitCommand) : UUID"
+          "+ create(command : RecordPendingSubmissionCommand) : QueuedSubmissionResult"
         ]
       },
       {
-        "id": "port4",
-        "name": "ResultReadPort",
-        "kind": "interface",
+        "id": "sampleHandler",
+        "name": "RunSampleCommandHandler",
         "methods": [
-          "+ getPublicResult(id : UUID) : SubmissionResult"
+          "+ run(command : RunSampleCommand) : SampleResult"
+        ]
+      },
+      {
+        "id": "socketSessions",
+        "name": "SubmissionSocketSessions",
+        "methods": [
+          "+ subscribe(submissionId : UUID, sessionId : String)",
+          "+ broadcast(submissionId : UUID, progress : TestcaseProgress)"
         ]
       }
     ],
     "externals": [],
     "relations": [
       {
-        "from": "service",
-        "to": "port1",
+        "from": "createController",
+        "to": "submitHandler",
         "kind": "dependency"
       },
       {
-        "from": "service",
-        "to": "port2",
+        "from": "sampleController",
+        "to": "sampleHandler",
         "kind": "dependency"
       },
       {
-        "from": "service",
-        "to": "port3",
-        "kind": "dependency"
-      },
-      {
-        "from": "service",
-        "to": "port4",
-        "kind": "dependency"
+        "from": "submitHandler",
+        "to": "socketSessions",
+        "kind": "dependency",
+        "label": "đăng ký kênh tiến độ"
       }
     ],
     "notes": [
-      "Chạy thử không ghi tiến độ; kết quả Hidden chỉ có trạng thái/chỉ số. Tự giữ mã khi đổi mô hình và chọn nút sau Accepted thuộc client.",
-      "[SoT: Suy luận] Tên lớp/phương thức là thiết kế backend từ DD."
+      "CreateSubmissionController tiếp nhận bài nộp, trả về submissionId ngay lập tức và đẩy bài vào hàng đợi.",
+      "RunSampleController chạy thử nghiệm độc lập với testcase Sample; SubmissionSocketSessions truyền tiến độ từng testcase qua WebSocket."
     ]
   }
 }

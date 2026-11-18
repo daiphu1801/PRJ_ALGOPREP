@@ -37,6 +37,17 @@ Prototype dùng store module (`aiTokenBudget`, `aiRateLimits`, `aiBudgetSettings
 | 9 xoá mô hình | F5 §26 `DELETE /admin/model-prices/{priceId}` | Làm mới danh sách giá sau thành công |
 | 10 đổi trần sinh testcase | F2 §57 `PUT /settings/ai-testcase-generation` | Gửi 1–10; phản hồi làm baseline mới |
 
+**Triển khai FE 2026-11-12 (nối API thật, Merge M4):** `entities/ai-budget/api/real-budget.ts` (§18 đến §22) và `real-model-prices.ts` (§23 đến §26), kèm test `real-*.test.ts` và `views/admin/ai-limits/ui/ai-limits-real.test.tsx`; hook ở `entities/ai-budget/api/queries.ts`. Store `aiBudgetSettings`, `aiRateLimits`, `aiTokenBudget` và kho đơn giá chỉ còn phục vụ chế độ mock, màn không đọc trực tiếp nữa. Mỗi thẻ có query riêng, lỗi hiện lý do `apiErrors.AIR-*` và nút thử lại riêng (`ui/block-error.tsx`). Chi tiết:
+
+- §18 và §19: ô hạn mức kiểm phía client bằng biểu thức `^\d+$`, 1 đến 9.000.000.000.000 (không dùng `Number("")`); gửi đúng `{ limitTokens }`; thanh và nhãn lấy từ phản hồi, lỗi (`AIR-V15`, `AIR-301`, `AIR-503`) giữ chữ đã nhập và hiện thông báo tương ứng.
+- §20: nút Mở khoá khi `usedTokens >= limitTokens` hiện cảnh báo và không gửi; khi gửi `POST` không body, phản hồi cập nhật cache. Lỗi `AIR-203`, `AIR-301`, `AIR-503` giữ hộp xác nhận mở và giữ trạng thái khoá.
+- §21 và §22: ba giới hạn (gồm `cooldownSeconds`, máy chủ vẫn mang trường này) và `warnPercent` đọc từ §21. Mỗi lần bấm +/- chỉ gửi trường vừa đổi, các bộ chỉnh bị khoá trong lúc gửi; giá trị hiển thị là giá trị máy chủ trả về. Sau §22 thành công thì làm mới §18 vì thanh ngân sách đọc `warnPercent`. Lỗi `AIR-V16`, `AIR-301` giữ giá trị cũ.
+- §23 đến §26: popup đọc §23; tên rỗng bị chặn ở client (không gửi); `AIR-204`, `AIR-V17`, `AIR-301` hiện thông báo qua toast, không thêm dòng. Ô đơn giá chỉ ghi khi rời ô hoặc nhấn Enter (một `PATCH` cho một lần sửa, không ghi từng phím), số âm hoặc không phải số về 0 theo BD Q4, chỉ gửi `{ usdPerMillionTokens }`; `AIR-V18`, `AIR-121`, `AIR-301` hiện thông báo và ô về giá trị máy chủ, riêng `AIR-121` tải lại danh sách. Đổi tên chỉ gửi `{ modelName }`.
+- Thẻ "Sinh testcase" (F2 §56, §57) giữ nguyên, đã nối F2 từ trước.
+
+Không có trường nào của màn bị bỏ vì thiếu nguồn: `periodStart`, `lockedAt` do §18 gửi nhưng màn không đọc nên mapper bỏ.
+
+
 Không có SSE. F6 Chế độ luyện giới hạn 20 lượt/giờ ở module F6, không có ô điều chỉnh trong màn. [SoT: F5 §21.3; BD ADM0303 Q3]
 
 ## 3. Trạng thái màn

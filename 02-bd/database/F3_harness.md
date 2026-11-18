@@ -55,7 +55,9 @@ cung cấp, để tránh gọi lại mỗi lần chấm testcase trong cùng m�
 | :--- | :--- | :--- | :--- |
 | `problem:spec:<problemId>` | Invalidate chủ động khi dòng `problem_specs` đổi, đã gồm chữ ký hàm (sự kiện `ProblemSpecChanged`; sửa 2026-10-22 phase 2) | `harness` đọc để sinh mã, tránh join lại nhiều bảng bên schema `problem` mỗi lần sinh | **`problem-bank`** sở hữu key này (đã khai ở `02-bd/database/F2_problem-bank.md` mục 3) — `harness` chỉ là bên đọc, không tạo key mới |
 
-`harness` **không cần tự thêm Redis key nào của riêng nó** — nếu về sau đo hiệu năng thấy sinh mã lặp lại
+**Ngoại lệ duy nhất, không phải cache:** từ 2026-11-08 (`DEC-2026-1108-f3-preview-rate-limit-owner`) `harness` sở hữu một **bộ đếm giới hạn tần suất** cho API xem trước chữ ký P6: key `harness:preview:rate:<userId>`, cửa sổ trượt 10 lần/giây/người bằng một script Lua nguyên tử, tự hết hạn sau 2 giây. Key này chỉ là bộ đếm chặn gọi dồn, không lưu dữ liệu nghiệp vụ và không bao giờ là nguồn sự thật. Redis lỗi thì cho qua (thao tác thuần CPU, body bị giới hạn 16 KiB).
+
+Ngoài bộ đếm trên, `harness` **không cần tự thêm Redis key nào của riêng nó** — nếu về sau đo hiệu năng thấy sinh mã lặp lại
 tốn kém, cân nhắc thêm cache in-process (JVM heap, ví dụ Caffeine) theo `problem_id` + `spec_version` thay vì
 Redis, vì mã sinh ra chỉ dùng nội bộ một lần gọi trong cùng tiến trình JVM của `algoprep-judge`/`algoprep-
 harness`, không cần chia sẻ giữa nhiều instance — chốt cụ thể ở DD nếu đo được nhu cầu thật.

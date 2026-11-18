@@ -1,10 +1,17 @@
 // Queue screen after the 2026-10-10 redesign: count tabs, pagination by the saved rows-per-page,
 // and the confirmation before the two risky cluster changes. `useT` returns the key.
-import { fireEvent, render, screen, within } from "@testing-library/react";
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
 vi.mock("@/shared/i18n", () => ({
   useT: () => (key: string) => key,
+  useApiErrorMessage: () => (error: unknown) => String(error),
 }));
 
 import { AdminQueueMonitorView } from "./admin-queue-monitor-view";
@@ -28,16 +35,16 @@ describe("AdminQueueMonitorView", () => {
     render(withQuery(<AdminQueueMonitorView />));
     await screen.findByRole("table", { name: "jobsTitle" });
     // 21 waiting jobs in the mock, 20 rows per page by default.
-    expect(bodyRows()).toHaveLength(20);
+    await waitFor(() => expect(bodyRows()).toHaveLength(20));
     fireEvent.click(screen.getByRole("button", { name: "pageNext" }));
-    expect(bodyRows()).toHaveLength(1);
+    await waitFor(() => expect(bodyRows()).toHaveLength(1));
   });
 
   it("the failed tab shows only failed jobs", async () => {
     render(withQuery(<AdminQueueMonitorView />));
     await screen.findByRole("table", { name: "jobsTitle" });
     fireEvent.click(screen.getByRole("button", { name: "tabFailed" }));
-    expect(bodyRows()).toHaveLength(1);
+    await waitFor(() => expect(bodyRows()).toHaveLength(1));
     expect(bodyRows()[0]).toHaveTextContent("jobStatus.sandboxError");
   });
 
@@ -53,12 +60,12 @@ describe("AdminQueueMonitorView", () => {
 
     fireEvent.click(pause);
     fireEvent.click(screen.getByRole("button", { name: "confirm.yes" }));
-    expect(pause).toHaveAttribute("aria-checked", "true");
+    await waitFor(() => expect(pause).toHaveAttribute("aria-checked", "true"));
     expect(screen.getByText("state.paused")).toBeInTheDocument();
 
-    // Resuming is the safe direction and applies at once.
+    // Resuming is the safe direction and applies without a confirmation.
     fireEvent.click(pause);
-    expect(pause).toHaveAttribute("aria-checked", "false");
+    await waitFor(() => expect(pause).toHaveAttribute("aria-checked", "false"));
   });
 
   it("asks before turning autoscale off, not before turning it on", async () => {
@@ -70,10 +77,14 @@ describe("AdminQueueMonitorView", () => {
     fireEvent.click(autoscale);
     expect(autoscale).toHaveAttribute("aria-checked", "true");
     fireEvent.click(screen.getByRole("button", { name: "confirm.yes" }));
-    expect(autoscale).toHaveAttribute("aria-checked", "false");
+    await waitFor(() =>
+      expect(autoscale).toHaveAttribute("aria-checked", "false"),
+    );
 
     fireEvent.click(autoscale);
-    expect(autoscale).toHaveAttribute("aria-checked", "true");
+    await waitFor(() =>
+      expect(autoscale).toHaveAttribute("aria-checked", "true"),
+    );
   });
 
   it("links to the infrastructure events screen instead of listing them", async () => {

@@ -15,7 +15,7 @@
         "role": "actor"
       },
       {
-        "name": "ChangeUserStatus",
+        "name": "ChangeUserStatusCommandHandler",
         "role": "service",
         "stereo": "application command"
       },
@@ -34,12 +34,12 @@
         "role": "datastore"
       },
       {
-        "name": "AdminEmailPort",
+        "name": "MailDeliveryPort",
         "role": "repository",
         "stereo": "output port"
       },
       {
-        "name": "MailAdapter",
+        "name": "MailDeliveryAdapter",
         "role": "repository",
         "stereo": "infrastructure"
       },
@@ -53,7 +53,7 @@
         "phase": "Giai đoạn 2 - Làm mới quyền sau khi khóa"
       },
       {
-        "from": "ChangeUserStatus",
+        "from": "ChangeUserStatusCommandHandler",
         "to": "PermissionCachePort",
         "text": "Thông báo trạng thái tài khoản đã đổi"
       },
@@ -72,25 +72,25 @@
           "label": "Quản trị viên chọn gửi email?",
           "then": [
             {
-              "from": "ChangeUserStatus",
-              "to": "AdminEmailPort",
+              "from": "ChangeUserStatusCommandHandler",
+              "to": "MailDeliveryPort",
               "text": "Gửi thông báo khóa tài khoản"
             },
             {
-              "from": "AdminEmailPort",
-              "to": "MailAdapter",
+              "from": "MailDeliveryPort",
+              "to": "MailDeliveryAdapter",
               "text": "Chuẩn bị nội dung thông báo"
             },
             {
-              "from": "MailAdapter",
+              "from": "MailDeliveryAdapter",
               "to": "Dịch vụ email",
               "text": "Gửi thư tới chủ tài khoản"
             }
           ],
           "else": [
             {
-              "from": "ChangeUserStatus",
-              "to": "ChangeUserStatus",
+              "from": "ChangeUserStatusCommandHandler",
+              "to": "ChangeUserStatusCommandHandler",
               "text": "Không gửi thư; trạng thái khóa vẫn có hiệu lực"
             }
           ]

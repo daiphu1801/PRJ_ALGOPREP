@@ -53,7 +53,7 @@
 | Tên vật lý (slug) | `solution_review` |
 | Trục tài liệu | Màn hình (`02-bd/screens/`) |
 | Actor | A1 (`STUDENT`) |
-| Phiên bản | V1.9 |
+| Phiên bản | V2.0 |
 | V1.8 | Sheet 5 (Khu vực F NO 4), Câu hỏi mở Q6, Hiện trạng bản dựng | Owner chốt 2026/10/23 (`DEC-2026-1023-db-actor-review-decisions`): thêm item hiển thị `followUpTopics` (chip chủ đề và một liên kết sang ngân hàng câu hỏi); **không** thêm thẻ `summaryText` (không item nào của RD F5-02 đến F5-07 đòi nó, `strengths` và `improvements` đã đủ ý); giữ trình xem Diff rút gọn cho prototype, dùng Monaco Diff Editor khi nối API. Chưa duyệt hình | 2026/10/23 | Claude |
 | Người tạo | Nhóm phát triển AlgoPrep |
 | Ngày tạo | 2026/09/22 |
@@ -82,6 +82,7 @@
 | V1.6 | Sheet 3 (Phỏng vấn giả lập), Sheet 8 (sự kiện "Bấm Phỏng vấn bài này") | Owner chốt 2026/10/21: lối vào phỏng vấn từ bài nộp là `/submissions/{submission_id}/interview` (theo bản dựng `solution-review-view.tsx:267`), thay cho `/mock-interview?submission_id=`. Màn phỏng vấn chưa đọc mã bài nộp (nợ prototype, `USR0302` Q8). Chưa duyệt hình | 2026/10/21 | Claude |
 | V1.7 | Sheet 4.2, Hiện trạng bản dựng | Owner chọn 2026/10/23: sửa prototype theo lược đồ `result_json` ở `02-bd/database/F5_ai-review.md` mục 1.3a (không thêm khoá vào lược đồ). Prototype nay có `schemaVersion`, `verdict`, `followUpTopics`, `codeDiff.{suggestedCode, explanation}` (hai khoá nullable); bỏ `summaryText` (thẻ "Nhận xét tổng quan" bị gỡ), `diffLines`, `diffNote`, `suggestedCode` ở gốc. Diff tính ở máy khách từ `source_code` và `codeDiff.suggestedCode`. Mục 4.2 ghi ánh xạ `complexity.actualTime`, `complexity.actualSpace`, `codeDiff` sang DTO. | 2026/10/23 | Claude |
 | V1.9 | Sheet 5 (Khu vực I NO 5) | Theo `DEC-2026-1024-dd-screens-ai-topic-length-and-rd-trim`: thêm item trạng thái chờ giới hạn tần suất (`AIR-402`, `AIR-404`) có đếm ngược, chỉ chữ và đồng hồ. Chỉ tài liệu, chưa đổi code | 2026/10/24 | Claude |
+| V2.0 | Hiện trạng bản dựng | 2026/11/12: nối API thật F5 #4 (`POST /ai/submissions/{id}/solution-review`) và F4 #5 cho phần mã/tên bài; mã lỗi `AIR-*` thay mã mock; `AIR-402/404` có đếm ngược Thử lại; `AIR-103` chờ tự động; báo cáo không mang tên bài, độ khó, mã nộp nên màn ghép từ F4. Chưa duyệt hình | 2026/11/12 | Claude |
 
 ---
 
@@ -506,6 +507,7 @@ Bảng này ghi điều prototype frontend đang có, để đối chiếu với
 
 | Hạng mục | Hiện trạng | Nguồn |
 | :--- | :--- | :--- |
+| Nối API thật (V2.0) | Báo cáo gọi F5 #4 qua `useSolutionReview` (`queries.ts:24`, `real-solution-review.ts:124`); tên bài, độ khó, mã nộp, `withdrawn`, mô hình nộp lấy từ F4 `useSubmissionDetail` (`solution-review-view.tsx:90`, `:540`); lỗi F4 thì ẩn mã và Diff, tắt Áp dụng. Chuẩn hoá khoảng trắng cuối dòng trước khi so Diff (`:420`). Nhãn "đã phân tích" ở `USR0101` (`problem-list-view.tsx:91,248`), nhận định nhanh `USR0102`/`USR0104` (`problem-detail-view.tsx:494`, `problem-overview-view.tsx:149`), khối gần đây `USR0601` (`dashboard/api/queries.ts`). Trường server không dùng: `servedFromCache`, `isReferenceOnly`. Quick insight thật không có `notes` nên danh sách ghi chú trống | `05-coding/frontend/src/entities/solution-review/api/real-solution-review.ts`, `.../views/users/solution-review/ui/solution-review-view.tsx` |
 | Kiểu dữ liệu báo cáo | `SolutionReviewDetail` chỉ có `readabilityScore`, `complexity`, `strengths`, `improvements`, `edgeCases`, `codeDiff`; không có `criteriaScores` | `05-coding/frontend/src/entities/solution-review/model/types.ts:35-61` (V1.7: theo đúng lược đồ 1.3a, thêm `schemaVersion`, `verdict`, `followUpTopics`, `codeDiff` nullable; bỏ `summaryText`) |
 | Chủ đề nên học tiếp | Thẻ chip từ `data.followUpTopics`, một liên kết `/interview-bank` (không lọc); ẩn khi mảng rỗng; không có `summaryText` | `05-coding/frontend/src/views/users/solution-review/ui/solution-review-view.tsx:364-383` |
 | Chỉ số đầu trang | Điểm dễ đọc hiển thị bằng `data.readabilityScore` | `05-coding/frontend/src/views/users/solution-review/ui/solution-review-view.tsx:261` |

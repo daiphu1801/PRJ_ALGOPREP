@@ -14,7 +14,7 @@
         "role": "actor"
       },
       {
-        "name": "SubmissionController",
+        "name": "InstructorSubmissionController",
         "role": "controller",
         "stereo": "presentation"
       },
@@ -24,22 +24,22 @@
         "stereo": "application query"
       },
       {
-        "name": "ClassScopeReadPort",
+        "name": "SubmissionClassScopeBridge",
         "role": "repository",
         "stereo": "identity output port"
       },
       {
-        "name": "ClassAssignmentReadPort",
+        "name": "ClassAssignmentReadBridge",
         "role": "repository",
         "stereo": "problem output port"
       },
       {
-        "name": "SubmissionReadPort",
+        "name": "SubmissionReadRepository",
         "role": "repository",
         "stereo": "output port"
       },
       {
-        "name": "JudgeDbAdapter",
+        "name": "JdbcSubmissionReadRepository",
         "role": "repository",
         "stereo": "persistence adapter"
       },
@@ -55,65 +55,65 @@
       },
       {
         "from": "Giảng viên",
-        "to": "SubmissionController",
+        "to": "InstructorSubmissionController",
         "text": "Mở một bài nộp trong danh sách lớp"
       },
       {
-        "from": "SubmissionController",
+        "from": "InstructorSubmissionController",
         "to": "GetInstructorSubmissionDetail",
         "text": "Lấy chi tiết bài nộp"
       },
       {
         "from": "GetInstructorSubmissionDetail",
-        "to": "SubmissionReadPort",
+        "to": "SubmissionReadRepository",
         "text": "Đọc bài nộp theo mã"
       },
       {
-        "from": "SubmissionReadPort",
-        "to": "JudgeDbAdapter",
+        "from": "SubmissionReadRepository",
+        "to": "JdbcSubmissionReadRepository",
         "text": "Tìm bài và chủ bài thật"
       },
       {
-        "from": "JudgeDbAdapter",
+        "from": "JdbcSubmissionReadRepository",
         "to": "PostgreSQL",
         "text": "Đọc bài, thời điểm nộp và kết quả chấm"
       },
       {
         "from": "PostgreSQL",
-        "to": "JudgeDbAdapter",
+        "to": "JdbcSubmissionReadRepository",
         "text": "Bài nộp và kết quả",
         "kind": "return"
       },
       {
-        "from": "JudgeDbAdapter",
-        "to": "SubmissionReadPort",
+        "from": "JdbcSubmissionReadRepository",
+        "to": "SubmissionReadRepository",
         "text": "Bài nộp và kết quả",
         "kind": "return"
       },
       {
-        "from": "SubmissionReadPort",
+        "from": "SubmissionReadRepository",
         "to": "GetInstructorSubmissionDetail",
         "text": "Bài nộp và kết quả",
         "kind": "return"
       },
       {
         "from": "GetInstructorSubmissionDetail",
-        "to": "ClassScopeReadPort",
+        "to": "SubmissionClassScopeBridge",
         "text": "Kiểm khoảng ghi danh của chủ bài trong lớp phụ trách"
       },
       {
-        "from": "ClassScopeReadPort",
+        "from": "SubmissionClassScopeBridge",
         "to": "GetInstructorSubmissionDetail",
         "text": "Lớp và khoảng ghi danh hợp lệ",
         "kind": "return"
       },
       {
         "from": "GetInstructorSubmissionDetail",
-        "to": "ClassAssignmentReadPort",
+        "to": "ClassAssignmentReadBridge",
         "text": "Kiểm bài đã giao tại thời điểm nộp"
       },
       {
-        "from": "ClassAssignmentReadPort",
+        "from": "ClassAssignmentReadBridge",
         "to": "GetInstructorSubmissionDetail",
         "text": "Các khoảng giao bài hợp lệ",
         "kind": "return"
@@ -129,12 +129,12 @@
             },
             {
               "from": "GetInstructorSubmissionDetail",
-              "to": "SubmissionController",
+              "to": "InstructorSubmissionController",
               "text": "Trả chi tiết, mã nguồn và kết quả được phép xem",
               "kind": "return"
             },
             {
-              "from": "SubmissionController",
+              "from": "InstructorSubmissionController",
               "to": "Giảng viên",
               "text": "Hiển thị chi tiết chỉ đọc",
               "kind": "return"
@@ -143,12 +143,12 @@
           "else": [
             {
               "from": "GetInstructorSubmissionDetail",
-              "to": "SubmissionController",
+              "to": "InstructorSubmissionController",
               "text": "Báo không tìm thấy bài nộp",
               "kind": "return"
             },
             {
-              "from": "SubmissionController",
+              "from": "InstructorSubmissionController",
               "to": "Giảng viên",
               "text": "Hiển thị lỗi không tìm thấy",
               "kind": "return"

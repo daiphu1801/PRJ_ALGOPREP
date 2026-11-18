@@ -1,5 +1,19 @@
 # DD — Logic module `harness` (F3)
 
+**2026-11-02:** P1/P2 reader workflow đã nối F2 thật. CurrentProblemSpecification dùng một
+view có version/flag/signature; thiếu chữ ký HRN-005 trước flag HRN-004, P5 defensive failure
+HRN-006. P2 kiểm source/language trước read, expectedSpecVersion trước render; Standard I/O
+không yêu cầu chữ ký và matchSpec.returnType=null. Không nhận stdin/testcase/limits trong
+payload. F2 raw unknown kind chỉ thành OTHER ở view typed, không ghi lại JSON.
+Report `261102-1532-f2-f3-spec-readers`; P1 HTTP/F4 persisted và snapshot reader còn mở.
+
+**Checkpoint D02e 2026-11-01:** §5.1–5.3 có lõi packaging thật cho cả hai mô hình: toolchain
+argv/env hằng, source chỉ nằm trong copyIn content, Java JAR/ApHRunner hoặc Main, C++ main,
+Python py_compile rồi chạy nguồn. `ProgramPackaging` kiểm P5 trước render wrapper; Standard I/O
+không nhận/đọc chữ ký. `PackagedProgram` là output pure input typed, chưa có F2 reader/quyền/
+specVersion và chưa thay thế toàn bộ P2/plugin registry. Bootstrap bridge chỉ dịch contracts
+application/domain để F4 gọi P3/P4; không có dependency harness↔judge.
+
 > Nguồn: `01-rd/req/F3_harness.md:11-42` (F3-01..F3-13) · `02-bd/architecture/F3_harness.md` · `02-bd/database/F3_harness.md` ·
 > `02-bd/security/F3_harness.md` · `.claude/skills/dd-generation/references/harness-codegen.md` (năm điểm DD phải chốt)
 > · `01-rd/req/nfr.md:72` (test golden file bắt buộc). README mô tả F3 là trọng tâm kỹ thuật ở `README.md:94-96`.
@@ -13,6 +27,13 @@
 > có chuỗi lập luận đi kèm; mọi mục như vậy được liệt kê lại ở mục 12 để chủ dự án duyệt.
 
 ## 1. Cấu trúc module và plugin ngôn ngữ
+
+**Triển khai D02d 2026-11-01:** FunctionWrapperRenderer là helper thuần tạo RenderedProgram
+từ typed draft + language + source; dùng P5/NodeSourceRenderer/NameConventions/ProgramSourceAssembler.
+Ba TypeCodeEmitter phát biểu thức đọc/in; runtime tin cậy ở classpath hỗ trợ toàn bảng kiểu,
+guard Python D02c được đặt trước call. Khung main/call do renderer phát, runtime là resource;
+chưa triển khai interface plugin đầy đủ, P2 reader/ExecutionPlan hoặc F4. Source không chứa input/expected.
+Các ghi chú D02a–c nói “chưa đọc/in” bên dưới là trạng thái lịch sử trước D02d.
 
 ### 1.1. Vị trí mã
 
@@ -77,8 +98,15 @@ Ví dụ: `two_sum` cho `two_sum` (Python), `twoSum` (Java, C++). `HTTPServer` c
 khoá hay tiền tố dành riêng (kiểm ở `validation/F3_harness.md` mục 3).
 
 Khoá `nameOverrides` được chuẩn hoá thành chữ hoa khi đọc (`JAVA`, `CPP`, `PYTHON`). BD ghi cả hai cách (mô tả
-cột nói khoá chữ hoa, ví dụ trong cùng dòng dùng `"java"`, `02-bd/database/F2_problem-bank.md:135`): xem câu hỏi
-mở Q10.
+cột nói khoá chữ hoa, ví dụ trong cùng dòng dùng `"java"`, `02-bd/database/F2_problem-bank.md:135`):
+Q10 đã đóng theo F2 Q-34, ghi khóa HOA; đọc không phân biệt hoa thường theo validation §3.
+
+**Triển khai P5 / chủ dự án chốt 2026-11-01:** `NameConventions` và bộ kiểm thuộc package
+`com.algoprep.common.functionspec`. Khóa được kiểm trên draft dạng string trước parse enum;
+hai khóa trùng sau chuẩn hóa (`JAVA`, `java`) trả `HRN-V18`. Giá trị override hợp lệ được giữ
+nguyên, không chuyển kiểu tên. Adapter đọc JSON thô và lưu JSON gốc thuộc lát F2 `SaveProblemSpec`
+sau này; thư viện typed không thay thế kiểm shape tại biên JSON. Xem `api/F3_harness.md` §6.3
+về bằng chứng kiểm thử và phạm vi AC còn thiếu.
 
 ## 3. Lược đồ kiểu và bảng sinh mã
 
@@ -144,6 +172,12 @@ danh sách), đúng mô tả ở `02-bd/architecture/F3_harness.md:93-98`.
 
 Tên trường node theo quy ước phổ biến: `val`, `next`, `left`, `right`. `val` có kiểu `of`.
 
+**Triển khai D02c 2026-11-01:** NodeSourceRenderer dùng P5 kiểm draft rồi phát đúng các
+lớp node xuất hiện trong return/parameters, chỉ một lớp mỗi loại, val INT/LONG/DOUBLE/BOOLEAN.
+`[SoT: Suy luận]` có constructor mặc định, nhận val và nhận cả liên kết con; Java field public,
+C++ struct/pointer, Python thuộc tính thường. Java đặt sau vùng người học, C++/Python đặt trước;
+helper chỉ trả chuỗi, caller P2 tương lai chịu trách nhiệm vị trí ghép. Chưa TypeCodeEmitter đọc/in.
+
 ### 3.3. Định dạng stdin (mã khung đọc input)
 
 Đầu vào là **mô tả giữa `problem-bank` (viết testcase, `stdin_format_md`) và `harness` (đọc)**: hai module
@@ -162,7 +196,7 @@ Bảng 2: Định dạng khối stdin theo kiểu.
 | `INT` `LONG` | 1 dòng, 1 số nguyên thập phân, có thể có khoảng trắng hai đầu | không parse được hoặc ngoài miền |
 | `DOUBLE` | 1 dòng, 1 số thực thập phân | không parse được |
 | `BOOLEAN` | 1 dòng `true` hoặc `false` (chữ thường, đúng hai giá trị) | khác hai giá trị |
-| `CHAR` | 1 dòng, đúng 1 ký tự in được, **không phải khoảng trắng** (miền `CHAR` chốt 2026-10-29, F3-04; cùng miền với phần tử `ARRAY(CHAR)` đọc theo token) | độ dài khác 1 hoặc ký tự trắng |
+| `CHAR` | 1 dòng đúng một ký tự ASCII U+0021–U+007E (owner D02d 2026-11-01; cùng miền với phần tử ARRAY/LIST(CHAR)); Unicode dùng STRING | ngoài miền hoặc độ dài khác 1 |
 | `STRING` | 1 dòng, **nguyên dòng** (giữ khoảng trắng, không tách token); dòng trống là chuỗi rỗng | hết dòng |
 | `ARRAY(of, k)` | Dòng tiêu đề `d1 d2 ... dk` (kích thước từng chiều). Rồi dữ liệu theo thứ tự hàng: `k = 1` một dòng gồm `d1` token (dòng trống nếu `d1 = 0`); `k = 2` đúng `d1` dòng, mỗi dòng `d2` token; `k = 3` đúng `d1 x d2` dòng, mỗi dòng `d3` token. Nếu `of = STRING` thì **mỗi phần tử một dòng**, tổng số dòng bằng `d1 x ... x dk` (không cần dòng gộp) | tiêu đề sai, thiếu hoặc thừa token |
 | `LIST(of)` | Dòng `n`. Nếu `of` là nguyên thuỷ không phải `STRING`: một dòng `n` token. Nếu `of = STRING`: `n` dòng. Nếu `of = LIST`: `n` khối con, **mỗi khối tự khai kích thước riêng** (đệ quy theo cùng quy tắc) | |
@@ -183,6 +217,11 @@ Ví dụ `twoSum(int[] nums, int target)` với `nums = [2,7,11,15]`, `target = 
 ```
 
 ### 3.4. Định dạng stdout (mã khung in kết quả)
+
+**Owner D02d 2026-11-01:** BFS stdin được bỏ các `#` đuôi; token không thể gắn vào cây là input lỗi.
+Chuỗi có ngoặc/nháy (LIST và ARRAY(STRING)) ngoài `\"`, `\\`, `\n` còn dùng `\t`, `\r`,
+`\b`, `\f`, và `\u00XX` cho control U+0000–U+001F còn lại. P4 đọc đúng tập escape này;
+không mở toàn bộ Unicode escape JSON. Các bảng bên dưới kế thừa phần mở rộng này.
 
 Chương trình in kết quả theo bảng dưới **sau** dòng đánh dấu `resultSentinel` (mục 5.4). Định dạng in
 cũng là định dạng chuẩn của `expected_output` mà `problem-bank` lưu (testcase sinh từ chạy Đáp án mẫu qua đúng
@@ -209,8 +248,13 @@ lần ghi** từ bộ đệm.
 Nếu bộ đệm vượt trần (`limits.max-result-bytes`, mặc định bằng hạn mức output của bài) hoặc duyệt `LINKED_LIST`
 `BINARY_TREE` vượt 1 000 000 node, chương trình **không ghi dòng đánh dấu và không ghi kết quả**, ghi dòng stderr cố
 định `@@APH-HARNESS-OUTPUT-LIMIT@@` rồi thoát với **mã 91**. Không còn kết quả bị cắt rồi chấm sai. Mã 91 khác mã 90
-(lỗi đọc input): F4 phải ánh xạ 91 thành lỗi output vượt giới hạn, không phải `RE` hay `WA` `[SoT: Suy luận]`; cách
-ánh xạ cuối cùng do `03-dd/logic/F4_judge-orchestration.md` xác nhận.
+(lỗi đọc input). **Owner 2026-11-01 chốt:** F4 gộp 91 + marker này vào `RE`, không thêm verdict.
+Hạn mức hiệu lực theo từng testcase, F4 truyền qua biến môi trường dành riêng
+`APH_MAX_RESULT_BYTES` khi run; không nhúng hạn mức vào source sinh ra. Owner D02d chốt đếm byte
+UTF-8 của kết quả, gồm newline cuối, không tính sentinel framing; env là số nguyên thập phân
+dương trong miền long, thiếu/sai trả 91 + marker, không có mặc định trong source. D02d có
+buffer/runtime được kiểm riêng; adapter F4 cấp env và chính sách output sandbox vẫn còn mở.
+Khung tuần tự hóa có kiểm trần trước publish; lỗi giữa chừng không in sentinel/kết quả một phần.
 
 **Giới hạn đã biết**: hai mảng chữ nhật có một chiều bằng 0 mà khác ở các chiều còn lại có thể in ra cùng
 một chuỗi (vì dòng trống cuối bị cắt khi chuẩn hoá, mục 7.1). Không có bài toán thuật toán thông thường cần
@@ -335,6 +379,14 @@ Ba điều đảm bảo (đúng `02-bd/security/F3_harness.md:12-26`):
 
 ### 4.2. Chuẩn hoá mã người học
 
+**Triển khai lõi D02b 2026-11-01:** `ProgramSourceAssembler` ghép các fragment tin cậy
+đã render `WrapperSource(prefix, beforeCall, callSite, afterCall)` với source đã chuẩn hóa.
+Không thay placeholder hay tìm neo trong source người học. Call-site được tính từ số LF
+trong prefix/user/beforeCall/callSite thực tế, kể cả call nhiều dòng; Standard I/O không có khung.
+`[SoT: Suy luận]` fragment không rỗng phải có LF cuối, không CR/NUL, call-site không blank;
+sai trả HRN-030. Plugin/template loader tương lai vẫn phải kiểm/cắt neo và render fragment theo §4.1;
+helper này chưa hiện thực loader hoặc TypeCodeEmitter. Không gọi helper là P2 đầy đủ.
+
 Trước khi nối, `normalizedUserSource` được tạo bằng các bước thuần, theo thứ tự:
 
 1. Bỏ BOM đầu tệp (nếu có).
@@ -396,6 +448,18 @@ khớp ở mục 7.
 
 ### 4.6. Mã khung (`GetStarterCode`) (BR-05)
 
+**Triển khai lõi 2026-11-01:** StarterCodeRenderer là helper thuần trong application/starter,
+không bean/cổng P1 rỗng; ClasspathStarterCodeTemplates nạp một lần các tài nguyên
+`harness-templates/{java,cpp,python}/starter-{wrapper,standard-io}.txt` để tạo helper.
+Render sau đó không I/O, dùng lại declaration formatter P6 và P5. Codegen không chuyển sang common.
+Chỉ template tin cậy trong jar; không nhận template hay source người học qua API.
+
+Wrapper có một class Solution, comment hướng dẫn và default return theo mục này; node chỉ là
+comment mô tả val/next/left/right (kiểu val ghi theo TypeKind), không khai báo lớp thật.
+Standard I/O không đọc draft và không phát logic input/output theo đặc tả. Output LF với newline
+cuối; tên/override/thứ tự tham số từ cùng formatter P6. Classpath loader có lỗi trả HRN-030 đã che.
+P1 phải nối quyền/reader/specVersion, P2 phải cung cấp node/prefix/epilogue thật sau này.
+
 Trước khi sinh mã khung qua HTTP, P1 hỏi `StarterCodeAccessPort` của F2 theo `problemId` và principal hiện hành. Bài chưa xuất bản chỉ tác giả hoặc ADMIN được đọc; không có/đã xoá/ngoài phạm vi cùng `HRN-001`. Việc gác này chạy **trước** `ProblemSpecReaderPort` và không lấy cờ quyền từ cache đặc tả; phần sinh mã sau đó vẫn thuần và tất định. [Owner 2026-10-25, F3 Q2]
 
 **Kích hoạt**: `getStarterCode`. **Tiền điều kiện**: như `prepare` (api mục 3.5). **Nguồn**:
@@ -429,6 +493,15 @@ Hậu điều kiện: bất biến `starterCode` đưa vào `prepare` (mô hình
 
 ### 4.7. Xem trước dòng khai báo của bản nháp (BR-05a)
 
+**Triển khai lõi 2026-11-01:** FunctionSignatureDeclarations dùng registry ba formatter
+Java/Cpp/Python, tái dùng NameConventions của common. Java phát `public T name(...)`,
+C++ `T name(...)`, Python `def name(self, ...) -> T:`; không có dấu mở thân hàm Java/C++.
+Kiểu theo bảng §3.2, Java chỉ boxing phần tử LIST, ARRAY giữ primitive; tên tham số đổi theo
+ngôn ngữ và giữ thứ tự, override chỉ áp dụng tên hàm. P1 chưa có, nên khả năng dùng chung
+formatter là điểm nối đã chuẩn bị, chưa là bằng chứng đối chiếu starter thực tế.
+Handler gọi P5 và chặn hard trước khi xét soft. HTTP/JSON/Redis hoãn theo chủ dự án;
+không triển khai plugin P1/P2 với phương thức rỗng để làm preview.
+
 P6 nhận `FunctionSpecDraft` chưa lưu từ `SHR0202`, chạy đúng `FunctionSpecEvaluator` của P5, rồi dùng bộ định dạng tên/kiểu ở §2 để dựng ba dòng khai báo `JAVA`, `CPP`, `PYTHON`. Không đọc `ProblemSpecReaderPort`, không lấy mã khung hay thân hàm. Khi bản nháp thiếu chữ ký hoặc có kiểu ngoài lược đồ, trả `wrapperSupported=false` và ba dòng `null`; vi phạm cứng trả `HRN-060` kèm danh sách vi phạm. P1 và P6 dùng chung hàm định dạng khai báo, nên xem trước và mã khung sau lưu không tự lệch khi đổi luật tên hàm. Vỏ HTTP và quyền ở `api/F3_harness.md` §3.7.
 
 ## 5. Đóng gói theo định dạng adapter (BR-06)
@@ -460,6 +533,13 @@ dịch riêng, nên lỗi cú pháp lấy từ bước kiểm `py_compile` (đú
 `02-bd/architecture/F3_harness.md:263-264`).
 
 `build-java.sh` nằm cố định trong image chấm bài, không do bài nộp tạo hoặc sửa; chỉ có tên tệp nguồn cố định theo mô hình, không nội suy mã nguồn vào lệnh. Gói JAR gom cả lớp phụ do mã Java khai báo; `copyOutCached` một `classes.jar` tránh giả định trước danh sách `.class`. Với C++ cache `main`; Python không cache output từ bước `py_compile`. Các fileId chỉ dùng trên chính instance go-judge đã compile và được xoá sau khi kết thúc lượt; đối chiếu [go-judge API](https://docs.goj.ac/api) khi build image.
+
+**Triển khai/kiểm riêng D02c 2026-11-01:** script gọi bằng argv hằng
+`/bin/sh /opt/algoprep/build-java.sh Solution.java` hoặc `Main.java`, từ chối mọi tên khác.
+Dockerfile cài toolchain và mount thư mục script read-only trong sandbox; image riêng
+`algoprep-judge-toolchain:f3-20261101` đã được probe qua API thật, gồm JAR có lớp phụ và ApHRunner.
+Không đổi compose/service đang chạy; đây chưa phải F4 adapter hoặc rollout. Báo cáo
+`06-plan/reports/261101-1735-f3-toolchain-guard-nodes/report.md`.
 
 ### 5.3. `JudgePayloadAssembler`
 
@@ -502,14 +582,19 @@ vào đây hai điểm mà một phép trừ đơn lẻ không đủ (đúng c�
 
 ### 6.2. Bộ parse từng compiler (bước 1 của BD, chốt ở DD)
 
+**Triển khai/chủ dự án chốt 2026-11-01:** chỉ giữ header để tạo line/column/message của DTO;
+mọi source/caret/contextLines đều không được ghép vào response, kể cả vùng USER. Các mô tả
+giữ ngữ cảnh ở bảng lịch sử dưới đây được thay bằng quy tắc này. Parser đã có fixture thực tế,
+nhưng chưa xác minh lại trên toolchain image go-judge/gói P2 thật.
+
 Mỗi diagnostic gồm `severity`, `line` (có thể null), `column` (có thể null), `message`, `contextLines[]`.
 Một **khối chẩn đoán** bắt đầu ở dòng tiêu đề khớp regex và kéo dài tới dòng tiêu đề kế tiếp.
 
 | Compiler | Regex dòng tiêu đề (đã đặt `LC_ALL=C`) | Dòng cần bỏ |
 | :--- | :--- | :--- |
-| `javac` | `^(?<file>\S+\.java):(?<line>\d+): (?<sev>error\|warning): (?<msg>.*)$` | Hai dòng sau tiêu đề là đoạn mã và dấu mũ: **giữ** nếu `line` nằm trong vùng người học (mã của chính họ), **bỏ** nếu ngoài vùng. Dòng cuối `N error(s)` bỏ |
+| `javac` | `^(?<file>\S+\.java):(?<line>\d+): (?<sev>error\|warning): (?<msg>.*)$` | Source/caret và dòng cuối `N error(s)` luôn bỏ khỏi response (chủ dự án chốt 2026-11-01) |
 | `g++` | `^(?<file>[^:\n]+):(?<line>\d+):(?<col>\d+): (?<sev>fatal error\|error\|warning\|note): (?<msg>.*)$` | Dòng `In file included from`, `In function`, `In member function`, `In instantiation of`, `required from` bị bỏ (chứa đường dẫn và vị trí khung); `note:` đi theo khối `error:` ngay trước nó và áp quy tắc ở mục 6.4 |
-| Python (`py_compile`) | Dòng `^\s*File "(?<file>[^"]+)", line (?<line>\d+)` rồi dòng kiểu lỗi `^(?<type>\w*Error): (?<msg>.*)$` | Dòng mã nguồn và dấu mũ ở giữa: giữ hoặc bỏ theo vùng như `javac` |
+| Python (`py_compile`) | Dòng `^\s*File "(?<file>[^"]+)", line (?<line>\d+)` rồi dòng kiểu lỗi `^(?<type>\w*Error): (?<msg>.*)$` | Source/caret ở giữa luôn bỏ; chỉ giữ header lỗi đã làm sạch trong DTO |
 
 Chỉ `severity` `error` và `fatal error` đi tiếp; `warning` và `note` độc lập bị bỏ khỏi thông báo cho học viên.
 `[SoT: Suy luận]` cho định dạng, vì định dạng thật phụ thuộc phiên bản compiler trong image go-judge chưa build;
@@ -517,6 +602,12 @@ bộ parse phải được kiểm bằng mẫu đầu ra thật (mục 10.3). M�
 nó rơi vào nhóm không có vị trí (mục 6.3 bước 3).
 
 ### 6.3. Thuật toán phân loại và dựng báo cáo
+
+**Triển khai 2026-11-01:** toàn bộ tham chiếu “toàn văn rawCompilerOutput” trong mục này là bản
+đầu vào đã cắt tối đa 65.536 ký tự, log có correlationId và truncated, theo chủ dự án chốt.
+Logger lỗi không làm mất báo cáo người học; có thể mất log và không echo lỗi log. Diagnostic từ
+file khác sourceFileName bị che như HARNESS; tham chiếu dòng ngoài vùng bị thay bằng vị trí ẩn.
+Các lựa chọn phòng thủ này không phơi thêm trường DTO hoặc dữ liệu module khác.
 
 Với mỗi diagnostic mức lỗi, `L` là dòng tuyệt đối:
 
@@ -554,6 +645,21 @@ mã khung ở `FUNCTION_WRAPPER` thực ra do người học phá cấu trúc (t
 epilogue; một câu "hãy thử lại" thuần tuý khiến họ lặp lại vô ích. Câu cố định, không chứa mã khung (đề xuất D4).
 
 ### 6.4. Hành vi compiler đã biết mà phép trừ đơn lẻ không xử lý được
+
+**Điều tra AC-18 Python, chủ dự án chốt 2026-11-01:** py_compile chỉ kiểm cú pháp. Thiết kế tiếp
+theo là guard trong epilogue khi chạy sandbox: lookup callable theo tên từ đặc tả, lấy signature
+nếu introspect được và bind bộ đối số trước call. Hỗ trợ kế thừa/default/*args, không từ chối bằng
+AST cứng. Lỗi introspection không đồng nghĩa sai chữ ký; TypeError sau khi đã bind và đang chạy
+thân hàm vẫn là lỗi chạy. Annotation không phải type-check runtime. P3 đã map call-site.
+**Owner chốt/D02c 2026-11-01:** guard resource `signature-guard.py` và loader classpath đã có;
+thiếu Solution/method, target không callable hoặc bind sai phát exit 92 và đúng một dòng
+`@@APH-HARNESS-SIGNATURE-ERROR@@`. Constructor/descriptor/thân hàm lỗi vẫn RE; introspection
+TypeError/ValueError thì gọi bình thường. F4 nhận 92 + marker khi engine kết thúc nonzero ở
+Python FUNCTION_WRAPPER rồi trả COMPILE_ERROR/thông báo signatureMismatch với signatureText
+đã kiểm soát, không parse traceback qua P3. Các trạng thái TLE/MLE/engine fault không được
+ghi đè bằng marker. P2 plugin/F4 classifier chưa có, AC-18 E2E vẫn mở. Probe 16 ca guard thật
+(mỗi ca py_compile và run), mutation bỏ bind đã bị bắt. Quyết định:
+DEC-2026-1101-harness-runtime-exit-contract. Điều tra 11 ca cũ là lịch sử trước guard resource.
 
 Bảng 5: Hành vi cần phòng. Cột "Cách xử lý" là hành vi của thuật toán mục 6.3.
 
@@ -596,14 +702,14 @@ Bảng 5: Hành vi cần phòng. Cột "Cách xử lý" là hành vi của thu�
 2. Cả `actualOutput` và `expectedOutput`: đổi `\r\n` và `\r` thành `\n`; **bỏ mọi `\n` ở cuối** chuỗi.
 `[SoT: Suy luận]` bước 2: BD nói `EXACT` là "bằng nhau tuyệt đối trên chuỗi đã chuẩn hoá" (`:239-242`) nhưng không
 nói xuống dòng cuối có tính không; không bỏ thì một chương trình Standard I/O quên `\n` cuối bị chấm sai vì lý do
-vô hình với người học. Câu hỏi mở Q12: chủ dự án có muốn `EXACT` nghiêm hơn không.
+vô hình với người học. Q12 đã đóng theo bảng cuối tài liệu: giữ quy tắc chuẩn hóa này.
 
 ### 7.2. Từng chiến lược
 
 | Chiến lược | Thuật toán | Ghi chú |
 | :--- | :--- | :--- |
 | `EXACT` | `normalized(actual) == normalized(expected)` so chuỗi từng ký tự | Hai cấu trúc cùng giá trị khác hình dạng cho hai chuỗi in khác nhau nên bị coi khác nhau, đúng ý BD (`:239-242`) |
-| `TRIMMED` | Với mỗi dòng: bỏ khoảng trắng (`' '`, `\t`) hai đầu, gộp mọi dãy khoảng trắng liên tiếp bên trong thành đúng một dấu cách; giữ nguyên dòng trống ở giữa; rồi so như `EXACT`. **Nếu `returnType.kind` là `LIST` hoặc `BINARY_TREE` thì bỏ qua bước gộp và so như `EXACT`** | BD: với hai kiểu này `TRIMMED` cho kết quả tương đương `EXACT` (`:243-246`). Với `LIST<STRING>` việc không gộp còn bảo vệ khoảng trắng bên trong chuỗi |
+| `TRIMMED` | Với mỗi dòng: bỏ khoảng trắng (`' '`, `\t`) hai đầu, gộp mọi dãy khoảng trắng liên tiếp bên trong thành đúng một dấu cách; giữ nguyên dòng trống ở giữa; rồi so như `EXACT`. **Với LIST, BINARY_TREE hoặc ARRAY có of.kind = STRING, bỏ qua bước gộp và so như EXACT** | BD ghi ngoại lệ LIST/BINARY_TREE. **Chủ dự án chốt và đã triển khai 2026-11-01:** ARRAY(STRING) cũng giữ nguyên nội dung chuỗi, tránh coi `["a  b"]` bằng `["a b"]` |
 | `EPSILON` | `FUNCTION_WRAPPER` có `returnType`: parse cả hai chuỗi **theo ngữ pháp in của kiểu** (mục 3.4) thành cây lá, so hình dạng chính xác, so lá `DOUBLE` bằng `|a - e| <= epsilonValue` (**bao hàm biên**, đúng BD `:247-248`), so lá khác kiểu bằng bằng nhau chính xác. `STANDARD_IO` (không biết kiểu): xem 7.3 | Duyệt song song hai cấu trúc là điểm phức tạp nhất (`:249-252`). Giá trị không hữu hạn: `NaN` chỉ khớp `NaN`, `Infinity` chỉ khớp `Infinity` cùng dấu. Không dùng `epsilonValue` khi chiến lược khác `EPSILON` |
 | `UNORDERED_SET` | Tách `actual` và `expected` thành **đa tập các phần tử cấp cao nhất** dưới dạng chuỗi chuẩn (xem dưới), đếm số lần mỗi phần tử rồi so hai map tần suất; thứ tự không quan trọng nhưng phần tử lặp có ý nghĩa | Owner 2026-10-25 chốt `[1,1,2]` khác `[1,2]` (Q13) |
 
@@ -625,6 +731,13 @@ luận]`: BD nói ma trận so khớp dùng chung cho cả hai mô hình (`:46-4
 (`:247-252`); DD chọn thuật toán token vì Standard I/O không khai kiểu.
 
 ### 7.4. Lỗi và độ tin cậy
+
+**Triển khai 2026-11-01:** bean `MatchOutputMatcher` gọi thuật toán thuần/parser theo kiểu ở
+`harness.domain.matching`. Test component bao phủ AC-23–AC-30; bảng truy vết ở TDD F3 §3 và
+bằng chứng chạy thật ở `handoff/f3-p4-output-matching/report.md`. Chưa phải E2E với F4.
+Scanner số tuyến tính, phép trừ BigDecimal có MathContext tránh bung vùng nhớ vì khoảng số mũ;
+lỗi parser không đính dữ liệu expected vào message/cause. Giới hạn số mũ và kiểm null nội bộ
+được ghi ở api §6.2; không coi đây là hỗ trợ mọi số thập phân với số mũ tùy ý.
 
 - `expectedOutput` không parse được theo `returnType` khi `EPSILON` hoặc `UNORDERED_SET`: `HRN-050` (lỗi dữ liệu testcase,
   `judge-orchestration` không được tính thành `WA` cho học viên).
@@ -681,6 +794,13 @@ stderr của testcase Sample. Không thêm cổng `MapRuntimeError` vào F3; l�
 việc vô hiệu cache đúng cả khi chỉ `matching_strategy` hay `stdin_format_md` đổi.
 
 ## 10. Chiến lược test golden file
+
+**Triển khai helper golden 2026-11-02, D02f:** RequiredGoldenMatrixTest có đủ nhóm Bảng6,
+22 ca ×3 language;286 file tại `src/test/resources/golden/required-matrix/`, gồm specs và
+thư mục từng ngôn ngữ/ca với user/wrapper/starter/linemap. Cập nhật chỉ bằng cờ golden.update;
+gate thường so byte, checker độc lập và manifest SHA-256 ở handoff/f3-f4-debt-closeout.
+Report `06-plan/reports/261102-0850-f3-f4-debt-closeout/report.md`. Chỉ đóng snapshot helper;
+PreparedProgram P2/F2/quyền/specVersion và tầng toolchain/E2E có phạm vi bằng chứng riêng.
 
 Bắt buộc theo `01-rd/req/nfr.md:72` ("test so khớp mã sinh ra (golden file) cho cả ba ngôn ngữ"); đây là bộ test rẻ nhất và bắt
 lỗi tốt nhất của đề tài.
@@ -783,3 +903,27 @@ Câu hỏi mở (chủ dự án hoặc DD module khác quyết). Đánh số ti�
 | Q14 | **Đã chốt owner 2026-10-25:** không mở cổng lọc stack trace | F4 ẩn stderr của `FUNCTION_WRAPPER`; F3 chỉ xử lý lỗi biên dịch |
 | Q15 | **DD đóng:** `EPSILON` khi kiểu trả về không có lá `DOUBLE` | Cho qua; phép so suy biến thành bằng nhau chính xác, không có điều kiện cấm trong BD |
 | Q16 | **DD đóng:** chưa khai chữ ký (`function_name` rỗng) đặt `function_wrapper_supported = false` | Có (`validation/F3_harness.md` mục 3, ngoại lệ mềm của BD `:193-201`) |
+
+
+## Triển khai D02s — 2026-11-04: F3 starter HTTP và nhánh không cache
+
+**D02s — F3 REST starter P1, 2026-11-04:** HTTP starter/quyền hiện hành/phiên bản thật đã kiểm; nhánh F3 không cache đọc v1→v2 không chờ event và từ chối expected version cũ. 57 test liên quan đạt (13 unit mới, 18 API mới, 26 hợp đồng/wiring trực tiếp), 5/5 mutation bị bắt; Spotless/Checkstyle/SpotBugs đạt. Chỉ tập trung F3/F4, task riêng F1/F2 tạm gác. C08/cache-on giữ giới hạn đã nêu, D09/persisted E2E và FE chưa đóng. [Report](F:/prj_algoprep/06-plan/reports/261104-f3-starter-http/report.md).
+
+GET P1 theo URL language/model, response language/submissionModel/sourceCode (không specVersion).
+Identity từ JWT subject và authorities hiện hành, không tin claim role cũ/query. Published cho
+mọi authenticated, unpublished author/admin; missing/deleted/ngoài quyền cùng404 HRN-001.
+HTTP lỗi đúng §3.4, không trả raw cause/message; thiếu/lạ model là400 binding Spring, DD chưa
+quy định mã miền riêng. Giữ core RR và port đã có, không sửa F1/F2. @Lazy chỉ giữ pure core scan
+không cần lắp bootstrap, runtime ứng dụng dùng port thật.
+
+Default không local cache theo logic §9/BD database §2: đã kiểm v1→v2/matching, Redis poison,
+P2 stale expected bị HRN-002. Chưa có bằng chứng cache-on/E1 Rabbit delivery; không tick QA
+TC-F3-AC40-01–04 cho cấu hình cache bật. Không thêm no-op listener hoặc tạo cache giả.
+Sample pipeline save→starter→điền lời giải→F4 Run Code đã đạt, không thay persisted Submit E2E
+D09/AC-18 hoặc FE/browser. C08 giữ hoãn. Full regression/coverage BUNDLE để mốc clear theo owner.
+
+
+**D02t — 2026-11-04:** D09/AC-18 local persisted E2E đã đạt 9/9 ca mới (3 Accepted + 6 sai tên/arity, Java/CPP/Python), spec v2/source/DB/API/quyền thật; static gates đạt. Không sửa production code, không chạy full regression. C08/cache-on và nghiệm thu tổng F3 giữ phạm vi riêng. [Report](F:/prj_algoprep/06-plan/reports/261104-f3-persisted-acceptance/report.md).
+
+
+**D02u — 2026-11-04:** Backend F3 local đã đóng, giữ ngoại lệ C08/AC-49 HTTP/UI tiếp tục hoãn theo owner. Review đủ 50 AC với symbol/oracle và mức bằng chứng; 6/6 test Spring startup mới (AC-44) và Spotless/Checkstyle/SpotBugs đạt. 114 file lõi/resource + 2 HTTP khớp nguồn đã kiểm; không chạy lại suite cũ hoặc full regression. Cache-on conditional chưa bật; F4/FE/FINAL còn mở. [Report](F:/prj_algoprep/06-plan/reports/261104-f3-backend-closeout/report.md).

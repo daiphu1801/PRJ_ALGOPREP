@@ -101,6 +101,12 @@ export function fetchAiConfigPage(): AiConfigPage {
   return {
     modelOptions: MODEL_OPTIONS,
     prompts: PROMPTS.map((prompt) => ({ ...prompt })),
+    activeIds: {
+      review: "mock-active-review",
+      interview: "mock-active-interview",
+      testcase: "mock-active-testcase",
+    },
+    drafts: {},
     // Per feature (D5, 2026-10-10); noFullSolution is locked on (D4).
     guards: {
       review: {

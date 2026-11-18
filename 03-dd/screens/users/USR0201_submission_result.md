@@ -14,9 +14,9 @@ Bảng 0.1: Bìa tài liệu.
 | Route | A1 `/submissions/{submissionId}`; A2 `/instructor/submissions/{submissionId}?from=&studentId=&classId=` |
 | Bounded Context đứng sau | F4 `judge-orchestration`; đọc thêm F2 `problem-bank`; liên kết sang F5 `ai-review` |
 | RD nguồn | `01-rd/screens/users/USR0201_submission_result.md` |
-| BD nguồn | `02-bd/screens/users/USR0201_submission_result.md` (V0.11) |
+| BD nguồn | `02-bd/screens/users/USR0201_submission_result.md` (V0.14) |
 | Prototype | `05-coding/frontend/src/views/users/submission-result/` (toàn bộ mock, không STOMP) |
-| Phiên bản, ngày | V0.1, 2026-10-23 |
+| Phiên bản, ngày | V0.3, 2026-11-16 |
 | Tiêu chí nghiệm thu | `04-tdd/screens/users/USR0201_submission_result.md` (luồng xuyên module) cộng các `AC` module ghi ở mục 7 |
 
 Bảng 0.2: Lịch sử sửa.
@@ -24,6 +24,8 @@ Bảng 0.2: Lịch sử sửa.
 | Ver | Mục | Nội dung | Ngày |
 | :--- | :--- | :--- | :--- |
 | V0.1 | Toàn bộ | Tạo mới từ prototype đã dựng và DD F2, F4, F5. Chốt cách hợp nhất ảnh chụp REST với bản tin realtime, cách ghép dữ liệu testcase mẫu từ hai module, hành vi nối lại ở mức màn | 2026-10-23 |
+| V0.2 | Bảng 2.1, 3.1, BR-SC-07 (mới), mục 6, Bảng 7.1 (T-SR-24 đến 27), OQ-8 | Thêm dòng "đang chờ chấm" (số bài phía trước, thời gian chờ ước tính) khi bài nộp còn `PENDING` và quy tắc làm tươi 5 giây (F4-14, quyết định chủ dự án 2026-11-15). **Dự kiến, chưa có mã** | 2026-11-15 |
+| V0.3 | Bảng 1.1, bảng EVT, BR-SC-07, mục 6, OQ-8 | Đồng bộ F4-14 đã dựng và kiểm trình duyệt thật 2026-11-16: (1) sửa dòng hook ở Bảng 1.1 (hook thật là `useSubmissionProgress` ở `progress.ts:38`, không phải `use-submission-progress.ts`), thêm dòng thành phần `queue-notice.tsx`; (2) BR-SC-07 ghi vị trí dòng ở đầu trang trên breadcrumb; (3) đóng OQ-8 (không ẩn ước tính lớn; một thành phần chung `QueueNotice`, tái dùng `NoticeTile`) | 2026-11-16 |
 
 Bảng 0.3: Viết tắt nguồn trích dẫn.
 
@@ -53,8 +55,9 @@ Bảng 1.1: Slice của màn.
 | views | `views/users/submission-result/ui/submission-result-view.tsx` | Một view cho cả hai vùng, tham số `area` | Có, 626 dòng [SoT: SRV:77-543] |
 | views | `views/teacher/submission-context/` | Breadcrumb và thẻ ngữ cảnh của A2 (không thuộc màn này, chỉ được truyền vào qua render-prop) | Có |
 | entities | `entities/submission/api/queries.ts` | `useSubmissionDetail(id, area)` | Có, mock [SoT: ES api/queries.ts:29-41] |
-| entities | `entities/submission/api/use-submission-progress.ts` | Hook "đăng ký rồi chụp ảnh" cho một `submissionId`; **dùng chung với DD-PD BR-SC-05** | Chưa có |
-| entities | `entities/submission/model/progress-reducer.ts` | Hàm thuần áp bản tin theo `seq` | Chưa có |
+| entities | `entities/submission/api/progress.ts` | Hook tiến trình `useSubmissionProgress` cho một `submissionId` (đọc ảnh chụp, hẹn đọc lại 5 giây khi `PENDING`); **dùng chung với DD-PD BR-SC-05** | Có, `useSubmissionProgress` ở `05-coding/frontend/src/entities/submission/api/progress.ts:38` (sửa 2026-11-16: bản trước ghi nhầm tên file `use-submission-progress.ts`, "Chưa có") |
+| entities | `entities/submission/ui/queue-notice.tsx` | Thành phần chung `QueueNotice` của dòng hàng đợi F4-14, nhận `queue` và hàm dịch khoá; tái dùng `NoticeTile` của `shared/ui`; dùng chung với `USR0102` (OQ-8) | Có, `05-coding/frontend/src/entities/submission/ui/queue-notice.tsx:11` |
+| entities | `entities/submission/model/progress-reducer.ts` | Hàm thuần áp bản tin theo `seq` | Chưa tách thành file riêng; logic áp `seq` hiện nằm trong `05-coding/frontend/src/entities/submission/api/progress.ts:77-80,143` (kiểm 2026-11-16) |
 | entities | `entities/submission/model/types.ts` | Kiểu `SubmissionDetail`, `SubmissionTestcaseResult` | Có, cần thêm trường (Bảng 1.2) [SoT: ES model/types.ts:33-68] |
 | entities | `entities/problem/api/queries.ts` | `useSampleTestcases(problemId)` để lấy input và kết quả mong đợi của Sample | Chưa có |
 | entities | `entities/submission/model/origin.ts` | `parseSubmissionOrigin` cho `from` (A2) | Có [SoT: ES model/origin.ts:4-10] |
@@ -83,8 +86,9 @@ Bảng 2.1: Sự kiện BD, endpoint theo ID, hook, trạng thái nối. Hiện 
 | EVT-1 (A1) | F4 mục 8 `GetSubmissionDetail` | `useSubmissionDetail(id, "student")` | mock [SoT: ES api/queries.ts:29-41] |
 | EVT-1 (A2) | F4 mục 14 `GetSubmissionDetail` biến thể giảng viên | `useSubmissionDetail(id, "instructor")` | mock |
 | EVT-4 (mở rộng testcase mẫu) | F2 mục 8 `GetProblemSampleTestcases` | `useSampleTestcases(problemId)`, **gọi lười** ở lần mở rộng đầu tiên | chưa có |
-| EVT-1, EVT-9 | F4 mục 2 kênh `/user/queue/submissions` (W1) | `useSubmissionProgress` (đăng ký) | chưa có |
-| EVT-1, EVT-9 | F4 mục 9 `GET /submissions/{submissionId}/progress` | `useSubmissionProgress` (ảnh chụp, nối lại, dự phòng) | chưa có |
+| EVT-1, EVT-9 | F4 mục 2 kênh `/user/queue/submissions` (W1) | `useSubmissionProgress` (đăng ký) | có, `05-coding/frontend/src/entities/submission/api/progress.ts:125` (`subscribeJudge`, `/user/queue/submissions`); kiểm 2026-11-16 |
+| EVT-1, EVT-9 | F4 mục 9 `GET /submissions/{submissionId}/progress` | `useSubmissionProgress` (ảnh chụp, nối lại, dự phòng) | có, `05-coding/frontend/src/entities/submission/api/progress.ts:69` (`GET .../progress`); kiểm 2026-11-16 |
+| EVT-10 | F4 mục 9 `GET /submissions/{submissionId}/progress`, trường `queue` (F4-14) | `useSubmissionProgress` (hook tiến trình dùng chung, hiện ở `05-coding/frontend/src/entities/submission/api/progress.ts:38`) | đã dựng FE 2026-11-16 (`05-coding/frontend/src/entities/submission/api/progress.ts:73-76`) |
 | EVT-2, 3, 6, 7, 8 | không gọi API | `next/link` | không áp dụng |
 | EVT-5 | không gọi API (Clipboard) | state màn | không áp dụng |
 
@@ -108,6 +112,7 @@ Bảng 3.1: Trạng thái theo vùng. Khoá i18n có tiền tố `submissionResu
 | Toàn trang | Quyền bị từ chối | A2 thiếu `CLASS_MANAGEMENT:READ`: `403 JDG-301` | Thông báo theo mã, khác với không tìm thấy [SoT: F4:795] | `apiError.JDG-301` |
 | Toàn trang | Chưa đăng nhập | `401` sau khi làm mới token thất bại | Chuyển về `auth` (xử lý ở `shared/api/client.ts`) | không áp dụng |
 | Banner | Chưa cuối | `PENDING`, `COMPILING`, `JUDGING` | Nhãn trạng thái (`verdict.PENDING` ...), số đạt/tổng lấy từ tiến trình, các chỉ số `-` | `verdict.*` |
+| Banner | Chờ trong hàng đợi (F4-14) | `PENDING` và `queue` khác `null` | Dòng "Đang chờ chấm: phía trước còn N bài, ước tính khoảng M giây"; chỉ số bài khi `estimatedWaitSeconds = null`; "sắp đến lượt bạn" khi `ahead = 0`; ẩn khi rời `PENDING` hoặc `queue = null`. Vùng giảng viên không hiện | `queue.waiting`, `queue.waitingWithEstimate`, `queue.aboutToStart` (mới) |
 | Banner | `SYSTEM_ERROR` | | Nhãn "Lỗi hệ thống"; điểm `-`; không phải lỗi của học viên | `verdict.SYSTEM_ERROR` |
 | Bảng testcase | Chờ | chưa cuối và chưa có dòng nào | Ghi chú "Chưa có testcase nào chạy"; dải chờ theo `totalCount` khi đã biết | `testcaseEmpty` |
 | Bảng testcase | Hết hạn | `testcaseDetail.available = false`, `unavailableReason = RETENTION_EXPIRED` | Thay bảng bằng một câu "Chi tiết từng testcase chỉ lưu 90 ngày"; banner và mã vẫn hiện | `testcaseExpired` (mới) |
@@ -182,6 +187,17 @@ Khi `status` chưa cuối, **bỏ qua** `testcaseDetail.available = false` do F4
 - `COMPILE_ERROR`: khối lỗi hiện `compileErrorMessage` (đã ánh xạ về dòng của học viên và lọc mã khung ở máy chủ; không bao giờ hiện nguyên văn `stderr`). Màn **không** tô dòng lỗi trong trình xem vì F4 chỉ trả một chuỗi văn bản, không có số dòng có cấu trúc; BD E NO 3 đòi tô dòng [SoT: BD:397; F4:1418], xem OQ-6.
 - Bản dựng hiển thị mã bằng thẻ `<pre>`, không phải Monaco chỉ đọc [SoT: SRV:309-311, 444-446]; nợ.
 
+### BR-SC-07 Làm tươi thông tin hàng đợi khi `PENDING` (F4-14)
+
+> **Đã dựng (FE và BE) 2026-11-16, đã kiểm trình duyệt thật** (`06-plan/reports/261116-0100-f4-14-browser-check/report.md`). Dòng hiện ở **đầu trang, trên breadcrumb**, không trong banner (`05-coding/frontend/src/views/users/submission-result/ui/submission-result-view.tsx:168-174`). Nguồn: `01-rd/req/F4_judge-orchestration.md` F4-14; BD Sheet 5 Khu vực B NO 6, Sheet 8 EVT-10; hợp đồng ở `03-dd/api/F4_judge-orchestration.md` mục 9.2 (không lặp schema ở đây).
+
+- **Kích hoạt:** `area = student` và trạng thái đang biết (từ EVT-1 hoặc ảnh chụp mới nhất) là `PENDING`.
+- **Các bước:** (1) hiện dòng hàng đợi từ `queue` của ảnh chụp đầu tiên của `attach` (BR-SC-01 bước 3); (2) trong lúc còn `PENDING`, hẹn đọc lại F4 mục 9 mỗi **5 giây** và thay `queue` bằng phản hồi mới nhất (kênh STOMP không có bản tin cho `PENDING`, F4 mục 2.3); (3) bản tin `STATUS_CHANGED` đến thì đọc ngay một ảnh chụp, không chờ hết 5 giây; (4) ảnh chụp báo `status` khác `PENDING` thì **dừng hẹn giờ** và ẩn dòng, từ đó theo BR-SC-02; (5) lần đọc lỗi thì giữ dòng cũ và thử lại ở chu kỳ sau, không hiện lỗi, không tính vào 10 lần của bước mất kênh ở BR-SC-02.
+- **Văn bản:** `ahead >= 1` và có `estimatedWaitSeconds` thì "Đang chờ chấm: phía trước còn {ahead} bài, ước tính khoảng {seconds} giây"; `estimatedWaitSeconds = null` thì "Đang chờ chấm: phía trước còn {ahead} bài"; `ahead = 0` thì "Đang chờ chấm: sắp đến lượt bạn". Luôn nói "ước tính khoảng", không hứa thời gian.
+- **Truy cập:** cập nhật dòng này **không** đọc lại qua `aria-live` mỗi 5 giây (tránh ồn); chỉ thông báo một lần khi bắt đầu chờ và khi bắt đầu chấm, trong vùng `role="status"` ở mục 6 `[SoT: Suy luận]`.
+- **Hậu điều kiện:** hẹn giờ luôn bị huỷ khi rời `PENDING`, rời trang hoặc `area = instructor`; không có lần đọc nào sau khi bài nộp đã cuối.
+- **Ghi chú ponytail:** dùng lại hook tiến trình hiện có, không thêm hook mới (bậc 4); chu kỳ 5 giây là hằng số trong mã (bậc 5).
+
 ## 5. Kiểm tra phía client
 
 Màn **không có form**: không có trường nhập nào được gửi lên máy chủ. Bảng 5.1 chỉ ghi những giá trị đầu vào màn phải chuẩn hoá hoặc không được tự kiểm.
@@ -196,7 +212,7 @@ Bảng 5.1: Đầu vào của màn và ánh xạ.
 
 ## 6. i18n và truy cập
 
-**Tiền tố khoá:** `submissionResult.*` ở `messages/vi.json:1824` và `messages/en.json:1824`. Khoá cần **thêm**: `testcaseExpired`, `progress.slow`, `progress.live` (thông báo `aria-live`), `actions.needAcceptedDesc`, `code.withdrawn` (OQ-3 đã chốt), cùng `apiError.JDG-110`, `apiError.JDG-301`. Khoá `verdict.*` đã có đủ chín trạng thái. Mã verdict từng testcase (`AC`, `WA`, `TLE`, `MLE`, `RE`) hiện in mã quốc tế, chưa qua i18n; thêm `testcaseVerdict.*` (nợ nhỏ đã biết, BD:593).
+**Tiền tố khoá:** `submissionResult.*` ở `messages/vi.json:1824` và `messages/en.json:1824`. Khoá **đã thêm** (F4-14, 2026-11-16, vi và en cùng cấu trúc, đặt cạnh `submissionResult.progressSlow`, ví dụ `messages/vi.json:2304-2308`): `queue.waiting` ("Đang chờ chấm: phía trước còn {ahead} bài" / "Waiting to be judged: {ahead} submission(s) ahead of you"), `queue.waitingWithEstimate` ("Đang chờ chấm: phía trước còn {ahead} bài, ước tính khoảng {seconds} giây" / "Waiting to be judged: {ahead} submission(s) ahead, about {seconds} seconds estimated"), `queue.aboutToStart` ("Đang chờ chấm: sắp đến lượt bạn" / "Waiting to be judged: you are next"). Khoá cần **thêm** (đợt trước): `testcaseExpired`, `progress.slow`, `progress.live` (thông báo `aria-live`), `actions.needAcceptedDesc`, `code.withdrawn` (OQ-3 đã chốt), cùng `apiError.JDG-110`, `apiError.JDG-301`. Khoá `verdict.*` đã có đủ chín trạng thái. Mã verdict từng testcase (`AC`, `WA`, `TLE`, `MLE`, `RE`) hiện in mã quốc tế, chưa qua i18n; thêm `testcaseVerdict.*` (nợ nhỏ đã biết, BD:593).
 
 **Không đặt tên endpoint, mã quyền hay thuật ngữ backend vào nhãn.**
 
@@ -240,6 +256,10 @@ Bảng 7.1: Điểm kiểm thử.
 | T-SR-21 | Normal | A2: `from` lạ về `submissions`; `studentId`, `classId` sai lệch không đổi học viên và lớp hiện ra | Vitest | SR-AC-10, F4 AC-45 |
 | T-SR-22 | Normal | Luồng đầy đủ: nộp từ Workspace, mở kết quả khi còn chấm, thấy dòng lấp dần và kết quả cuối | Playwright | SR-AC-02, SR-AC-03 |
 | T-SR-23 | Normal | AI chết: trang vẫn hiển thị đủ, hai nút AI vẫn điều hướng | Vitest | SR-AC-09, F4 AC-68 |
+| T-SR-24 | Normal | `PENDING` với `queue = { ahead: 18, estimatedWaitSeconds: 9 }`: hiện dòng đủ cả hai số; `estimatedWaitSeconds = null` chỉ hiện số bài; `ahead = 0` hiện "sắp đến lượt bạn" | Vitest | SR-AC-11, F4 AC-78, AC-79 |
+| T-SR-25 | Normal | `PENDING`: đọc lại ảnh chụp mỗi 5 giây (giả đồng hồ), thay `queue`; rời `PENDING` thì huỷ hẹn giờ và ẩn dòng, không còn lần đọc nào | Vitest (giả đồng hồ) | SR-AC-11 |
+| T-SR-26 | Abnormal | Một lần đọc ảnh chụp lỗi khi `PENDING`: dòng cũ giữ nguyên, không toast lỗi, chu kỳ sau đọc lại; `queue = null` ẩn dòng | Vitest | SR-AC-11, F4 AC-80 |
+| T-SR-27 | Security | Vùng giảng viên: không hẹn giờ 5 giây, không hiện dòng hàng đợi dù bài `PENDING` | Vitest | SR-AC-11, SR-AC-10 |
 
 ## 8. Nợ prototype và câu hỏi mở
 
@@ -275,3 +295,4 @@ Bảng 8.2: Câu hỏi mở, mặc định đề xuất và bậc ponytail.
 | OQ-5 | `scoreRatio` (F4-13, RD ví dụ "0.6/1") có in riêng ngoài `{đạt}/{tổng}` không | Giữ như bản dựng: chỉ `{đạt}/{tổng}` vì `scoreRatio = đạt / tổng` (cùng thông tin) | 3 |
 | OQ-6 | Tô dòng lỗi biên dịch trong trình xem mã (BD E NO 3) | Không tô: F4 chỉ trả chuỗi, không có số dòng có cấu trúc (F4 Q23). Chỉ hiện khối lỗi | 2 |
 | OQ-7 | **Đã chốt 2026-10-24** (`DEC-2026-1024-dd-screens-users-core-contract-changes`): thư viện STOMP là `@stomp/stompjs`, một khách ở `shared/realtime` dùng chung với `USR0102` (cùng OQ-1 của `USR0102`). Mã làm sau | Đã chốt | 1 |
+| OQ-8 | ~~Dòng hàng đợi (F4-14) có ẩn khi ước tính lớn không; dùng chung một thành phần với `USR0102` hay mỗi màn tự dựng?~~ **Đã chốt 2026-11-16 (chủ dự án)** | Không ẩn (máy chủ chặn trần 3600 giây; ponytail bậc 5). Dùng **một** thành phần chung `QueueNotice` ở `05-coding/frontend/src/entities/submission/ui/queue-notice.tsx:11`, tái dùng `NoticeTile` của `shared/ui` (`05-coding/frontend/src/entities/submission/ui/queue-notice.tsx:33`); hai màn chỉ khác khoá i18n. Đã dựng | 4 |

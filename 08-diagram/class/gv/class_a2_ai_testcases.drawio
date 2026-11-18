@@ -4,47 +4,60 @@
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="t_service" value='&lt;div style="text-align:center"&gt;&lt;b&gt;AiTestcaseService&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;generateDrafts(actorId&amp;nbsp;:&amp;nbsp;UUID,&amp;nbsp;problemId&amp;nbsp;:&amp;nbsp;UUID)&amp;nbsp;:&amp;nbsp;List&amp;lt;TestcaseDraft&amp;gt;&lt;br&gt;+&amp;nbsp;requireReferencePass(problemId&amp;nbsp;:&amp;nbsp;UUID)&lt;br&gt;+&amp;nbsp;approve(actorId&amp;nbsp;:&amp;nbsp;UUID,&amp;nbsp;draftId&amp;nbsp;:&amp;nbsp;UUID)&amp;nbsp;:&amp;nbsp;Testcase' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="295.75" y="60" width="463.2" height="82" as="geometry" />
+        <mxCell id="t_tcCtrl" value='&lt;div style="text-align:center"&gt;&lt;b&gt;ProblemTestcaseController&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;update(caller&amp;nbsp;:&amp;nbsp;JwtAuthenticationToken,&amp;nbsp;problemId&amp;nbsp;:&amp;nbsp;String,&amp;nbsp;testcaseId&amp;nbsp;:&amp;nbsp;String,&amp;nbsp;body&amp;nbsp;:&amp;nbsp;JsonNode)&amp;nbsp;:&amp;nbsp;Saved' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="167.05" y="60" width="676.6999999999999" height="54" as="geometry" />
         </mxCell>
-        <mxCell id="t_port1" value='&lt;div style="text-align:center"&gt;&lt;b&gt;ReferenceSolutionPort&lt;/b&gt;&lt;br&gt;&lt;font style="font-size:9px" color="#666666"&gt;&amp;lt;&amp;lt;interface&amp;gt;&amp;gt;&lt;/font&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;verifyAll(problemId&amp;nbsp;:&amp;nbsp;UUID)&amp;nbsp;:&amp;nbsp;boolean' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#DCEBFC;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="54" y="212" width="261.9" height="68" as="geometry" />
+        <mxCell id="t_aiService" value='&lt;div style="text-align:center"&gt;&lt;b&gt;AiTestcaseService&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;generateDrafts(actorId&amp;nbsp;:&amp;nbsp;UUID,&amp;nbsp;problemId&amp;nbsp;:&amp;nbsp;UUID)&amp;nbsp;:&amp;nbsp;List&amp;lt;TestcaseDraft&amp;gt;&lt;br&gt;+&amp;nbsp;requireReferencePass(problemId&amp;nbsp;:&amp;nbsp;UUID)&lt;br&gt;+&amp;nbsp;approve(actorId&amp;nbsp;:&amp;nbsp;UUID,&amp;nbsp;draftId&amp;nbsp;:&amp;nbsp;UUID)&amp;nbsp;:&amp;nbsp;Saved' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="273.79999999999995" y="184" width="463.2" height="82" as="geometry" />
         </mxCell>
-        <mxCell id="t_port2" value='&lt;div style="text-align:center"&gt;&lt;b&gt;TestcaseGenerationPort&lt;/b&gt;&lt;br&gt;&lt;font style="font-size:9px" color="#666666"&gt;&amp;lt;&amp;lt;interface&amp;gt;&amp;gt;&lt;/font&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;generate(input&amp;nbsp;:&amp;nbsp;GenerationInput)&amp;nbsp;:&amp;nbsp;List&amp;lt;TestcaseDraft&amp;gt;' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#DCEBFC;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="365.9" y="212" width="371.7" height="68" as="geometry" />
+        <mxCell id="t_sampleRunner" value='&lt;div style="text-align:center"&gt;&lt;b&gt;SampleSolutionRunnerPort&lt;/b&gt;&lt;br&gt;&lt;font style="font-size:9px" color="#666666"&gt;&amp;lt;&amp;lt;interface&amp;gt;&amp;gt;&lt;/font&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;run(request&amp;nbsp;:&amp;nbsp;ReferenceSolutionRun.Request)&amp;nbsp;:&amp;nbsp;ReferenceSolutionRun.Result' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#DCEBFC;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="66" y="336" width="481.5" height="68" as="geometry" />
         </mxCell>
-        <mxCell id="t_port3" value='&lt;div style="text-align:center"&gt;&lt;b&gt;TestcaseRepository&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;approve(id&amp;nbsp;:&amp;nbsp;UUID)&amp;nbsp;:&amp;nbsp;Testcase' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="787.5999999999999" y="212" width="213.1" height="54" as="geometry" />
+        <mxCell id="t_tcRepo" value='&lt;div style="text-align:center"&gt;&lt;b&gt;TestcaseWriteRepository&lt;/b&gt;&lt;br&gt;&lt;font style="font-size:9px" color="#666666"&gt;&amp;lt;&amp;lt;interface&amp;gt;&amp;gt;&lt;/font&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;insert(problemId&amp;nbsp;:&amp;nbsp;UUID,&amp;nbsp;testcase&amp;nbsp;:&amp;nbsp;StoredTestcase)&lt;br&gt;+&amp;nbsp;update(testcase&amp;nbsp;:&amp;nbsp;StoredTestcase)' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#DCEBFC;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="597.5" y="336" width="347.29999999999995" height="82" as="geometry" />
         </mxCell>
-        <mxCell id="e1" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.181;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_service" target="t_port1">
+        <mxCell id="t_aiPort" value='&lt;div style="text-align:center"&gt;&lt;b&gt;AiTestcaseGeneratorPort&lt;/b&gt;&lt;br&gt;&lt;font style="font-size:9px" color="#666666"&gt;&amp;lt;&amp;lt;interface&amp;gt;&amp;gt;&lt;/font&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;generateInputs(problemStatement&amp;nbsp;:&amp;nbsp;String,&amp;nbsp;constraints&amp;nbsp;:&amp;nbsp;String)&amp;nbsp;:&amp;nbsp;List&amp;lt;String&amp;gt;' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#DCEBFC;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="249.39999999999998" y="488" width="512" height="68" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.181;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_aiService" target="t_sampleRunner">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-            <mxPoint x="379.6166666666667" y="159.5" />
-            <mxPoint x="184.95" y="159.5" />
+            <mxPoint x="357.66666666666663" y="283.5" />
+            <mxPoint x="306.75" y="283.5" />
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="e2" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.500;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_service" target="t_port2">
+        <mxCell id="e2" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.500;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_aiService" target="t_aiPort">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-            <mxPoint x="527.35" y="177" />
-            <mxPoint x="551.75" y="177" />
+            <mxPoint x="505.4" y="301" />
+            <mxPoint x="30" y="301" />
+            <mxPoint x="30" y="453" />
+            <mxPoint x="505.4" y="453" />
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="e3" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.819;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_service" target="t_port3">
+        <mxCell id="e3" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.819;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_aiService" target="t_tcRepo">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-            <mxPoint x="675.0833333333333" y="194.5" />
-            <mxPoint x="894.1499999999999" y="194.5" />
+            <mxPoint x="653.1333333333332" y="318.5" />
+            <mxPoint x="771.15" y="318.5" />
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="title" value="A2 — Sinh và duyệt testcase AI" style="text;html=1;fontSize=16;fontStyle=1;align=center;verticalAlign=middle;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="0" y="10" width="1030.6999999999998" height="30" as="geometry" />
+        <mxCell id="e4" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.500;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.509;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_tcCtrl" target="t_aiService">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+            <mxPoint x="505.4" y="149" />
+            <mxPoint x="509.4" y="149" />
+            </Array>
+          </mxGeometry>
         </mxCell>
-        <mxCell id="v4" value="Ghi chú: Testcase AI ở trạng thái nháp đến khi người có quyền duyệt; không dùng đáp án mẫu làm đầu vào AI.&lt;br&gt;Ghi chú: [SoT: Suy luận] Tên lớp/phương thức là thiết kế backend từ DD." style="text;html=1;align=left;verticalAlign=top;fontSize=12;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="30" y="300" width="1100" height="44" as="geometry" />
+        <mxCell id="title" value="A2 — Sinh va duyet testcase AI" style="text;html=1;fontSize=16;fontStyle=1;align=center;verticalAlign=middle;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="0" y="10" width="974.8" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="v5" value="Ghi chú: Bat buoc dap an mau Pass truoc khi sinh testcase AI.&lt;br&gt;Ghi chú: Testcase AI sinh o dang nhap; giang vien phai phe duyet truoc khi dua vao bo Hidden." style="text;html=1;align=left;verticalAlign=top;fontSize=12;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="30" y="576" width="1100" height="44" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>

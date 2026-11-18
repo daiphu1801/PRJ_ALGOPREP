@@ -15,12 +15,12 @@
         "role": "actor"
       },
       {
-        "name": "AssignmentController",
+        "name": "ClassAssignmentController",
         "role": "controller",
         "stereo": "presentation"
       },
       {
-        "name": "RemoveClassAssignment",
+        "name": "ClassAssignmentCommandHandler",
         "role": "service",
         "stereo": "application command"
       },
@@ -35,7 +35,7 @@
         "stereo": "output port"
       },
       {
-        "name": "ProblemDbAdapter",
+        "name": "JdbcClassAssignmentRepository",
         "role": "repository",
         "stereo": "persistence adapter"
       },
@@ -56,22 +56,22 @@
       },
       {
         "from": "Giảng viên",
-        "to": "AssignmentController",
+        "to": "ClassAssignmentController",
         "text": "Chọn bài và xác nhận gỡ khỏi lớp"
       },
       {
-        "from": "AssignmentController",
-        "to": "RemoveClassAssignment",
+        "from": "ClassAssignmentController",
+        "to": "ClassAssignmentCommandHandler",
         "text": "Yêu cầu gỡ bài khỏi lớp"
       },
       {
-        "from": "RemoveClassAssignment",
+        "from": "ClassAssignmentCommandHandler",
         "to": "InstructorClassPort",
         "text": "Kiểm lớp do giảng viên phụ trách"
       },
       {
         "from": "InstructorClassPort",
-        "to": "RemoveClassAssignment",
+        "to": "ClassAssignmentCommandHandler",
         "text": "Kết quả kiểm phạm vi",
         "kind": "return"
       },
@@ -80,48 +80,48 @@
           "label": "Lớp thuộc phạm vi phụ trách?",
           "then": [
             {
-              "from": "RemoveClassAssignment",
+              "from": "ClassAssignmentCommandHandler",
               "to": "ClassAssignmentRepository",
               "text": "Gỡ dòng giao còn hiệu lực"
             },
             {
               "from": "ClassAssignmentRepository",
-              "to": "ProblemDbAdapter",
+              "to": "JdbcClassAssignmentRepository",
               "text": "Đặt mốc gỡ nếu chưa gỡ"
             },
             {
-              "from": "ProblemDbAdapter",
+              "from": "JdbcClassAssignmentRepository",
               "to": "PostgreSQL",
               "text": "Cập nhật dòng giao đang hoạt động"
             },
             {
               "from": "PostgreSQL",
-              "to": "ProblemDbAdapter",
+              "to": "JdbcClassAssignmentRepository",
               "text": "Có hoặc không có dòng được cập nhật",
               "kind": "return"
             },
             {
-              "from": "ProblemDbAdapter",
+              "from": "JdbcClassAssignmentRepository",
               "to": "ClassAssignmentRepository",
               "text": "Kết quả cập nhật",
               "kind": "return"
             },
             {
               "from": "ClassAssignmentRepository",
-              "to": "RemoveClassAssignment",
+              "to": "ClassAssignmentCommandHandler",
               "text": "Kết quả cập nhật",
               "kind": "return"
             }
           ],
           "else": [
             {
-              "from": "RemoveClassAssignment",
-              "to": "AssignmentController",
+              "from": "ClassAssignmentCommandHandler",
+              "to": "ClassAssignmentController",
               "text": "Từ chối vì không phụ trách lớp",
               "kind": "return"
             },
             {
-              "from": "AssignmentController",
+              "from": "ClassAssignmentController",
               "to": "Giảng viên",
               "text": "Hiển thị lỗi quyền lớp",
               "kind": "return"
@@ -134,19 +134,19 @@
           "label": "Đã gỡ được dòng đang hoạt động?",
           "then": [
             {
-              "from": "RemoveClassAssignment",
+              "from": "ClassAssignmentCommandHandler",
               "to": "ProblemEventPort",
               "text": "Báo bài đã rời danh sách giao",
               "kind": "async"
             },
             {
-              "from": "RemoveClassAssignment",
-              "to": "AssignmentController",
+              "from": "ClassAssignmentCommandHandler",
+              "to": "ClassAssignmentController",
               "text": "Xác nhận đã gỡ",
               "kind": "return"
             },
             {
-              "from": "AssignmentController",
+              "from": "ClassAssignmentController",
               "to": "Giảng viên",
               "text": "Bài biến khỏi danh sách giao của lớp",
               "kind": "return"
@@ -154,13 +154,13 @@
           ],
           "else": [
             {
-              "from": "RemoveClassAssignment",
-              "to": "AssignmentController",
+              "from": "ClassAssignmentCommandHandler",
+              "to": "ClassAssignmentController",
               "text": "Báo bài đã gỡ trước đó",
               "kind": "return"
             },
             {
-              "from": "AssignmentController",
+              "from": "ClassAssignmentController",
               "to": "Giảng viên",
               "text": "Tải lại danh sách bài giao",
               "kind": "return"

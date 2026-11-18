@@ -54,13 +54,28 @@ export type PromptVersionEntry = {
   feature: AiFeatureKey;
   version: string;
   publishedAt: string;
-  author: string;
+  /** Null in real mode: the history endpoint (F5 #15) sends no author. */
+  author: string | null;
   /** Instruction as it was in that version, copied into the draft by "Khôi phục". */
   systemInstruction: string;
 };
 
+/** The server-side DRAFT row of one feature (F5 #14); guards are null for testcase generation. */
+export type PromptDraft = {
+  systemInstruction: string;
+  modelId: string;
+  guards: GuardSet | null;
+};
+
 export type AiConfigPage = {
   prompts: PromptConfig[];
+  /**
+   * Id of the ACTIVE row the screen loaded per feature: sent back as `expectedActivePromptId` on
+   * publish (F5 #17, AIR-201 when someone else published first).
+   */
+  activeIds: Record<AiFeatureKey, string>;
+  /** Unpublished drafts already stored on the server; they seed the editable copy on load. */
+  drafts: Partial<Record<AiFeatureKey, PromptDraft>>;
   /** Models the dev has approved in the backend config; ADMIN picks from these, never types one. */
   modelOptions: string[];
   guards: Record<GuardedFeature, GuardSet>;

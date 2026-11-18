@@ -20,17 +20,17 @@
         "stereo": "presentation"
       },
       {
-        "name": "UpdatePermissionMatrixCell",
+        "name": "UpdateRolePermissionCommandHandler",
         "role": "service",
         "stereo": "application command"
       },
       {
-        "name": "RbacStorePort",
+        "name": "RbacRepository",
         "role": "repository",
         "stereo": "output port"
       },
       {
-        "name": "IdentityDbAdapter",
+        "name": "JdbcRbacRepository",
         "role": "repository",
         "stereo": "persistence adapter"
       },
@@ -70,39 +70,39 @@
       },
       {
         "from": "RbacController",
-        "to": "UpdatePermissionMatrixCell",
+        "to": "UpdateRolePermissionCommandHandler",
         "text": "Đổi quyền của vai trò"
       },
       {
-        "from": "UpdatePermissionMatrixCell",
-        "to": "RbacStorePort",
+        "from": "UpdateRolePermissionCommandHandler",
+        "to": "RbacRepository",
         "text": "Khóa vai trò và đọc quyền hiện hành"
       },
       {
-        "from": "RbacStorePort",
-        "to": "IdentityDbAdapter",
+        "from": "RbacRepository",
+        "to": "JdbcRbacRepository",
         "text": "Đọc vai trò, ô quyền và phiên bản"
       },
       {
-        "from": "IdentityDbAdapter",
+        "from": "JdbcRbacRepository",
         "to": "PostgreSQL",
         "text": "Khóa dòng vai trò, đọc ô quyền"
       },
       {
         "from": "PostgreSQL",
-        "to": "IdentityDbAdapter",
+        "to": "JdbcRbacRepository",
         "text": "Giá trị hiện tại và phiên bản",
         "kind": "return"
       },
       {
-        "from": "IdentityDbAdapter",
-        "to": "RbacStorePort",
+        "from": "JdbcRbacRepository",
+        "to": "RbacRepository",
         "text": "Giá trị hiện tại và phiên bản",
         "kind": "return"
       },
       {
-        "from": "RbacStorePort",
-        "to": "UpdatePermissionMatrixCell",
+        "from": "RbacRepository",
+        "to": "UpdateRolePermissionCommandHandler",
         "text": "Giá trị hiện tại và phiên bản",
         "kind": "return"
       },
@@ -111,7 +111,7 @@
           "label": "Mất quyền quản trị cuối?",
           "then": [
             {
-              "from": "UpdatePermissionMatrixCell",
+              "from": "UpdateRolePermissionCommandHandler",
               "to": "RbacController",
               "text": "Từ chối vì sẽ mất quyền quản trị",
               "kind": "return"
@@ -125,33 +125,33 @@
           ],
           "else": [
             {
-              "from": "UpdatePermissionMatrixCell",
-              "to": "RbacStorePort",
+              "from": "UpdateRolePermissionCommandHandler",
+              "to": "RbacRepository",
               "text": "Lưu ô quyền và tăng phiên bản"
             },
             {
-              "from": "RbacStorePort",
-              "to": "IdentityDbAdapter",
+              "from": "RbacRepository",
+              "to": "JdbcRbacRepository",
               "text": "Ghi quyền và phiên bản cùng giao dịch"
             },
             {
-              "from": "IdentityDbAdapter",
+              "from": "JdbcRbacRepository",
               "to": "PostgreSQL",
               "text": "Cập nhật quyền và phiên bản quyền"
             },
             {
-              "from": "UpdatePermissionMatrixCell",
+              "from": "UpdateRolePermissionCommandHandler",
               "to": "AuditLogPort",
               "text": "Ghi nhật ký cùng giao dịch"
             },
             {
               "from": "AuditLogPort",
-              "to": "UpdatePermissionMatrixCell",
+              "to": "UpdateRolePermissionCommandHandler",
               "text": "Nhật ký đã ghi",
               "kind": "return"
             },
             {
-              "from": "UpdatePermissionMatrixCell",
+              "from": "UpdateRolePermissionCommandHandler",
               "to": "PermissionCachePort",
               "text": "Phát thông báo phiên bản mới sau commit",
               "kind": "async"
@@ -169,7 +169,7 @@
               "kind": "async"
             },
             {
-              "from": "UpdatePermissionMatrixCell",
+              "from": "UpdateRolePermissionCommandHandler",
               "to": "RbacController",
               "text": "Trả ô quyền mới",
               "kind": "return"

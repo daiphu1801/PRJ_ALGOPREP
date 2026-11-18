@@ -35,7 +35,9 @@ export function InProgressList({
 
   if (shown.length === 0) {
     return (
-      <p className="text-[12.5px] text-[var(--color-text-muted)]">{emptyText}</p>
+      <p className="text-[12.5px] text-[var(--color-text-muted)]">
+        {emptyText}
+      </p>
     );
   }
 
@@ -69,11 +71,13 @@ export function InProgressList({
                 }`}
               >
                 {td(`language.${item.language}`)} ·{" "}
-                {tl("inProgress.lastVerdict", {
-                  verdict: td(`verdict.${item.lastVerdict}`),
-                  passed: item.passedCount,
-                  total: item.totalCount,
-                })}
+                {item.passedCount === null || item.totalCount === null
+                  ? td(`verdict.${item.lastVerdict}`)
+                  : tl("inProgress.lastVerdict", {
+                      verdict: td(`verdict.${item.lastVerdict}`),
+                      passed: item.passedCount,
+                      total: item.totalCount,
+                    })}
               </p>
             </Link>
           </li>

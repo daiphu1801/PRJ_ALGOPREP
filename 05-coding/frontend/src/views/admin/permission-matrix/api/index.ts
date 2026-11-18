@@ -11,4 +11,5 @@ export {
   type Role,
   type RolePermissions,
 } from "../model/types";
+export { usePermissionActions } from "./mutations";
 export { usePermissionMatrixPage } from "./queries";

@@ -44,6 +44,24 @@ Các tiêu chí dưới đây kiểm hành vi màn hình và phối hợp giữa
 | **Kết quả mong đợi** | Màn hỏi cách xử lý thay đổi; chỉ rời khi phần phải lưu đã thành công. Nếu đổi email còn chờ xác minh, người học ở lại để hoàn tất hoặc hủy bản nháp. |
 | **Nguồn** | [SoT: 03-dd/screens/users/USR0502_profile.md] mục 3, 7 |
 
+### PF-AC-05 — Đổi ảnh đại diện có xem trước rồi lưu
+
+| Mục | Nội dung |
+| :--- | :--- |
+| **Tiền đề** | Người học đã đăng nhập ở màn Hồ sơ, có một ảnh PNG hợp lệ và một tệp SVG. |
+| **Hành động** | Chọn ảnh PNG, xem bản xem trước, bấm Huỷ; chọn lại, bấm Lưu ảnh. Chọn tệp SVG. Giả lập máy chủ từ chối một lần Lưu. |
+| **Kết quả mong đợi** | Chọn ảnh chỉ hiện bản xem trước, chưa gửi gì; Huỷ trả về ảnh hiện tại; Lưu thì ảnh mới hiện ở khối danh tính và thanh đầu trang, có thông báo thành công. Tệp SVG bị báo lỗi và không vào xem trước. Khi máy chủ từ chối, bản xem trước còn nguyên để thử lại hoặc huỷ, ảnh cũ chưa đổi. |
+| **Nguồn** | [SoT: 03-dd/screens/users/USR0502_profile.md] mục 3, 4 (BR-SC-07), 7 |
+
+### PF-AC-06 — Xoá ảnh và chữ viết tắt thay thế
+
+| Mục | Nội dung |
+| :--- | :--- |
+| **Tiền đề** | Người học đang có ảnh; một người dùng khác không có ảnh; một lần tải ảnh bị lỗi. |
+| **Hành động** | Bấm Xoá ảnh rồi huỷ, rồi xác nhận. Mở màn của người không có ảnh. Gây lỗi tải ảnh. Đăng xuất và đăng nhập tài khoản khác. |
+| **Kết quả mong đợi** | Huỷ hộp xác nhận giữ nguyên ảnh; xác nhận thì mọi nơi hiện chữ viết tắt. Người không có ảnh luôn thấy chữ viết tắt mà không có thông báo lỗi; tải ảnh lỗi cũng rơi về chữ viết tắt, không toast. Tài khoản khác không thấy ảnh của phiên trước. |
+| **Nguồn** | [SoT: 03-dd/screens/users/USR0502_profile.md] mục 3, 4 (BR-SC-07), 7 |
+
 ## 3. Truy vết
 
 | AC | Luồng DD | Test case | Trạng thái |
@@ -52,4 +70,6 @@ Các tiêu chí dưới đây kiểm hành vi màn hình và phối hợp giữa
 | PF-AC-02 | Mục 3, 7; điểm kiểm DD: T-PF-04–07 | [TC-USR0502-PFAC02-01](../../testcases/screens/users/USR0502_profile.md) | Chưa thực hiện |
 | PF-AC-03 | Mục 3, 7; điểm kiểm DD: T-PF-08–15, T-PF-20 | [TC-USR0502-PFAC03-01](../../testcases/screens/users/USR0502_profile.md) | Chưa thực hiện |
 | PF-AC-04 | Mục 3, 7; điểm kiểm DD: T-PF-16–17 | [TC-USR0502-PFAC04-01](../../testcases/screens/users/USR0502_profile.md) | Chưa thực hiện |
+| PF-AC-05 | Mục 3, 4, 7; điểm kiểm DD: T-PF-21–25, T-PF-30; F1 AC-93, AC-96, AC-100, AC-101 | `avatar-editor.test.tsx` (T-PF-21 đến 25), `real-avatar.test.ts` | Đạt ở Vitest (2026-11-17); chưa có Playwright (T-PF-30) |
+| PF-AC-06 | Mục 3, 4, 7; điểm kiểm DD: T-PF-26–28, T-PF-30; F1 AC-97, AC-98 | `avatar-editor.test.tsx` (T-PF-26, 28), `user-avatar.test.tsx` (T-PF-27, 28) | Đạt ở Vitest (2026-11-17); chưa có Playwright (T-PF-30) |
 

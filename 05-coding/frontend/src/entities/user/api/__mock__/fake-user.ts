@@ -23,6 +23,7 @@ let profile: UserProfile = {
   schoolOrCompany: "Đại học Cần Thơ",
   currentPosition: "Sinh viên năm 4",
   targetPosition: "Middle Backend",
+  phone: null,
   hasPassword: true,
   passwordChangedAt: "2026-06-12",
   linkedProviders: ["GOOGLE"],
@@ -86,6 +87,7 @@ export function fakeUpdateMyProfile(
     schoolOrCompany: input.schoolOrCompany || null,
     currentPosition: input.currentPosition || null,
     targetPosition: input.targetPosition || null,
+    phone: input.phone || null,
   };
   return delay(profile, 600);
 }
@@ -113,7 +115,9 @@ export function fakeConfirmEmailChange(
 
 export function fakeChangeMyPassword(
   input: ChangePasswordInput,
-): Promise<{ ok: true } | { ok: false; message: string }> {
+): Promise<
+  { ok: true; noticeEmailFailed?: boolean } | { ok: false; message: string }
+> {
   if (profile.hasPassword && input.currentPassword !== "correct-password") {
     // Prototype convention: "correct-password" is the one value that passes the current-password
     // check, matching entities/auth's canned-credential approach (no real hashing to compare against).
@@ -175,9 +179,40 @@ export function fakeDeleteMyAccount(
 ): Promise<{ ok: true } | { ok: false; message: string }> {
   // Same rule as the client: trim + case-insensitive (D38).
   if (
-    emailConfirmation.trim().toLowerCase() !== profile.email.trim().toLowerCase()
+    emailConfirmation.trim().toLowerCase() !==
+    profile.email.trim().toLowerCase()
   ) {
     return delay({ ok: false, message: "errors.confirmPhraseMismatch" }, 400);
   }
   return delay({ ok: true }, 600);
+}
+
+// Avatar mock (F1 #74 to #77): the picture lives in memory so the real flow can be seen in mock mode.
+let mockAvatarBlob: Blob | null = null;
+
+export async function fakeUploadMyAvatar(
+  blob: Blob,
+): Promise<{ avatarVersion: number }> {
+  mockAvatarBlob = blob;
+  const avatarVersion = Math.max(Date.now(), (profile.avatarVersion ?? 0) + 1);
+  profile = { ...profile, avatarVersion };
+  return delay({ avatarVersion }, 400);
+}
+
+export function fakeRemoveMyAvatar(): Promise<void> {
+  mockAvatarBlob = null;
+  profile = { ...profile, avatarVersion: null };
+  return delay(undefined, 300);
+}
+
+export function fakeRemoveUserAvatar(): Promise<void> {
+  return delay(undefined, 300);
+}
+
+/** Only the signed-in mock user can have a picture; anyone else rejects like the real 404. */
+export function fakeGetUserAvatar(userId: string): Promise<Blob> {
+  if (userId === profile.userId && mockAvatarBlob) {
+    return Promise.resolve(mockAvatarBlob);
+  }
+  return Promise.reject(new Error("no avatar"));
 }

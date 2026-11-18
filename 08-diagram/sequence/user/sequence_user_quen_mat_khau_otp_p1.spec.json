@@ -14,22 +14,22 @@
         "role": "actor"
       },
       {
-        "name": "AuthController",
+        "name": "PasswordResetController",
         "role": "controller",
         "stereo": "presentation"
       },
       {
-        "name": "ForgotPasswordCmd",
+        "name": "ForgotPasswordCommandHandler",
         "role": "service",
         "stereo": "application command"
       },
       {
-        "name": "UserRepo",
+        "name": "UserAccountRepository",
         "role": "repository",
         "stereo": "domain output port"
       },
       {
-        "name": "IdentityDbAdapter",
+        "name": "JdbcUserAccountRepository",
         "role": "repository",
         "stereo": "infrastructure"
       },
@@ -45,44 +45,44 @@
       },
       {
         "from": "Sinh viên",
-        "to": "AuthController",
+        "to": "PasswordResetController",
         "text": "Yêu cầu lấy lại mật khẩu"
       },
       {
-        "from": "AuthController",
-        "to": "ForgotPasswordCmd",
+        "from": "PasswordResetController",
+        "to": "ForgotPasswordCommandHandler",
         "text": "Kiểm tra email và tìm tài khoản"
       },
       {
-        "from": "ForgotPasswordCmd",
-        "to": "UserRepo",
+        "from": "ForgotPasswordCommandHandler",
+        "to": "UserAccountRepository",
         "text": "Tìm tài khoản theo email"
       },
       {
-        "from": "UserRepo",
-        "to": "IdentityDbAdapter",
+        "from": "UserAccountRepository",
+        "to": "JdbcUserAccountRepository",
         "text": "Chuyển yêu cầu đọc"
       },
       {
-        "from": "IdentityDbAdapter",
+        "from": "JdbcUserAccountRepository",
         "to": "PostgreSQL",
         "text": "Đọc tài khoản và trạng thái"
       },
       {
         "from": "PostgreSQL",
-        "to": "IdentityDbAdapter",
+        "to": "JdbcUserAccountRepository",
         "text": "Có tài khoản hoặc không",
         "kind": "return"
       },
       {
-        "from": "IdentityDbAdapter",
-        "to": "UserRepo",
+        "from": "JdbcUserAccountRepository",
+        "to": "UserAccountRepository",
         "text": "Kết quả tra cứu",
         "kind": "return"
       },
       {
-        "from": "UserRepo",
-        "to": "ForgotPasswordCmd",
+        "from": "UserAccountRepository",
+        "to": "ForgotPasswordCommandHandler",
         "text": "Loại tài khoản và mã người dùng",
         "kind": "return"
       },
@@ -91,15 +91,15 @@
           "label": "Tìm thấy tài khoản?",
           "then": [
             {
-              "from": "ForgotPasswordCmd",
-              "to": "ForgotPasswordCmd",
-            "text": "Xác định cách tài khoản đăng nhập"
+              "from": "ForgotPasswordCommandHandler",
+              "to": "ForgotPasswordCommandHandler",
+              "text": "Xác định cách tài khoản đăng nhập"
             }
           ],
           "else": [
             {
-              "from": "ForgotPasswordCmd",
-              "to": "ForgotPasswordCmd",
+              "from": "ForgotPasswordCommandHandler",
+              "to": "ForgotPasswordCommandHandler",
               "text": "Giữ phản hồi chung, không phát mã"
             }
           ]

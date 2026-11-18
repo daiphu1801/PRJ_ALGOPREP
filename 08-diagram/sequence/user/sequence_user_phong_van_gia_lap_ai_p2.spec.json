@@ -17,22 +17,22 @@
         "role": "actor"
       },
       {
-        "name": "InterviewController",
+        "name": "InterviewTurnController",
         "role": "controller",
         "stereo": "presentation SSE"
       },
       {
-        "name": "InterviewTurnCmd",
+        "name": "SendInterviewTurnCommandHandler",
         "role": "service",
         "stereo": "application command"
       },
       {
-        "name": "InterviewRepo",
+        "name": "InterviewSessionRepository",
         "role": "repository",
         "stereo": "output port F5"
       },
       {
-        "name": "AiDbAdapter",
+        "name": "JdbcInterviewSessionRepository",
         "role": "repository",
         "stereo": "persistence adapter"
       },
@@ -42,12 +42,12 @@
         "stereo": "schema ai"
       },
       {
-        "name": "ChatMemoryPort",
+        "name": "InterviewChatMemoryPort",
         "role": "repository",
         "stereo": "output port"
       },
       {
-        "name": "RedisChatAdapter",
+        "name": "RedisInterviewChatMemoryAdapter",
         "role": "repository",
         "stereo": "infrastructure"
       },
@@ -63,82 +63,82 @@
       },
       {
         "from": "Sinh viên",
-        "to": "InterviewController",
+        "to": "InterviewTurnController",
         "text": "Gửi câu trả lời của phiên"
       },
       {
-        "from": "InterviewController",
-        "to": "InterviewTurnCmd",
+        "from": "InterviewTurnController",
+        "to": "SendInterviewTurnCommandHandler",
         "text": "Kiểm lượt và chủ phiên"
       },
       {
-        "from": "InterviewTurnCmd",
-        "to": "InterviewRepo",
+        "from": "SendInterviewTurnCommandHandler",
+        "to": "InterviewSessionRepository",
         "text": "Đọc phiên và lượt mới nhất"
       },
       {
-        "from": "InterviewRepo",
-        "to": "AiDbAdapter",
+        "from": "InterviewSessionRepository",
+        "to": "JdbcInterviewSessionRepository",
         "text": "Tra trạng thái và lịch sử"
       },
       {
-        "from": "AiDbAdapter",
+        "from": "JdbcInterviewSessionRepository",
         "to": "PostgreSQL",
         "text": "Đọc phiên và số lượt đã hoàn tất"
       },
       {
         "from": "PostgreSQL",
-        "to": "AiDbAdapter",
+        "to": "JdbcInterviewSessionRepository",
         "text": "Trạng thái và lịch sử",
         "kind": "return"
       },
       {
-        "from": "AiDbAdapter",
-        "to": "InterviewRepo",
+        "from": "JdbcInterviewSessionRepository",
+        "to": "InterviewSessionRepository",
         "text": "Kết quả tra cứu",
         "kind": "return"
       },
       {
-        "from": "InterviewRepo",
-        "to": "InterviewTurnCmd",
+        "from": "InterviewSessionRepository",
+        "to": "SendInterviewTurnCommandHandler",
         "text": "Phiên đang mở hoặc từ chối",
         "kind": "return"
       },
       {
-        "from": "InterviewTurnCmd",
-        "to": "InterviewTurnCmd",
+        "from": "SendInterviewTurnCommandHandler",
+        "to": "SendInterviewTurnCommandHandler",
         "text": "Giữ một lượt, kiểm số lượt mong đợi"
       },
       {
-        "from": "InterviewTurnCmd",
-        "to": "ChatMemoryPort",
+        "from": "SendInterviewTurnCommandHandler",
+        "to": "InterviewChatMemoryPort",
         "text": "Lấy ngữ cảnh hội thoại"
       },
       {
-        "from": "ChatMemoryPort",
-        "to": "RedisChatAdapter",
+        "from": "InterviewChatMemoryPort",
+        "to": "RedisInterviewChatMemoryAdapter",
         "text": "Tra bộ nhớ tạm"
       },
       {
-        "from": "RedisChatAdapter",
+        "from": "RedisInterviewChatMemoryAdapter",
         "to": "Redis",
         "text": "Đọc hội thoại của phiên"
       },
       {
         "from": "Redis",
-        "to": "RedisChatAdapter",
+        "to": "RedisInterviewChatMemoryAdapter",
         "text": "Ngữ cảnh hoặc bị thiếu",
         "kind": "return"
       },
       {
-        "from": "RedisChatAdapter",
-        "to": "ChatMemoryPort",
+        "from": "RedisInterviewChatMemoryAdapter",
+        "to": "InterviewChatMemoryPort",
         "text": "Kết quả tra cứu",
         "kind": "return"
       },
       {
-        "from": "ChatMemoryPort",
-        "to": "InterviewTurnCmd",
+        "from": "InterviewChatMemoryPort",
+        "to": "SendInterviewTurnCommandHandler",
         "text": "Ngữ cảnh hoặc cần dựng lại",
         "kind": "return"
       },
@@ -147,56 +147,56 @@
           "label": "Thiếu bộ nhớ tạm?",
           "then": [
             {
-              "from": "InterviewTurnCmd",
-              "to": "InterviewRepo",
+              "from": "SendInterviewTurnCommandHandler",
+              "to": "InterviewSessionRepository",
               "text": "Dựng lại từ lịch sử đã lưu"
             },
             {
-              "from": "InterviewRepo",
-              "to": "InterviewTurnCmd",
+              "from": "InterviewSessionRepository",
+              "to": "SendInterviewTurnCommandHandler",
               "text": "Hội thoại đầy đủ",
               "kind": "return"
             }
           ],
           "else": [
             {
-              "from": "InterviewTurnCmd",
-              "to": "InterviewTurnCmd",
+              "from": "SendInterviewTurnCommandHandler",
+              "to": "SendInterviewTurnCommandHandler",
               "text": "Dùng ngữ cảnh đang có"
             }
           ]
         }
       },
       {
-        "from": "InterviewTurnCmd",
-        "to": "InterviewRepo",
+        "from": "SendInterviewTurnCommandHandler",
+        "to": "InterviewSessionRepository",
         "text": "Lưu câu trả lời người học"
       },
       {
-        "from": "InterviewRepo",
-        "to": "AiDbAdapter",
+        "from": "InterviewSessionRepository",
+        "to": "JdbcInterviewSessionRepository",
         "text": "Ghi hoặc sửa lượt đang chờ"
       },
       {
-        "from": "AiDbAdapter",
+        "from": "JdbcInterviewSessionRepository",
         "to": "PostgreSQL",
         "text": "Ghi câu trả lời trước khi mở luồng"
       },
       {
         "from": "PostgreSQL",
-        "to": "AiDbAdapter",
+        "to": "JdbcInterviewSessionRepository",
         "text": "Đã lưu câu trả lời",
         "kind": "return"
       },
       {
-        "from": "AiDbAdapter",
-        "to": "InterviewRepo",
+        "from": "JdbcInterviewSessionRepository",
+        "to": "InterviewSessionRepository",
         "text": "Đã nhận lượt",
         "kind": "return"
       },
       {
-        "from": "InterviewRepo",
-        "to": "InterviewTurnCmd",
+        "from": "InterviewSessionRepository",
+        "to": "SendInterviewTurnCommandHandler",
         "text": "Sẵn sàng phát luồng ở trang 2b",
         "kind": "return"
       }

@@ -39,7 +39,7 @@ import {
   newlyDisabled,
   validateLanguageConfig,
 } from "../model/validation";
-import { useLocale, useT } from "@/shared/i18n";
+import { useApiErrorMessage, useLocale, useT } from "@/shared/i18n";
 import { useUnsavedChangesGuard } from "@/shared/lib";
 import { toast } from "@/shared/lib/toast-store";
 import {
@@ -84,6 +84,7 @@ export function AdminLanguageConfigView() {
 }
 
 function LanguageConfigForm({ initial }: { initial: LanguageConfigPage }) {
+  const errorMessage = useApiErrorMessage();
   const t = useT("adminLanguageConfig");
   const tCommon = useT("common");
   const locale = useLocale();
@@ -140,13 +141,15 @@ function LanguageConfigForm({ initial }: { initial: LanguageConfigPage }) {
   /** The success toast sits inside the try, after the await: a failed save must not report success. */
   async function commit(): Promise<boolean> {
     try {
-      await saveConfig.mutateAsync(draft);
-      setSaved(draft);
+      const response = await saveConfig.mutateAsync(draft);
+      const persisted = response ?? draft;
+      setSaved(persisted);
+      setDraft(persisted);
       setAttempted(false);
       toast.success(t("saveDone"));
       return true;
-    } catch {
-      toast.error(t("saveFailed"));
+    } catch (error) {
+      toast.error(errorMessage(error));
       return false;
     }
   }

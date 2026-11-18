@@ -29,6 +29,7 @@ export function createLevelListStore<Tone extends string>(
 
   return {
     use: store.use,
+    get: store.get,
     add: (label: string): ManagedListError | null =>
       store.add(label, { tone: newTone }),
     rename: (key: string, label: string) => store.update(key, { label }),

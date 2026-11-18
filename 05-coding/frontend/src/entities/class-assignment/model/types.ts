@@ -36,6 +36,8 @@ export type AssignedProblem = z.infer<typeof assignedProblemSchema>;
 export const assignmentSummarySchema = z.object({
   assignedCount: z.number(),
   classCount: z.number(),
+  /** Real data only; null = no submission yet or statistics unavailable. */
+  avgAcRate: z.number().nullable().optional(),
 });
 export type AssignmentSummary = z.infer<typeof assignmentSummarySchema>;
 
@@ -44,3 +46,26 @@ export type AssignableProblem = Pick<
   AssignedProblem,
   "id" | "title" | "topic" | "difficulty"
 >;
+
+/** What a batch assign did, per problem (DD #52): new, already given, or refused with a PRB code. */
+export type AssignResult = {
+  succeeded: string[];
+  skipped: string[];
+  failed: { id: string; code: string }[];
+};
+
+/**
+ * A row of the paged list. Real data can leave the two figures unknown (`null`: the statistics source
+ * did not answer, shown as "-"); the mock list, which always knows them, is assignable to this.
+ */
+export type AssignedRow = Omit<
+  AssignedProblem,
+  "submissionCount" | "acRate"
+> & { submissionCount: number | null; acRate: number | null };
+
+/** A row of the "Bài tập của tôi" block of INS0101 (DD F2 #54): problem and its submissions in my classes. */
+export type TopAssignedProblem = {
+  id: string;
+  title: string;
+  submissionCount: number;
+};

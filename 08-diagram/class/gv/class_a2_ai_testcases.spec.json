@@ -1,7 +1,7 @@
 {
-  "_": "Nguồn tiêu chí: 01-rd/req/user_stories/a2_instructor.md:74; 01-rd/req/user_stories/a2_instructor.md:78; 01-rd/req/user_stories/a2_instructor.md:80. Nguồn thiết kế: 03-dd/logic/F2_problem-bank.md; 03-dd/api/F2_problem-bank.md. [SoT: Suy luận] Tên lớp và chữ ký phương thức là thiết kế đề xuất từ hợp đồng DD vì backend nghiệp vụ chưa hiện thực đầy đủ. Mỗi phương thức ở lớp điều phối nối với đúng một tiêu chí theo thứ tự trong bảng truy vết; không hàm ý một endpoint riêng cho mỗi tiêu chí. Bỏ DTO HTTP, getter/setter, nhánh lỗi chi tiết.",
+  "_": "Nguon tieu chi: 01-rd/req/user_stories/a2_instructor.md:74-80. Nguon ma nguon: 05-coding/backend/algoprep-problem-bank/src/main/java/com/algoprep/problembank/application/ports/out/SampleSolutionRunnerPort.java, presentation/controller/ProblemTestcaseController.java. [SoT: Suy luan] AiTestcaseService la thiet ke de xuat theo DD F2.",
   "kind": "class",
-  "title": "A2 — Sinh và duyệt testcase AI",
+  "title": "A2 — Sinh va duyet testcase AI",
   "covers": [
     "F2-14"
   ],
@@ -9,60 +9,73 @@
     "legend": "shared",
     "classes": [
       {
-        "id": "service",
+        "id": "tcCtrl",
+        "name": "ProblemTestcaseController",
+        "methods": [
+          "+ update(caller : JwtAuthenticationToken, problemId : String, testcaseId : String, body : JsonNode) : Saved"
+        ]
+      },
+      {
+        "id": "aiService",
         "name": "AiTestcaseService",
         "methods": [
           "+ generateDrafts(actorId : UUID, problemId : UUID) : List<TestcaseDraft>",
           "+ requireReferencePass(problemId : UUID)",
-          "+ approve(actorId : UUID, draftId : UUID) : Testcase"
+          "+ approve(actorId : UUID, draftId : UUID) : Saved"
         ]
       },
       {
-        "id": "port1",
-        "name": "ReferenceSolutionPort",
+        "id": "sampleRunner",
+        "name": "SampleSolutionRunnerPort",
         "kind": "interface",
         "methods": [
-          "+ verifyAll(problemId : UUID) : boolean"
+          "+ run(request : ReferenceSolutionRun.Request) : ReferenceSolutionRun.Result"
         ]
       },
       {
-        "id": "port2",
-        "name": "TestcaseGenerationPort",
+        "id": "tcRepo",
+        "name": "TestcaseWriteRepository",
         "kind": "interface",
         "methods": [
-          "+ generate(input : GenerationInput) : List<TestcaseDraft>"
+          "+ insert(problemId : UUID, testcase : StoredTestcase)",
+          "+ update(testcase : StoredTestcase)"
         ]
       },
       {
-        "id": "port3",
-        "name": "TestcaseRepository",
-        "kind": "class",
+        "id": "aiPort",
+        "name": "AiTestcaseGeneratorPort",
+        "kind": "interface",
         "methods": [
-          "+ approve(id : UUID) : Testcase"
+          "+ generateInputs(problemStatement : String, constraints : String) : List<String>"
         ]
       }
     ],
     "externals": [],
     "relations": [
       {
-        "from": "service",
-        "to": "port1",
+        "from": "aiService",
+        "to": "sampleRunner",
         "kind": "dependency"
       },
       {
-        "from": "service",
-        "to": "port2",
+        "from": "aiService",
+        "to": "aiPort",
         "kind": "dependency"
       },
       {
-        "from": "service",
-        "to": "port3",
+        "from": "aiService",
+        "to": "tcRepo",
+        "kind": "dependency"
+      },
+      {
+        "from": "tcCtrl",
+        "to": "aiService",
         "kind": "dependency"
       }
     ],
     "notes": [
-      "Testcase AI ở trạng thái nháp đến khi người có quyền duyệt; không dùng đáp án mẫu làm đầu vào AI.",
-      "[SoT: Suy luận] Tên lớp/phương thức là thiết kế backend từ DD."
+      "Bat buoc dap an mau Pass truoc khi sinh testcase AI.",
+      "Testcase AI sinh o dang nhap; giang vien phai phe duyet truoc khi dua vao bo Hidden."
     ]
   }
 }

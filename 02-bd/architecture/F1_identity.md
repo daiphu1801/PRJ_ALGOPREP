@@ -1,5 +1,10 @@
 # BD — Kiến trúc module `identity` (F1)
 
+**D1, 2026-11-02:** thêm inbound `RecordSystemAuditUseCase`, REQUIRED cùng giao dịch caller;
+caller tự khai outbound port/DTO, bridge tại bootstrap. Không import chéo module nghiệp vụ
+hoặc ghi trực tiếp schema identity từ F2. Owner chốt
+`DEC-2026-1102-cross-module-audit-required`; không đổi handler F1 cũ.
+
 > Trạng thái: **BD lần đầu**, 2026-09-12. Module đầu tiên theo thứ tự
 > `06-plan/260912-1055-bd-rollout-order.md`.
 
@@ -16,6 +21,33 @@ Hạ tầng phụ thuộc: PostgreSQL + Redis (blacklist refresh-token, rate lim
 [SoT: `.nexa/control/dependency-map.md` mục 2]. **Không dùng MinIO** — `identity` không lưu file lớn,
 nên `02-bd/storage/F1_identity.md` không được tạo (skill `bd-generation` Layer 3: "không phải module nào
 cũng cần cả 4 file, xác nhận theo RD, không viết file rỗng").
+
+### 1.1. Quy ước gom nhóm package theo tính năng
+
+Các thư mục phẳng trong `algoprep-identity` quá nhiều file (hiện `application/ports/in` có 83, `domain/model` có 67, `application/command` có 62, `application/query` có 44, `application/dto` có 42) nên được gom thành package con theo tính năng (Bảng 1.1). Việc gom chỉ là di chuyển file, không đổi logic và không đổi ranh giới module Maven. Bảng ánh xạ cũ sang mới của từng class: `06-plan/reports/p6-moves-identity.tsv`.
+
+Bảng 1.1: Nhóm tính năng dùng để chia package trong `algoprep-identity` (tên nhóm giống nhau ở mọi tầng; ô trống nghĩa là nhóm không có class ở tầng đó).
+
+| Nhóm | Nội dung | `ports.in` | `command` | `query` | `dto` | `domain.model` |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| `auth` | Đăng nhập, làm mới phiên, đăng xuất, OAuth, dọn refresh token | `LoginUseCase`, `RefreshSessionUseCase` | `LoginCommandHandler`, `SessionIssuer` | | `LoginResult`, `IssuedAccessToken` | `StoredRefreshToken`, `OAuthProfile` |
+| `registration` | Đăng ký, xác minh email, gửi lại mã, dọn tài khoản chờ | `RegisterUseCase`, `VerifyEmailUseCase` | `RegisterCommandHandler`, `EmailVerificationService` | | `RegisterCommand`, `RegistrationResponse` | `RegistrationAccount` |
+| `password` | Quên mật khẩu, OTP, đặt lại và đổi mật khẩu | `ForgotPasswordUseCase`, `ChangeMyPasswordUseCase` | `ResetPasswordCommandHandler`, `PasswordResetService` | | `ResetPasswordCommand`, `ChangeMyPasswordCommand` | `PasswordPolicy`, `PasswordResetChallenge` |
+| `account` | Hồ sơ, cài đặt, đổi email, xóa và khôi phục tài khoản, xuất dữ liệu cá nhân | `GetMyProfileUseCase`, `DeleteMyAccountUseCase` | `UpdateMyProfileCommandHandler`, `EmailChangeService` | `GetMyProfileQueryHandler`, `ExportMySubmissionsQueryHandler` | `PersonalDataExport`, `PendingEmailChange` | `MyProfile`, `RestorationTicket` |
+| `progress` | Tiến độ cá nhân, lịch hoạt động, trạng thái giải bài, nhận sự kiện chấm | `GetMyProgressSummaryUseCase`, `ApplySubmissionAcceptedUseCase` | `ApplySubmissionAcceptedCommandHandler`, `ApplyMockInterviewFinishedCommandHandler` | `GetMyProgressSummaryQueryHandler` | | `SolveState`, `ProgressCounters` |
+| `classes` | Lớp học, mã mời, danh sách lớp, số liệu lớp cho giảng viên và học viên | `CreateClassUseCase`, `GetClassProgressUseCase` | `CreateClassCommandHandler`, `ClassInviteCodeIssuer` | `ListMyClassesQueryHandler`, `ClassMetricsAssembler` | `CreateClassCommand`, `CreatedClass` | `ClassRef`, `ClassInviteCode` |
+| `rbac` | Vai trò, ma trận quyền | `GetPermissionMatrixUseCase`, `CreateRoleUseCase` | `UpdateRolePermissionCommandHandler`, `RbacNotFound` | `GetPermissionMatrixQueryHandler` | `UpdateRolePermissionCommand`, `CreateRoleCommand` | `PermissionMatrix`, `RbacRole` |
+| `audit` | Nhật ký hệ thống: tìm, xuất, stream, thời hạn lưu, dọn | `SearchSystemAuditLogsUseCase`, `RecordSystemAuditUseCase` | `PurgeExpiredAuditLogsCommandHandler`, `RecordSystemAuditCommandHandler` | `AuditLogMasker`, `SearchSystemAuditLogsQueryHandler` | `AuditLogItem`, `SearchAuditLogsQuery` | `AuditEntry`, `AuditCategory` |
+| `admin` | Quản trị người dùng, dashboard quản trị, tạo admin đầu tiên | `ChangeUserRoleUseCase`, `ListUsersUseCase` | `ChangeUserStatusCommandHandler`, `AdminReductionGuard` | `ListUsersQueryHandler`, `GetAdminDashboardQueryHandler` | `ListUsersQuery`, `CreateUserAccountCommand` | `AdminUserItem`, `StatSummary` |
+| `outbox` | Relay và dọn outbox sự kiện của identity | `RelayIdentityOutboxUseCase`, `CleanIdentityOutboxUseCase` | `RelayIdentityOutboxCommandHandler` | | | `OutboxEvent` |
+
+Quy tắc áp dụng:
+
+- Chỉ thư mục có hơn khoảng 30 file mới được gom: `application/ports/in`, `application/command`, `application/query`, `application/dto`, `domain/model`. Các thư mục nhỏ hoặc có ranh giới riêng (`application/ports/out`, `domain/ports`, `domain/exception`, `infrastructure/**`) giữ phẳng.
+- Cùng một tên nhóm dùng ở mọi tầng, để cổng vào `application.ports.in.auth` khớp handler `application.command.auth` và model `domain.model.auth`.
+- Kiểu dùng chung nhiều nhóm ở lại package cha của tầng và là `public` ở đó: `application/command` gồm `AccountRestorationService`, `RbacAuditJson`, `RegistrationValidation`; `application/dto` gồm `UserSummary`; `domain/model` gồm `BaseCategory`, `UserAccount`, `UserStatus`.
+- `presentation/controller` giữ phẳng: các test của controller trộn nhiều nhóm nên không ép controller vào một nhóm.
+- Không giữ file `package-info.java` trong module này.
 
 ## 2. Phạm vi nghiệp vụ module này bao trùm
 
@@ -67,7 +99,7 @@ BD chỉ chốt **có kênh event, không có import trực tiếp**.
 | `StudentRemovedFromClass { classId, studentId, occurredAt }` | Giảng viên gỡ học viên khỏi lớp (F1-26), BR-11 | Không module nào phải xử lý dữ liệu (`DEC-2026-1014-keep-learning-history-on-leave`) | Chỉ `class_enrollments.left_at` đổi |
 | `ClassDeleted { classId, occurredAt }` | Giảng viên xoá cứng lớp (F1-24), BR-22 | `problem-bank` đặt `removed_at = now()` cho các dòng `class_assignments` của lớp | `class_invite_codes`, `class_enrollments` đi theo bằng CASCADE; `identity_recent_activity.scope_class_id` về NULL bằng SET NULL (`02-bd/database/F1_identity.md` mục 1.8, 1.12) |
 
-`ClassDeleted` thuộc `DEC-2026-1022-db-sync-round4` mục 3 (tiêu chí ponytail bậc 6: không để tham chiếu treo sau xoá cứng). Phát sau khi giao dịch xoá commit; cơ chế phát đi theo BR-22 (cùng kiểu `StudentRemovedFromClass`, chưa có outbox riêng cho `identity`).
+`ClassDeleted` thuộc `DEC-2026-1022-db-sync-round4` mục 3. Cập nhật 2026-11-11: ghi `identity.outbox_events` cùng giao dịch xóa lớp, relay sau commit, publisher confirm không có mandatory return mới đánh dấu đã phát. F2 queue `problem-bank.class-deleted` nhận `class.deleted` từ `algoprep.identity.events`. `StudentRemovedFromClass` vẫn best-effort BR-11, hiện không có consumer (`DEC-2026-1110-class-deleted-durable-outbox`).
 
 ### 3.2. Cung cấp outbound cho module khác gọi vào (bị gọi, không phải identity gọi ra)
 
@@ -79,7 +111,7 @@ JWT ở các module khác dùng thư viện/filter đọc claim từ Access Toke
 
 Các module khác (`problem-bank`, `interview-bank`, `judge-orchestration`) có thao tác quản trị cần ghi nhật ký F1-14 nhưng **không được ghi trực tiếp vào schema `identity`**. `identity` cung cấp một cổng vào (inbound port) tên `AuditLogPort` trong `algoprep-identity`:
 
-`record(actorUserId, actionType, targetType, targetId, beforeJson, afterJson)` → một dòng `identity.system_audit_logs`.
+`record(AuditEntry)` → một dòng `identity.system_audit_logs`; `AuditEntry` gom sáu trường `actorUserId, actionType, targetType, targetId, beforeJson, afterJson` (sửa 2026-10-31, `DEC-2026-1031-audit-log-port-entry-record`: trước đây ghi sáu tham số rời, Checkstyle giới hạn năm).
 
 | Nơi gọi | Thao tác quản trị cần ghi |
 | :--- | :--- |
@@ -156,3 +188,12 @@ nguyên, không cần đổi. Xem `07-review/bd_open_questions_260913.md` mục 
 - `.nexa/control/decision-registry.md` — `DEC-2026-0820-architecture-baseline`,
   `DEC-2026-0831-partial-score-testcase-ratio` (ảnh hưởng F1-06/F1-07).
 - `06-plan/260912-1055-bd-rollout-order.md` — thứ tự triển khai BD.
+- `06-plan/reports/p6-moves-identity.tsv` — bảng ánh xạ package cũ sang mới sau khi gom nhóm (mục 1.1).
+
+## 9. Lịch sử sửa đổi
+
+Bảng 9.1: Lịch sử sửa đổi tài liệu (bản đầu 2026-09-12 ghi ở đầu file; bảng này bắt đầu ghi từ lần sửa 2026-11-15).
+
+| Ngày | Nội dung thay đổi | Căn cứ |
+| :--- | :--- | :--- |
+| 2026-11-15 | Thêm mục 1.1: quy ước gom nhóm package theo tính năng (mười nhóm), class `public` dùng chung ở lại package cha, bỏ `package-info.java`; cập nhật đường dẫn gói sau khi gom thư mục con | Phase 6, `06-plan/reports/p6-moves-identity.tsv` |

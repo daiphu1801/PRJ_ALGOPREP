@@ -2,6 +2,7 @@
 "use client";
 
 import { useT } from "@/shared/i18n";
+import { useApiErrorMessage } from "@/shared/i18n/use-api-error-message";
 import { toast } from "@/shared/lib/toast-store";
 import { Button, Card, TextField } from "@/shared/ui";
 import type { UserProfile } from "@/entities/user";
@@ -16,6 +17,7 @@ export function PersonalInfoCard({
   onProfileSaved: (next: UserProfile) => void;
 }) {
   const t = useT("profile");
+  const apiMessage = useApiErrorMessage();
   const {
     fields,
     fieldErrors,
@@ -32,7 +34,10 @@ export function PersonalInfoCard({
   async function handleSave() {
     const result = await save();
     if (result.ok) toast.success(t("form.savedToast"));
-    else toast.error(t(result.errorKey));
+    else
+      toast.error(
+        "error" in result ? apiMessage(result.error) : t(result.errorKey),
+      );
   }
 
   return (
@@ -84,6 +89,15 @@ export function PersonalInfoCard({
           invalid={Boolean(fieldErrors.targetPosition)}
           disabled={isSaving}
           maxLength={100}
+        />
+        <TextField
+          label={t("form.phone")}
+          type="tel"
+          value={fields.phone}
+          onChange={(e) => update("phone", e.target.value)}
+          invalid={Boolean(fieldErrors.phone)}
+          disabled={isSaving}
+          maxLength={20}
         />
 
         <div className="col-span-full flex flex-wrap items-center gap-3 border-t border-[var(--color-border)] pt-4">

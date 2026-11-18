@@ -15,22 +15,22 @@
         "role": "actor"
       },
       {
-        "name": "UserAdminController",
+        "name": "AdminUserActionController",
         "role": "controller",
         "stereo": "presentation"
       },
       {
-        "name": "ChangeUserStatus",
+        "name": "ChangeUserStatusCommandHandler",
         "role": "service",
         "stereo": "application command"
       },
       {
-        "name": "UserAdminStorePort",
+        "name": "AccountLifecycleRepository",
         "role": "repository",
         "stereo": "output port"
       },
       {
-        "name": "IdentityDbAdapter",
+        "name": "JdbcUserAccountRepository",
         "role": "repository",
         "stereo": "persistence adapter"
       },
@@ -51,49 +51,49 @@
       },
       {
         "from": "Quản trị viên",
-        "to": "UserAdminController",
+        "to": "AdminUserActionController",
         "text": "Chọn tài khoản, nhập lý do và xác nhận khóa"
       },
       {
-        "from": "UserAdminController",
-        "to": "UserAdminController",
+        "from": "AdminUserActionController",
+        "to": "AdminUserActionController",
         "text": "Kiểm lý do và quyền quản trị tài khoản"
       },
       {
-        "from": "UserAdminController",
-        "to": "ChangeUserStatus",
+        "from": "AdminUserActionController",
+        "to": "ChangeUserStatusCommandHandler",
         "text": "Khóa một tài khoản"
       },
       {
-        "from": "ChangeUserStatus",
-        "to": "UserAdminStorePort",
+        "from": "ChangeUserStatusCommandHandler",
+        "to": "AccountLifecycleRepository",
         "text": "Khóa dòng quản trị viên đang hoạt động và đọc tài khoản đích"
       },
       {
-        "from": "UserAdminStorePort",
-        "to": "IdentityDbAdapter",
+        "from": "AccountLifecycleRepository",
+        "to": "JdbcUserAccountRepository",
         "text": "Đọc tài khoản và tập quản trị viên"
       },
       {
-        "from": "IdentityDbAdapter",
+        "from": "JdbcUserAccountRepository",
         "to": "PostgreSQL",
         "text": "Khóa dòng quản trị viên, đọc trạng thái người dùng"
       },
       {
         "from": "PostgreSQL",
-        "to": "IdentityDbAdapter",
+        "to": "JdbcUserAccountRepository",
         "text": "Trạng thái và số quản trị viên",
         "kind": "return"
       },
       {
-        "from": "IdentityDbAdapter",
-        "to": "UserAdminStorePort",
+        "from": "JdbcUserAccountRepository",
+        "to": "AccountLifecycleRepository",
         "text": "Trạng thái và số quản trị viên",
         "kind": "return"
       },
       {
-        "from": "UserAdminStorePort",
-        "to": "ChangeUserStatus",
+        "from": "AccountLifecycleRepository",
+        "to": "ChangeUserStatusCommandHandler",
         "text": "Trạng thái và số quản trị viên",
         "kind": "return"
       },
@@ -102,13 +102,13 @@
           "label": "Khóa sẽ làm mất quản trị viên hoạt động cuối?",
           "then": [
             {
-              "from": "ChangeUserStatus",
-              "to": "UserAdminController",
+              "from": "ChangeUserStatusCommandHandler",
+              "to": "AdminUserActionController",
               "text": "Từ chối khóa quản trị viên cuối",
               "kind": "return"
             },
             {
-              "from": "UserAdminController",
+              "from": "AdminUserActionController",
               "to": "Quản trị viên",
               "text": "Hiển thị lỗi bảo vệ hệ thống",
               "kind": "return"
@@ -116,44 +116,44 @@
           ],
           "else": [
             {
-              "from": "ChangeUserStatus",
-              "to": "ChangeUserStatus",
+              "from": "ChangeUserStatusCommandHandler",
+              "to": "ChangeUserStatusCommandHandler",
               "text": "Tự khóa thì kiểm xác nhận ảnh hưởng"
             },
             {
-              "from": "ChangeUserStatus",
-              "to": "UserAdminStorePort",
+              "from": "ChangeUserStatusCommandHandler",
+              "to": "AccountLifecycleRepository",
               "text": "Đặt trạng thái bị khóa và thu hồi phiên"
             },
             {
-              "from": "UserAdminStorePort",
-              "to": "IdentityDbAdapter",
+              "from": "AccountLifecycleRepository",
+              "to": "JdbcUserAccountRepository",
               "text": "Ghi trạng thái, nguồn khóa và thu hồi phiên"
             },
             {
-              "from": "IdentityDbAdapter",
+              "from": "JdbcUserAccountRepository",
               "to": "PostgreSQL",
               "text": "Cập nhật người dùng và phiên làm mới"
             },
             {
-              "from": "ChangeUserStatus",
+              "from": "ChangeUserStatusCommandHandler",
               "to": "AuditLogPort",
               "text": "Ghi người thao tác, đích và lý do cùng giao dịch"
             },
             {
               "from": "AuditLogPort",
-              "to": "ChangeUserStatus",
+              "to": "ChangeUserStatusCommandHandler",
               "text": "Nhật ký đã ghi",
               "kind": "return"
             },
             {
-              "from": "ChangeUserStatus",
-              "to": "UserAdminController",
+              "from": "ChangeUserStatusCommandHandler",
+              "to": "AdminUserActionController",
               "text": "Trả kết quả khóa",
               "kind": "return"
             },
             {
-              "from": "UserAdminController",
+              "from": "AdminUserActionController",
               "to": "Quản trị viên",
               "text": "Hiển thị tài khoản bị khóa",
               "kind": "return"

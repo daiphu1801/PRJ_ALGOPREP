@@ -70,3 +70,31 @@ Baseline 2026-10-29: `DEC-2026-1029-f2-migration-readiness`; không còn câu h�
 - Không bắt buộc cache nội dung MinIO ở baseline; thêm sau khi đo tải, không phát sinh bảng DB.
 - Snapshot chứa byte input/output thật và bất biến theo version; không phụ thuộc object testcase hiện hành có thể bị sửa/xóa. Giữ snapshot cũ và so nội dung bộ chấm khi tái xuất bản theo DD BR-08/BR-11.
 - Dọn object mồ côi không chạy bằng migration; quy tắc retention snapshot theo §1.15 BD database. Object upload hết hạn chưa confirm được giữ theo giới hạn vận hành DD hiện hành, không tự thêm job/bảng mới.
+
+## 6. Định dạng snapshot bất biến v1 — owner chốt 2026-11-02
+
+Quyết định `DEC-2026-1102-testcase-snapshot-json-v1`: object là JSON UTF-8, không ZIP.
+Root đúng4 trường: `formatVersion:1`, `problemId` (UUID), `testcaseSetVersion` (số nguyên dương),
+`testcases` (mảng không rỗng). Mỗi ca đúng5 trường: `testcaseId` (UUID duy nhất trong bundle),
+`visibility` (`SAMPLE`/`HIDDEN`), `position` (nguyên dương), `inputBase64`, `expectedOutputBase64`.
+Hai vế dùng base64 chuẩn để giữ byte nguyên vẹn, kể cả rỗng/CRLF/non-UTF8; không trim hoặc decode
+về text trong cổng đọc. Writer sắp position rồi testcaseId; position có thể trùng theo schema DB.
+
+`content_sha256` là SHA-256 trên chính bytes JSON được ghi, kiểm trước khi parse/trả nội dung.
+Reader kiểm format/ID bài/phiên bản/số ca so metadata; từ chối duplicate key, duplicate testcaseId,
+trailing JSON, sai kiểu hoặc field ngoài định dạng. Không giữ nguyên nhân parser/SDK có thể chứa
+Hidden/object key. Metadata trỏ object chính xác; reader không suy ra key mới hoặc đọc current cases
+thay cho phiên bản đã ghim. Encoder/decoder và lõi writer D02h đã có; full publish/testcase-mutation
+callers với quyền/checklist/sandbox/audit/HTTP vẫn là lát sau.
+
+MinIO adapter giữ mã PRB-052 và detail cũ, thêm phân loại nội bộ objectMissing cho NoSuchKey/
+NoSuchObject/NotFound; lỗi kết nối, AccessDenied hoặc NoSuchBucket là hạ tầng. snapshotReady chỉ
+kiểm metadata và HEAD object >0; checksum/cấu trúc được kiểm khi loadTestcaseSnapshot. Không cache
+nội dung, không cấp presigned URL hoặc đưa bundle vào HTTP/RabbitMQ. Report `261102-2340-f2-f4-grading-readers`.
+
+**Writer D02h, 2026-11-03:** key mới dạng `problems/<id>/snapshots/<version>/<uuid>.json`
+(`[SoT: Suy luận triển khai]` UUID riêng tránh đè orphan khi retry cùng version; IdGeneratorPort
+cam kết ID mới). Writer chỉ INSERT metadata, không UPDATE/DELETE metadata hay object lịch sử.
+HEAD phải khớp độ dài, GET đọc lại phải qua codec/checksum trước khi INSERT. Metadata/version/
+Outbox rollback cùng caller; object chưa tham chiếu có thể còn sau rollback theo §4/BD database.
+Retry sinh key mới. Chưa dọn orphan/job hoặc relay RabbitMQ. Report `261103-0011-f2-snapshot-publication-core`.

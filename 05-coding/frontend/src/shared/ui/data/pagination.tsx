@@ -65,12 +65,12 @@ export function Pagination({
     <nav
       aria-label={summary}
       className={cn(
-        "flex items-center justify-between gap-3 pt-3 text-[13px]",
+        "flex flex-wrap items-center justify-between gap-3 pt-3 text-[13px]",
         className,
       )}
     >
       <span className="text-[var(--color-text-muted)]">{summary}</span>
-      <span className="flex items-center gap-1.5">
+      <span className="flex flex-wrap items-center gap-1.5">
         {pageSizeOptions && onPageSizeChange ? (
           // Same glass pop-up as the list filters; opens upward because this bar sits at the card's foot.
           <FilterMenu

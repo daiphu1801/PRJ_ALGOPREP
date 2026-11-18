@@ -48,11 +48,11 @@
 | Route (prototype Next.js) | `/instructor/classes/[classId]` |
 | Trục tài liệu | Màn hình (`02-bd/screens/`) |
 | Actor | A2 (`INSTRUCTOR`) |
-| Phiên bản | V0.10 |
+| Phiên bản | V0.14 |
 | Người tạo | Nhóm phát triển AlgoPrep |
 | Ngày tạo | 2026/10/11 |
 | Người cập nhật | Nhóm phát triển AlgoPrep |
-| Ngày cập nhật | 2026/10/18 |
+| Ngày cập nhật | 2026/11/18 |
 
 ---
 
@@ -70,6 +70,10 @@
 | V0.8 | Sheet 3 (ghi chú `from=class`) | Áp `DEC-2026-1014-instructor-submissions-list-details` mục (5): trang kết quả vùng giảng viên biết màn gọi tới qua query `from=submissions|student|class`. Trang này hiện chưa có liên kết trực tiếp tới một lượt nộp nên chỉ thêm ghi chú: nếu sau này có, phải mở kèm `from=class`. Không thêm hay đổi NO, EVT | 2026/10/14 | AI |
 | V0.9 | Sheet 4 (thêm mục "Hiện trạng bản dựng") | Dựng prototype gỡ học viên (giữ lịch sử, đánh dấu đã rời): ghi hiện trạng bản dựng của nút gỡ ở bảng học viên trong lớp và của mock `removeStudent`. Không đổi yêu cầu, item, EVT hay quyết định thiết kế. **Chưa duyệt hình** | 2026/10/14 | AI |
 | V0.10 | Sheet 4 (4.6) | Dựng prototype Phase 4-5 (bài giao theo lớp, phân trang 20, from=). Ghi hiện trạng: màn này chỉ vào từ "Lớp của tôi" (sau khi tạo lớp hoặc từ danh sách lớp) nên giữ mục nav đó sáng bằng khớp tiền tố, không cần mã riêng; liên kết tên học viên ở đây không mang `from=`, nên trang chi tiết học viên cũng sáng "Lớp của tôi". Nút Quay lại về danh sách lớp (Q2) đã dựng. Không đổi yêu cầu hay quyết định thiết kế. **Chưa duyệt hình** | 2026/10/18 | AI |
+| V0.11 | Sheet 4 (4.6), 5 | Sửa 2026-11-02 (task #12, nối FE với API thật). (1) Màn gọi F1 #19, #21 đến #24, #26, #27, ba vùng tải độc lập. (2) Bảng học viên hiện email, số điện thoại, ngày vào lớp; cột trạng thái, điểm TB, hoàn thành, hoạt động chỉ có ở mock vì cần F4. Không có câu hỏi mở mới. |
+| V0.12 | Sheet 4 (4.6), 5 | Sửa 2026-11-07 (F1-7, nối FE). Danh sách học viên của lớp (F1 #26) nay kèm nhãn trạng thái, điểm TB, hoàn thành, lần nộp gần nhất khi máy chủ đọc được số liệu F4; khi không đọc được, danh sách vẫn trả đủ học viên nhưng không có bốn cột đó [SoT: Suy luận]. Lớp chưa giao bài hiện hoàn thành "-". Chưa duyệt hình. |
+| V0.13 | Sheet 4 (4.6), Câu hỏi mở | Ghi 2026-11-07 (kiểm trình duyệt thật, phát hiện F5, **owner chốt phương án A cùng ngày**). Khi có số liệu F4 bảng học viên hiện điểm TB, hoàn thành, hoạt động và không còn email, số điện thoại, ngày vào lớp (V0.11 ghi bảng hiện ba cột liên hệ này). **Đã xử lý:** bảng luôn hiện ba cột liên hệ (email, số điện thoại, vào lớp), số liệu F4 (trạng thái, điểm TB, hoàn thành, hoạt động gần nhất) nối tiếp khi máy chủ đọc được. Không còn câu hỏi mở. Ca `classes-real.spec.ts:113` xanh. |
+| V0.14 | Sheet 5 (danh sách học viên NO 2), 6, 7 (7.1, 7.2, 7.3) | Sửa 2026-11-18 (F1-35, `DEC-2026-1117-user-avatar-upload`, chưa duyệt hình). Cột "Học viên" của bảng nay hiện ảnh đại diện thật của học viên (hoặc chữ viết tắt khi chưa có ảnh hoặc ảnh lỗi), đọc từ `avatarVersion` của F1 #26. Đồng bộ số phiên bản ở Sheet 1 (đang ghi V0.11 trong khi lịch sử đã tới V0.13). | 2026/11/18 | Claude |
 
 ---
 
@@ -335,6 +339,7 @@ Bảng 4.6 ghi những gì bản dựng Next.js đang làm ở trang chi tiết 
 | Hành vi gỡ (mock) | `removeStudent` chỉ đặt `leftAt` cho học viên, **không xoá dòng**; giảm `studentCount` của lớp, và giảm `absentCount` nếu học viên đang ở trạng thái vắng | [Nguồn: 05-coding/frontend/src/entities/class/api/__mock__/class-mocks.ts:351-364], [Nguồn: 05-coding/frontend/src/entities/class/model/types.ts:64] |
 | Bảng học viên sau khi gỡ | `listClassStudents` chỉ trả học viên đang ở lớp (hàm `activeStudents` loại dòng có `leftAt`), nên học viên đã gỡ biến mất khỏi bảng | [Nguồn: 05-coding/frontend/src/entities/class/api/__mock__/class-mocks.ts:272-280] |
 | Kiểm thử mock | `class-mocks.test.ts` có ca gọi `removeStudent` (kể cả gọi lặp) | [Nguồn: 05-coding/frontend/src/entities/class/api/__mock__/class-mocks.test.ts:19,41-42] |
+| Ảnh đại diện học viên (V0.14) | Cột "Học viên" hiện `UserAvatar` cỡ nhỏ trước tên, dữ liệu `avatarVersion` của từng dòng (F1 #26); không có ảnh hoặc ảnh lỗi thì chữ viết tắt. Chưa duyệt hình | [Nguồn: 05-coding/frontend/src/views/teacher/class-detail/ui/class-detail-view.tsx:170-175], [Nguồn: 05-coding/frontend/src/entities/class/api/real-class.ts:162,176] |
 | Nút Quay lại (Q2) | `IconAction` mũi tên với `href="/instructor/classes"`, về danh sách lớp kể cả khi vào ngay sau khi tạo lớp (`INS0201` chuyển sang trang này bằng `router.push`). Chưa duyệt hình | [Nguồn: 05-coding/frontend/src/views/teacher/class-detail/ui/class-detail-view.tsx:72-77], [Nguồn: 05-coding/frontend/src/views/teacher/class-management/ui/class-management-view.tsx:237] |
 | Mục nav sáng (Q3) | Không cần mã riêng: `/instructor/classes/{id}` khớp tiền tố mục "Lớp của tôi" và `instructorActiveHrefOverride` không xử lý route này. Liên kết tên học viên ở bảng không mang `from=`, nên trang chi tiết học viên tiếp tục sáng "Lớp của tôi". Chưa duyệt hình | [Nguồn: 05-coding/frontend/src/widgets/app-shell/ui/instructor-sidebar.tsx:52-64], [Nguồn: 05-coding/frontend/src/views/teacher/class-detail/ui/class-detail-view.tsx:105] |
 
@@ -402,7 +407,7 @@ Khi thu gọn (danh sách lớp ở `INS0201`) cả năm phần ghép thành m�
 | :--- | --: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :-: | :-: | :--- | :--- | :--- |
 | Học viên của lớp | | | | | | | | | | | | | |
 | | 1 | Bảng học viên | `classDetail.studentList.table` | `identity.class_enrollments` | - | List | List | - | - | O | rỗng | - | Học viên của **đúng lớp này**, không có tab lọc lớp<br>[Nguồn giá trị] `ListClassStudents` với `classId`<br>[EVT liên quan] EVT-1 |
-| | 2 | Học viên | `classDetail.studentList.col.studentName` | `identity.users` | `display_name` | Link | String | 100 | - | O | - | - | Bấm sang `INS0204`. Cột chữ cái đầu và tên như `INS0201` Sheet 5 Khu vực D NO 4<br>[EVT liên quan] EVT-7 |
+| | 2 | Học viên (ảnh đại diện hoặc chữ viết tắt, kèm tên) | `classDetail.studentList.col.studentName` | `identity.users`; `identity.user_avatars` | `display_name`; `updated_at` | Link | String | 100 | - | O | Chữ viết tắt | Ảnh tròn nhỏ hoặc hai ký tự in hoa, rồi tên | Bấm sang `INS0204`. Mỗi dòng có ảnh đại diện của học viên; chưa có ảnh hoặc ảnh tải lỗi thì hiện chữ viết tắt, không hiện biểu tượng ảnh hỏng (F1-35 mục 2)<br>[Nguồn giá trị] Tên: `display_name`. Có ảnh khi `ClassStudentRowDto.avatarVersion` (F1 #26) khác rỗng, ảnh tải qua `GetUserAvatar` [Nguồn: 03-dd/api/F1_identity.md mục 0.9.5]<br>[Công thức] Chữ viết tắt: ghép ký tự đầu của hai từ cuối trong `display_name`, viết hoa<br>[EVT liên quan] EVT-7<br>[Hiện trạng bản dựng] Đã dựng 2026-11-17, chưa duyệt hình (`05-coding/frontend/src/views/teacher/class-detail/ui/class-detail-view.tsx:170-175`)
 | | 3 | Trạng thái | `classDetail.studentList.col.status` | - | - | Badge | Enum | - | - | O | - | Nhãn kèm chấm màu | Năm nhãn dùng chung cụm lớp. Công thức: `INS0201` Sheet 5 Khu vực D NO 8<br>[EVT liên quan] - |
 | | 4 | Điểm TB | `classDetail.studentList.col.avgScore` | `judge.submissions` | `status`, `problem_id`, `user_id` | ListColumn | Number | 4 | - | O | - | Một chữ số thập phân | Công thức: `INS0201` Sheet 5 Khu vực D NO 6. Chưa có lượt nộp thì `-`<br>[EVT liên quan] - |
 | | 5 | Hoàn thành | `classDetail.studentList.col.completion` | - | - | ListColumn | Number | 3 | - | O | - | `{số}%` | Công thức: `INS0201` Sheet 5 Khu vực D NO 7<br>[EVT liên quan] - |
@@ -434,6 +439,7 @@ Chỉ ghi chỗ **khác** `INS0201`; điều kiện còn lại giống `INS0201`
 | Thẻ Mã mời | 2 | Sao chép mã | Điều kiện | Mã đã quá `expires_at` hiển thị nhãn "Hết hạn" và không cho sao chép. |
 | Thẻ Mã mời | 3 | Tạo mã mới | Điều kiện | Chỉ hiển thị khi có `CLASS_MANAGEMENT:CREATE`; không kích hoạt khi đang gửi yêu cầu. |
 | Bảng học viên | 1 | Bảng học viên | Có | Trong lúc tải hiển thị khung chờ; không có học viên thì "Lớp này chưa có học viên nào — chia sẻ mã mời để học viên tham gia". |
+| Bảng học viên | 2 | Học viên (ảnh đại diện hoặc chữ viết tắt) | Có | Ảnh tải lỗi hoặc `avatarVersion` rỗng thì hiện chữ viết tắt; việc tải ảnh của một dòng không chặn các dòng và cột khác. |
 | Bảng học viên | 6 | Gỡ khỏi lớp | Điều kiện | Luôn hiện ở cuối dòng, không phụ thuộc rê chuột; chỉ ẩn khi thiếu `CLASS_MANAGEMENT:DELETE`; không kích hoạt khi đang có popup mở. |
 
 ---
@@ -443,12 +449,14 @@ Chỉ ghi chỗ **khác** `INS0201`; điều kiện còn lại giống `INS0201`
 ### 7.1 Trường DTO
 
 Dùng lại nguyên các DTO của `INS0201` Sheet 7.1 (`ClassCardDto`, `ClassScheduleDto`, `ClassInviteCodeDto`,
-`ClassStudentRowDto`, `ClassFormDto`). Điểm khác duy nhất: `ClassCardDto.description` (String, cột `description`)
+`ClassStudentRowDto`, `ClassFormDto`). Điểm khác: `ClassStudentRowDto.avatarVersion` (V0.14, xem bên dưới) và `ClassCardDto.description` (String, cột `description`)
 đã thêm để hiển thị mô tả ở đầu trang (Q1 đóng): màn dùng lại `ListInstructorClasses` lọc theo `classId` ở phía máy khách, **không** có `GetClassDetail`.
 
-### 7.2 Truy cập bảng dữ liệu (6)
+Trường thêm V0.14 (F1-35): `ClassStudentRowDto.avatarVersion` (Number, bảng `identity.user_avatars`, cột `updated_at`, rỗng khi chưa có ảnh), dùng cho item "Học viên" (Khu vực danh sách NO 2); hợp đồng duy nhất ở `03-dd/api/F1_identity.md` mục 0.9.5 (nguồn #26), không chép lại ở đây. Thay ô chữ cái đầu "sinh ở phía giao diện" của `INS0201` Sheet 7.1 NO 20 bằng ảnh khi có `avatarVersion`.
 
-Như `INS0201` Sheet 7.2; không thêm bảng, không thêm thao tác CRUD mới.
+### 7.2 Truy cập bảng dữ liệu (7)
+
+Như `INS0201` Sheet 7.2, thêm bảng `identity.user_avatars` (`UserAvatarRepository`, `R`: đọc `updated_at` kèm danh sách #26 và byte ảnh qua `GetUserAvatar` [Nguồn: 02-bd/database/F1_identity.md mục 1.16]); không thêm thao tác `C`, `U`, `D`.
 
 ### 7.3 Danh sách endpoint [Nội bộ]
 
@@ -463,6 +471,7 @@ Như `INS0201` Sheet 7.2; không thêm bảng, không thêm thao tác CRUD mới
 | 5 | `RemoveStudentFromClass` | `INS0201` (cùng hành vi ở `INS0204`) | Gỡ khỏi lớp | `identity` |
 | 6 | `UpdateClass` | `INS0201` | Lưu từ popup chế độ sửa | `identity` |
 | 7 | `DeleteClass` | `INS0201` | Xoá lớp | `identity` |
+| 8 | `GetUserAvatar` | `USR0502` (F1 #76) | Byte ảnh đại diện của từng học viên có `avatarVersion` khác rỗng trong bảng học viên; lỗi hoặc rỗng thì rơi về chữ viết tắt [Nguồn: 03-dd/api/F1_identity.md mục 0.9.5] | `identity` |
 | 8 | `ListClassAssignments`, `GetClassStudentSubmissionMetrics` | `INS0201` | Phía `identity` gọi sang để tính Hoàn thành, Điểm TB `[SoT: Suy luận]` chỉ còn phục vụ cột của bảng học viên nếu DD cần | `problem-bank`, `judge-orchestration` |
 
 [Nguồn: 02-bd/screens/teacher/INS0201_class_management.md — Sheet 7.3; 03-dd/api/F1_identity.md:60-68]

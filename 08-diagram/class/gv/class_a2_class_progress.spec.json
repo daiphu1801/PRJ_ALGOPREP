@@ -1,7 +1,7 @@
 {
-  "_": "Nguồn tiêu chí: 01-rd/req/user_stories/a2_instructor.md:123; 01-rd/req/user_stories/a2_instructor.md:126; 01-rd/req/user_stories/a2_instructor.md:139; 01-rd/req/user_stories/a2_instructor.md:142; 01-rd/req/user_stories/a2_instructor.md:144; 01-rd/req/user_stories/a2_instructor.md:147. Nguồn thiết kế: 03-dd/logic/F1_identity.md; 03-dd/api/F1_identity.md. [SoT: Suy luận] Tên lớp và chữ ký phương thức là thiết kế đề xuất từ hợp đồng DD vì backend nghiệp vụ chưa hiện thực đầy đủ. Mỗi phương thức ở lớp điều phối nối với đúng một tiêu chí theo thứ tự trong bảng truy vết; không hàm ý một endpoint riêng cho mỗi tiêu chí. Bỏ DTO HTTP, getter/setter, nhánh lỗi chi tiết.",
+  "_": "Nguon tieu chi: 01-rd/req/user_stories/a2_instructor.md:123-147. Nguon ma nguon: 05-coding/backend/algoprep-judge/src/main/java/com/algoprep/judge/application/query/GetClassStudentSubmissionMetricsQueryHandler.java, domain/metrics/ClassSubmissionMetricsCalculator.java, domain/ports/out/ClassSubmissionMetricsRepository.java, algoprep-identity/.../InstructorActivityController.java.",
   "kind": "class",
-  "title": "A2 — Tiến độ lớp và học viên",
+  "title": "A2 — Tien do va suc khoe lop hoc",
   "covers": [
     "F1-12",
     "F1-27",
@@ -11,63 +11,80 @@
     "legend": "shared",
     "classes": [
       {
-        "id": "service",
-        "name": "ClassProgressService",
+        "id": "activityCtrl",
+        "name": "InstructorActivityController",
         "methods": [
-          "+ studentDetail(instructorId : UUID, classId : UUID, studentId : UUID) : StudentProgress",
-          "+ requireInstructorScope(instructorId : UUID, classId : UUID)",
-          "+ overview(instructorId : UUID) : ClassProgressOverview",
-          "+ filterClass(instructorId : UUID, classId : UUID) : ClassProgress",
-          "+ atRiskStudents(instructorId : UUID, classId : UUID) : List<StudentProgress>",
-          "+ emptyOverview(instructorId : UUID) : ClassProgressOverview"
+          "+ recentActivity(jwt : Jwt, classId : String) : Response"
         ]
       },
       {
-        "id": "port1",
-        "name": "InstructorClassPort",
-        "kind": "interface",
+        "id": "metricsHandler",
+        "name": "GetClassStudentSubmissionMetricsQueryHandler",
         "methods": [
-          "+ requireOwner(instructorId : UUID, classId : UUID)"
+          "+ read(scope : ClassMetricsScope) : List<StudentSubmissionMetrics>"
         ]
       },
       {
-        "id": "port2",
-        "name": "ProgressReadPort",
-        "kind": "interface",
+        "id": "calculator",
+        "name": "ClassSubmissionMetricsCalculator",
         "methods": [
-          "+ forClass(classId : UUID) : ClassProgress"
+          "+ calculate(scope : ClassMetricsScope, rows : List<ClassMetricSubmission>, now : Instant) : List<StudentSubmissionMetrics>",
+          "+ weekStart(now : Instant) : LocalDate"
         ]
       },
       {
-        "id": "port3",
-        "name": "SubmissionReadPort",
+        "id": "metricsRepo",
+        "name": "ClassSubmissionMetricsRepository",
         "kind": "interface",
         "methods": [
-          "+ recentForClass(classId : UUID) : List<SubmissionSummary>"
+          "+ find(scope : ClassMetricsScope, now : Instant) : List<ClassMetricSubmission>",
+          "+ now() : Instant"
+        ]
+      },
+      {
+        "id": "metricsCache",
+        "name": "ClassSubmissionMetricsCache",
+        "kind": "interface",
+        "methods": [
+          "+ get(scope : ClassMetricsScope, week : LocalDate) : Optional<List<StudentSubmissionMetrics>>",
+          "+ put(scope : ClassMetricsScope, week : LocalDate, result : List<StudentSubmissionMetrics>)"
+        ]
+      },
+      {
+        "id": "activityRepo",
+        "name": "ClassActivityReadRepository",
+        "kind": "interface",
+        "methods": [
+          "+ list(instructorId : UUID, classId : UUID) : List<ClassActivityItem>"
         ]
       }
     ],
     "externals": [],
     "relations": [
       {
-        "from": "service",
-        "to": "port1",
+        "from": "metricsHandler",
+        "to": "calculator",
         "kind": "dependency"
       },
       {
-        "from": "service",
-        "to": "port2",
+        "from": "metricsHandler",
+        "to": "metricsRepo",
         "kind": "dependency"
       },
       {
-        "from": "service",
-        "to": "port3",
+        "from": "metricsHandler",
+        "to": "metricsCache",
+        "kind": "dependency"
+      },
+      {
+        "from": "activityCtrl",
+        "to": "activityRepo",
         "kind": "dependency"
       }
     ],
     "notes": [
-      "Phạm vi lớp kiểm ở service trước khi đọc tiến độ; không phụ trách lớp nào trả trạng thái rỗng.",
-      "[SoT: Suy luận] Tên lớp/phương thức là thiết kế backend từ DD."
+      "Tinh diem trung binh lop, chuoi ngay streak, va ti le chap nhan qua ClassSubmissionMetricsCalculator.",
+      "Phat hien sinh vien can chu y (khong nop bai 7 ngay, ti le < 50%) theo pham vi lop giang vien phu trach."
     ]
   }
 }

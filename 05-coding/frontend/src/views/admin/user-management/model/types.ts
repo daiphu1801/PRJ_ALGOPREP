@@ -8,12 +8,17 @@ export type AdminUserRole = "student" | "instructor" | "admin";
 export type AdminUserStatus = "active" | "pending" | "locked";
 
 export type AdminUser = {
+  /** Server id, used by every action call; the mock uses the e-mail. */
+  id: string;
   /** Email doubles as the row key — the mockup keys its selection map the same way. */
   email: string;
   name: string;
+  /** Picture version (F1 #35); absent or null means no picture. */
+  avatarVersion?: number | null;
   role: AdminUserRole;
-  solvedCount: number;
-  submissionCount: number;
+  /** Absent with the real API: no read model yet (F4), so nothing is shown instead of a made-up zero. */
+  solvedCount?: number;
+  submissionCount?: number;
   /**
    * Human-readable "last seen". NO DATA SOURCE EXISTS for this yet: `database/F1_identity.md` has no
    * "last active" column, only `refresh_tokens.issued_at` as an indirect proxy. Flagged as level B1
@@ -21,7 +26,9 @@ export type AdminUser = {
    * `users.last_active_at`. Kept as a plain string here so the mock cannot be mistaken for a
    * resolved contract.
    */
-  lastActiveLabel: string;
+  lastActiveLabel?: string;
+  /** Real API: ISO time of the latest activity, `null` when the account never logged in. */
+  lastActiveAt?: string | null;
   status: AdminUserStatus;
   /**
    * `password_hash IS NOT NULL` on the server (DD `ListUsers`, DEC-2026-1011). Absent means true;
@@ -54,11 +61,3 @@ export type AdminUserPage = {
   totalUsers: number;
   totalPages: number;
 };
-
-export function initialsOf(name: string): string {
-  return name
-    .split(" ")
-    .slice(-2)
-    .map((word) => word[0] ?? "")
-    .join("");
-}

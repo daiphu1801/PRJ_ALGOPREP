@@ -1,11 +1,26 @@
 export {
+  type AdminListParams,
   type AdminProblem,
-  type AdminProblemPage,
+  type AdminProblemList,
   type AttentionItem,
   type AttentionRuleCode,
+  type BulkResult,
   type Difficulty,
+  type PageMeta,
   type ProblemSortKey,
   type ProblemStatus,
+  type TopicDistribution,
   type TopicDistributionItem,
 } from "../model/types";
-export { useAdminProblemPage } from "./queries";
+export {
+  useAdminProblemList,
+  useAttentionList,
+  useBulkDelete,
+  useBulkDifficulty,
+  useBulkPublish,
+  useBulkUnpublish,
+  useBulkTopic,
+  useExportFilteredProblems,
+  useExportProblems,
+  useTopicDistribution,
+} from "./queries";

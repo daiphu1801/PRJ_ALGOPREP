@@ -40,7 +40,7 @@
 | Tên vật lý (slug) | `admin_permission_matrix` |
 | Trục tài liệu | Màn hình (`02-bd/screens/`) |
 | Actor | A3 (`ADMIN`) |
-| Phiên bản | V0.8 |
+| Phiên bản | V0.9 |
 | Người tạo | Nhóm phát triển AlgoPrep |
 | Ngày tạo | 2026/09/15 |
 | Người cập nhật | Nhóm phát triển AlgoPrep |
@@ -60,6 +60,7 @@
 | V0.6 | Phương châm, Sheet 3, 4, 5, 6, 7, 8, 9, Câu hỏi mở | Đồng bộ prototype vòng 2 ngày 2026-10-08 và chốt của owner (`DEC-2026-1008-admin-system-open-questions-closed`). (1) **Q2 đã chốt: chặn xoá** vai trò tuỳ biến còn tài khoản gán, không tự chuyển — `RoleDto` thêm `userCount` (Sheet 7.1 NO 12), nút xoá hiện toast cảnh báo kèm tên vai trò và số tài khoản, không mở hộp xác nhận; hộp xác nhận chỉ dành cho `userCount = 0` (Sheet 8 EVT-7, Sheet 9 NO 7). (2) **Q3 đã chốt: không đổi tên vai trò**; "sửa" của F1-11 là sửa ô ma trận. (3) **Q6 phần 2 đã chốt: khoá ô chỉ theo vai trò hệ thống `STUDENT` (theo `code`), không theo nhóm cơ bản**; vai trò tuỳ biến luôn chỉnh được kể cả khi nhóm là `STUDENT` — viết lại Sheet 3, 4, 5, 6, 7, 8 (EVT-2, EVT-8), 9 (NO 5). Q6 đóng hẳn. | 2026/10/08 | AI |
 | V0.7 | Sheet 5 | Sửa lỗi Minor review UX khu Admin F9 (`06-plan/reports/261014-1054-admin-ux-review/`), **chưa duyệt hình**: tab vai trò hiển thị `roles.name` ("Người học", "Giảng viên", "Quản trị", "Trợ giảng") thay cho mã `STUDENT`/`INSTRUCTOR`/`ADMIN`; `code` chỉ dùng làm khoá (Khu vực A tab vai trò NO 1) | 2026/10/14 | Claude |
 | V0.8 | Phương châm, Sheet 4, 5, 7, Hiện trạng | Owner 2026-10-23: thêm Function thứ 11 `LANGUAGE_CONFIG` (F4-11) nên bảng ma trận 11 hàng. Prototype đã dựng: `FunctionKey` và `FUNCTION_KEYS` thêm khoá sau `JUDGE_QUEUE_MONITOR` (`05-coding/frontend/src/views/admin/permission-matrix/model/types.ts:27,41`), mock seed ADMIN đủ quyền, INSTRUCTOR và vai trò tuỳ biến `false` (`05-coding/frontend/src/views/admin/permission-matrix/api/__mock__/permission-matrix-mocks.ts:66,80`), nhãn i18n vi/en (`05-coding/frontend/messages/vi.json:972`). Sheet 5 không đổi cấu trúc item vì số hàng động theo bảng seed. | 2026/10/23 | Claude |
+| V0.9 | Sheet 4, 7 | Sửa 2026-11-02 (task #12, nối FE với API thật, `DEC-2026-1102-admin-user-management-contracts` không liên quan). (1) Màn gọi F1 #30 đến #34 và `GET /me/profile`; ô quyền chỉ đổi theo giá trị máy chủ trả về, lỗi giữ ô như cũ. (2) Vai trò của chính quản trị viên suy từ tên role trong hồ sơ `[SoT: Suy luận]`. (3) Chưa tự chuyển trang khi quản trị viên tự gỡ quyền vào màn này. Không có câu hỏi mở mới; Q1 đến Q6 vẫn đã chốt. |
 
 ---
 

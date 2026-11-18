@@ -107,11 +107,15 @@ describe("ProblemDetailView", () => {
     expect(await dialog.findByText("Kết quả thực tế")).toBeInTheDocument();
     expect(dialog.getByText("Kết quả mong đợi")).toBeInTheDocument();
     expect(dialog.getByText("[]")).toBeInTheDocument();
-    expect(dialog.getByText(/Thời gian \d+ ms · Bộ nhớ \d+ MB/)).toBeInTheDocument();
+    expect(
+      dialog.getByText(/Thời gian \d+ ms · Bộ nhớ \d+ MB/),
+    ).toBeInTheDocument();
     expect(dialog.getByText("2/3 testcase mẫu đạt")).toBeInTheDocument();
 
     fireEvent.click(dialog.getByRole("button", { name: /Case 1/ }));
-    expect(dialog.getByText(/Thời gian 3 ms · Bộ nhớ 36 MB/)).toBeInTheDocument();
+    expect(
+      dialog.getByText(/Thời gian 3 ms · Bộ nhớ 36 MB/),
+    ).toBeInTheDocument();
 
     fireEvent.click(dialog.getByRole("button", { name: "Đóng" }));
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
@@ -137,9 +141,9 @@ describe("ProblemDetailView", () => {
     fireEvent.change(screen.getByLabelText("Vùng soạn mã"), {
       target: { value: "class Solution {}" },
     });
-    expect(
-      window.localStorage.getItem("algoprep-draft:1:java:function"),
-    ).toBe("class Solution {}");
+    expect(window.localStorage.getItem("algoprep-draft:1:java:function")).toBe(
+      "class Solution {}",
+    );
     expect(screen.getByText("Đã lưu trên trình duyệt này")).toBeInTheDocument();
   });
 

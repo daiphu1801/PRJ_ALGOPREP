@@ -42,6 +42,20 @@ describe("Modal", () => {
     expect(onClose).toHaveBeenCalledTimes(1);
   });
 
+  it("ignores Escape and the scrim when it is not dismissible", () => {
+    const onClose = vi.fn();
+    render(
+      <Modal open onClose={onClose} title="Bắt buộc" dismissible={false}>
+        <button type="button">Trong hộp thoại</button>
+      </Modal>,
+    );
+
+    fireEvent.keyDown(document, { key: "Escape" });
+    fireEvent.click(document.querySelector("[aria-hidden='true']") as Element);
+
+    expect(onClose).not.toHaveBeenCalled();
+  });
+
   it("moves focus into the dialog and wraps Tab instead of letting it escape", () => {
     render(
       <Modal

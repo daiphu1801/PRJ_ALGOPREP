@@ -16,12 +16,12 @@
         "role": "actor"
       },
       {
-        "name": "ProblemController",
+        "name": "ProblemAuthoringController",
         "role": "controller",
         "stereo": "presentation"
       },
       {
-        "name": "CreateProblem",
+        "name": "CreateProblemCommandHandler",
         "role": "service",
         "stereo": "application command"
       },
@@ -31,12 +31,12 @@
         "stereo": "judge output port"
       },
       {
-        "name": "ProblemRepository",
+        "name": "ProblemPublishRepository",
         "role": "repository",
         "stereo": "output port"
       },
       {
-        "name": "ProblemDbAdapter",
+        "name": "JdbcProblemPublishRepository",
         "role": "repository",
         "stereo": "persistence adapter"
       },
@@ -57,60 +57,60 @@
       },
       {
         "from": "Người soạn đề",
-        "to": "ProblemController",
+        "to": "ProblemAuthoringController",
         "text": "Gửi đề mới và giới hạn chấm"
       },
       {
-        "from": "ProblemController",
-        "to": "ProblemController",
+        "from": "ProblemAuthoringController",
+        "to": "ProblemAuthoringController",
         "text": "Kiểm quyền soạn đề và các trường bắt buộc"
       },
       {
-        "from": "ProblemController",
-        "to": "CreateProblem",
+        "from": "ProblemAuthoringController",
+        "to": "CreateProblemCommandHandler",
         "text": "Tạo bài toán bản nháp"
       },
       {
-        "from": "CreateProblem",
+        "from": "CreateProblemCommandHandler",
         "to": "JudgeConfigReadPort",
         "text": "Lấy giới hạn chấm mặc định khi còn thiếu"
       },
       {
         "from": "JudgeConfigReadPort",
-        "to": "CreateProblem",
+        "to": "CreateProblemCommandHandler",
         "text": "Giới hạn mặc định hoặc giá trị dự phòng",
         "kind": "return"
       },
       {
-        "from": "CreateProblem",
-        "to": "ProblemRepository",
+        "from": "CreateProblemCommandHandler",
+        "to": "ProblemPublishRepository",
         "text": "Kiểm tra mức độ và chủ đề còn tồn tại"
       },
       {
-        "from": "ProblemRepository",
-        "to": "ProblemDbAdapter",
+        "from": "ProblemPublishRepository",
+        "to": "JdbcProblemPublishRepository",
         "text": "Đọc danh mục đã chọn"
       },
       {
-        "from": "ProblemDbAdapter",
+        "from": "JdbcProblemPublishRepository",
         "to": "PostgreSQL",
         "text": "Tìm mức độ và chủ đề"
       },
       {
         "from": "PostgreSQL",
-        "to": "ProblemDbAdapter",
+        "to": "JdbcProblemPublishRepository",
         "text": "Kết quả kiểm tra danh mục",
         "kind": "return"
       },
       {
-        "from": "ProblemDbAdapter",
-        "to": "ProblemRepository",
+        "from": "JdbcProblemPublishRepository",
+        "to": "ProblemPublishRepository",
         "text": "Kết quả kiểm tra danh mục",
         "kind": "return"
       },
       {
-        "from": "ProblemRepository",
-        "to": "CreateProblem",
+        "from": "ProblemPublishRepository",
+        "to": "CreateProblemCommandHandler",
         "text": "Kết quả kiểm tra danh mục",
         "kind": "return"
       },
@@ -119,51 +119,51 @@
           "label": "Mức độ và chủ đề còn hợp lệ?",
           "then": [
             {
-              "from": "CreateProblem",
-              "to": "CreateProblem",
+              "from": "CreateProblemCommandHandler",
+              "to": "CreateProblemCommandHandler",
               "text": "Sinh mã đề duy nhất từ tiêu đề"
             },
             {
-              "from": "CreateProblem",
-              "to": "ProblemRepository",
+              "from": "CreateProblemCommandHandler",
+              "to": "ProblemPublishRepository",
               "text": "Lưu bài mới và các liên kết"
             },
             {
-              "from": "ProblemRepository",
-              "to": "ProblemDbAdapter",
+              "from": "ProblemPublishRepository",
+              "to": "JdbcProblemPublishRepository",
               "text": "Ghi bài, chủ đề, thẻ, ví dụ và đáp án mẫu"
             },
             {
-              "from": "ProblemDbAdapter",
+              "from": "JdbcProblemPublishRepository",
               "to": "PostgreSQL",
               "text": "Tạo bài chưa xuất bản trong một giao dịch"
             },
             {
               "from": "PostgreSQL",
-              "to": "ProblemDbAdapter",
+              "to": "JdbcProblemPublishRepository",
               "text": "Bài nháp và thời điểm cập nhật",
               "kind": "return"
             },
             {
-              "from": "ProblemDbAdapter",
-              "to": "ProblemRepository",
+              "from": "JdbcProblemPublishRepository",
+              "to": "ProblemPublishRepository",
               "text": "Bài nháp đã lưu",
               "kind": "return"
             },
             {
-              "from": "ProblemRepository",
-              "to": "CreateProblem",
+              "from": "ProblemPublishRepository",
+              "to": "CreateProblemCommandHandler",
               "text": "Bài nháp đã lưu",
               "kind": "return"
             },
             {
-              "from": "CreateProblem",
-              "to": "ProblemController",
+              "from": "CreateProblemCommandHandler",
+              "to": "ProblemAuthoringController",
               "text": "Trả bài nháp",
               "kind": "return"
             },
             {
-              "from": "ProblemController",
+              "from": "ProblemAuthoringController",
               "to": "Người soạn đề",
               "text": "Hiển thị bài đã tạo",
               "kind": "return"
@@ -171,13 +171,13 @@
           ],
           "else": [
             {
-              "from": "CreateProblem",
-              "to": "ProblemController",
+              "from": "CreateProblemCommandHandler",
+              "to": "ProblemAuthoringController",
               "text": "Báo danh mục đã thay đổi",
               "kind": "return"
             },
             {
-              "from": "ProblemController",
+              "from": "ProblemAuthoringController",
               "to": "Người soạn đề",
               "text": "Yêu cầu chọn lại mức độ hoặc chủ đề",
               "kind": "return"

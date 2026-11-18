@@ -13,22 +13,30 @@
 //
 // Cluster controls are real controls (F4-10): pausing consumption and turning autoscale off ask for
 // confirmation first, because both change how every learner's submission is handled.
+//
+// One render tree for mock and real data (2026-11-14): the hooks in ../api return the same shape in
+// both modes. The worker card shows only when the source has worker data (the real snapshot has none).
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import {
-  useQueuePage,
+  QUEUE_KEY,
+  useQueueControl,
+  useQueueJobs,
+  useQueueLive,
+  useQueueSummary,
+  useSaveQueueSettings,
   type ClusterControls,
   type JobStatus,
   type QueueJob,
-  type QueuePage,
+  type QueueSummary,
+  type QueueTab,
   type WorkerStatus,
 } from "../api";
-import { useRecentInfraAlerts } from "@/entities/infra-event";
-import { useT } from "@/shared/i18n";
+import { useApiErrorMessage, useT } from "@/shared/i18n";
 import { toast } from "@/shared/lib/toast-store";
-import { queueSettings } from "../model/settings";
 import {
   Badge,
   Button,
@@ -37,6 +45,7 @@ import {
   DataTable,
   PageHeader,
   QueryBoundary,
+  QueryError,
   Pagination,
   ParamsDialog,
   ProgressBar,
@@ -65,8 +74,6 @@ const STALE_AFTER_MS = 60_000;
 const LINK_CLASS =
   "text-[12.5px] font-semibold text-[var(--color-primary)] hover:underline";
 
-type JobTab = "waiting" | "failed" | "all";
-type SortKey = "wait";
 type ControlKey = keyof ClusterControls;
 
 /** "HH:mm:ss" in the viewer's local time. */
@@ -75,37 +82,30 @@ function clock(epochMs: number): string {
 }
 
 export function AdminQueueMonitorView() {
-  const query = useQueuePage();
+  const poll = useQueueLive();
+  const summary = useQueueSummary(poll);
   return (
-    <QueryBoundary query={query}>
-      {(initial) => (
-        <QueueMonitorInner
-          initial={initial}
-          reload={async () => (await query.refetch()).data}
-        />
-      )}
+    <QueryBoundary query={summary}>
+      {(data) => <QueueMonitorInner summary={data} poll={poll} />}
     </QueryBoundary>
   );
 }
 
 function QueueMonitorInner({
-  initial,
-  reload,
+  summary,
+  poll,
 }: {
-  initial: QueuePage;
-  reload: () => Promise<QueuePage | undefined>;
+  summary: QueueSummary;
+  poll: number | false;
 }) {
   const t = useT("adminQueueMonitor");
-  const [page, setPage] = useState(initial);
-  const [controls, setControls] = useState<ClusterControls>(page.controls);
-  const settings = queueSettings.use();
+  const errorMessage = useApiErrorMessage();
+  const cache = useQueryClient();
   const [editingParams, setEditingParams] = useState(false);
   const [confirming, setConfirming] = useState<ControlKey | null>(null);
-  const [tab, setTab] = useState<JobTab>("waiting");
+  const [tab, setTab] = useState<QueueTab>("waiting");
   const [pageNumber, setPageNumber] = useState(1);
-  const [sort, setSort] = useState<{ key: SortKey; direction: "asc" | "desc" }>(
-    { key: "wait", direction: "desc" },
-  );
+  const [direction, setDirection] = useState<"asc" | "desc">("desc");
   // Ticks so the "stale" state appears without any user action.
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => {
@@ -113,68 +113,45 @@ function QueueMonitorInner({
     return () => clearInterval(timer);
   }, []);
 
-  const counts = useMemo(
-    () => ({
-      waiting: page.jobs.filter((job) => job.status === "waiting").length,
-      failed: page.jobs.filter((job) => job.status === "sandboxError").length,
-      all: page.jobs.length,
-    }),
-    [page.jobs],
-  );
-  const alerts = useRecentInfraAlerts().data ?? { warn: 0, error: 0 };
+  const jobsQuery = useQueueJobs(tab, pageNumber, direction, poll);
+  const jobs = jobsQuery.data;
+  const control = useQueueControl();
+  const saveSettings = useSaveQueueSettings();
+  const { settings } = summary;
 
-  // State priority: paused > an overloaded worker > backlog at or above the autoscale threshold.
-  const stale = now - page.generatedAt > STALE_AFTER_MS;
-  let tone: StatusStripTone = "success";
-  let stateText = t("state.ok");
-  if (controls.paused) {
-    tone = "warn";
-    stateText = t("state.paused");
-  } else if (page.workers.some((worker) => worker.status === "overloaded")) {
-    tone = "warn";
-    stateText = t("state.overloaded");
-  } else if (counts.waiting >= settings.autoscaleThreshold) {
-    tone = "warn";
-    stateText = t("state.backlog", { count: counts.waiting });
-  }
+  const stale = now - summary.generatedAt > STALE_AFTER_MS;
+  const tone: StatusStripTone = summary.state === "ok" ? "success" : "warn";
+  const stateText =
+    summary.state === "backlog"
+      ? t("state.backlog", { count: summary.pendingCount })
+      : t(`state.${summary.state}`);
+  const latencyPercent =
+    summary.latency.seconds == null
+      ? 0
+      : Math.min(
+          100,
+          (summary.latency.seconds / settings.latencyCapSeconds) * 100,
+        );
 
-  const visibleJobs = useMemo(() => {
-    const filtered = page.jobs.filter((job) => {
-      if (tab === "waiting") return job.status === "waiting";
-      if (tab === "failed") return job.status === "sandboxError";
-      return true;
+  function refresh() {
+    void cache.invalidateQueries({ queryKey: QUEUE_KEY }).then(() => {
+      setNow(Date.now());
+      toast.success(t("refreshDone"));
     });
-    const factor = sort.direction === "asc" ? 1 : -1;
-    // BD F NO10: failed jobs always sink to the bottom whatever the direction. They carry
-    // waitSeconds -1, so a plain numeric sort put them FIRST when ascending (UX review B3).
-    return [...filtered].sort((a, b) => {
-      const aFailed = a.status === "sandboxError";
-      const bFailed = b.status === "sandboxError";
-      if (aFailed !== bFailed) return aFailed ? 1 : -1;
-      return (a.waitSeconds - b.waitSeconds) * factor;
-    });
-  }, [page.jobs, tab, sort]);
-
-  const lastPage = Math.max(
-    1,
-    Math.ceil(visibleJobs.length / settings.jobsPerPage),
-  );
-  const currentPage = Math.min(pageNumber, lastPage);
-  const rows = visibleJobs.slice(
-    (currentPage - 1) * settings.jobsPerPage,
-    currentPage * settings.jobsPerPage,
-  );
-
-  async function refresh() {
-    const fresh = await reload();
-    if (fresh) setPage(fresh);
-    setNow(Date.now());
-    toast.success(t("refreshDone"));
   }
 
   function apply(key: ControlKey, value: boolean) {
-    setControls((previous) => ({ ...previous, [key]: value }));
-    toast.success(t(`control.${key}.${value ? "doneOn" : "doneOff"}`));
+    control.mutate(
+      { key, value, expected: summary.controls[key] },
+      {
+        onSuccess: () =>
+          toast.success(t(`control.${key}.${value ? "doneOn" : "doneOff"}`)),
+        onError: (error) => {
+          toast.error(errorMessage(error));
+          void cache.invalidateQueries({ queryKey: QUEUE_KEY });
+        },
+      },
+    );
   }
 
   // Pausing and turning autoscale off are the two risky directions; the reverse applies at once.
@@ -213,7 +190,7 @@ function QueueMonitorInner({
       header: t("columnWait"),
       width: "88px",
       align: "right",
-      sortable: true,
+      sortable: jobs?.sortable,
       render: (job) => (
         <span className="font-mono text-[12.5px] whitespace-nowrap text-[var(--color-text-muted)]">
           {job.waitLabel}
@@ -223,10 +200,7 @@ function QueueMonitorInner({
   ];
 
   const controlRows: ControlKey[] = ["paused", "autoscale"];
-  const latencyPercent = Math.min(
-    100,
-    (page.latency.seconds / settings.latencyCapSeconds) * 100,
-  );
+  const hasWorkers = summary.workers.length > 0;
 
   return (
     <div>
@@ -256,63 +230,67 @@ function QueueMonitorInner({
         detail={stale ? t("state.staleHint") : undefined}
         trailing={
           <span suppressHydrationWarning>
-            {t("updatedAt", { time: clock(page.generatedAt) })}
+            {t("updatedAt", { time: clock(summary.generatedAt) })}
           </span>
         }
       />
 
-      <div className="mb-4 grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1.4fr)_minmax(280px,1fr)]">
-        <Card
-          title={t("workersTitle")}
-          description={t("workersSubtitle", {
-            count: page.workerCount,
-            max: page.maxWorkers,
-          })}
-          className="min-w-0"
-        >
-          <ul aria-label={t("workersTitle")} className="flex flex-col gap-1">
-            {page.workers.map((worker) => (
-              <li
-                key={worker.id}
-                className="grid grid-cols-[minmax(0,1fr)_90px_minmax(80px,1fr)_56px] items-center gap-3 rounded-xl px-2.5 py-2 hover:bg-[var(--color-row-hover)]"
-              >
-                <span className="min-w-0">
-                  <span className="block font-mono text-[12.5px] font-semibold">
-                    {worker.id}
-                  </span>
-                  <span className="block text-[11.5px] text-[var(--color-text-subtle)]">
-                    {worker.meta}
-                  </span>
-                </span>
-                <Badge
-                  variant={WORKER_VARIANT[worker.status]}
-                  className="justify-center"
+      <div
+        className={`mb-4 grid grid-cols-1 gap-4 ${hasWorkers ? "lg:grid-cols-[minmax(0,1.4fr)_minmax(280px,1fr)]" : ""}`}
+      >
+        {hasWorkers ? (
+          <Card
+            title={t("workersTitle")}
+            description={t("workersSubtitle", {
+              count: summary.workerCount,
+              max: summary.maxWorkers,
+            })}
+            className="min-w-0"
+          >
+            <ul aria-label={t("workersTitle")} className="flex flex-col gap-1">
+              {summary.workers.map((worker) => (
+                <li
+                  key={worker.id}
+                  className="grid grid-cols-[minmax(0,1fr)_90px_minmax(80px,1fr)_56px] items-center gap-3 rounded-xl px-2.5 py-2 hover:bg-[var(--color-row-hover)]"
                 >
-                  {t(`workerStatus.${worker.status}`)}
-                </Badge>
-                <span className="flex items-center gap-2">
-                  <ProgressBar
-                    value={worker.load}
-                    height={6}
-                    label={t("workerLoadLabel", { id: worker.id })}
-                    className="flex-1"
-                    fill={
-                      worker.load > 85
-                        ? "linear-gradient(90deg, var(--color-admin-warn), var(--color-admin-negative))"
-                        : "linear-gradient(90deg, var(--color-admin-teal), var(--color-admin-cyan))"
-                    }
-                  />
-                  <span className="w-9 text-right font-mono text-xs text-[var(--color-text-muted)]">
-                    {worker.load}%
+                  <span className="min-w-0">
+                    <span className="block font-mono text-[12.5px] font-semibold">
+                      {worker.id}
+                    </span>
+                    <span className="block text-[11.5px] text-[var(--color-text-subtle)]">
+                      {worker.meta}
+                    </span>
                   </span>
-                </span>
-                <span className="text-right font-mono text-xs text-[var(--color-text-muted)]">
-                  {t("workerJobs", { count: worker.jobs })}
-                </span>
-              </li>
-            ))}
-          </ul>
-        </Card>
+                  <Badge
+                    variant={WORKER_VARIANT[worker.status]}
+                    className="justify-center"
+                  >
+                    {t(`workerStatus.${worker.status}`)}
+                  </Badge>
+                  <span className="flex items-center gap-2">
+                    <ProgressBar
+                      value={worker.load}
+                      height={6}
+                      label={t("workerLoadLabel", { id: worker.id })}
+                      className="flex-1"
+                      fill={
+                        worker.load > 85
+                          ? "linear-gradient(90deg, var(--color-admin-warn), var(--color-admin-negative))"
+                          : "linear-gradient(90deg, var(--color-admin-teal), var(--color-admin-cyan))"
+                      }
+                    />
+                    <span className="w-9 text-right font-mono text-xs text-[var(--color-text-muted)]">
+                      {worker.load}%
+                    </span>
+                  </span>
+                  <span className="text-right font-mono text-xs text-[var(--color-text-muted)]">
+                    {t("workerJobs", { count: worker.jobs })}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </Card>
+        ) : null}
 
         <Card
           title={t("controlsTitle")}
@@ -327,7 +305,7 @@ function QueueMonitorInner({
             <div className="mb-1.5 flex items-baseline justify-between text-[13px]">
               <span className="font-semibold">{t("latencyTitle")}</span>
               <span className="font-mono text-xs text-[var(--color-text-muted)]">
-                {page.latency.label}
+                {summary.latency.label}
               </span>
             </div>
             <ProgressBar
@@ -351,7 +329,8 @@ function QueueMonitorInner({
                 })}
               >
                 <Toggle
-                  checked={controls[key]}
+                  checked={summary.controls[key]}
+                  disabled={control.isPending}
                   onCheckedChange={(value) => requestChange(key, value)}
                   label={t(`control.${key}.label`)}
                 />
@@ -376,44 +355,55 @@ function QueueMonitorInner({
             options={[
               {
                 value: "waiting",
-                label: t("tabWaiting", { count: counts.waiting }),
+                label: t("tabWaiting", { count: jobs?.counts.waiting ?? 0 }),
               },
               {
                 value: "failed",
-                label: t("tabFailed", { count: counts.failed }),
+                label: t("tabFailed", { count: jobs?.counts.failed ?? 0 }),
               },
-              { value: "all", label: t("tabAll", { count: counts.all }) },
+              {
+                value: "all",
+                label: t("tabAll", { count: jobs?.counts.all ?? 0 }),
+              },
             ]}
           />
         }
       >
+        {jobsQuery.isError ? <QueryError query={jobsQuery} /> : null}
         <DataTable
           caption={t("jobsTitle")}
           columns={columns}
-          rows={rows}
+          rows={jobs?.items ?? []}
           rowKey={(job) => job.id}
+          status={
+            jobsQuery.isLoading
+              ? "loading"
+              : jobsQuery.isError
+                ? "error"
+                : "ready"
+          }
           emptyMessage={t("emptyJobs")}
           minWidth={520}
-          sort={{
-            key: sort.key,
-            direction: sort.direction,
-            onSortChange: (key, direction) =>
-              setSort({ key: key as SortKey, direction }),
-          }}
+          sort={
+            jobs?.sortable
+              ? {
+                  key: "wait",
+                  direction,
+                  onSortChange: (_key, next) => setDirection(next),
+                }
+              : undefined
+          }
         />
-        {visibleJobs.length > settings.jobsPerPage ? (
+        {jobs && jobs.total > jobs.pageSize ? (
           <Pagination
-            page={currentPage}
-            pageSize={settings.jobsPerPage}
-            total={visibleJobs.length}
+            page={jobs.page}
+            pageSize={jobs.pageSize}
+            total={jobs.total}
             onPageChange={setPageNumber}
             summary={t("pageSummary", {
-              from: (currentPage - 1) * settings.jobsPerPage + 1,
-              to: Math.min(
-                currentPage * settings.jobsPerPage,
-                visibleJobs.length,
-              ),
-              total: visibleJobs.length,
+              from: (jobs.page - 1) * jobs.pageSize + 1,
+              to: Math.min(jobs.page * jobs.pageSize, jobs.total),
+              total: jobs.total,
             })}
             previousLabel={t("pagePrevious")}
             nextLabel={t("pageNext")}
@@ -425,11 +415,14 @@ function QueueMonitorInner({
         <p className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[13px]">
           <span className="font-semibold">{t("infraTitle")}</span>
           <span className="text-[var(--color-text-muted)]">
-            {t("infraSummary", { warn: alerts.warn, error: alerts.error })}
+            {t("infraSummary", {
+              warn: summary.infra.warn,
+              error: summary.infra.error,
+            })}
           </span>
           <Link
             href={
-              alerts.error > 0
+              summary.infra.error > 0
                 ? "/admin/infra-events?level=error"
                 : "/admin/infra-events"
             }
@@ -496,14 +489,19 @@ function QueueMonitorInner({
             min: 1,
           },
         ]}
-        onSave={(values) =>
-          queueSettings.set({
-            autoscaleThreshold: Number(values.autoscaleThreshold),
-            jobsPerPage: Number(values.jobsPerPage),
-            errorRetentionHours: Number(values.errorRetentionHours),
-            latencyCapSeconds: Number(values.latencyCapSeconds),
-          })
-        }
+        onSave={async (values) => {
+          try {
+            await saveSettings.mutateAsync({
+              autoscaleThreshold: Number(values.autoscaleThreshold),
+              jobsPerPage: Number(values.jobsPerPage),
+              errorRetentionHours: Number(values.errorRetentionHours),
+              latencyCapSeconds: Number(values.latencyCapSeconds),
+            });
+          } catch (error) {
+            toast.error(errorMessage(error));
+            throw error;
+          }
+        }}
         labels={{
           save: t("params.save"),
           cancel: t("params.cancel"),

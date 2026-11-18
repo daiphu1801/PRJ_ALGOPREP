@@ -87,3 +87,23 @@ Gọi qua cổng ra trung lập theo engine (`JudgeExecutionPort`), adapter mặ
     tập tất cả bài nộp `Accepted` của **cùng bài toán và cùng ngôn ngữ lập trình** (không so giữa các ngôn
     ngữ khác nhau vì tốc độ thực thi không tương đương). Chỉ hiển thị khi verdict là `Accepted`; rỗng (`—`)
     cho mọi verdict khác. Công thức và ngưỡng làm tròn cụ thể chốt khi viết BD/DD của `judge-orchestration`.
+  - **F4-14 — Vị trí trong hàng đợi và thời gian chờ ước tính khi bài nộp còn `PENDING`.** Bổ sung 2026-11-15
+    (quyết định của chủ dự án; lý do: đo tải cho thấy máy demo chấm khoảng 2 bài nộp mỗi giây nên một bài có thể
+    nằm ở `PENDING` 40 đến 90 giây mà người học chỉ thấy "đang chờ"; chưa có yêu cầu nào trước đó, không phải
+    amendment của F4-01 hay F4-08). **User story:** là sinh viên vừa nộp bài, tôi muốn biết phía trước còn bao
+    nhiêu bài nộp và chờ khoảng bao lâu, để biết hệ thống vẫn đang làm việc và có nên chờ hay không.
+    - **Cho** bài nộp của tôi đang `PENDING`, **Khi** tôi xem trang kết quả hoặc console kết quả ở màn soạn mã,
+      **Thì** tôi thấy số bài nộp đang chờ nộp **trước** bài của tôi; nếu hệ thống đủ dữ liệu về tốc độ chấm gần
+      đây thì thấy thêm thời gian chờ ước tính tính bằng giây, nếu chưa đủ thì chỉ thấy số bài phía trước.
+    - **Cho** phía trước tôi không còn bài nào đang chờ, **Khi** tôi xem trạng thái, **Thì** tôi chỉ thấy tôi sắp
+      được chấm, không có con số thời gian chờ.
+    - **Cho** bài nộp của tôi đã rời `PENDING` (đang chấm hoặc đã có kết quả), **Khi** trạng thái đổi, **Thì**
+      thông tin vị trí và thời gian chờ biến mất và giao diện chuyển sang hiển thị tiến độ từng testcase như
+      F4-08.
+    - **Cho** người khác nộp bài, **Khi** tôi xem thông tin chờ của mình, **Thì** tôi chỉ thấy một con số tổng,
+      không thấy ai nộp, bài nào hay mã nguồn nào; chỉ chủ của bài nộp xem được thông tin này.
+    - **Cho** hệ thống không tính được vị trí hoặc thời gian chờ, **Khi** tôi xem trạng thái bài nộp, **Thì**
+      mọi thông tin khác của bài nộp vẫn hiển thị bình thường, chỉ thiếu dòng thông tin chờ.
+    - **Tính chất:** con số là **gợi ý hiển thị gần đúng**, không phải cam kết: hàng đợi tiêu thụ gần theo thứ tự
+      nộp nhưng không bảo đảm tuyệt đối, và tốc độ chấm thay đổi theo tải. Cách tính, các ngưỡng và hợp đồng API
+      thuộc BD/DD, không ghi ở đây.

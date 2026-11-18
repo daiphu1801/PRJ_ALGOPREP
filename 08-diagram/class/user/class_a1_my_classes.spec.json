@@ -1,8 +1,9 @@
 {
-  "_": "Nguồn tiêu chí: 01-rd/req/user_stories/a1_student.md:194; 01-rd/req/user_stories/a1_student.md:197; 01-rd/req/user_stories/a1_student.md:199; 01-rd/req/user_stories/a1_student.md:202; 01-rd/req/user_stories/a1_student.md:204; 01-rd/req/user_stories/a1_student.md:207. Nguồn thiết kế: 03-dd/logic/F1_identity.md; 03-dd/api/F1_identity.md; 03-dd/logic/F2_problem-bank.md; 03-dd/api/F2_problem-bank.md. [SoT: Suy luận] Tên lớp và chữ ký phương thức là thiết kế đề xuất từ hợp đồng DD vì backend nghiệp vụ chưa hiện thực đầy đủ. Mỗi phương thức ở lớp điều phối nối với đúng một tiêu chí theo thứ tự trong bảng truy vết; không hàm ý một endpoint riêng cho mỗi tiêu chí. Bỏ DTO HTTP, getter/setter, nhánh lỗi chi tiết.",
+  "_": "Nguồn tiêu chí: 01-rd/req/user_stories/a1_student.md:144-159. Nguồn mã nguồn: 05-coding/backend/algoprep-identity/src/main/java/com/algoprep/identity/presentation/controller/StudentClassController.java và application/command/JoinClassByCodeCommandHandler.java.",
   "kind": "class",
   "title": "A1 — Tham gia và xem lớp của tôi",
   "covers": [
+    "F1-22",
     "F1-23",
     "F1-25",
     "F1-26",
@@ -13,63 +14,72 @@
     "legend": "shared",
     "classes": [
       {
-        "id": "service",
-        "name": "StudentClassService",
+        "id": "classController",
+        "name": "StudentClassController",
         "methods": [
-          "+ joinByInvite(studentId : UUID, code : String) : ClassSummary",
-          "+ validateInvite(code : String) : InviteStatus",
-          "+ joinIdempotently(studentId : UUID, classId : UUID) : Membership",
-          "+ listMine(studentId : UUID) : List<ClassSummary>",
-          "+ assignments(studentId : UUID, classId : UUID) : List<AssignmentProgress>",
-          "+ requireMembership(studentId : UUID, classId : UUID) : Membership"
+          "+ join(jwt : Jwt, body : JoinRequest) : JoinResponse",
+          "+ list(jwt : Jwt) : MyClassesResponse",
+          "+ detail(jwt : Jwt, classId : String) : MyClass"
         ]
       },
       {
-        "id": "port1",
-        "name": "ClassRepository",
-        "kind": "class",
+        "id": "joinHandler",
+        "name": "JoinClassByCodeCommandHandler",
         "methods": [
-          "+ findByInvite(code : String) : Classroom"
+          "+ join(command : JoinClassByCodeCommand) : ClassRef"
         ]
       },
       {
-        "id": "port2",
-        "name": "MembershipRepository",
-        "kind": "class",
+        "id": "listQuery",
+        "name": "ListMyClassesQueryHandler",
         "methods": [
-          "+ find(studentId : UUID, classId : UUID) : Membership"
+          "+ list(studentId : UUID) : List<MyClass>"
         ]
       },
       {
-        "id": "port3",
-        "name": "AssignmentProgressPort",
+        "id": "membershipRepo",
+        "name": "ClassMembershipRepository",
         "kind": "interface",
         "methods": [
-          "+ forClass(studentId : UUID, classId : UUID) : List<AssignmentProgress>"
+          "+ isMember(studentId : UUID, classId : UUID) : boolean",
+          "+ join(studentId : UUID, classId : UUID)"
+        ]
+      },
+      {
+        "id": "inviteRepo",
+        "name": "ClassInviteCodeRepository",
+        "kind": "interface",
+        "methods": [
+          "+ findActive(code : String) : Optional<ClassInviteCode>"
         ]
       }
     ],
     "externals": [],
     "relations": [
       {
-        "from": "service",
-        "to": "port1",
+        "from": "classController",
+        "to": "joinHandler",
         "kind": "dependency"
       },
       {
-        "from": "service",
-        "to": "port2",
+        "from": "classController",
+        "to": "listQuery",
         "kind": "dependency"
       },
       {
-        "from": "service",
-        "to": "port3",
+        "from": "joinHandler",
+        "to": "inviteRepo",
+        "kind": "dependency"
+      },
+      {
+        "from": "joinHandler",
+        "to": "membershipRepo",
         "kind": "dependency"
       }
     ],
     "notes": [
-      "Mã mời hiệu lực 7 ngày; vào lớp lặp là idempotent; lớp ngoài phạm vi trả cùng kiểu 404.",
-      "[SoT: Suy luận] Tên lớp/phương thức là thiết kế backend từ DD."
+      "StudentClassController cho phép sinh viên nhập mã mời 7 ký tự để gia nhập lớp học và xem danh sách lớp.",
+      "JoinClassByCodeCommandHandler kiểm tra mã mời còn hạn, giới hạn thử mã và ghi nhận thành viên lớp."
     ]
   }
 }

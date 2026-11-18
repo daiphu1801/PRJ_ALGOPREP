@@ -50,7 +50,11 @@ type Props = {
   title: string;
   fields: readonly ParamField[];
   values: ParamValues;
-  onSave: (values: ParamValues) => void;
+  /**
+   * A save that returns a promise is waited for: a rejection keeps the dialog and the draft open (the
+   * caller has already told the user why) and no success toast is shown.
+   */
+  onSave: (values: ParamValues) => void | Promise<void>;
   /**
    * Returns a warning when this particular save needs a second look (shortening a retention period,
    * switching to a destructive policy); the dialog then shows it and asks again before saving.
@@ -71,6 +75,7 @@ function ParamsForm({
   const [draft, setDraft] = useState<ParamValues>(values);
   const [touched, setTouched] = useState(false);
   const [warning, setWarning] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
 
   const errorFor = (field: ParamField) => {
     if (field.type !== "number") return undefined;
@@ -81,7 +86,7 @@ function ParamsForm({
   };
   const hasError = fields.some((field) => errorFor(field));
 
-  function save() {
+  async function save() {
     setTouched(true);
     if (hasError) {
       toastFirstError(fields.map(errorFor));
@@ -92,7 +97,18 @@ function ParamsForm({
       setWarning(message);
       return;
     }
-    onSave(draft);
+    // A sync save runs straight through; only a returned promise is waited for.
+    const pending = onSave(draft);
+    if (pending) {
+      setSaving(true);
+      try {
+        await pending;
+      } catch {
+        return;
+      } finally {
+        setSaving(false);
+      }
+    }
     toast.success(labels.saved);
     onClose();
   }
@@ -154,7 +170,12 @@ function ParamsForm({
         >
           {warning ? (labels.back ?? labels.cancel) : labels.cancel}
         </Button>
-        <Button variant="cta" size="sm" onClick={save}>
+        <Button
+          variant="cta"
+          size="sm"
+          disabled={saving}
+          onClick={() => void save()}
+        >
           {warning ? (labels.confirm ?? labels.save) : labels.save}
         </Button>
       </div>

@@ -53,11 +53,13 @@
 | Tên vật lý (slug) | `instructor_overview` |
 | Trục tài liệu | Màn hình (`02-bd/screens/`) |
 | Actor | A2 (`INSTRUCTOR`) |
-| Phiên bản | V0.15 |
+| Phiên bản | V0.18 |
+| V0.16 | Hiện trạng bản dựng (4.5) | Khối "Hoạt động gần đây" nối API thật `GET /instructor/dashboard/recent-activity` (#45, `03-dd/api/F1_identity.md` mục 0.8, Triển khai 2026-11-05): máy chủ trả loại hoạt động và tên người làm, không trả câu chữ và không có tiêu đề bài (F1 không đọc `problem-bank`), nên màn ghép câu theo loại qua i18n (`instructorOverview.activity.type.*`), thời gian tương đối bằng `formatRelativeVN`. Dòng "vừa nộp bài đạt Accepted" mất tên bài so với mock; muốn có tên bài phải thêm cổng F2 (chưa quyết). Các khối khác không đổi | 2026/11/05 | Claude |
+| V0.17 | Hiện trạng bản dựng (4.5) | Sửa 2026-11-07 (F2-6 phần 3, nối FE). Khối "Bài tập của tôi" đọc thật F2 #54 `GET /instructor/assigned-problems/top` qua `useTopAssignedProblems` (`05-coding/frontend/src/entities/class-assignment/api/queries.ts`): năm bài nhiều lượt nộp nhất trong các lớp của giảng viên, máy chủ sắp xếp và cắt; F4 lỗi thì máy chủ trả danh sách rỗng và khối hiện câu "Chưa có dữ liệu", không có số bịa. Chưa duyệt hình, RD không đổi | 2026-11-07 | AI |
 | Người tạo | Nhóm phát triển AlgoPrep |
 | Ngày tạo | 2026/09/21 |
 | Người cập nhật | Claude |
-| Ngày cập nhật | 2026/10/22 |
+| Ngày cập nhật | 2026/11/18 |
 
 ---
 
@@ -80,6 +82,9 @@
 | V0.13 | Sheet 5 (D NO 7, DTO NO 10), Câu hỏi mở Q8 | Áp `DEC-2026-1014-batch7-remaining-open-questions` (ponytail bậc 5): Q8 đóng, "Lớp của tôi" giữ `completionPct` do `identity` tính; bỏ câu đề xuất read model `class_completion_stats`. Cách đánh số: không đổi NO | 2026/10/14 | AI |
 | V0.14 | Hiện trạng bản dựng (4.5) | Áp `DEC-2026-1018-instructor-overview-richer`: bản dựng dựng lại 8 khối có biểu đồ, thêm hai thẻ số liệu, lịch dạy trong tuần, biểu đồ lượt nộp 7 ngày, bài nộp gần đây. Thiết kế dữ liệu và endpoint không đổi. Chưa duyệt hình | 2026/10/18 | AI |
 | V0.15 | Sheet 5 (khu vực D NO 7), Sheet 7 (7.1 NO 10), các dòng `[Nguồn]`, Câu hỏi mở Q8 | Sửa 2026-10-22 đồng bộ DB, `DEC-2026-1022-identity-schema-sync` mục 4 (ID-05): `completionPct` do `identity` **tính khi đọc** (công thức V0.13 giữ nguyên, thêm điều kiện học viên còn ghi danh `left_at IS NULL`), không có bảng read model `class_completion_stats` (đã bỏ ở DB, `02-bd/database/F1_identity.md:122`); nội dung V0.13 đã đúng nên không đổi quyết định. Đọc lại số dòng mọi trích dẫn `02-bd/database/{F1_identity,F2_problem-bank,F5_ai-review}.md` (đã dịch dòng; ví dụ `identity_recent_activity` từ `:115-116` thành `:194-195`, `class_assignments` từ `:116-128` thành `:175-187`) và sửa trích dẫn `.nexa/control/decision-registry.md:3865` thành `:1796`. Không đổi RD, không đổi code | 2026/10/22 | Claude |
+| V0.16 | Hiện trạng bản dựng (4.0) | Sửa 2026-11-07 (nối FE, việc 7a, 7b, 8). Thẻ lớp, nửa vòng tròn "Học viên", "Lớp của tôi" đọc F1 #56 (`useInstructorClassSummary`) thay #19: có `completionPercent`, `absentCount` thật; F4 lỗi (`IDT-507`) thì #56 lùi về #19 và hai khối cần số F4 không vẽ. "Bài nộp gần đây" chế độ thật lấy 5 dòng đầu của F4 #13 (`useInstructorSubmissionPage`, `result=all`, trang 1; cờ `leftClass` đi kèm); chế độ mock giữ `buildSubmissionRows`. **Biểu đồ "Lượt nộp theo ngày" ẩn ở chế độ thật** (chủ dự án chốt 2026-11-07: không có endpoint đếm theo ngày cho giảng viên, một trang 20 dòng của #13 sẽ vẽ sai). Khối "Bài tập của tôi" (#54) lỗi mạng hiện khối lỗi có nút thử lại, không còn câu rỗng. `useClassStudents` chỉ còn mock. Chưa duyệt hình | 2026/11/07 | AI |
+| V0.17 | Hiện trạng bản dựng (4.0) | Sửa 2026-11-07 (kiểm trình duyệt thật, phát hiện F1). Thẻ "Tổng học viên" và "vắng bài" đọc số người không trùng của F1 #56 (`studentCount`, `absentStudentCount`) thay vì cộng số học viên từng thẻ lớp (học viên ở hai lớp bị đếm hai lần: 5 thay vì 3). Khi #56 lỗi và danh sách #19 thay thế thì quay về cộng theo lớp. Hook `useInstructorClassTotals`; test `real-class-metrics.test.ts`. Báo cáo `06-plan/reports/261107-2100-f1-f2-kiem-trinh-duyet/report.md`. Chưa duyệt hình. |
+| V0.18 | Sheet 4 (bảng 4.0), 5 (A NO 3), 6 (A NO 3), 7 (7.1 NO 17, 7.2 NO 8, 7.3 NO 5), 8 (NO 4) | Sửa 2026-11-18 (F1-35, `DEC-2026-1117-user-avatar-upload`, chưa duyệt hình). Ô "Avatar" ở thanh công cụ nay là ảnh đại diện thật của giảng viên, chưa có ảnh hoặc ảnh lỗi thì hiện chữ viết tắt; mỗi dòng của khối "Bài nộp gần đây" hiện ảnh học viên theo `avatarVersion` của danh sách bài nộp giảng viên (F4 mục 13.3). Khối "Học viên cần chú ý" (#58) vẫn không dựng nên không có ảnh ở màn này. | 2026/11/18 | Claude |
 
 ---
 
@@ -318,8 +323,8 @@ Bảng 4.0: Các khối của bản dựng sau `DEC-2026-1018-instructor-overvie
 | Thẻ "Học viên": nửa vòng tròn + thanh "Vắng bài theo lớp" | `studentCount`, `absentCount` | Thêm thanh vắng theo từng lớp |
 | "Lớp của tôi", "Bài giao cho lớp" | `completionPct`, `submissionCount` | Nhãn lớp kèm số học viên |
 | "Lịch dạy trong tuần" | `class.schedule` | Khối mới, ngày hôm nay được tô |
-| "Lượt nộp theo ngày" (cột chồng 7 ngày) | bài nộp của học viên các lớp | Mốc 7 ngày lấy theo bài nộp mới nhất của mock; chủ dự án chốt 2026-10-18 giữ mock, chỉ kiểm lại khi có API thật |
-| "Bài nộp gần đây" | `buildSubmissionRows`, 5 dòng mới nhất | Liên kết sang trang kết quả giảng viên với `from=submissions` |
+| "Lượt nộp theo ngày" (cột chồng 7 ngày) | bài nộp của học viên các lớp (**chế độ thật: ẩn**, V0.16) | Mốc 7 ngày lấy theo bài nộp mới nhất của mock; chủ dự án chốt 2026-10-18 giữ mock, chỉ kiểm lại khi có API thật |
+| "Bài nộp gần đây" | `buildSubmissionRows`, 5 dòng mới nhất | Liên kết sang trang kết quả giảng viên với `from=submissions`; mỗi dòng có ảnh đại diện học viên (hoặc chữ viết tắt) theo `avatarVersion` của danh sách bài nộp giảng viên, F4 mục 13.3 (V0.18, `views/teacher/overview/ui/instructor-overview-view.tsx:374-379`) |
 | "Hoạt động gần đây" | `ACTIVITY_FEED` cục bộ | Không đổi |
 
 Khối "Học viên cần chú ý" chủ dự án không chọn nên không dựng. Các dòng bảng 4.1 nói "đã gỡ hai thẻ" và "hàng một 3 thẻ" lỗi thời theo bảng trên.
@@ -340,7 +345,7 @@ Bảng 4.1: Đối chiếu bản dựng Next.js với thiết kế sau `DEC-2026
 | "Hoạt động gần đây": thẻ hàng hai, 4 mục (dữ liệu cục bộ `ACTIVITY_FEED`, chưa gọi API), 2 cột từ 768px | Đã dựng, chưa duyệt hình | cùng tệp `:21-46,153-175` |
 | Bố cục tổng: hàng một 3 thẻ cao bằng nhau (`h-full`), dưới 1024px xếp dọc | Đã dựng, chưa duyệt hình | cùng tệp `:72,74,105,126` |
 | **Khoảng cách prototype đã biết (2026-10-14):** số ở giữa biểu đồ "Học viên" là tổng `studentCount` theo từng lớp, trong khi thiết kế chốt đếm `DISTINCT student_id` (người) theo `DEC-2026-1014-instructor-batch1-counting-rules` | Chưa khớp thiết kế nhưng chủ dự án chốt 2026-10-18 giữ mock, đếm theo người khi có API thật. Dữ liệu mock không có học viên nằm ở hai lớp nên hai cách ra cùng số; ghi vào `06-plan/PROTOTYPE_DEBT.md` do tài liệu khác phụ trách | `05-coding/frontend/src/views/teacher/overview/ui/instructor-overview-view.tsx:57-58` |
-| Nguồn dữ liệu của bản dựng: `useInstructorClasses` (`studentCount`, `absentCount`, `completionPct`) và `useClassAssignments` (`submissionCount`, `title`) | Dữ liệu mock/entity, tên trường khớp | `05-coding/frontend/src/views/teacher/overview/ui/instructor-overview-view.tsx:54-58`; `05-coding/frontend/src/entities/class/model/types.ts:38-41`; `05-coding/frontend/src/entities/class-assignment/model/types.ts:16` |
+| Nguồn dữ liệu của bản dựng: `useInstructorClasses` (`studentCount`, `absentCount`, `completionPct`) và `useTopAssignedProblems` (`submissionCount`, `title`; thật từ 2026-11-07 qua F2 #54, mock tự tính năm bài đầu từ danh sách mock) | Dữ liệu mock/entity, tên trường khớp | `05-coding/frontend/src/views/teacher/overview/ui/instructor-overview-view.tsx:54-58`; `05-coding/frontend/src/entities/class/model/types.ts:38-41`; `05-coding/frontend/src/entities/class-assignment/model/types.ts:16` |
 
 Toàn bộ các dòng "chưa duyệt hình" ở trên là thay đổi trình bày của prototype ngày 2026-10-14, chủ dự án chưa duyệt; RD không đổi.
 
@@ -361,7 +366,7 @@ Toàn bộ các dòng "chưa duyệt hình" ở trên là thay đổi trình bà
 | Hàng công cụ đầu màn | | | | | | | | | | | | | |
 | | 1 | ~~Ô tìm kiếm~~ (đã bỏ 2026-10-11) | `instructorOverview.toolbar.searchBox` | - | - | TextBox | String | 100 | - | I | rỗng | - | Ô nhập từ khoá, gợi ý "Tìm lớp, học viên, bài tập…". Prototype chưa lập trình hành vi<br>[Nguồn giá trị] Người dùng nhập; phạm vi tìm kiếm và màn kết quả chưa chốt, xem Q3<br>[EVT liên quan] EVT-2 |
 | | 2 | ~~Tạo lớp mới~~ (đã bỏ 2026-10-11) | `instructorOverview.toolbar.btnCreateClass` | - | - | Button | - | - | - | I | - | `+ Tạo lớp mới` | Nút hành động chính của màn, điều hướng sang `class_management` ở chế độ tạo mới<br>[Nguồn giá trị] Nhãn tĩnh i18n<br>[EVT liên quan] EVT-3 |
-| | 3 | Avatar giảng viên (nay ở thanh công cụ chung của khu, `_shell`) | `instructorOverview.toolbar.avatar` | `identity.users` | `display_name` | Label | String | 2 | - | O | - | Hai ký tự đầu của họ và tên | Hiển thị chữ cái viết tắt của người đang đăng nhập; **không có menu thả xuống ở đợt này**, thông tin danh tính đầy đủ đã có ở đáy sidebar<br>[Công thức] Ghép ký tự đầu của hai từ cuối trong `display_name`, viết hoa<br>[EVT liên quan] EVT-4 |
+| | 3 | Ảnh đại diện giảng viên (hoặc chữ viết tắt; nay ở thanh công cụ chung của khu, `_shell`) | `instructorOverview.toolbar.avatar` | `identity.user_avatars`; `identity.users` | `updated_at`; `display_name` | Label | String | - | - | O | Chữ viết tắt | Ảnh tròn, hoặc hai ký tự in hoa | Hiển thị ảnh của người đang đăng nhập; chưa có ảnh hoặc ảnh tải lỗi thì hiện chữ viết tắt, không hiện biểu tượng ảnh hỏng (F1-35 mục 2); bấm vào mở menu người dùng (Q10 đã chốt)<br>[Nguồn giá trị] Có ảnh khi `MyProfileDto.avatarVersion` khác rỗng (mục 7.1 NO 17); ảnh tải qua `GetUserAvatar` [Nguồn: 03-dd/api/F1_identity.md mục 0.9.5]<br>[Công thức] Chữ viết tắt: ghép ký tự đầu của hai từ cuối trong `display_name`, viết hoa<br>[Hiện trạng bản dựng] Đã dựng 2026-11-17, chưa duyệt hình (`05-coding/frontend/src/widgets/app-shell/ui/instructor-toolbar.tsx:18`, `widgets/app-shell/ui/area-user-menu.tsx:67-72`); trước khi hồ sơ tải xong hiện một chữ cái đầu (`area-user-menu.tsx:74-80`) Ghép ký tự đầu của hai từ cuối trong `display_name`, viết hoa<br>[EVT liên quan] EVT-4 |
 
 ### Khu vực B — Thẻ biểu đồ "Học viên" (trước V0.9: Thẻ thống kê)
 
@@ -444,7 +449,7 @@ Toàn bộ các dòng "chưa duyệt hình" ở trên là thay đổi trình bà
 | Hàng công cụ đầu màn | | | | |
 | | 1 | ~~Ô tìm kiếm~~ (đã bỏ 2026-10-11) | Có | [Điều kiện kích hoạt] Luôn kích hoạt. Hành vi tìm kiếm chưa chốt (Q3) nên ở đợt này ô chỉ nhận ký tự, không phát yêu cầu nào. |
 | | 2 | ~~Tạo lớp mới~~ (đã bỏ 2026-10-11) | Có | [Điều kiện kích hoạt] Luôn kích hoạt. Không phụ thuộc trạng thái tải của các khối dữ liệu. |
-| | 3 | Avatar giảng viên (nay ở thanh công cụ chung của khu, `_shell`) | Có | [Điều kiện kích hoạt] Luôn kích hoạt — bấm mở menu người dùng (Cài đặt, Trang cá nhân, Thoát), Q10 đã chốt 2026-10-13. Menu thuộc khung vỏ, không phải việc của màn này. |
+| | 3 | Ảnh đại diện giảng viên (hoặc chữ viết tắt; nay ở thanh công cụ chung của khu, `_shell`) | Có | [Điều kiện hiển thị] Ảnh tải lỗi hoặc chưa có thì hiện chữ viết tắt.<br>[Điều kiện kích hoạt] Luôn kích hoạt — bấm mở menu người dùng (Cài đặt, Trang cá nhân, Thoát), Q10 đã chốt 2026-10-13. Menu thuộc khung vỏ, không phải việc của màn này. |
 
 ### Khu vực B — Thẻ biểu đồ "Học viên" (trước V0.9: Thẻ thống kê)
 
@@ -527,8 +532,9 @@ Toàn bộ các dòng "chưa duyệt hình" ở trên là thay đổi trình bà
 | 14 | `AssignedProblemSummaryDto` | `primaryTopic` | String | `problem.problem_topics` | - | ~~"Dòng meta"~~ (gỡ khỏi bản dựng 2026-10-14) | Không | [Chuyển đổi] Chủ đề đầu tiên của bài; không có thì giao diện bỏ luôn dấu phân cách. |
 | 15 | `AssignedProblemSummaryDto` | `useCount` | Number | `judge.submissions` | `problem_id` | "Lượt dùng" (thanh và giá trị xếp hạng, E NO 6) | Có | [Nguồn] Phạm vi đếm **theo lớp của giảng viên**, chốt 2026/10/14 (Q9 đóng; `DEC-2026-1014-instructor-batch1-counting-rules`); cần tổng hợp theo lớp ở `judge-orchestration`, thuộc DD. Bản dựng đọc tên `submissionCount` [Nguồn: 05-coding/frontend/src/entities/class-assignment/model/types.ts:16]<br>[Chuyển đổi] V0.9: không còn hậu tố `lượt`; dùng làm khoá chọn 5 bài cao nhất (E NO 3, Q15 đóng 2026/10/14). |
 | 16 | `ClassSummaryDto` | `absentCount` | Number | - | - | Phần "Vắng bài" của biểu đồ "Học viên" (B NO 8, 9) | Có | [Nguồn] V0.9, **trường mới** thêm vào DTO: cùng read model với `ClassCardDto.absentCount` của `INS0201` [Nguồn: 02-bd/screens/teacher/INS0201_class_management.md:494]; bản dựng đọc `absentCount` [Nguồn: 05-coding/frontend/src/entities/class/model/types.ts:41]<br>[Chuyển đổi] Cộng qua các lớp. `[SoT: Suy luận]` rằng `ListMyClassesSummary` trả được trường này; DD `identity` chốt. |
+| 17 | `MyProfileDto`; `InstructorSubmissionItemDto` | `avatarVersion` | Number | `identity.user_avatars` | `updated_at` | "Ảnh đại diện giảng viên" (A NO 3); ảnh học viên ở "Bài nộp gần đây" (4.0) | Có | [Nguồn] Dấu phiên bản ảnh (số nguyên mili giây), rỗng khi chưa có ảnh; hợp đồng duy nhất ở `03-dd/api/F1_identity.md` mục 0.9.5 (`MyProfileDto`) và `03-dd/api/F4_judge-orchestration.md` mục 13.3 (danh sách bài nộp giảng viên), không chép lại ở đây<br>[Chuyển đổi] Rỗng thì hiện chữ viết tắt, không gọi tải ảnh; có thì tải `GetUserAvatar` và phá cache theo giá trị này. |
 
-### 7.2 Truy cập bảng dữ liệu (7)
+### 7.2 Truy cập bảng dữ liệu (8)
 
 | NO | Tên logic | Bảng | Repository | CRUD | Mục đích | Ghi chú |
 | --: | :--- | :--- | :--- | :-: | :--- | :--- |
@@ -539,6 +545,7 @@ Toàn bộ các dòng "chưa duyệt hình" ở trên là thay đổi trình bà
 | 5 | Bài giao cho lớp | `problem.class_assignments` | `ClassAssignmentRepository` | R | Dựng danh sách "Bài tập của tôi" và mẫu số của tỉ lệ hoàn thành | `ListMyAssignedProblems`: R<br>`ListMyClassesSummary`: R |
 | 6 | Bài toán | `problem.problems` | `ProblemRepository` | R | Lấy tên bài và mức độ khó cho khối "Bài tập của tôi" | `ListMyAssignedProblems`: R |
 | 7 | Danh mục độ khó | `problem.problem_levels` | `ProblemLevelRepository` | R | Lấy nhãn độ khó của bài cho khối "Bài tập của tôi" qua join `level_id` | `ListMyAssignedProblems`: R, qua join. Màn này không ghi; ADMIN quản lý độ khó ở `SHR0201`, INSTRUCTOR chỉ chọn [Nguồn: 02-bd/database/F2_problem-bank.md mục `problem_levels`] |
+| 8 | Ảnh đại diện | `identity.user_avatars` | `UserAvatarRepository` | R | Đọc `updated_at` cho `avatarVersion` (qua `GetMyProfile`) và byte ảnh cho `GetUserAvatar`; màn không thêm, đổi hay xoá ảnh [Nguồn: 02-bd/database/F1_identity.md mục 1.16] | `GetMyProfile`: R; `GetUserAvatar`: R |
 
 **Toàn bộ là `R`.** Màn này không có bất kỳ thao tác `C`, `U`, `D` nào — đây là màn chỉ đọc.
 
@@ -555,6 +562,7 @@ schema khác `identity`; `identity` **không** đọc trực tiếp chúng, xem 
 | 2 | `ListInstructorRecentActivity` | Mười mục hoạt động gần nhất liên quan tới lớp phụ trách | `identity` |
 | 3 | `ListMyClassesSummary` | Danh sách lớp phụ trách kèm sĩ số (`studentCount`), số vắng bài (`absentCount`) và tỉ lệ hoàn thành trung bình (`completionPct`); nguồn chung của thẻ "Học viên" và thẻ "Lớp của tôi" | `identity` |
 | 4 | `ListMyAssignedProblems` | Năm bài giao kèm lượt nộp tính trong các lớp của giảng viên (cần tổng hợp theo lớp ở `judge-orchestration`, DD) | `problem-bank` |
+| 5 | `GetUserAvatar` | Byte ảnh đại diện của một người theo mã người dùng (giảng viên ở thanh công cụ, học viên ở "Bài nộp gần đây"); gọi riêng cho từng người có `avatarVersion` khác rỗng; lỗi hoặc rỗng thì rơi về chữ viết tắt, không ảnh hưởng khối chứa nó. Dùng chung với các màn khác, không tính vào ba endpoint số liệu bên dưới [Nguồn: 03-dd/api/F1_identity.md mục 0.9.5] | `identity` |
 
 Còn **3 endpoint hoạt động** (NO 1 đã bỏ, gạch giữ số). **Chốt ở BD: giữ các endpoint riêng, không gộp thành một payload tổng hợp** — cùng lý do đã áp cho
 `admin_overview`: yêu cầu ba trạng thái theo từng khối [Nguồn: 01-rd/req/F1_identity.md:185-186] sẽ mất nghĩa
@@ -585,7 +593,7 @@ Không có endpoint nào cho ô tìm kiếm ở đợt này (Q3).
 | 1 | Màn hình | Khởi tạo màn | Vào màn thì tải 4 khối dữ liệu. | Không | Có | `ListInstructorRecentActivity`, `ListMyClassesSummary`, `ListMyAssignedProblems` | [Các bước]<br>1. Xác định giảng viên từ phiên đăng nhập, kiểm tra vai trò `INSTRUCTOR`.<br>2. Hiển thị khung chờ cho cả 4 khối.<br>3. Gọi song song 3 endpoint (`GetInstructorOverviewStats` đã bỏ 2026/10/14; thẻ "Học viên" dùng kết quả `ListMyClassesSummary`); máy chủ tự giới hạn phạm vi theo lớp phụ trách.<br>[Khi thành công] Từng khối hiển thị ngay khi có dữ liệu của nó, không chờ khối chậm nhất.<br>[Khi lỗi] Khối nào lỗi thì hiển thị câu lỗi trong đúng khối đó, các khối còn lại vẫn hiển thị bình thường; **không rời màn, không hiển thị màn lỗi toàn trang**. |
 | 2 | Nhập liệu | ~~Nhập từ khoá tìm kiếm~~ (đã bỏ 2026-10-11) | Gõ vào ô tìm kiếm ở hàng công cụ. | Không | Không | - | [Các bước]<br>1. Ghi nhận từ khoá vào trạng thái cục bộ của màn.<br>[Khi thành công] Không có hành vi nào tiếp theo ở đợt này — phạm vi tìm kiếm và màn kết quả chưa chốt (Q3). Dựng ô nhập nhưng **không** gọi máy chủ, để không cam kết một hợp đồng chưa được duyệt. |
 | 3 | Nút | ~~Tạo lớp mới~~ (đã bỏ 2026-10-11) | Bấm "+ Tạo lớp mới". | Có | Không | - | [Các bước]<br>1. Điều hướng sang màn `class_management` kèm cờ mở biểu mẫu tạo lớp.<br>[Khi thành công] Mở màn `class_management` ở chế độ tạo mới. Không có thay đổi chưa lưu nào để cảnh báo. Đích đến là đề xuất của BD, xem Q2. |
-| 4 | Nhấn | Bấm avatar giảng viên | Bấm vào ô chữ cái viết tắt ở hàng công cụ. | Không | Không | - | [Các bước]<br>1. Mở menu người dùng của khung vỏ (Cài đặt, Trang cá nhân, Thoát).<br>[Khi thành công] Menu popup hiện ra dưới avatar, đóng bằng Esc hoặc bấm ra ngoài. Chốt 2026-10-13 (Q10, `DEC-2026-1013-instructor-avatar-menu-and-read-source`); khối danh tính ở đáy sidebar đã bỏ [Nguồn: 02-bd/screens/teacher/_shell.md]. |
+| 4 | Nhấn | Bấm ảnh đại diện giảng viên | Bấm vào ảnh đại diện (hoặc ô chữ viết tắt khi chưa có ảnh) ở hàng công cụ. | Không | Không | - | [Các bước]<br>1. Mở menu người dùng của khung vỏ (Cài đặt, Trang cá nhân, Thoát).<br>[Khi thành công] Menu popup hiện ra dưới avatar, đóng bằng Esc hoặc bấm ra ngoài. Chốt 2026-10-13 (Q10, `DEC-2026-1013-instructor-avatar-menu-and-read-source`); khối danh tính ở đáy sidebar đã bỏ [Nguồn: 02-bd/screens/teacher/_shell.md]. |
 | 5 | Liên kết | Quản lý lớp | Bấm "Quản lý lớp" ở khối "Lớp của tôi". | Có | Không | - | [Các bước]<br>1. Điều hướng sang màn `class_management` ở chế độ danh sách.<br>[Khi thành công] Mở màn quản lý lớp, không chọn sẵn lớp nào. |
 | 6 | Liên kết | Xem tất cả — Bài tập của tôi | Bấm "Xem tất cả" ở khối "Bài tập của tôi". | Có | Không | - | [Các bước]<br>1. Điều hướng sang màn `class_assignments`.<br>[Khi thành công] Mở màn giao bài cho lớp. |
 | 7 | Màn hình | Quay lại màn và làm mới | Quay lại màn này từ một màn khác của khu Giảng viên, hoặc tải lại trang. | Không | Có | Ba endpoint như EVT-1 | [Các bước]<br>1. Chạy lại đúng luồng của EVT-1.<br>[Khi thành công] Số liệu phản ánh trạng thái mới nhất. **Không** mở kênh WebSocket riêng cho dashboard [Nguồn: 01-rd/req/F1_identity.md:177-178]. |

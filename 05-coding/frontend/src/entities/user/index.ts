@@ -38,3 +38,11 @@ export {
   updateMyProfile,
   updateMySettings,
 } from "./api/mutations";
+export type { ExportedFile } from "./api/real-export";
+export {
+  removeMyAvatar,
+  removeUserAvatar,
+  uploadMyAvatar,
+} from "./api/mutations";
+export { useAvatarUrl } from "./api/avatar-queries";
+export { UserAvatar } from "./ui/user-avatar";

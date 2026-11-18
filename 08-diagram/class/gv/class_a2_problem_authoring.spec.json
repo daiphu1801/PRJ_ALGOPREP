@@ -1,7 +1,7 @@
 {
-  "_": "Nguồn tiêu chí: 01-rd/req/user_stories/a2_instructor.md:13; 01-rd/req/user_stories/a2_instructor.md:15; 01-rd/req/user_stories/a2_instructor.md:17; 01-rd/req/user_stories/a2_instructor.md:26; 01-rd/req/user_stories/a2_instructor.md:28; 01-rd/req/user_stories/a2_instructor.md:30; 01-rd/req/user_stories/a2_instructor.md:32. Nguồn thiết kế: 03-dd/logic/F2_problem-bank.md; 03-dd/api/F2_problem-bank.md. [SoT: Suy luận] Tên lớp và chữ ký phương thức là thiết kế đề xuất từ hợp đồng DD vì backend nghiệp vụ chưa hiện thực đầy đủ. Mỗi phương thức ở lớp điều phối nối với đúng một tiêu chí theo thứ tự trong bảng truy vết; không hàm ý một endpoint riêng cho mỗi tiêu chí. Bỏ DTO HTTP, getter/setter, nhánh lỗi chi tiết.",
+  "_": "Nguon tieu chi: 01-rd/req/user_stories/a2_instructor.md:13-32. Nguon ma nguon: 05-coding/backend/algoprep-problem-bank/src/main/java/com/algoprep/problembank/presentation/controller/ProblemAuthoringController.java, ProblemSpecController.java, application/command/CreateProblemCommandHandler.java, SaveProblemSpecCommandHandler.java, UpdateProblemPublishStatusCommandHandler.java.",
   "kind": "class",
-  "title": "A2 — Soạn và xuất bản bài toán",
+  "title": "A2 — Soan va xuat ban bai toan",
   "covers": [
     "F2-01",
     "F2-02",
@@ -13,77 +13,78 @@
     "legend": "shared",
     "classes": [
       {
-        "id": "service",
-        "name": "ProblemAuthoringService",
+        "id": "authorCtrl",
+        "name": "ProblemAuthoringController",
         "methods": [
-          "+ saveContent(actorId : UUID, draft : ProblemDraft) : Problem",
-          "+ saveFunctionSpec(actorId : UUID, spec : FunctionSpecDraft) : ProblemSpec",
-          "+ setMatchingStrategy(actorId : UUID, strategy : MatchingStrategy)",
-          "+ createUnpublished(actorId : UUID, draft : ProblemDraft) : Problem",
-          "+ publish(actorId : UUID, problemId : UUID) : PublishChecklist",
-          "+ validatePublish(problemId : UUID) : PublishChecklist",
-          "+ withdraw(actorId : UUID, problemId : UUID)"
+          "+ create(caller : JwtAuthenticationToken, body : ProblemRequest) : ProblemAuthoringView",
+          "+ replace(caller : JwtAuthenticationToken, problemId : String, body : ProblemRequest) : ProblemAuthoringView",
+          "+ changeStatus(caller : JwtAuthenticationToken, problemId : String, body : StatusRequest) : UpdateProblemStatusResult"
         ]
       },
       {
-        "id": "port1",
-        "name": "ProblemRepository",
-        "kind": "class",
+        "id": "specCtrl",
+        "name": "ProblemSpecController",
         "methods": [
-          "+ save(problem : Problem)"
+          "+ save(caller : JwtAuthenticationToken, problemId : String, request : String) : SaveProblemSpecResult"
         ]
       },
       {
-        "id": "port2",
-        "name": "FunctionSpecEvaluator",
-        "kind": "class",
+        "id": "specHandler",
+        "name": "SaveProblemSpecCommandHandler",
         "methods": [
-          "+ evaluate(spec : FunctionSpecDraft) : Evaluation"
+          "+ save(command : SaveProblemSpecCommand) : SaveProblemSpecResult"
         ]
       },
       {
-        "id": "port3",
-        "name": "PublishChecklistService",
-        "kind": "class",
+        "id": "statusHandler",
+        "name": "UpdateProblemPublishStatusCommandHandler",
         "methods": [
-          "+ evaluate(problemId : UUID) : PublishChecklist"
+          "+ update(command : UpdateProblemStatusCommand) : UpdateProblemStatusResult"
         ]
       },
       {
-        "id": "port4",
-        "name": "AuthorScopePolicy",
-        "kind": "class",
+        "id": "publishGate",
+        "name": "PublishGate",
         "methods": [
-          "+ requireWrite(actorId : UUID, problemId : UUID)"
+          "+ check(problem : AuthoringProblemRecord) : PublishChecklist"
+        ]
+      },
+      {
+        "id": "publishRepo",
+        "name": "ProblemPublishRepository",
+        "kind": "interface",
+        "methods": [
+          "+ updateStatus(problemId : UUID, newStatus : String, publishedAt : Instant)",
+          "+ findForPublish(problemId : UUID) : Optional<AuthoringProblemRecord>"
         ]
       }
     ],
     "externals": [],
     "relations": [
       {
-        "from": "service",
-        "to": "port1",
+        "from": "authorCtrl",
+        "to": "statusHandler",
         "kind": "dependency"
       },
       {
-        "from": "service",
-        "to": "port2",
+        "from": "specCtrl",
+        "to": "specHandler",
         "kind": "dependency"
       },
       {
-        "from": "service",
-        "to": "port3",
+        "from": "statusHandler",
+        "to": "publishGate",
         "kind": "dependency"
       },
       {
-        "from": "service",
-        "to": "port4",
+        "from": "statusHandler",
+        "to": "publishRepo",
         "kind": "dependency"
       }
     ],
     "notes": [
-      "Bài mới UNPUBLISHED; xuất bản cần đủ checklist và đáp án mẫu qua toàn bộ testcase duyệt.",
-      "[SoT: Suy luận] Tên lớp/phương thức là thiết kế backend từ DD."
+      "ProblemAuthoringController va ProblemSpecController dieu phoi soan de va dac ta.",
+      "PublishGate kiem tra du dac ta va hidden testcase truoc khi xuat ban."
     ]
   }
 }

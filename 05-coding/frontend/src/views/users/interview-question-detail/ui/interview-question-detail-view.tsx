@@ -1,4 +1,5 @@
-// PROTOTYPE — no DD yet. See 06-plan/PROTOTYPE_DEBT.md mục 9.1 (`views/interview-question-detail`).
+// Data: F6 #3 (detail), #4 (recall), #5 (bookmark), #6 (practice answer), #7 (attempt history) through
+// `entities/interview-question`; see 03-dd/screens/users/USR0402 section 2.
 //
 // USR0402 `interview_question_detail` has no prototype OF ITS OWN, but it is not UI invented from
 // nothing either: most of Chế độ học reuses the "xem nhanh" block already dựng for
@@ -26,25 +27,27 @@
 // justified at prototype stage.
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, Bookmark } from "lucide-react";
 import {
-  useInterviewQuestion,
+  nextReviewDays,
   topicLabel,
   levelLabel,
-  useGradePracticeAnswer,
-  RECALL_NEXT_REVIEW_DAYS,
   useInterviewLevels,
   useInterviewTopics,
-  useRecallAndBookmarkState,
+  useLearnerQuestionDetail,
+  usePracticeAttempts,
+  useRateRecall,
+  useSetBookmark,
+  useSubmitPracticeAnswer,
   RecallLevelPicker,
-  type AnswerAttempt,
-  type InterviewQuestion,
+  type LearnerQuestionDetail,
+  type PracticeAttempt,
   type RecallLevel,
 } from "@/entities/interview-question";
-import { useLocale, useT } from "@/shared/i18n";
+import { useApiErrorMessage, useLocale, useT } from "@/shared/i18n";
 import { formatDateVN, type DateLocale } from "@/shared/lib";
 import { toast } from "@/shared/lib/toast-store";
 import {
@@ -56,7 +59,9 @@ import {
   NoticeTile,
   ProgressBar,
   QueryBoundary,
+  QueryError,
   SegmentedTabs,
+  Skeleton,
   TextArea,
 } from "@/shared/ui";
 
@@ -74,46 +79,148 @@ export function InterviewQuestionDetailView({
   questionId: string;
 }) {
   return (
-    <QueryBoundary query={useInterviewQuestion(questionId)}>
+    <QueryBoundary query={useLearnerQuestionDetail(questionId)}>
       {(question) => <QuestionDetail key={questionId} question={question} />}
     </QueryBoundary>
   );
 }
 
-function QuestionDetail({ question }: { question: InterviewQuestion | null }) {
+/**
+ * Feedback of one attempt (F6 #6 answer or #7 history row): strengths, gaps, per-criterion levels and
+ * next steps for a COMPLETED attempt, the AI-unavailable notice for a FAILED one. The same block is used
+ * for the attempt just submitted and for an older one opened in the history (USR0402 EVT-9).
+ */
+function AttemptFeedback({
+  attempt,
+  onBackToStudy,
+}: {
+  attempt: PracticeAttempt;
+  /** Only the freshly submitted attempt offers the way back to Study mode. */
+  onBackToStudy?: () => void;
+}) {
+  const t = useT("interviewQuestionDetail");
+  return (
+    <div className="flex flex-col gap-3">
+      {attempt.feedbackStatus === "pending" ? (
+        <p role="status" className="text-[13px] text-[var(--color-text-muted)]">
+          {t("practice.pendingState")}
+        </p>
+      ) : attempt.feedbackStatus === "failed" ? (
+        <NoticeTile tone="warn" title={t("practice.aiUnavailable")} />
+      ) : (
+        <>
+          {attempt.strengths?.length ? (
+            <div>
+              <p className="mb-1.5 text-[10.5px] font-semibold tracking-[0.08em] text-[var(--color-success-text)] uppercase">
+                {t("practice.strengthsLabel")}
+              </p>
+              <ul className="list-disc pl-5 text-[13px] text-[var(--color-text-muted)]">
+                {attempt.strengths.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
+          {attempt.gaps?.length ? (
+            <div>
+              <p className="mb-1.5 text-[10.5px] font-semibold tracking-[0.08em] text-[var(--color-admin-warn)] uppercase">
+                {t("practice.gapsLabel")}
+              </p>
+              <ul className="list-disc pl-5 text-[13px] text-[var(--color-text-muted)]">
+                {attempt.gaps.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
+          {attempt.criteria?.length ? (
+            <div>
+              <p className="mb-1.5 text-[10.5px] font-semibold tracking-[0.08em] text-[var(--color-text-subtle)] uppercase">
+                {t("practice.criteriaLabel")}
+              </p>
+              <ul className="flex flex-col gap-2.5">
+                {attempt.criteria.map((criterion) => (
+                  <li key={criterion.criterionCode}>
+                    <div className="mb-1 flex items-baseline justify-between gap-3 text-[13px]">
+                      <span className="font-semibold text-[var(--color-text)]">
+                        {criterion.criterionCode}
+                      </span>
+                      <span className="text-[var(--color-text-muted)]">
+                        {t("practice.criterionRow", {
+                          achievement: criterion.achievementPercent,
+                          weight: criterion.weightPercent,
+                        })}
+                      </span>
+                    </div>
+                    <ProgressBar
+                      value={criterion.achievementPercent}
+                      label={criterion.criterionCode}
+                      fill="var(--color-primary)"
+                      height={6}
+                    />
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
+          {attempt.nextSteps ? (
+            <div>
+              <p className="mb-1.5 text-[10.5px] font-semibold tracking-[0.08em] text-[var(--color-text-subtle)] uppercase">
+                {t("practice.nextStepsLabel")}
+              </p>
+              <p className="text-[13px] whitespace-pre-line text-[var(--color-text-muted)]">
+                {attempt.nextSteps}
+              </p>
+            </div>
+          ) : null}
+          <p className="text-[11.5px] text-[var(--color-text-subtle)]">
+            {t("practice.eduDisclaimer")}
+          </p>
+          {onBackToStudy ? (
+            <button
+              type="button"
+              onClick={onBackToStudy}
+              className="self-start text-[12.5px] font-semibold text-[var(--color-primary)] hover:underline"
+            >
+              {t("practice.linkBackToStudy")}
+            </button>
+          ) : null}
+        </>
+      )}
+    </div>
+  );
+}
+
+function QuestionDetail({
+  question,
+}: {
+  question: LearnerQuestionDetail | null;
+}) {
   const t = useT("interviewQuestionDetail");
   const locale = useLocale() as DateLocale;
   const router = useRouter();
   const topicList = useInterviewTopics();
   const levelList = useInterviewLevels();
-  const { mutateAsync: gradeAnswer } = useGradePracticeAnswer();
-
-  // Hook cần một mảng — câu hỏi đơn lẻ vẫn seed đúng một khoá. Câu hỏi không tồn tại thì mảng rỗng,
-  // hook vẫn an toàn (map rỗng).
-  const { recall, bookmarks, rate, toggleBookmark } = useRecallAndBookmarkState(
-    question ? [question] : [],
-  );
+  const apiMessage = useApiErrorMessage();
+  const rateMutation = useRateRecall();
+  const bookmarkMutation = useSetBookmark();
+  const submitMutation = useSubmitPracticeAnswer(question?.id ?? "");
+  const attemptsQuery = usePracticeAttempts(question?.id ?? "");
+  const attempts =
+    attemptsQuery.data?.pages.flatMap((page) => page.items) ?? [];
+  const totalAttempts = attemptsQuery.data?.pages[0]?.totalAttempts ?? 0;
 
   const [mode, setMode] = useState<Mode>("study");
   const [answerText, setAnswerText] = useState("");
-  const [attempts, setAttempts] = useState<AnswerAttempt[]>(
-    question?.attempts ?? [],
+  const pendingFeedback = submitMutation.isPending;
+  // The attempt whose feedback is on screen in Practice mode, straight from the submit answer. Null =
+  // empty composer (always the state on entry and after "Thử lại một lượt mới"); the composer is
+  // read-only only while this is set.
+  const [shownAttempt, setShownAttempt] = useState<PracticeAttempt | null>(
+    null,
   );
-  const [pendingFeedback, setPendingFeedback] = useState(false);
-  // attemptNo whose feedback is on screen in Practice mode. Null = empty composer (always the state on
-  // entry and after "Thử lại một lượt mới"); the composer is read-only only while this is set.
-  const [shownAttemptNo, setShownAttemptNo] = useState<number | null>(null);
   const [expandedAttempt, setExpandedAttempt] = useState<number | null>(null);
   const [leaveTarget, setLeaveTarget] = useState<string | null>(null);
-  // The simulated AI delay must not fire after the learner has left the screen.
-  const feedbackTimer = useRef<number | null>(null);
-  useEffect(
-    () => () => {
-      if (feedbackTimer.current !== null)
-        window.clearTimeout(feedbackTimer.current);
-    },
-    [],
-  );
 
   if (!question) {
     return (
@@ -133,10 +240,8 @@ function QuestionDetail({ question }: { question: InterviewQuestion | null }) {
     );
   }
 
-  const shownAttempt =
-    attempts.find((attempt) => attempt.attemptNo === shownAttemptNo) ?? null;
-  const questionRecall = recall[question.code] ?? null;
-  const bookmarked = bookmarks[question.code] ?? false;
+  const questionRecall = question.recall;
+  const bookmarked = question.bookmarked;
   // Unsent text in the composer, for the first attempt and every later one alike.
   const hasDraft =
     mode === "practice" && answerText.trim().length > 0 && !shownAttempt;
@@ -159,67 +264,45 @@ function QuestionDetail({ question }: { question: InterviewQuestion | null }) {
     const trimmed = answerText.trim();
     if (!trimmed || trimmed.length > ANSWER_MAX_LENGTH || pendingFeedback)
       return;
-    setPendingFeedback(true);
-    const attemptNo = Math.max(0, ...attempts.map((a) => a.attemptNo)) + 1;
-    // Không gọi AI thật (prototype) — mô phỏng độ trễ và một phản hồi mẫu bám theo rubric của câu
-    // hỏi, để khối phản hồi có nội dung liên quan thay vì text vô nghĩa cố định.
-    // `question` is narrowed non-null by the early return above, but that narrowing does not
-    // survive into a closure — `setTimeout`'s callback runs later, so TS re-widens it to
-    // `| undefined` here. The value itself cannot actually change (seeded once via useState).
-    const rubric = question!.rubric;
-    feedbackTimer.current = window.setTimeout(async () => {
-      let criteria;
-      try {
-        criteria = await gradeAnswer(rubric);
-      } catch (error) {
-        setPendingFeedback(false);
-        toast.error(error instanceof Error ? error.message : String(error));
-        return;
-      }
-      const strengths = rubric
-        .slice(0, 1)
-        .map((c) =>
-          t("practice.feedbackSample.strength", { criterion: c.label }),
-        );
-      const gaps = rubric
-        .slice(1, 2)
-        .map((c) => t("practice.feedbackSample.gap", { criterion: c.label }));
-      setAttempts((prev) => [
-        {
-          attemptNo,
-          createdAt: new Date().toISOString(),
-          feedbackStatus: "completed",
-          answerText: trimmed,
-          strengths,
-          gaps,
-          nextSteps: t("practice.feedbackSample.nextSteps"),
-          criteria,
-        },
-        ...prev,
-      ]);
-      setShownAttemptNo(attemptNo);
-      setPendingFeedback(false);
-      toast.success(t("toast.answerSubmitted"));
-    }, 900);
+    // The callbacks live on `mutate`, so nothing fires once the learner has left the screen.
+    submitMutation.mutate(trimmed, {
+      onSuccess: (attempt) => {
+        setShownAttempt(attempt);
+        if (attempt.feedbackStatus === "completed")
+          toast.success(t("toast.answerSubmitted"));
+        else toast.warning(t("practice.aiUnavailable"));
+      },
+      onError: (error) => toast.error(apiMessage(error)),
+    });
   }
 
   function rateWithToast(level: RecallLevel) {
-    rate(question!.code, level);
-    toast.success(t("toast.rated"));
+    rateMutation.mutate(
+      { id: question!.id, level },
+      {
+        onSuccess: () => toast.success(t("toast.rated")),
+        onError: (error) => toast.error(apiMessage(error)),
+      },
+    );
   }
 
   function toggleBookmarkWithToast() {
-    toggleBookmark(question!.code);
-    toast.success(
-      (bookmarks[question!.code] ?? false)
-        ? t("toast.unbookmarked")
-        : t("toast.bookmarked"),
+    const target = !bookmarked;
+    bookmarkMutation.mutate(
+      { id: question!.id, bookmarked: target },
+      {
+        onSuccess: () =>
+          toast.success(
+            target ? t("toast.bookmarked") : t("toast.unbookmarked"),
+          ),
+        onError: (error) => toast.error(apiMessage(error)),
+      },
     );
   }
 
   function retryPractice() {
     setAnswerText("");
-    setShownAttemptNo(null);
+    setShownAttempt(null);
   }
 
   return (
@@ -279,7 +362,7 @@ function QuestionDetail({ question }: { question: InterviewQuestion | null }) {
         <div className="min-w-0">
           <Card className="mb-4 px-6 py-5">
             <h1 className="mb-3 text-2xl font-bold tracking-tight text-pretty">
-              {question.question}
+              {question.title}
             </h1>
             <p className="text-[14px] leading-relaxed whitespace-pre-line text-[var(--color-text-muted)]">
               {question.content}
@@ -291,7 +374,7 @@ function QuestionDetail({ question }: { question: InterviewQuestion | null }) {
             value={mode}
             onValueChange={(next) => {
               // Practice stays clickable when locked so the click says why.
-              if (next === "practice" && !question.hasRubric) {
+              if (next === "practice" && !question.practiceAvailable) {
                 toast.warning(t("mode.practiceLockedReason"));
                 return;
               }
@@ -330,8 +413,7 @@ function QuestionDetail({ question }: { question: InterviewQuestion | null }) {
                 <div>
                   <p className="mb-2 flex items-center gap-2 text-[10.5px] font-semibold tracking-[0.08em] text-[var(--color-text-subtle)] uppercase">
                     {t("study.answerFrameworkLabel")}
-                    {topicList.find((item) => item.key === question.topic)
-                      ?.usesStarFramework ? (
+                    {question.usesStarFramework ? (
                       <Badge variant="neutral">{t("study.starTag")}</Badge>
                     ) : null}
                   </p>
@@ -370,7 +452,8 @@ function QuestionDetail({ question }: { question: InterviewQuestion | null }) {
                   {t("study.recallLabel")}
                 </p>
                 <RecallLevelPicker
-                  value={questionRecall}
+                  value={questionRecall?.level ?? null}
+                  disabled={rateMutation.isPending}
                   onRate={rateWithToast}
                   labels={recallLabels}
                   groupLabel={t("study.recallLabel")}
@@ -378,9 +461,11 @@ function QuestionDetail({ question }: { question: InterviewQuestion | null }) {
                 />
                 {questionRecall ? (
                   <p className="text-[12px] text-[var(--color-text-subtle)]">
-                    {t("study.nextReviewHint", {
-                      n: RECALL_NEXT_REVIEW_DAYS[questionRecall],
-                    })}
+                    {nextReviewDays(questionRecall.nextReviewAt) >= 1
+                      ? t("study.nextReviewHint", {
+                          n: nextReviewDays(questionRecall.nextReviewAt),
+                        })
+                      : t("study.nextReviewDue")}
                   </p>
                 ) : null}
               </div>
@@ -444,97 +529,11 @@ function QuestionDetail({ question }: { question: InterviewQuestion | null }) {
               </div>
 
               {shownAttempt ? (
-                <div className="mt-2 flex flex-col gap-3 border-t border-[var(--color-border)] pt-4">
-                  {shownAttempt.feedbackStatus === "pending" ? (
-                    <p
-                      role="status"
-                      className="text-[13px] text-[var(--color-text-muted)]"
-                    >
-                      {t("practice.pendingState")}
-                    </p>
-                  ) : shownAttempt.feedbackStatus === "failed" ? (
-                    <NoticeTile
-                      tone="warn"
-                      title={t("practice.aiUnavailable")}
-                    />
-                  ) : (
-                    <>
-                      {shownAttempt.strengths?.length ? (
-                        <div>
-                          <p className="mb-1.5 text-[10.5px] font-semibold tracking-[0.08em] text-[var(--color-success-text)] uppercase">
-                            {t("practice.strengthsLabel")}
-                          </p>
-                          <ul className="list-disc pl-5 text-[13px] text-[var(--color-text-muted)]">
-                            {shownAttempt.strengths.map((item) => (
-                              <li key={item}>{item}</li>
-                            ))}
-                          </ul>
-                        </div>
-                      ) : null}
-                      {shownAttempt.gaps?.length ? (
-                        <div>
-                          <p className="mb-1.5 text-[10.5px] font-semibold tracking-[0.08em] text-[var(--color-admin-warn)] uppercase">
-                            {t("practice.gapsLabel")}
-                          </p>
-                          <ul className="list-disc pl-5 text-[13px] text-[var(--color-text-muted)]">
-                            {shownAttempt.gaps.map((item) => (
-                              <li key={item}>{item}</li>
-                            ))}
-                          </ul>
-                        </div>
-                      ) : null}
-                      {shownAttempt.criteria?.length ? (
-                        <div>
-                          <p className="mb-1.5 text-[10.5px] font-semibold tracking-[0.08em] text-[var(--color-text-subtle)] uppercase">
-                            {t("practice.criteriaLabel")}
-                          </p>
-                          <ul className="flex flex-col gap-2.5">
-                            {shownAttempt.criteria.map((criterion) => (
-                              <li key={criterion.criterionCode}>
-                                <div className="mb-1 flex items-baseline justify-between gap-3 text-[13px]">
-                                  <span className="font-semibold text-[var(--color-text)]">
-                                    {criterion.criterionCode}
-                                  </span>
-                                  <span className="text-[var(--color-text-muted)]">
-                                    {t("practice.criterionRow", {
-                                      achievement: criterion.achievementPercent,
-                                      weight: criterion.weightPercent,
-                                    })}
-                                  </span>
-                                </div>
-                                <ProgressBar
-                                  value={criterion.achievementPercent}
-                                  label={criterion.criterionCode}
-                                  fill="var(--color-primary)"
-                                  height={6}
-                                />
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      ) : null}
-                      {shownAttempt.nextSteps ? (
-                        <div>
-                          <p className="mb-1.5 text-[10.5px] font-semibold tracking-[0.08em] text-[var(--color-text-subtle)] uppercase">
-                            {t("practice.nextStepsLabel")}
-                          </p>
-                          <p className="text-[13px] text-[var(--color-text-muted)]">
-                            {shownAttempt.nextSteps}
-                          </p>
-                        </div>
-                      ) : null}
-                      <p className="text-[11.5px] text-[var(--color-text-subtle)]">
-                        {t("practice.eduDisclaimer")}
-                      </p>
-                      <button
-                        type="button"
-                        onClick={() => setMode("study")}
-                        className="self-start text-[12.5px] font-semibold text-[var(--color-primary)] hover:underline"
-                      >
-                        {t("practice.linkBackToStudy")}
-                      </button>
-                    </>
-                  )}
+                <div className="mt-2 border-t border-[var(--color-border)] pt-4">
+                  <AttemptFeedback
+                    attempt={shownAttempt}
+                    onBackToStudy={() => setMode("study")}
+                  />
                 </div>
               ) : null}
             </Card>
@@ -554,7 +553,11 @@ function QuestionDetail({ question }: { question: InterviewQuestion | null }) {
             </Card>
           ) : null}
           <Card title={t("attempts.title")}>
-            {attempts.length === 0 ? (
+            {attemptsQuery.isPending ? (
+              <Skeleton className="h-16 w-full" />
+            ) : attemptsQuery.isError ? (
+              <QueryError query={attemptsQuery} />
+            ) : attempts.length === 0 ? (
               <EmptyState>{t("attempts.emptyState")}</EmptyState>
             ) : (
               <ul className="flex flex-col gap-2">
@@ -599,15 +602,32 @@ function QuestionDetail({ question }: { question: InterviewQuestion | null }) {
                         </span>
                       </button>
                       {expanded ? (
-                        <p className="border-t border-[var(--color-border)] px-3 py-2.5 text-[13px] whitespace-pre-line text-[var(--color-text-muted)]">
-                          {attempt.answerText}
-                        </p>
+                        <div className="flex flex-col gap-3 border-t border-[var(--color-border)] px-3 py-2.5">
+                          <p className="text-[13px] whitespace-pre-line text-[var(--color-text-muted)]">
+                            {attempt.answerText}
+                          </p>
+                          <AttemptFeedback attempt={attempt} />
+                        </div>
                       ) : null}
                     </li>
                   );
                 })}
               </ul>
             )}
+            {attemptsQuery.hasNextPage ? (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="mt-2 border border-[var(--color-border)]"
+                disabled={attemptsQuery.isFetchingNextPage}
+                onClick={() => void attemptsQuery.fetchNextPage()}
+              >
+                {t("attempts.loadMore", {
+                  shown: attempts.length,
+                  total: totalAttempts,
+                })}
+              </Button>
+            ) : null}
           </Card>
         </aside>
       </div>

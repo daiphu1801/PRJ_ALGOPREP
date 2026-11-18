@@ -5,14 +5,18 @@ import { QueryProvider } from "./query-provider";
 import { ThemeProvider } from "./theme-provider";
 import { AuthProvider } from "./auth-provider";
 import { AppToaster } from "./app-toaster";
+import { AuthLoadingReset } from "@/features/auth-by-credentials";
 
 export function Providers({ children }: { children: ReactNode }) {
   return (
     <ThemeProvider>
-      <QueryProvider>
-        <AuthProvider>{children}</AuthProvider>
-        <AppToaster />
-      </QueryProvider>
+      <AuthProvider>
+        <QueryProvider>
+          {children}
+          <AppToaster />
+        </QueryProvider>
+        <AuthLoadingReset />
+      </AuthProvider>
     </ThemeProvider>
   );
 }

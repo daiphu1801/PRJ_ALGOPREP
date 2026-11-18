@@ -16,38 +16,38 @@ import type {
   ForgotEmailOutcome,
   ForgotOtpOutcome,
   ForgotResetOutcome,
+  SignupOutcome,
 } from "../../model/types";
 
 function delay(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-// Deterministic canned identifiers so the reviewer can drive every branch of the state machine
-// without a real backend. Documented here instead of hidden in conditionals scattered around.
-const RESERVED_USERNAMES = new Set([
-  "duplicate",
-  "admin",
-  "instructor",
-  "deactivated",
-]);
+// Deterministic canned accounts so the reviewer can drive every branch of the state machine
+// without a real backend. The part of the e-mail before "@" picks the behaviour: `admin`,
+// `instructor`, `deactivated` and `duplicate` are reserved, anything else is a student.
 const VALID_OTP = "123456";
 
-export async function fakeSignup(input: SignupInput): Promise<AuthOutcome> {
+function localPart(email: string): string {
+  return email.trim().toLowerCase().split("@")[0] ?? "";
+}
+
+export async function fakeSignup(input: SignupInput): Promise<SignupOutcome> {
   await delay(600);
-  if (input.username.toLowerCase() === "duplicate") {
-    return { ok: false, fieldErrors: { username: "errors.usernameTaken" } };
+  if (localPart(input.email) === "duplicate") {
+    return { ok: false, fieldErrors: { email: "errors.emailTaken" } };
   }
-  return { ok: true, role: "STUDENT" };
+  return { ok: true, email: input.email };
 }
 
 export async function fakeLogin(input: LoginInput): Promise<AuthOutcome> {
   await delay(600);
-  const id = input.identifier.trim().toLowerCase();
+  const id = localPart(input.email);
 
   if (id === "deactivated") {
     // deactivated-recovery variant of `login` (02-bd/screens/shared/SHR0101_auth.md Sheet 3) — the
     // credentials are otherwise correct, so this is `ok: true` with a flag, not a field error.
-    return { ok: true, role: "STUDENT", deactivated: true };
+    return { ok: true, deactivated: true };
   }
   if (input.password === "wrong") {
     return {
@@ -57,12 +57,6 @@ export async function fakeLogin(input: LoginInput): Promise<AuthOutcome> {
   }
   if (id === "admin") return { ok: true, role: "ADMIN" };
   if (id === "instructor") return { ok: true, role: "INSTRUCTOR" };
-  if (RESERVED_USERNAMES.has(id) === false && id.length === 0) {
-    return {
-      ok: false,
-      fieldErrors: { identifier: "errors.identifierRequired" },
-    };
-  }
   return { ok: true, role: "STUDENT" };
 }
 
@@ -72,10 +66,11 @@ export async function fakeInstructorLogin(
   input: LoginInput,
 ): Promise<AuthOutcome> {
   const outcome = await fakeLogin(input);
-  if (!outcome.ok || outcome.role === "INSTRUCTOR") return outcome;
+  if (!outcome.ok) return outcome;
+  if (!outcome.deactivated && outcome.role === "INSTRUCTOR") return outcome;
   return {
     ok: false,
-    fieldErrors: { identifier: "errors.notInstructorAccount" },
+    fieldErrors: { email: "errors.notInstructorAccount" },
   };
 }
 

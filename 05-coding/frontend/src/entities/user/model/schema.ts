@@ -4,11 +4,13 @@
 // module's own validation DD, written today) rather than invented — this is the one screen slice
 // in this run that already had a real DD to read before coding.
 import { z } from "zod";
+import { fitsBcrypt } from "@/shared/lib";
 
 const displayNameField = z
   .string()
   .trim()
   .min(1, "errors.displayNameRequired")
+  .min(2, "errors.displayNameTooShort")
   .max(100, "errors.displayNameTooLong");
 // `school_or_company` / `current_position` / `target_position` are optional free text — empty
 // string means "not set" (server stores NULL) [SoT: 03-dd/validation/F1_identity.md mục 5].
@@ -25,11 +27,20 @@ const targetPositionField = z
   .trim()
   .max(100, "errors.targetPositionTooLong");
 
+// `phone` is optional (DD validation F1 section 5, IDT-V13): digits, spaces and `+ - ( )`, at most
+// 20 characters; an empty string clears it.
+const phoneField = z
+  .string()
+  .trim()
+  .max(20, "errors.phoneInvalid")
+  .regex(/^[0-9\s+\-()]*$/, "errors.phoneInvalid");
+
 export const profileFormSchema = z.object({
   displayName: displayNameField,
   schoolOrCompany: schoolOrCompanyField,
   currentPosition: currentPositionField,
   targetPosition: targetPositionField,
+  phone: phoneField,
 });
 
 // D23: the default language is written only from Settings (BD USR0502 Q6), so it is not part of this form.
@@ -44,15 +55,16 @@ export const emailChangeSchema = z
 
 export type ProfileFormInput = z.infer<typeof profileFormSchema>;
 
-// Password rule table [SoT: 03-dd/validation/F1_identity.md mục 1]: 8-128 chars, at least one letter
-// and one digit. Duplicated from entities/auth's own password rule rather than imported — same FSD
-// reason entities/auth already documents for duplicating `Role` (entities cannot import entities).
+// Password rule: 8 characters minimum, at most 72 UTF-8 bytes (BCrypt limit,
+// DEC-2026-1030-bcrypt-password-byte-limit), at least one letter and one digit. Duplicated from
+// entities/auth's own password rule rather than imported — same FSD reason entities/auth already
+// documents for duplicating `Role` (entities cannot import entities).
 const newPasswordField = z
   .string()
   .min(8, "errors.passwordTooShort")
-  .max(128, "errors.passwordTooLong")
-  .regex(/[A-Za-z]/, "errors.passwordNeedsLetter")
-  .regex(/\d/, "errors.passwordNeedsDigit");
+  .regex(/\p{L}/u, "errors.passwordNeedsLetter")
+  .regex(/\d/, "errors.passwordNeedsDigit")
+  .refine(fitsBcrypt, "errors.passwordTooLong");
 
 /** `currentPassword` is required unless the caller passes `hasPassword: false` (BR-05, OAuth-only account setting a password for the first time). */
 export function changePasswordSchema(hasPassword: boolean) {

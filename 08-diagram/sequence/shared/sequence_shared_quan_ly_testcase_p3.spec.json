@@ -2,39 +2,143 @@
   "_": "Trang 3a/3: điều kiện trước khi gọi AI. Nguồn: 03-dd/api/F2_problem-bank.md §49; 03-dd/logic/F2_problem-bank.md BR-16; 03-dd/database/F2_problem-bank.md. GenerateCasesCmd = GenerateTestcasesWithAiCommandHandler; TestcaseRepo = TestcaseRepository; ProblemDbAdapter = TestcasePersistenceAdapter; ReferenceRunnerPort = SampleSolutionRunnerPort [SoT: Suy luận về tên handler/repository/adapter, cổng runner theo DD]. Cần quyền TESTCASE_MANAGEMENT:CREATE, bài thuộc người soạn, constraints_md có nội dung, ít nhất hai Sample thủ công đã duyệt, đáp án mẫu chạy PASS mọi ca đã duyệt, còn lượt sinh. Nếu thiếu điều kiện, trả lỗi trước khi gọi AI. Khoá Redis chống hai lượt sinh cùng bài và giới hạn sandbox lấy qua JudgeConfigReadPort được lược khỏi hình; hợp đồng BR-16 bắt buộc. ReferenceRunnerPort gọi F3/go-judge qua adapter của F2; bridge lược để giữ hình đọc được. Đáp án mẫu và ca ẩn tuyệt đối không nằm trong payload gửi AI ở trang 3b.",
   "kind": "sequence",
   "title": "Sơ đồ tuần tự chi tiết - Kiểm điều kiện sinh testcase AI (3a/3)",
-  "covers": ["F2-14"],
+  "covers": [
+    "F2-14"
+  ],
   "mode": "color",
   "sequence": {
     "detail": true,
     "participants": [
-      {"name": "Người soạn đề", "role": "actor"},
-      {"name": "TestcaseCtrl", "role": "controller", "stereo": "presentation"},
-      {"name": "GenerateCasesCmd", "role": "service", "stereo": "application command"},
-      {"name": "TestcaseRepo", "role": "repository", "stereo": "domain output port"},
-      {"name": "ProblemDbAdapter", "role": "repository", "stereo": "infrastructure"},
-      {"name": "PostgreSQL", "role": "datastore", "stereo": "schema problem"},
-      {"name": "ReferenceRunnerPort", "role": "repository", "stereo": "output port"}
+      {
+        "name": "Người soạn đề",
+        "role": "actor"
+      },
+      {
+        "name": "ProblemTestcaseController",
+        "role": "controller",
+        "stereo": "presentation"
+      },
+      {
+        "name": "AiTestcaseService",
+        "role": "service",
+        "stereo": "application command"
+      },
+      {
+        "name": "TestcaseWriteRepository",
+        "role": "repository",
+        "stereo": "domain output port"
+      },
+      {
+        "name": "JdbcTestcaseWriteRepository",
+        "role": "repository",
+        "stereo": "infrastructure"
+      },
+      {
+        "name": "PostgreSQL",
+        "role": "datastore",
+        "stereo": "schema problem"
+      },
+      {
+        "name": "SampleSolutionRunnerPort",
+        "role": "repository",
+        "stereo": "output port"
+      }
     ],
     "messages": [
-      {"phase": "Giai đoạn 3a - Kiểm bài, Sample và đáp án mẫu trước AI"},
-      {"from": "Người soạn đề", "to": "TestcaseCtrl", "text": "Yêu cầu sinh bộ testcase nháp"},
-      {"from": "TestcaseCtrl", "to": "GenerateCasesCmd", "text": "Bắt đầu lượt sinh cho bài"},
-      {"from": "GenerateCasesCmd", "to": "TestcaseRepo", "text": "Đọc điều kiện bài và số lượt còn lại"},
-      {"from": "TestcaseRepo", "to": "ProblemDbAdapter", "text": "Lấy bài, hai Sample thủ công và đáp án"},
-      {"from": "ProblemDbAdapter", "to": "PostgreSQL", "text": "Đọc bài, ca đã duyệt và hạn mức"},
-      {"from": "PostgreSQL", "to": "ProblemDbAdapter", "text": "Ràng buộc, Sample, đáp án và số lượt", "kind": "return"},
-      {"from": "ProblemDbAdapter", "to": "TestcaseRepo", "text": "Điều kiện đầu vào", "kind": "return"},
-      {"from": "TestcaseRepo", "to": "GenerateCasesCmd", "text": "Điều kiện đầu vào", "kind": "return"},
-      {"from": "GenerateCasesCmd", "to": "GenerateCasesCmd", "text": "Cần ràng buộc, hai Sample tự viết, còn lượt"},
-      {"from": "GenerateCasesCmd", "to": "ReferenceRunnerPort", "text": "Chạy đáp án mẫu trên mọi ca đã duyệt"},
-      {"alt": {"label": "Đáp án mẫu Pass toàn bộ?", "then": [
-        {"from": "ReferenceRunnerPort", "to": "GenerateCasesCmd", "text": "Tất cả ca đạt", "kind": "return"},
-        {"from": "GenerateCasesCmd", "to": "GenerateCasesCmd", "text": "Chỉ chuyển đề và hai Sample sang trang 3b"}
-      ], "else": [
-        {"from": "ReferenceRunnerPort", "to": "GenerateCasesCmd", "text": "Có ca chưa đạt", "kind": "return"},
-        {"from": "GenerateCasesCmd", "to": "TestcaseCtrl", "text": "Chưa đủ điều kiện sinh", "kind": "return"},
-        {"from": "TestcaseCtrl", "to": "Người soạn đề", "text": "Hướng dẫn sửa đáp án trước", "kind": "return"}
-      ]}}
+      {
+        "phase": "Giai đoạn 3a - Kiểm bài, Sample và đáp án mẫu trước AI"
+      },
+      {
+        "from": "Người soạn đề",
+        "to": "ProblemTestcaseController",
+        "text": "Yêu cầu sinh bộ testcase nháp"
+      },
+      {
+        "from": "ProblemTestcaseController",
+        "to": "AiTestcaseService",
+        "text": "Bắt đầu lượt sinh cho bài"
+      },
+      {
+        "from": "AiTestcaseService",
+        "to": "TestcaseWriteRepository",
+        "text": "Đọc điều kiện bài và số lượt còn lại"
+      },
+      {
+        "from": "TestcaseWriteRepository",
+        "to": "JdbcTestcaseWriteRepository",
+        "text": "Lấy bài, hai Sample thủ công và đáp án"
+      },
+      {
+        "from": "JdbcTestcaseWriteRepository",
+        "to": "PostgreSQL",
+        "text": "Đọc bài, ca đã duyệt và hạn mức"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "JdbcTestcaseWriteRepository",
+        "text": "Ràng buộc, Sample, đáp án và số lượt",
+        "kind": "return"
+      },
+      {
+        "from": "JdbcTestcaseWriteRepository",
+        "to": "TestcaseWriteRepository",
+        "text": "Điều kiện đầu vào",
+        "kind": "return"
+      },
+      {
+        "from": "TestcaseWriteRepository",
+        "to": "AiTestcaseService",
+        "text": "Điều kiện đầu vào",
+        "kind": "return"
+      },
+      {
+        "from": "AiTestcaseService",
+        "to": "AiTestcaseService",
+        "text": "Cần ràng buộc, hai Sample tự viết, còn lượt"
+      },
+      {
+        "from": "AiTestcaseService",
+        "to": "SampleSolutionRunnerPort",
+        "text": "Chạy đáp án mẫu trên mọi ca đã duyệt"
+      },
+      {
+        "alt": {
+          "label": "Đáp án mẫu Pass toàn bộ?",
+          "then": [
+            {
+              "from": "SampleSolutionRunnerPort",
+              "to": "AiTestcaseService",
+              "text": "Tất cả ca đạt",
+              "kind": "return"
+            },
+            {
+              "from": "AiTestcaseService",
+              "to": "AiTestcaseService",
+              "text": "Chỉ chuyển đề và hai Sample sang trang 3b"
+            }
+          ],
+          "else": [
+            {
+              "from": "SampleSolutionRunnerPort",
+              "to": "AiTestcaseService",
+              "text": "Có ca chưa đạt",
+              "kind": "return"
+            },
+            {
+              "from": "AiTestcaseService",
+              "to": "ProblemTestcaseController",
+              "text": "Chưa đủ điều kiện sinh",
+              "kind": "return"
+            },
+            {
+              "from": "ProblemTestcaseController",
+              "to": "Người soạn đề",
+              "text": "Hướng dẫn sửa đáp án trước",
+              "kind": "return"
+            }
+          ]
+        }
+      }
     ]
   }
 }

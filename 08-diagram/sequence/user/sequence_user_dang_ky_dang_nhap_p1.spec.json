@@ -2,35 +2,128 @@
   "_": "Trang 1a/3 đăng ký tài khoản tự tạo. Nguồn: 03-dd/api/F1_identity.md endpoint #1 và #53, mục 0.1; 03-dd/logic/F1_identity.md BR-21; 03-dd/database/F1_identity.md; 01-rd/system/SYS0101_backend_architecture.md. RegisterCmd = RegisterUserCommandHandler; UserRepo = UserRepository; IdentityDbAdapter = UserPersistenceAdapter [SoT: Suy luận về tên lớp]. Sau đăng ký users.status = PENDING_VERIFICATION, must_change_password = false; chưa có access/refresh token và chưa ACTIVE. OTP email ở trang 1b, xác minh OTP ở trang 1c. Email trùng trả 409 theo DD; nhánh lỗi được ghi ở note để trang tập trung đường thành công. Mật khẩu băm trước khi lưu, không vẽ bộ mã hoá như một hệ ngoài. Quyền mặc định là STUDENT.",
   "kind": "sequence",
   "title": "Sơ đồ tuần tự chi tiết - Tạo tài khoản chờ xác minh (1a/3)",
-  "covers": ["F1-01"],
+  "covers": [
+    "F1-01"
+  ],
   "mode": "color",
   "sequence": {
     "detail": true,
     "participants": [
-      {"name": "Sinh viên", "role": "actor"},
-      {"name": "AuthController", "role": "controller", "stereo": "presentation"},
-      {"name": "RegisterCmd", "role": "service", "stereo": "application command"},
-      {"name": "UserRepo", "role": "repository", "stereo": "domain output port"},
-      {"name": "IdentityDbAdapter", "role": "repository", "stereo": "infrastructure"},
-      {"name": "PostgreSQL", "role": "datastore", "stereo": "schema identity"}
+      {
+        "name": "Sinh viên",
+        "role": "actor"
+      },
+      {
+        "name": "RegistrationController",
+        "role": "controller",
+        "stereo": "presentation"
+      },
+      {
+        "name": "RegisterCommandHandler",
+        "role": "service",
+        "stereo": "application command"
+      },
+      {
+        "name": "UserAccountRepository",
+        "role": "repository",
+        "stereo": "domain output port"
+      },
+      {
+        "name": "JdbcUserAccountRepository",
+        "role": "repository",
+        "stereo": "infrastructure"
+      },
+      {
+        "name": "PostgreSQL",
+        "role": "datastore",
+        "stereo": "schema identity"
+      }
     ],
     "messages": [
-      {"phase": "Giai đoạn 1a - Tạo tài khoản chưa xác minh email"},
-      {"from": "Sinh viên", "to": "AuthController", "text": "Gửi email, tên và mật khẩu đăng ký"},
-      {"from": "AuthController", "to": "RegisterCmd", "text": "Yêu cầu tạo tài khoản học viên"},
-      {"from": "RegisterCmd", "to": "UserRepo", "text": "Kiểm email chưa thuộc tài khoản khác"},
-      {"from": "UserRepo", "to": "IdentityDbAdapter", "text": "Tra tài khoản theo email"},
-      {"from": "IdentityDbAdapter", "to": "PostgreSQL", "text": "Tìm email"},
-      {"from": "PostgreSQL", "to": "IdentityDbAdapter", "text": "Chưa có email", "kind": "return"},
-      {"from": "IdentityDbAdapter", "to": "UserRepo", "text": "Có thể đăng ký", "kind": "return"},
-      {"from": "UserRepo", "to": "RegisterCmd", "text": "Có thể đăng ký", "kind": "return"},
-      {"from": "RegisterCmd", "to": "RegisterCmd", "text": "Băm mật khẩu; đặt trạng thái chờ xác minh"},
-      {"from": "RegisterCmd", "to": "UserRepo", "text": "Lưu tài khoản học viên mới"},
-      {"from": "UserRepo", "to": "IdentityDbAdapter", "text": "Ghi tài khoản chưa kích hoạt"},
-      {"from": "IdentityDbAdapter", "to": "PostgreSQL", "text": "Lưu tài khoản chờ xác minh"},
-      {"from": "PostgreSQL", "to": "IdentityDbAdapter", "text": "Đã commit", "kind": "return"},
-      {"from": "IdentityDbAdapter", "to": "UserRepo", "text": "Mã tài khoản", "kind": "return"},
-      {"from": "UserRepo", "to": "RegisterCmd", "text": "Mã tài khoản", "kind": "return"}
+      {
+        "phase": "Giai đoạn 1a - Tạo tài khoản chưa xác minh email"
+      },
+      {
+        "from": "Sinh viên",
+        "to": "RegistrationController",
+        "text": "Gửi email, tên và mật khẩu đăng ký"
+      },
+      {
+        "from": "RegistrationController",
+        "to": "RegisterCommandHandler",
+        "text": "Yêu cầu tạo tài khoản học viên"
+      },
+      {
+        "from": "RegisterCommandHandler",
+        "to": "UserAccountRepository",
+        "text": "Kiểm email chưa thuộc tài khoản khác"
+      },
+      {
+        "from": "UserAccountRepository",
+        "to": "JdbcUserAccountRepository",
+        "text": "Tra tài khoản theo email"
+      },
+      {
+        "from": "JdbcUserAccountRepository",
+        "to": "PostgreSQL",
+        "text": "Tìm email"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "JdbcUserAccountRepository",
+        "text": "Chưa có email",
+        "kind": "return"
+      },
+      {
+        "from": "JdbcUserAccountRepository",
+        "to": "UserAccountRepository",
+        "text": "Có thể đăng ký",
+        "kind": "return"
+      },
+      {
+        "from": "UserAccountRepository",
+        "to": "RegisterCommandHandler",
+        "text": "Có thể đăng ký",
+        "kind": "return"
+      },
+      {
+        "from": "RegisterCommandHandler",
+        "to": "RegisterCommandHandler",
+        "text": "Băm mật khẩu; đặt trạng thái chờ xác minh"
+      },
+      {
+        "from": "RegisterCommandHandler",
+        "to": "UserAccountRepository",
+        "text": "Lưu tài khoản học viên mới"
+      },
+      {
+        "from": "UserAccountRepository",
+        "to": "JdbcUserAccountRepository",
+        "text": "Ghi tài khoản chưa kích hoạt"
+      },
+      {
+        "from": "JdbcUserAccountRepository",
+        "to": "PostgreSQL",
+        "text": "Lưu tài khoản chờ xác minh"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "JdbcUserAccountRepository",
+        "text": "Đã commit",
+        "kind": "return"
+      },
+      {
+        "from": "JdbcUserAccountRepository",
+        "to": "UserAccountRepository",
+        "text": "Mã tài khoản",
+        "kind": "return"
+      },
+      {
+        "from": "UserAccountRepository",
+        "to": "RegisterCommandHandler",
+        "text": "Mã tài khoản",
+        "kind": "return"
+      }
     ]
   }
 }

@@ -27,6 +27,7 @@ function AuthViewContent({ initialMode = "signup" }: AuthViewProps) {
   const isLoginLike = mode === "login" || mode === "signup";
   const title = {
     signup: t("signupTitle"),
+    verify_email: t("verifyEmailTitle"),
     login: t("loginTitle"),
     forgot_email: t("forgotEmailTitle"),
     forgot_otp: t("forgotOtpTitle"),

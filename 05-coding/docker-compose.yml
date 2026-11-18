@@ -16,6 +16,20 @@
 name: algoprep
 
 services:
+  # Local SMTP sink; messages are visible at http://localhost:8025.
+  mailpit:
+    image: axllent/mailpit:v1.31.5
+    container_name: algoprep-mailpit
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${MAILPIT_SMTP_PORT:-1025}:1025"
+      - "127.0.0.1:${MAILPIT_UI_PORT:-8025}:8025"
+    healthcheck:
+      test: ["CMD", "/mailpit", "readyz"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
   # ---------------------------------------------------------------------------
   # PostgreSQL — database chinh, SAU schema trong MOT instance.
   # Sau schema, khong phai sau database: modular monolith dung mot PostgreSQL instance
@@ -131,7 +145,9 @@ services:
       mc alias set local http://minio:9000 $${MINIO_ROOT_USER} $${MINIO_ROOT_PASSWORD} &&
       mc mb --ignore-existing local/$${MINIO_BUCKET_TESTCASE} &&
       mc anonymous set none local/$${MINIO_BUCKET_TESTCASE} &&
-      echo 'bucket san sang: '$${MINIO_BUCKET_TESTCASE}
+      mc mb --ignore-existing local/$${MINIO_BUCKET_AVATAR} &&
+      mc anonymous set none local/$${MINIO_BUCKET_AVATAR} &&
+      echo 'bucket san sang: '$${MINIO_BUCKET_TESTCASE}' '$${MINIO_BUCKET_AVATAR}
       "
     environment:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER:-algoprep}
@@ -139,6 +155,8 @@ services:
       # `mc anonymous set none` o tren la co chu dich: testcase an KHONG duoc truy cap cong khai
       # (F2-08 — chong ro ri testcase an, 01-rd/req/nfr.md muc D).
       MINIO_BUCKET_TESTCASE: ${MINIO_BUCKET_TESTCASE:-algoprep-testcases}
+      # Avatars (F1-35) are served only through the backend (#76), never by a public bucket policy.
+      MINIO_BUCKET_AVATAR: ${MINIO_BUCKET_AVATAR:-algoprep-avatars}
     restart: "no"
 
   # ---------------------------------------------------------------------------
@@ -153,7 +171,12 @@ services:
   # trong tien trinh backend — quyen nay khong the cap cho ung dung web.
   # ---------------------------------------------------------------------------
   go-judge:
-    image: criyle/go-judge:v1.12.3
+    # Image toolchain dan xuat tu criyle/go-judge:v1.12.3: them OpenJDK 21, g++, python3 de bien dich
+    # va chay duoc ca ba ngon ngu nop bai. Engine khong doi; `up` tu dung image neu may chua co
+    # (DEC-2026-1107-go-judge-toolchain-image-in-compose).
+    build:
+      context: ./judge-engine
+    image: algoprep-judge-toolchain:f3-20261101
     container_name: algoprep-go-judge
     restart: unless-stopped
     privileged: true
@@ -179,7 +202,7 @@ services:
       - -http-addr=0.0.0.0:5050
       - -grpc-addr=0.0.0.0:5051
       - -monitor-addr=0.0.0.0:5052
-      - -parallelism=${GO_JUDGE_PARALLELISM:-4}
+      - -parallelism=${GO_JUDGE_PARALLELISM:-8}
       - -output-limit=67108864
       - -silent=false
       # Mo /metrics o cong monitor cho Prometheus scrape (05-coding/monitoring/prometheus.yml).
@@ -226,9 +249,10 @@ services:
       - --config.file=/etc/prometheus/prometheus.yml
       - --storage.tsdb.retention.time=15d
     ports:
-      - "${PROMETHEUS_PORT:-9090}:9090"
+      - "127.0.0.1:${PROMETHEUS_PORT:-9090}:9090"
     volumes:
       - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./monitoring/secrets:/etc/prometheus/secrets:ro
       - prometheus-data:/prometheus
 
   grafana:
@@ -243,9 +267,11 @@ services:
       GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD:?GRAFANA_PASSWORD phai duoc dat trong .env}
       GF_USERS_ALLOW_SIGN_UP: "false"
     ports:
-      - "${GRAFANA_PORT:-3001}:3000"
+      - "127.0.0.1:${GRAFANA_PORT:-3001}:3000"
     volumes:
       - grafana-data:/var/lib/grafana
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./monitoring/grafana/dashboards:/var/lib/grafana/provisioned-dashboards:ro
 
 volumes:
   postgres-data:

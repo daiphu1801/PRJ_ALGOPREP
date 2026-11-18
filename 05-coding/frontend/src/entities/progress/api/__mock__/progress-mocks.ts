@@ -13,7 +13,6 @@ import {
   type ProgressOverview,
   type ProgressRange,
   type RecentInterviewSession,
-  type SubmissionDailyCount,
   type TopicProgress,
 } from "../../model/types";
 
@@ -87,6 +86,7 @@ export function fakeGetProgressOverview(): Promise<ProgressOverview> {
     totalPublishedProblemCount: 640,
     totalSubmissions: 418,
     acceptedCount: Math.round(418 * 0.43),
+    acceptanceRatePercent: 43,
     currentStreakDays: 12,
     avgAttemptsPerSolved: Math.round((418 / 182) * 10) / 10,
   });
@@ -101,21 +101,6 @@ export function fakeGetTopicProgress(
       ...topic,
       acRate: Math.max(0, Math.min(100, Math.round(BASE_AC[i]! * scale))),
       lastSubmittedAt: BASE_LAST[i]!,
-    })),
-    500,
-  );
-}
-
-const DAILY_COUNTS = [3, 0, 5, 2, 6, 4, 0, 1, 7, 5, 3, 8, 2, 6];
-
-export function fakeGetDailySubmissions(
-  range: ProgressRange,
-): Promise<SubmissionDailyCount[]> {
-  const scale = RANGE_SCALE[range];
-  return delay(
-    DAILY_COUNTS.map((count, i) => ({
-      day: String(8 + i).padStart(2, "0"),
-      count: Math.round(count * scale),
     })),
     500,
   );

@@ -43,6 +43,7 @@ email/tên hiển thị; ba trường tự khai này có thể gắn với một
 nộp/phiên phỏng vấn — các bảng ở module khác giữ nguyên `user_id` để không vỡ thống kê lớp
 (`01-rd/req/F1_identity.md:262-268`, F1-16). **Sửa 2026-10-22 (đồng bộ DB, phase 1):** sửa số dòng RD trích sai (`200-202`).
 **Sửa 2026-10-22 (đồng bộ DB, phase 2, DEC-2026-1022-identity-schema-sync):** thêm điều kiện `deactivation_source = 'SELF'` và phần xoá `oauth_identities`/trường tự khai.
+**Ảnh đại diện (bổ sung 2026-11-17, `DEC-2026-1117-user-avatar-upload`, sửa vòng 2 cùng ngày):** khi người dùng bấm xoá tài khoản, **cùng giao dịch** đặt `status = 'DEACTIVATED'` cũng xoá dòng `user_avatars` của user, và xoá đối tượng ảnh trong MinIO sau khi commit (mục 1.16, `02-bd/storage/F1_identity.md` mục 4). Job ẩn danh hoá **không** còn việc gì với ảnh. Owner chốt 2026-11-17 (Q-AV-1); khôi phục tài khoản trong 30 ngày ân hạn không lấy lại ảnh.
 **Chênh lệch tài liệu cần sửa ở nơi khác (không sửa ở đây):** `03-dd/logic/F1_identity.md` BR-08 (`:122-131`) bước 1 quét `status = 'DEACTIVATED' AND deactivated_at <= now() - 30 ngày` **không có** `deactivation_source`, nên theo DD hiện hành job vẫn ẩn danh cả tài khoản Admin khoá; bước 2 chưa xoá `oauth_identities`; bước 1 của đường tự xoá (`:117`) chưa đặt `deactivation_source = 'SELF'`. `02-bd/architecture/F1_identity.md:31, 99` chỉ nêu "khoá mềm → ẩn danh hoá" và ân hạn 30 ngày, không phân biệt nguồn khoá.
 
 ### 1.2. `roles`
@@ -81,7 +82,7 @@ Chỉ đọc trên giao diện (F1-11, `01-rd/req/F1_identity.md:54-57`) — kh�
 | `granted` | BOOLEAN | |
 | `updated_at`, `updated_by` | TIMESTAMPTZ, FK user | Ghi vào `system_audit_logs` mỗi lần đổi (F1-14) |
 
-**Seed ma trận mặc định:** migration chèn đủ 3 role x 11 function x 4 action = 132 dòng `permissions` (**Sửa 2026-10-23:** trước đây 10 function, 120 dòng; thêm 12 dòng của `LANGUAGE_CONFIG`: `ADMIN` bật cả 4, `INSTRUCTOR` và `STUDENT` tắt). `ADMIN`: `granted = true` toàn bộ, trong đó `PERMISSION_MATRIX` bắt buộc đủ 4 hành động (RD ghi "mặc định chỉ `ADMIN` có toàn quyền", `01-rd/req/F1_identity.md:64`). `STUDENT`: toàn bộ `false` (quyền học viên đi theo vai trò Lớp 1, F1-05, không qua ma trận, `01-rd/req/F1_identity.md:22`). `INSTRUCTOR`: RD chưa nêu từng ô; **chốt 2026-10-22 (chủ dự án chốt 2026-10-22, chờ ghi DEC- ở phase 0):** bật đủ 4 hành động `CREATE`/`READ`/`UPDATE`/`DELETE` cho `CLASS_MANAGEMENT`, `PROBLEM_AUTHORING`, `TESTCASE_MANAGEMENT` (khớp luồng giảng viên F1-23 đến F1-28, F2-01 đến F2-09), các function còn lại `false`. **Sửa 2026-10-22 (đồng bộ DB, phase 1):** thêm seed.
+**Seed ma trận mặc định:** migration chèn đủ 3 role x 11 function x 4 action = 132 dòng `permissions` (**Sửa 2026-10-23:** trước đây 10 function, 120 dòng; thêm 12 dòng của `LANGUAGE_CONFIG`: `ADMIN` bật cả 4, `INSTRUCTOR` và `STUDENT` tắt). `ADMIN`: `granted = true` toàn bộ, trong đó `PERMISSION_MATRIX` bắt buộc đủ 4 hành động (RD ghi "mặc định chỉ `ADMIN` có toàn quyền", `01-rd/req/F1_identity.md:64`). `STUDENT`: toàn bộ `false` (quyền học viên đi theo vai trò Lớp 1, F1-05, không qua ma trận, `01-rd/req/F1_identity.md:22`). `INSTRUCTOR`: RD chưa nêu từng ô; **chốt 2026-10-22 (chủ dự án chốt 2026-10-22, chờ ghi DEC- ở phase 0):** bật đủ 4 hành động `CREATE`/`READ`/`UPDATE`/`DELETE` cho `CLASS_MANAGEMENT`, `PROBLEM_AUTHORING`, `TESTCASE_MANAGEMENT` (khớp luồng giảng viên F1-23 đến F1-28, F2-01 đến F2-09), các function còn lại `false`. **Sửa 2026-10-22 (đồng bộ DB, phase 1):** thêm seed. **Sửa 2026-11-11 (owner chốt, `DEC-2026-1111-instructor-interview-bank-default-grant`, tiêu chí ponytail bậc 1):** `INSTRUCTOR` bật thêm đủ 4 hành động cho `INTERVIEW_BANK_MANAGEMENT` (16 ô `granted = true`, 4 function); lúc duyệt màn `SHR0301` trên trình duyệt thấy seed cũ khiến A2 không vào được màn. Tổng vẫn 132 dòng, chỉ đổi giá trị `granted`. Migration `V1.001` giữ nguyên (đã áp dụng, checksum Flyway); thay đổi nằm ở `V1.004__instructor_interview_bank_grant.sql` (idempotent, chỉ đụng dòng còn `false`, `updated_by` để NULL, tăng `roles.permission_version` của `INSTRUCTOR` để xoá cache quyền). Cơ sở dữ liệu đã chạy sẵn chỉ có quyền này khi `V1.004` chạy, và ô tuỳ chỉnh của cặp `INSTRUCTOR` / `INTERVIEW_BANK_MANAGEMENT` bị ghi đè thành `true` một lần. Quản lý chủ đề và độ khó vẫn chỉ `ADMIN` (Lớp 1, DD F6 mục 1.2).
 
 Unique `(role_id, function_id, action_id)` (chỉ mục này đã phủ truy vấn theo `role_id` vì `role_id` đứng đầu, không tạo chỉ mục riêng, xem mục 2). **Khoá ngoại:** `role_id` → `roles.id` **ON DELETE CASCADE**: xoá role chỉ xảy ra khi `is_system = false` và không còn user gán (BR-14, `03-dd/logic/F1_identity.md:204-205`) nên các ô ma trận của role đó đi theo role, không mồ côi; `function_id`, `action_id` là `RESTRICT` (dữ liệu seed). **Sửa 2026-10-22 (đồng bộ DB, phase 1):** bổ sung hành vi xoá. Đổi một dòng → invalidate cache quyền ngay (mục bảo mật).
 
@@ -183,6 +184,8 @@ không lọc được theo câu truy vấn; nếu sau này cần thống kê "kh
 chứ không sửa ngược bản ghi cũ. Mở khoá **không** có lý do — nên cấu trúc `after_json` của hai hành
 động này không giống nhau, và màn nhật ký phải hiển thị khác nhau `[SoT: Suy luận]`.
 
+**Bổ sung 2026-11-17 (`DEC-2026-1117-user-avatar-upload`, Q-AV-4) — loại `action_type` `USER_AVATAR_REMOVED`:** ghi một dòng mỗi lần quản trị viên gỡ ảnh đại diện của người khác, `actor_user_id` = quản trị viên, `target_type = 'USER'`, `target_id` = `users.id` của người bị gỡ, `before_json = {"hadAvatar": true}`, `after_json` rỗng; **không** lưu khoá đối tượng hay nội dung ảnh. Người dùng tự gỡ hoặc đổi ảnh của chính mình **không** ghi dòng này (nhật ký này là hành động quản trị). Nhóm phân loại hiển thị do `ADM0403` chốt `[SoT: Suy luận]` (đề xuất cùng nhóm với khoá/mở khoá tài khoản).
+
 **Bổ sung 2026-10-11 (H4) — ánh xạ `action_type` ra phần hiển thị:** một enum `AuditAction` trong module
 `identity` mang, cho từng `action_type`, ba thứ: nhóm phân loại hiển thị, tên dịch vụ và khoá i18n của mẫu
 câu. Giao diện dựng câu nội dung từ khoá đó cộng tham số lấy từ `after_json`; **không** thêm cột `category`,
@@ -190,6 +193,8 @@ câu. Giao diện dựng câu nội dung từ khoá đó cộng tham số lấy 
 (`DEC-2026-1011-admin-system-open-questions-closed`, ponytail bậc 5).
 
 ### 1.12. Read model tổng hợp từ domain event (mục 3.1 kiến trúc)
+
+- `processed_domain_events(event_id UUID PK, event_type VARCHAR(40), processed_at TIMESTAMPTZ)` — **Bảng MỚI, 2026-11-03 (`DEC-2026-1103-f1-processed-domain-events`, ponytail bậc 6 + 4).** Khử trùng sự kiện đã nhận: mỗi dòng ghi cùng giao dịch với cập nhật read model, nên gửi lại một sự kiện không đếm hai lần. Không có khoá ngoại; chỉ mục `processed_at` để sau này dọn dòng cũ khi cần `[SoT: Suy luận]`. Migration `V1.002__processed_domain_events.sql`.
 
 - `user_problem_best_score(user_id, problem_id, best_ratio NUMERIC(5,4), best_verdict VARCHAR(32) NOT NULL, updated_at)`, PK `(user_id, problem_id)`; `best_ratio` trong [0,1] `[SoT: Suy luận]`; `best_verdict` dùng lại đúng giá trị của `judge.submissions.status` (`ACCEPTED`, `WRONG_ANSWER`, `TIME_LIMIT_EXCEEDED`, `RUNTIME_ERROR`, `COMPILE_ERROR`; không gồm trạng thái chưa cuối), là verdict của lượt đang giữ `best_ratio`, lưu VARCHAR để không phải migrate khi `judge` đổi enum `[SoT: Suy luận]` (**Sửa 2026-10-22, phase 2**) — phục vụ F1-06
   best-attempt (`DEC-2026-0831-partial-score-testcase-ratio`).
@@ -224,6 +229,7 @@ Khi thêm `ac_eligible_count` cho dữ liệu đã có, migration tính lại m�
 | `identity:refresh:blacklist:<jti>` | = thời hạn còn lại của token | Chặn refresh token đã bị revoke mà chưa hết hạn tự nhiên (rotate/logout) |
 | `identity:pwreset:<userId>` | 10 phút | Mã OTP quên mật khẩu, kèm số lần thử sai và `issued_at` lấy từ đồng hồ PostgreSQL khi phát mã. Không tạo cho tài khoản chỉ OAuth. `issued_at` dùng cùng `users.password_changed_at` để chặn phát lại sau khi đổi thành công; lỗi ghi DB giữ mã và TTL gốc (owner chốt 2026-10-27; DD BR-04) |
 | `identity:pwreset:resend:<userId>` | 60 giây | Chặn gửi lại mã quá nhanh |
+| `identity:restore:<sha256(ticket)>` | 5 phút | Vé khôi phục tự xoá #61, chỉ cấp sau xác minh mật khẩu/provider. Giá trị gồm userId, deactivatedAt và expiresAt từ đồng hồ DB; không lưu ticket thô. Khoá user và kiểm lại trước khi chuyển ACTIVE; xoá sau commit (`DEC-2026-1030-restore-ticket-storage`, triển khai hợp đồng đã chốt `DEC-2026-1025-dd-auth-recovery-contracts`) |
 | `identity:emailchange:<userId>` | 10 phút | Mã OTP đổi email (tái dùng cơ chế F1-17) |
 | `identity:emailverify:<userId>` | 10 phút | Mã OTP xác thực email cho tài khoản `PENDING_VERIFICATION` **tự đăng ký** (F1-01), kèm bộ đếm số lần thử sai, cùng cơ chế F1-17. Xác thực đúng → `status = ACTIVE`. **Sửa 2026-10-22 (vòng 2, DEC-2026-1022-db-sync-round2 mục 1):** khoá này chỉ có cho tự đăng ký; tài khoản Admin tạo không có khoá này (chuyển `ACTIVE` ở lần đăng nhập đầu bằng mật khẩu tạm). Tên khoá `[SoT: Suy luận — DEC-2026-1022-identity-schema-sync nêu tên này, mã nghiệp vụ là F1-33 (xác thực email) và F1-34 (buộc đổi mật khẩu), `01-rd/req/F1_identity.md:101, 113`; hai mã này ở RD đang ghi "mã đề xuất"]. **Sửa 2026-10-22 (đồng bộ DB vòng 4, DEC-2026-1022-db-sync-round4):** bỏ câu "RD chưa có mã F1-nn".` |
 | `identity:emailverify:resend:<userId>` | 60 giây | Chặn gửi lại mã xác thực quá nhanh, theo mẫu `identity:pwreset:resend` `[SoT: Suy luận]` |
@@ -292,12 +298,28 @@ Không phải cột mới (quy tắc hiển thị hoặc tính ở tầng ứng 
 tiếp ngày, biểu đồ, lưới 12 tháng) dùng một múi giờ hệ thống cố định **UTC+7**; cột thời gian vẫn là
 `TIMESTAMPTZ`, quy đổi chỉ khi cắt ngày. Cùng quy tắc với `judge-orchestration`.
 
+### 1.16. `user_avatars` (F1-35, thêm 2026-11-17, `DEC-2026-1117-user-avatar-upload`)
+
+Một dòng cho mỗi người **có** ảnh đại diện; không có ảnh thì không có dòng. Byte ảnh nằm ở MinIO (`02-bd/storage/F1_identity.md`), bảng chỉ giữ siêu dữ liệu. Tách khỏi `users` để truy vấn danh sách người dùng không kéo theo cột này và để "chưa có ảnh" là vắng dòng, không phải một cột NULL.
+
+| Cột | Kiểu | Ghi chú |
+| :--- | :--- | :--- |
+| `user_id` | UUID PK, FK → `users.id` | Một người một ảnh. Theo quy ước ON DELETE toàn schema (đầu mục 1) dùng **NO ACTION**: `users` không bị xoá cứng |
+| `object_key` | VARCHAR(200) NOT NULL | Khoá đối tượng trong bucket `algoprep-avatars`: `users/<user_id>/<avatar_id>.<ext>` (`02-bd/storage/F1_identity.md` mục 2). Không chứa tên tệp của người dùng |
+| `content_type` | VARCHAR(20) NOT NULL, CHECK trong (`image/png`, `image/jpeg`, `image/webp`) | Phát hiện từ byte đầu tệp, **không** lấy từ tiêu đề gửi lên (`02-bd/security/F1_identity.md` mục 6.1) |
+| `size_bytes` | INTEGER NOT NULL, CHECK từ 1 đến 524288 | Tối đa 512 KB, khớp F1-35 mục 1 |
+| `updated_at` | TIMESTAMPTZ NOT NULL | Đổi ở mỗi lần thêm hoặc thay ảnh. Là gốc của giá trị phiên bản ảnh mà các API có người trả về để trình duyệt làm mới cache (`avatarVersion`, DD chốt biểu diễn) |
+
+Chỉ mục: khoá chính `user_id` là đủ, không có truy vấn nào tìm theo cột khác.
+
+**Phiên bản ảnh đi qua ranh giới module.** Danh sách có người ở module khác (ví dụ bài nộp của học viên ở `judge-orchestration`) không được nối thẳng sang schema `identity`; `avatarVersion` chạy qua cổng đọc mà `identity` đã khai báo cho từng danh sách đó. Cổng nào và DTO nào mang giá trị do DD chốt `[SoT: Suy luận]`.
+
 ## 4. Migration — thứ tự tạo bảng
 
 (Sửa 2026-10-22, phase 2: không có bảng hay khoá ngoại mới; chỉ thêm cột `users.must_change_password`/`deactivation_source`, `user_submission_stats.top_language`/`language_counts`, chỉ mục `refresh_tokens(issued_at)`, nên thứ tự dưới đây giữ nguyên; hai cột `ENUM`/`BOOLEAN` của `users` nằm trong migration tạo `users`.)
 
 `roles` → `functions`/`actions` (seed) → `users` → `permissions` (vì `permissions.updated_by` là khoá ngoại tới `users`; seed ma trận chèn sau bước này) → `user_preferences` → `oauth_identities` →
-`refresh_tokens` → `classes` → `class_invite_codes` → `class_enrollments` → `system_audit_logs` → `system_settings` →
+`refresh_tokens` → `classes` → `class_invite_codes` → `class_enrollments` → `system_audit_logs` → `system_settings` → `user_avatars` (migration `V1.006__user_avatars.sql`, sau `V1.005__session_revocations.sql`) →
 các bảng read model (mục 1.12).
 
 **Tài khoản `ADMIN` đầu tiên (bổ sung 2026-10-23, `DEC-2026-1023-db-actor-review-fixes`, ponytail bậc 6):** màn quản lý người dùng không tạo được `ADMIN` (`01-rd/req/F1_identity.md:72-75`), nên nếu không có đường khác thì triển khai xong không ai vào được khu quản trị. Đường duy nhất là **seed lúc khởi động ứng dụng**, không phải migration SQL: khi bảng `users` **chưa có người dùng nào gán role `ADMIN`**, một bước khởi động (runner của `algoprep-identity`) tạo một tài khoản `ADMIN` từ hai biến môi trường `ALGOPREP_BOOTSTRAP_ADMIN_EMAIL` và `ALGOPREP_BOOTSTRAP_ADMIN_PASSWORD` (tên biến `[SoT: Suy luận]`, DD chốt). Quy tắc: (1) **không đặt mật khẩu trong file migration** để không lộ băm mật khẩu trong kho mã; (2) tài khoản khởi tạo giống luồng Admin tạo (F1-13): `status = PENDING_VERIFICATION`, `must_change_password = true`, chuyển `ACTIVE` ở lần đăng nhập đầu bằng mật khẩu này (mục 1.1); (3) chạy lại khi đã có `ADMIN` thì **không làm gì** (idempotent), nên đổi biến môi trường sau đó không đổi mật khẩu; (4) **không ghi `system_audit_logs`** vì `actor_user_id` NOT NULL và không có người thao tác (cùng lý do job ẩn danh hoá, mục 1.11); (5) thiếu một trong hai biến khi chưa có `ADMIN` thì ứng dụng **dừng khởi động** kèm thông báo rõ, không chạy với hệ thống không có quản trị viên. Không thêm cột hay bảng.
@@ -311,3 +333,10 @@ các bảng read model (mục 1.12).
 - **Việc đồng bộ ở tài liệu khác (không thuộc file này):** DD logic BR-08 (thêm `deactivation_source`, xoá `oauth_identities`, đặt `SELF` ở bước tự xoá) và BR-12/endpoint 29 (bỏ read model lớp); DD logic BR-18 (`:261`) còn `CLASS_HAS_ABSENT_STUDENTS`; BD `USR0503` đổi tên bảng; BD `ADM0101` đóng Q2; BD kiến trúc identity nêu nguồn khoá; ~~RD thêm mã F1-nn cho xác thực email và luồng Admin tạo tài khoản buộc đổi mật khẩu~~ — đã có F1-33, F1-34 (`01-rd/req/F1_identity.md:101, 113`); **Sửa 2026-10-22 (đồng bộ DB vòng 4, DEC-2026-1022-db-sync-round4):** xoá việc tồn đọng này.
 - **Đã chốt 2026-10-22:** `top_language` cập nhật bằng event kèm `language_counts`; tập `activity_type` không có sự kiện tham gia lớp (RD `01-rd/req/F1_identity.md:224-226` phải sửa cho khớp); ẩn danh hoá đặt NULL ba trường tự khai và xoá `oauth_identities`. **Đã chốt 2026-10-29 (chủ dự án xác nhận mặc định):** `best_verdict` VARCHAR(32), dùng lại giá trị của `judge.submissions.status` (mục 1.12).
 - ~~Có cần bảng `role` tuỳ biến thật hay chỉ 3 role cố định~~ — **đã đóng:** cần bảng `roles` thật, role tuỳ biến tạo/sửa/xoá được (`01-rd/req/F1_identity.md:54`, `02-bd/architecture/F1_identity.md:98-104`). **Sửa 2026-10-22 (đồng bộ DB, phase 1):** xoá câu hỏi mở lỗi thời.
+
+
+## Bổ sung 2026-11-11 — ClassDeleted Outbox
+
+Migration `V1.003__class_event_outbox.sql` thêm `identity.outbox_events`: `id UUID PK`, `aggregate_type VARCHAR(40) NOT NULL`, `aggregate_id UUID NOT NULL`, `event_type VARCHAR(64) NOT NULL`, `routing_key VARCHAR(100) NOT NULL`, `payload JSONB NOT NULL`, `created_at TIMESTAMPTZ NOT NULL DEFAULT now()`, `published_at TIMESTAMPTZ NULL`, `publish_attempts INT NOT NULL DEFAULT 0 CHECK (publish_attempts >= 0)`. Không FK tới lớp vì lớp bị hard delete trong cùng giao dịch.
+
+Index pending `(created_at,id) WHERE published_at IS NULL`; index cleanup `(published_at,id) WHERE published_at IS NOT NULL`. Chỉ ClassDeleted ghi vào bảng này; eventId giữ nguyên qua retry. Ghi lỗi rollback xóa lớp; broker lỗi giữ pending. Dòng đã phát giữ 90 ngày, pending không xóa theo tuổi. StudentRemovedFromClass chưa dùng Outbox. Quyết định `DEC-2026-1110-class-deleted-durable-outbox`.

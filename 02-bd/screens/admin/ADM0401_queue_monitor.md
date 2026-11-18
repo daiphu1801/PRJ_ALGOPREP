@@ -45,11 +45,11 @@
 | Tên vật lý (slug) | `admin_queue_monitor` |
 | Trục tài liệu | Màn hình (`02-bd/screens/`) |
 | Actor | A3 (`ADMIN`) |
-| Phiên bản | V1.3 |
+| Phiên bản | V1.5 |
 | Người tạo | Nhóm phát triển AlgoPrep |
 | Ngày tạo | 2026/09/15 |
 | Người cập nhật | Nhóm phát triển AlgoPrep |
-| Ngày cập nhật | 2026/10/14 |
+| Ngày cập nhật | 2026/11/14 |
 
 ---
 
@@ -68,6 +68,8 @@
 | V1.1 | Phạm vi bị cắt, Sheet 5, 6, 7, Câu hỏi mở | Chốt theo tiêu chí ponytail (`.claude/rules/ponytail-criteria.md`), `DEC-2026-1010-admin-operations-regroup`: **xác nhận bỏ ưu tiên job, mức độ trễ thứ hai và cột "Job"** (đóng Q4, bỏ dấu "chờ xác nhận"); đóng Q8 (không thêm trần worker hay ngưỡng thu hẹp, "tối đa 8" là hằng số `application.yml`) và Q9 (không cảnh báo mềm, ô đã có tối thiểu 1); số cảnh báo và số lỗi của thẻ liên kết chỉ lấy từ hai nguồn thật: bản ghi Outbox kẹt (`outbox_events.publish_attempts`, ngưỡng hằng số trong `application.yml`: từ 3 lần thử là `WARN`, từ 5 lần là `ERROR`) và lượt nộp `SYSTEM_ERROR` hoặc lỗi sandbox (từ `judge.submissions` và timeout sweep); ghi hai rủi ro kỹ thuật (kiểm go-judge xuất metric, autoscale trên Docker Compose) | 2026/10/10 | AI |
 | V1.2 | Sheet 6 | Theo báo cáo `06-plan/reports/261014-1054-admin-ux-review/` (B3): job lỗi sandbox nay luôn nằm cuối bảng bất kể chiều sắp (F NO 10); trước đây sắp tăng dần đưa job lỗi lên đầu vì mang `waitSeconds = -1`. Không đổi spec | 2026-10-14 | Claude |
 | V1.3 | Sheet 5 | Sửa lỗi Minor review UX khu Admin F14 (`06-plan/reports/261014-1054-admin-ux-review/`), **chưa duyệt hình**, chỉ sửa mock: độ trễ chờ trung bình nay tính từ `waitSeconds` của các job trong mock (18,8s), không còn số cố định 1,8s lệch với bảng job (Khu vực E NO 4); worker `go-judge-w4` chuyển sang "Đang chạy" với 1 job thay vì "Nhàn rỗi" cạnh một hàng đợi đang dồn (Khu vực C NO 5). Cụm worker vẫn là mock cho tới khi cài go-judge thật (quyết định của chủ dự án). Không đổi spec | 2026-10-14 | Claude |
+| V1.4 | Sheet 4, 5 (hiện trạng bản dựng) | Đồng bộ bản dựng **nối backend thật** với bố cục V1.0, **chưa duyệt hình**, không đổi spec. Trước đó màn thật (`NEXT_PUBLIC_MOCK_DATA=false`) dùng chữ trần: trạng thái, "Cập nhật lúc", độ trễ là ba dòng `<p>`; hai công tắc và hai nút dồn một hàng; bảng job không có huy hiệu. Nay: dải trạng thái `StatusStrip` (Khu vực J, tông theo `PAUSED`/`BACKLOGGED`/`NORMAL`, nhãn "Dữ liệu cũ" sau 60 giây), khối Điều khiển có thanh độ trễ `ProgressBar` và hai `SettingRow` (Khu vực K), nút "Cấu hình" và "Làm mới" ở thanh tiêu đề, thẻ liên kết sự kiện hạ tầng kèm `?level=error` khi có lỗi (Khu vực G), bảng job có huy hiệu trạng thái, mã mono, cột chờ căn phải, phân trang chỉ hiện khi vượt số dòng mỗi trang. **Khác bản mock, ghi nhận:** bản thật **không có khối cụm worker** (snapshot thật không có dữ liệu worker; ponytail bậc 2, không hiển thị giá trị bịa), khối Điều khiển dùng cả chiều rộng; thẻ liên kết hạ tầng đứng trên bảng job vì cùng nguồn dữ liệu với dải trạng thái. [Nguồn: file `real-queue-monitor.tsx` ở thời điểm đó, đã xoá ở V1.5] | 2026-11-14 | Claude |
+| V1.5 | Sheet 4, 5 (hiện trạng bản dựng) | **Hợp nhất mock và thật thành một cây hiển thị**, chủ dự án yêu cầu 2026-11-14, không đổi spec. Màn thật trước đó là file riêng `real-queue-monitor.tsx` (đã xoá). Nay `admin-queue-monitor-view.tsx` dùng chung cho cả hai chế độ, dữ liệu qua các hook ở `api/queries.ts` (`useQueueSummary`, `useQueueJobs`, `useQueueControl`, `useSaveQueueSettings`, `useQueueLive`) trả cùng một kiểu `QueueSummary` và `JobsPage` (`model/types.ts`). Phía thật chuyển đổi bằng `toQueueSummary` và `toJobsPage` (`api/real-queue.ts`); phía mock đọc `__mock__/judge-queue-mocks.ts`. Khối cụm worker chỉ hiện khi nguồn có dữ liệu worker, nên bản thật không có (ghi ở V1.4). Cột "Chờ" chỉ sắp xếp được ở mock (`sortable`), vì danh sách từ máy chủ theo thứ tự cố định. Tab, trang và hai công tắc ở mock nay đi qua truy vấn, nên cập nhật bất đồng bộ như bản thật. [Nguồn: 05-coding/frontend/src/views/admin/queue-monitor/ui/admin-queue-monitor-view.tsx; 05-coding/frontend/src/views/admin/queue-monitor/api/queries.ts] | 2026-11-14 | Claude |
 
 ---
 

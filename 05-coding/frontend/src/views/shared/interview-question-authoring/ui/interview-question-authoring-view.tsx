@@ -1,6 +1,9 @@
-// PROTOTYPE — no DD yet. See 06-plan/PROTOTYPE_DEBT.md section 9.
+// Wired to F6 #20 / #21 / #22 / #23 (03-dd/api/F6_interview-bank.md). Route param: the question UUID (the
+// code of the mock bank in mock mode) or "new". Save is pessimistic: the form keeps the draft until the
+// server answers. `contentMarkdown` and each criterion's `description` have no input on this form
+// (BD SHR0302 Q7), so a save sends back what was loaded: PUT replaces the whole question.
 //
-// THE ONE ADMIN SCREEN WITH NO PROTOTYPE. 09-layoutBase has no mockup for it and the BD says so
+// History: THE ONE ADMIN SCREEN WITH NO PROTOTYPE. 09-layoutBase has no mockup for it and the BD says so
 // outright, describing the layout by structure only
 // [SoT: 02-bd/screens/shared/SHR0302_interview_question_authoring.md:12-14]. So this build follows the BD
 // rather than a picture, reuses the tokens and primitives the other Admin screens already
@@ -23,17 +26,20 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { ArrowLeft, Eye } from "lucide-react";
 import {
-  useInterviewQuestion,
-  type InterviewQuestion,
+  useAdminQuestion,
+  useCreateAdminQuestion,
   useInterviewLevels,
   useInterviewTopics,
-  type QuestionLevel,
-  type QuestionTopic,
-  type RubricCriterion,
+  useRetireAdminQuestions,
+  useUpdateAdminQuestion,
+  type AdminQuestionDetail,
+  type AdminQuestionInput,
 } from "@/entities/interview-question";
-import { useT } from "@/shared/i18n";
+import { ApiError } from "@/shared/api";
+import { useApiErrorMessage, useT } from "@/shared/i18n";
 import { toast } from "@/shared/lib/toast-store";
 import {
   Button,
@@ -50,20 +56,31 @@ import {
   TextField,
 } from "@/shared/ui";
 
-type Draft = {
-  question: string;
-  topic: QuestionTopic;
-  level: QuestionLevel;
-  followUps: string[];
-  rubric: RubricCriterion[];
+type DraftCriterion = {
+  label: string;
+  /** Weight percentage, 0-100. */
+  weight: number;
+  description: string | null;
 };
 
-// topic and level start empty: the create form fills them with the first row of the admin-managed lists,
+// `topicId` / `levelId` are the list rows' ids (API) or keys (mock); empty means "first row of the list",
 // which an admin may have renamed, reordered or deleted (DEC-2026-1001).
+type Draft = {
+  title: string;
+  topicId: string;
+  levelId: string;
+  contentMarkdown: string | null;
+  followUps: string[];
+  rubric: DraftCriterion[];
+};
+
+const TITLE_MAX = 255;
+
 const EMPTY_DRAFT: Draft = {
-  question: "",
-  topic: "",
-  level: "",
+  title: "",
+  topicId: "",
+  levelId: "",
+  contentMarkdown: null,
   followUps: [""],
   rubric: [],
 };
@@ -77,22 +94,27 @@ type Props = {
 
 function draftFor(
   questionId: string,
-  found: InterviewQuestion | null,
+  found: AdminQuestionDetail | null,
 ): Draft | null {
   if (questionId === "new") return EMPTY_DRAFT;
   if (!found) return null;
   return {
-    question: found.question,
-    topic: found.topic,
-    level: found.level,
+    title: found.title,
+    topicId: found.topicId,
+    levelId: found.levelId,
+    contentMarkdown: found.contentMarkdown,
     followUps: found.followUps.length > 0 ? [...found.followUps] : [""],
-    rubric: found.rubric.map((criterion) => ({ ...criterion })),
+    rubric: found.rubric.map((criterion) => ({
+      label: criterion.criterionCode,
+      weight: criterion.weightPercent,
+      description: criterion.description,
+    })),
   };
 }
 
 export function InterviewQuestionAuthoringView(props: Props) {
   const isNew = props.questionId === "new";
-  const query = useInterviewQuestion(props.questionId, !isNew);
+  const query = useAdminQuestion(props.questionId, !isNew);
   // The create form has nothing to load, so it skips the boundary.
   if (isNew) return <InterviewQuestionAuthoring {...props} found={null} />;
   return (
@@ -106,21 +128,26 @@ function InterviewQuestionAuthoring({
   questionId,
   listHref,
   found,
-}: Props & { found: InterviewQuestion | null }) {
+}: Props & { found: AdminQuestionDetail | null }) {
   const t = useT("interviewQuestionAuthoring");
   const isNew = questionId === "new";
+  const apiMessage = useApiErrorMessage();
+  const router = useRouter();
   const topicList = useInterviewTopics();
   const levelList = useInterviewLevels();
+  const create = useCreateAdminQuestion();
+  const update = useUpdateAdminQuestion();
+  const retire = useRetireAdminQuestions();
   const [loaded] = useState(() => draftFor(questionId, found));
-  const [draft, setDraft] = useState<Draft>(
-    loaded ?? {
-      ...EMPTY_DRAFT,
-      topic: topicList[0]?.key ?? "",
-      level: levelList[0]?.key ?? "",
-    },
-  );
-  const [saving, setSaving] = useState(false);
+  // Kept from the first render: after a soft delete the detail query refetches and comes back null.
+  const [displayNo] = useState(found?.displayNo ?? 0);
+  const [draft, setDraft] = useState<Draft>(loaded ?? EMPTY_DRAFT);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
+  const saving = create.isPending || update.isPending;
+  const idOf = (item: { id?: string; key: string }) => item.id ?? item.key;
+  // An untouched create form shows (and saves) the first row of each list.
+  const topicId = draft.topicId || (topicList[0] ? idOf(topicList[0]) : "");
+  const levelId = draft.levelId || (levelList[0] ? idOf(levelList[0]) : "");
 
   const rubricTotal = draft.rubric.reduce(
     (sum, criterion) => sum + criterion.weight,
@@ -128,8 +155,7 @@ function InterviewQuestionAuthoring({
   );
   // Empty is fine; non-empty must add to exactly 100.
   const rubricBlocksSave = draft.rubric.length > 0 && rubricTotal !== 100;
-  const canSave =
-    draft.question.trim().length > 0 && !rubricBlocksSave && !saving;
+  const canSave = draft.title.trim().length > 0 && !rubricBlocksSave && !saving;
 
   function patch(changes: Partial<Draft>) {
     setDraft((previous) => ({ ...previous, ...changes }));
@@ -141,7 +167,7 @@ function InterviewQuestionAuthoring({
     });
   }
 
-  function setCriterion(index: number, changes: Partial<RubricCriterion>) {
+  function setCriterion(index: number, changes: Partial<DraftCriterion>) {
     patch({
       rubric: draft.rubric.map((item, i) =>
         i === index ? { ...item, ...changes } : item,
@@ -150,10 +176,27 @@ function InterviewQuestionAuthoring({
   }
 
   // The Save button looks disabled while blocked but stays clickable, so a click names the reason.
-  async function save() {
+  function save() {
     if (saving) return;
-    if (draft.question.trim().length === 0) {
+    const title = draft.title.trim();
+    if (title.length === 0) {
       toast.warning(t("saveBlocked.empty"));
+      return;
+    }
+    if ([...title].length > TITLE_MAX) {
+      toast.warning(t("saveBlocked.titleTooLong", { max: TITLE_MAX }));
+      return;
+    }
+    const names = draft.rubric.map((criterion) => criterion.label.trim());
+    if (names.some((name) => name === "")) {
+      toast.warning(t("saveBlocked.criterionBlank"));
+      return;
+    }
+    if (
+      new Set(names.map((name) => name.toLocaleLowerCase("vi"))).size <
+      names.length
+    ) {
+      toast.warning(t("saveBlocked.criterionDuplicate"));
       return;
     }
     if (rubricBlocksSave) {
@@ -162,16 +205,55 @@ function InterviewQuestionAuthoring({
       );
       return;
     }
-    setSaving(true);
-    // No endpoint yet — the delay stands in for the round trip so the saving state is reviewable.
-    try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      toast.success(t("toast.saved"));
-    } catch {
-      toast.error(t("toast.saveFailed"));
-    } finally {
-      setSaving(false);
+    if (!topicId || !levelId) {
+      toast.warning(t("saveBlocked.classify"));
+      return;
     }
+    const input: AdminQuestionInput = {
+      topicId,
+      levelId,
+      title,
+      contentMarkdown: draft.contentMarkdown,
+      followUps: draft.followUps
+        .map((item) => item.trim())
+        .filter((item) => item !== ""),
+      rubric: draft.rubric.map((criterion, index) => ({
+        criterionCode: names[index]!,
+        weightPercent: criterion.weight,
+        description: criterion.description,
+      })),
+    };
+    const onError = (error: unknown) => toast.error(apiMessage(error));
+    if (isNew) {
+      create.mutate(input, {
+        onSuccess: (created) => {
+          toast.success(t("toast.saved"));
+          router.replace(`${listHref}/${created.id}/edit`);
+        },
+        onError,
+      });
+    } else {
+      update.mutate(
+        { id: questionId, input },
+        { onSuccess: () => toast.success(t("toast.saved")), onError },
+      );
+    }
+  }
+
+  // Soft delete is bulk-delete of one id (F6 #23); a 200 can still list the id as failed.
+  function softDelete() {
+    retire.mutate([questionId], {
+      onSuccess: (result) => {
+        const failed = result.failedItems[0];
+        if (failed) {
+          toast.error(apiMessage(new ApiError(failed.code, 0)));
+          return;
+        }
+        toast.success(t("toast.softDeleted"));
+        router.push(listHref);
+      },
+      onError: (error) => toast.error(apiMessage(error)),
+    });
   }
 
   if (loaded === null) {
@@ -196,7 +278,13 @@ function InterviewQuestionAuthoring({
         leading={
           <IconAction icon={ArrowLeft} label={t("back")} href={listHref} />
         }
-        title={isNew ? t("titleNew") : t("titleEdit", { code: questionId })}
+        title={
+          isNew
+            ? t("titleNew")
+            : t("titleEdit", {
+                code: `IQ-${String(displayNo).padStart(3, "0")}`,
+              })
+        }
         description={t("subtitle")}
         actions={
           <>
@@ -221,8 +309,8 @@ function InterviewQuestionAuthoring({
               label={t("questionLabel")}
               placeholder={t("questionPlaceholder")}
               rows={4}
-              value={draft.question}
-              onChange={(event) => patch({ question: event.target.value })}
+              value={draft.title}
+              onChange={(event) => patch({ title: event.target.value })}
             />
           </Card>
 
@@ -346,7 +434,12 @@ function InterviewQuestionAuthoring({
               variant="ghost"
               size="sm"
               onClick={() =>
-                patch({ rubric: [...draft.rubric, { label: "", weight: 0 }] })
+                patch({
+                  rubric: [
+                    ...draft.rubric,
+                    { label: "", weight: 0, description: null },
+                  ],
+                })
               }
               className="self-start border border-dashed border-[var(--color-border)]"
             >
@@ -362,21 +455,19 @@ function InterviewQuestionAuthoring({
             <div className="flex flex-col gap-3">
               <SelectField
                 label={t("topicLabel")}
-                value={draft.topic}
-                onChange={(event) => patch({ topic: event.target.value })}
+                value={topicId}
+                onChange={(event) => patch({ topicId: event.target.value })}
                 options={topicList.map((topic) => ({
-                  value: topic.key,
+                  value: idOf(topic),
                   label: topic.label,
                 }))}
               />
               <SelectField
                 label={t("levelLabel")}
-                value={draft.level}
-                onChange={(event) =>
-                  patch({ level: event.target.value as QuestionLevel })
-                }
+                value={levelId}
+                onChange={(event) => patch({ levelId: event.target.value })}
                 options={levelList.map((item) => ({
-                  value: item.key,
+                  value: idOf(item),
                   label: item.label,
                 }))}
               />
@@ -405,7 +496,7 @@ function InterviewQuestionAuthoring({
         onClose={() => setConfirmingDelete(false)}
         onConfirm={() => {
           setConfirmingDelete(false);
-          toast.success(t("toast.softDeleted"));
+          softDelete();
         }}
         title={t("confirmSoftDeleteTitle")}
         confirmLabel={t("softDelete")}

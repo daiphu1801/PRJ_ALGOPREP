@@ -1,0 +1,10 @@
+{
+  "java.import.exclusions": [
+    "**/node_modules/**",
+    "**/.metadata/**",
+    "**/archetype-resources/**",
+    "**/META-INF/maven/**",
+    "**/.claude/worktrees/**"
+  ],
+  "java.configuration.updateBuildConfiguration": "automatic"
+}

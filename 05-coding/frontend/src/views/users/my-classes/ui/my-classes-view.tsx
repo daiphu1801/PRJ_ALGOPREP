@@ -1,17 +1,19 @@
-// PROTOTYPE - no RD/BD/DD yet (owner 2026-10-23: build first, docs later). See 06-plan/PROTOTYPE_DEBT.md.
+// F1 #25/#25A supplies membership; F2 #13A supplies whole-class progress independently per card.
 //
 // Learner-side class screen: join by invite code (F1-23, 01-rd/req/F1_identity.md:133-137) and, once in a
 // class, its schedule, instructor and assigned problems (F2-12 also lists them on problem_list).
 "use client";
 
 import { useState, type FormEvent } from "react";
+import { useMyClassProblems } from "@/entities/problem";
+import { isMockMode } from "@/shared/api";
 import {
   formatClassSchedule,
   useJoinClass,
   useMyClasses,
   type MyClass,
 } from "@/entities/class";
-import { useT } from "@/shared/i18n";
+import { useApiErrorMessage, useT } from "@/shared/i18n";
 import { toast } from "@/shared/lib/toast-store";
 import {
   Button,
@@ -29,6 +31,7 @@ const CODE_MAX_LENGTH = 16;
 export function MyClassesView() {
   const t = useT("myClasses");
   const tm = useT("classManagement");
+  const toMessage = useApiErrorMessage();
   const classes = useMyClasses();
   const join = useJoinClass();
   const [code, setCode] = useState("");
@@ -41,7 +44,8 @@ export function MyClassesView() {
         setCode("");
         toast.success(t("join.success", { name: klass.name }));
       },
-      onError: () => toast.error(t("join.invalid")),
+      // IDT-410 (wrong or expired code) and IDT-412 (too many wrong codes) read by their own code.
+      onError: (error) => toast.error(toMessage(error)),
     });
   }
 
@@ -104,9 +108,19 @@ export function MyClassesView() {
 
 function ClassCard({ klass, schedule }: { klass: MyClass; schedule: string }) {
   const t = useT("myClasses");
-  const solved = klass.assignments.filter((a) => a.solved).length;
-  const total = klass.assignments.length;
-  const progress = t("card.progress", { solved, total });
+  const real = !isMockMode();
+  // One first-page read per class; meta covers every page, never just the returned 20 rows.
+  const assignments = useMyClassProblems(klass.id, 1, real);
+  const total = real
+    ? (assignments.data?.meta?.totalAssigned ?? null)
+    : (klass.assignments?.length ?? 0);
+  const solved = real
+    ? (assignments.data?.meta?.solvedCount ?? null)
+    : (klass.assignments ?? []).filter((a) => a.solved).length;
+  const progress =
+    solved === null
+      ? t("card.assignedCount", { total: total ?? 0 })
+      : t("card.progress", { solved, total: total ?? 0 });
 
   return (
     <Card className="min-w-0 px-[18px] py-4">
@@ -117,7 +131,9 @@ function ClassCard({ klass, schedule }: { klass: MyClass; schedule: string }) {
         </p>
       ) : null}
       <dl className="mt-3 grid gap-1 text-[12.5px] sm:grid-cols-[110px_1fr]">
-        <dt className="text-[var(--color-text-muted)]">{t("card.instructor")}</dt>
+        <dt className="text-[var(--color-text-muted)]">
+          {t("card.instructor")}
+        </dt>
         <dd>{klass.instructorName}</dd>
         {schedule ? (
           <>
@@ -131,15 +147,22 @@ function ClassCard({ klass, schedule }: { klass: MyClass; schedule: string }) {
         <dd>{klass.joinedAtLabel}</dd>
       </dl>
 
-      {total > 0 ? (
+      {real && assignments.isError ? <QueryError query={assignments} /> : null}
+      {real && assignments.isLoading ? (
+        <p className="mt-4 text-[12px] text-[var(--color-text-muted)]">
+          {t("card.progressLoading")}
+        </p>
+      ) : total !== null && total > 0 ? (
         <div className="mt-4">
-          <ProgressBar
-            value={solved}
-            max={total}
-            label={progress}
-            height={6}
-            className="mb-1.5"
-          />
+          {solved !== null ? (
+            <ProgressBar
+              value={solved}
+              max={total}
+              label={progress}
+              height={6}
+              className="mb-1.5"
+            />
+          ) : null}
           <p className="text-[12px] text-[var(--color-text-muted)]">
             {progress}
           </p>

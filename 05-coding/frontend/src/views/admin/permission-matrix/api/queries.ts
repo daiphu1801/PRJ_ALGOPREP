@@ -1,14 +1,18 @@
-// PROTOTYPE — no DD endpoint wired yet. See 06-plan/PROTOTYPE_DEBT.md
-//
-// Data boundary of the permission-matrix screen: `GetPermissionMatrix`
-// (03-dd/api/F1_identity.md, row 30). Cell toggles are still local state in the view.
-import { useMockQuery } from "@/shared/api/mock-query";
+// Data boundary of the permission-matrix screen: `GetPermissionMatrix` (#30) with the role list (#32)
+// in real mode, the prototype page in mock mode (03-dd/api/F1_identity.md section 0.5).
+import { useQuery } from "@tanstack/react-query";
+import { withMockData } from "@/shared/api";
 import { fetchPermissionMatrix } from "./__mock__/permission-matrix-mocks";
+import { realFetchPermissionMatrix } from "./real-permission-matrix";
+
+export const PERMISSION_MATRIX_KEY = ["permission-matrix"] as const;
 
 export const usePermissionMatrixPage = () =>
-  useMockQuery({
-    queryKey: ["permission-matrix"],
-    mock: fetchPermissionMatrix,
-    spec: "03-dd/api/F1_identity.md",
+  useQuery({
+    queryKey: PERMISSION_MATRIX_KEY,
+    queryFn: () =>
+      withMockData(fetchPermissionMatrix, realFetchPermissionMatrix),
+    // A reopened screen must show what the server holds now, not a cached copy.
     staleTime: 0,
+    retry: false,
   });

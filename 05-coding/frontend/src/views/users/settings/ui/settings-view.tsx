@@ -35,9 +35,7 @@ export function SettingsView({
       <div className="flex min-w-0 flex-col gap-3.5">
         <AppearanceCard />
         <PreferencesForm />
-        {profile.data ? (
-          <SecurityCard profile={profile.data} />
-        ) : null}
+        {profile.data ? <SecurityCard profile={profile.data} /> : null}
         {profile.isError ? (
           // D33: without the profile there is no email to confirm against, so say so instead of a
           // skeleton that never resolves.

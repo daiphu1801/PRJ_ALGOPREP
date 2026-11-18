@@ -4,80 +4,69 @@
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="t_plugin" value='&lt;div style="text-align:center"&gt;&lt;b&gt;LanguageHarnessPlugin&lt;/b&gt;&lt;br&gt;&lt;font style="font-size:9px" color="#666666"&gt;&amp;lt;&amp;lt;interface&amp;gt;&amp;gt;&lt;/font&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;language()&amp;nbsp;:&amp;nbsp;Language&lt;br&gt;+&amp;nbsp;renderFunctionWrapper(spec&amp;nbsp;:&amp;nbsp;FunctionSpec,&amp;nbsp;normalizedUserSource&amp;nbsp;:&amp;nbsp;String)&amp;nbsp;:&amp;nbsp;RenderedProgram&lt;br&gt;+&amp;nbsp;renderStandardIo(normalizedUserSource&amp;nbsp;:&amp;nbsp;String)&amp;nbsp;:&amp;nbsp;RenderedProgram&lt;br&gt;+&amp;nbsp;starterCode(specOrNull&amp;nbsp;:&amp;nbsp;FunctionSpec,&amp;nbsp;model&amp;nbsp;:&amp;nbsp;SubmissionModel)&amp;nbsp;:&amp;nbsp;String&lt;br&gt;+&amp;nbsp;toolchain(model&amp;nbsp;:&amp;nbsp;SubmissionModel)&amp;nbsp;:&amp;nbsp;ToolchainProfile&lt;br&gt;+&amp;nbsp;parseCompilerOutput(raw&amp;nbsp;:&amp;nbsp;String)&amp;nbsp;:&amp;nbsp;List&amp;lt;RawDiagnostic&amp;gt;' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#DCEBFC;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="254.0025" y="184" width="591.3" height="138" as="geometry" />
+        <mxCell id="t_renderer" value='&lt;div style="text-align:center"&gt;&lt;b&gt;FunctionWrapperRenderer&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;render(language&amp;nbsp;:&amp;nbsp;Language,&amp;nbsp;draft&amp;nbsp;:&amp;nbsp;FunctionSpecDraft,&amp;nbsp;userSource&amp;nbsp;:&amp;nbsp;String)&amp;nbsp;:&amp;nbsp;RenderedProgram' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="286.5999999999999" y="60" width="603.5" height="54" as="geometry" />
         </mxCell>
-        <mxCell id="t_java" value='&lt;div style="text-align:center"&gt;&lt;b&gt;JavaHarnessPlugin&lt;/b&gt;&lt;/div&gt;' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=center;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="54" y="418" width="155.45499999999998" height="36" as="geometry" />
+        <mxCell id="t_emitter" value='&lt;div style="text-align:center"&gt;&lt;b&gt;TypeCodeEmitter&lt;/b&gt;&lt;br&gt;&lt;font style="font-size:9px" color="#666666"&gt;&amp;lt;&amp;lt;interface&amp;gt;&amp;gt;&lt;/font&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;type(node&amp;nbsp;:&amp;nbsp;TypeNode)&amp;nbsp;:&amp;nbsp;String&lt;br&gt;+&amp;nbsp;read(node&amp;nbsp;:&amp;nbsp;TypeNode)&amp;nbsp;:&amp;nbsp;String&lt;br&gt;+&amp;nbsp;write(node&amp;nbsp;:&amp;nbsp;TypeNode,&amp;nbsp;value&amp;nbsp;:&amp;nbsp;String)&amp;nbsp;:&amp;nbsp;String' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#DCEBFC;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="313.6499999999999" y="184" width="322.9" height="96" as="geometry" />
         </mxCell>
-        <mxCell id="t_cpp" value='&lt;div style="text-align:center"&gt;&lt;b&gt;CppHarnessPlugin&lt;/b&gt;&lt;/div&gt;' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=center;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="259.455" y="418" width="148.44" height="36" as="geometry" />
+        <mxCell id="t_java" value='&lt;div style="text-align:center"&gt;&lt;b&gt;JavaTypeCodeEmitter&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;type(node&amp;nbsp;:&amp;nbsp;TypeNode)&amp;nbsp;:&amp;nbsp;String&lt;br&gt;+&amp;nbsp;read(node&amp;nbsp;:&amp;nbsp;TypeNode)&amp;nbsp;:&amp;nbsp;String&lt;br&gt;+&amp;nbsp;write(node&amp;nbsp;:&amp;nbsp;TypeNode,&amp;nbsp;value&amp;nbsp;:&amp;nbsp;String)&amp;nbsp;:&amp;nbsp;String' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="54" y="350" width="322.9" height="82" as="geometry" />
         </mxCell>
-        <mxCell id="t_py" value='&lt;div style="text-align:center"&gt;&lt;b&gt;PythonHarnessPlugin&lt;/b&gt;&lt;/div&gt;' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=center;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="457.895" y="418" width="169.48499999999999" height="36" as="geometry" />
+        <mxCell id="t_cpp" value='&lt;div style="text-align:center"&gt;&lt;b&gt;CppTypeCodeEmitter&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;type(node&amp;nbsp;:&amp;nbsp;TypeNode)&amp;nbsp;:&amp;nbsp;String&lt;br&gt;+&amp;nbsp;read(node&amp;nbsp;:&amp;nbsp;TypeNode)&amp;nbsp;:&amp;nbsp;String&lt;br&gt;+&amp;nbsp;write(node&amp;nbsp;:&amp;nbsp;TypeNode,&amp;nbsp;value&amp;nbsp;:&amp;nbsp;String)&amp;nbsp;:&amp;nbsp;String' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="426.9" y="350" width="322.9" height="82" as="geometry" />
         </mxCell>
-        <mxCell id="t_registry" value='&lt;div style="text-align:center"&gt;&lt;b&gt;PluginRegistry&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;-&amp;nbsp;plugins&amp;nbsp;:&amp;nbsp;EnumMap&amp;lt;Language,&amp;nbsp;LanguageHarnessPlugin&amp;gt;' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="379.0525" y="60" width="341.2" height="54" as="geometry" />
+        <mxCell id="t_py" value='&lt;div style="text-align:center"&gt;&lt;b&gt;PythonTypeCodeEmitter&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;type(node&amp;nbsp;:&amp;nbsp;TypeNode)&amp;nbsp;:&amp;nbsp;String&lt;br&gt;+&amp;nbsp;read(node&amp;nbsp;:&amp;nbsp;TypeNode)&amp;nbsp;:&amp;nbsp;String&lt;br&gt;+&amp;nbsp;write(node&amp;nbsp;:&amp;nbsp;TypeNode,&amp;nbsp;value&amp;nbsp;:&amp;nbsp;String)&amp;nbsp;:&amp;nbsp;String' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="799.8" y="350" width="322.9" height="82" as="geometry" />
         </mxCell>
-        <mxCell id="t_emitter" value='&lt;div style="text-align:center"&gt;&lt;b&gt;TypeCodeEmitter&lt;/b&gt;&lt;/div&gt;' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=center;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="677.38" y="418" width="141.425" height="36" as="geometry" />
+        <mxCell id="t_prog" value='&lt;div style="text-align:center"&gt;&lt;b&gt;RenderedProgram&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;sourceFileName&amp;nbsp;:&amp;nbsp;String&lt;br&gt;+&amp;nbsp;text&amp;nbsp;:&amp;nbsp;String&lt;br&gt;+&amp;nbsp;lineMap&amp;nbsp;:&amp;nbsp;LineMap' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="686.55" y="184" width="176.5" height="82" as="geometry" />
         </mxCell>
-        <mxCell id="t_prog" value='&lt;div style="text-align:center"&gt;&lt;b&gt;RenderedProgram&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;-&amp;nbsp;sourceFileName&amp;nbsp;:&amp;nbsp;String&lt;br&gt;-&amp;nbsp;text&amp;nbsp;:&amp;nbsp;String&lt;br&gt;-&amp;nbsp;lineMap&amp;nbsp;:&amp;nbsp;LineMap' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="868.8050000000001" y="418" width="176.5" height="82" as="geometry" />
-        </mxCell>
-        <mxCell id="e1" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.500;exitY=0;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.114;entryY=1;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=block;endFill=0;" edge="1" parent="1" source="t_java" target="t_plugin">
+        <mxCell id="e1" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.500;exitY=0;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.187;entryY=1;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=block;endFill=0;" edge="1" parent="1" source="t_java" target="t_emitter">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-            <mxPoint x="131.7275" y="338" />
-            <mxPoint x="321.1325" y="338" />
+            <mxPoint x="215.45" y="297.5" />
+            <mxPoint x="374.13333333333327" y="297.5" />
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="e2" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.500;exitY=0;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.307;entryY=1;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=block;endFill=0;" edge="1" parent="1" source="t_cpp" target="t_plugin">
+        <mxCell id="e2" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.500;exitY=0;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=1;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=block;endFill=0;" edge="1" parent="1" source="t_cpp" target="t_emitter">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-            <mxPoint x="333.67499999999995" y="354" />
-            <mxPoint x="435.3925" y="354" />
+            <mxPoint x="588.3499999999999" y="315" />
+            <mxPoint x="475.0999999999999" y="315" />
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="e3" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.500;exitY=0;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=1;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=block;endFill=0;" edge="1" parent="1" source="t_py" target="t_plugin">
+        <mxCell id="e3" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.500;exitY=0;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.813;entryY=1;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=block;endFill=0;" edge="1" parent="1" source="t_py" target="t_emitter">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-            <mxPoint x="542.6374999999999" y="370" />
-            <mxPoint x="549.6524999999999" y="370" />
+            <mxPoint x="961.25" y="332.5" />
+            <mxPoint x="576.0666666666666" y="332.5" />
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="e4" value="tra cứu" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.512;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_registry" target="t_plugin">
+        <mxCell id="e4" value="phát mã kiểu" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.258;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_renderer" target="t_emitter">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-            <mxPoint x="553.6524999999999" y="149" />
-            <mxPoint x="549.6524999999999" y="149" />
+            <mxPoint x="442.4749999999999" y="137.33333333333334" />
+            <mxPoint x="475.0999999999999" y="137.33333333333334" />
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="e5" value="trả về" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.886;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_plugin" target="t_prog">
+        <mxCell id="e5" value="trả về" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.742;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_renderer" target="t_prog">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-            <mxPoint x="778.1724999999999" y="402" />
-            <mxPoint x="957.0550000000001" y="402" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="e6" value="dùng" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.693;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_plugin" target="t_emitter">
-          <mxGeometry relative="1" as="geometry">
-            <Array as="points">
-            <mxPoint x="663.9124999999999" y="386" />
-            <mxPoint x="748.0925" y="386" />
+            <mxPoint x="734.2249999999999" y="160.66666666666666" />
+            <mxPoint x="774.8" y="160.66666666666666" />
             </Array>
           </mxGeometry>
         </mxCell>
         <mxCell id="title" value="F3 — Sinh mã theo ngôn ngữ" style="text;html=1;fontSize=16;fontStyle=1;align=center;verticalAlign=middle;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="0" y="10" width="1075.3049999999998" height="30" as="geometry" />
+          <mxGeometry x="0" y="10" width="1152.6999999999998" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="v7" value="Ghi chú: Registry chọn plugin Java, C++ hoặc Python; plugin sinh mã và trả về RenderedProgram.&lt;br&gt;Ghi chú: Mỗi ngôn ngữ có bộ phát mã kiểu riêng. [SoT: Suy luận] Tên lớp PluginRegistry." style="text;html=1;align=left;verticalAlign=top;fontSize=12;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="30" y="520" width="1100" height="44" as="geometry" />
+        <mxCell id="v6" value="Ghi chú: FunctionWrapperRenderer điều phối sinh mã bọc hàm cho cả 3 ngôn ngữ Java, C++ và Python.&lt;br&gt;Ghi chú: TypeCodeEmitter chuẩn hóa việc đọc, ghi và biểu diễn kiểu dữ liệu cây (TypeNode) cho từng ngôn ngữ mục tiêu." style="text;html=1;align=left;verticalAlign=top;fontSize=12;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="30" y="452" width="1100" height="44" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>

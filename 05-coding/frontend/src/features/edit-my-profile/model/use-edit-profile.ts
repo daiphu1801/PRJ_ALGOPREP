@@ -3,6 +3,7 @@
 
 import { useCallback, useMemo, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
+import { ApiError } from "@/shared/api";
 import type { ZodError } from "zod";
 import {
   emailChangeSchema,
@@ -19,6 +20,7 @@ type FormValues = {
   schoolOrCompany: string;
   currentPosition: string;
   targetPosition: string;
+  phone: string;
 };
 
 function toFormValues(profile: UserProfile): FormValues {
@@ -28,8 +30,19 @@ function toFormValues(profile: UserProfile): FormValues {
     schoolOrCompany: profile.schoolOrCompany ?? "",
     currentPosition: profile.currentPosition ?? "",
     targetPosition: profile.targetPosition ?? "",
+    phone: profile.phone ?? "",
   };
 }
+
+/** Backend validation codes of `PATCH /me/profile` (DD F1 #10) and the form field each one marks. */
+const FIELD_BY_CODE: Record<string, keyof FormValues> = {
+  "IDT-V19": "displayName",
+  "IDT-V20": "displayName",
+  "IDT-V09": "schoolOrCompany",
+  "IDT-V07": "currentPosition",
+  "IDT-V08": "targetPosition",
+  "IDT-V13": "phone",
+};
 
 function zodErrorsToFieldErrors(error: ZodError): Record<string, string> {
   const result: Record<string, string> = {};
@@ -41,7 +54,11 @@ function zodErrorsToFieldErrors(error: ZodError): Record<string, string> {
 }
 
 /** Outcome of `save`: the i18n key (profile namespace) of the first error, so the card can toast it. */
-export type SaveProfileResult = { ok: true } | { ok: false; errorKey: string };
+export type SaveProfileResult =
+  | { ok: true }
+  | { ok: false; errorKey: string }
+  // An API failure of the e-mail request, for `useApiErrorMessage` (taken address, rate limit).
+  | { ok: false; error: unknown };
 
 /**
  * Owns Khu vực B (personal-info form) of USR0502_profile. `email` is edited here but is NEVER part
@@ -87,6 +104,7 @@ export function useEditProfile(
       schoolOrCompany: fields.schoolOrCompany,
       currentPosition: fields.currentPosition,
       targetPosition: fields.targetPosition,
+      phone: fields.phone,
     };
     const parsed = profileFormSchema.safeParse(input);
     if (!parsed.success) {
@@ -128,10 +146,19 @@ export function useEditProfile(
       if (emailRes.status === "fulfilled" && emailChanged) {
         setEmailOtpTarget(nextEmail);
       }
-      if (profileRes.status === "rejected")
+      if (profileRes.status === "rejected") {
+        // A server validation code marks its field and is shown through `apiErrors`.
+        const reason: unknown = profileRes.reason;
+        const field =
+          reason instanceof ApiError ? FIELD_BY_CODE[reason.code] : undefined;
+        if (field) {
+          setFieldErrors({ [field]: (reason as ApiError).code });
+          return { ok: false, error: reason };
+        }
         return { ok: false, errorKey: "form.saveFailed" };
+      }
       if (emailRes.status === "rejected")
-        return { ok: false, errorKey: "form.emailRequestFailed" };
+        return { ok: false, error: emailRes.reason };
       return { ok: true };
     } finally {
       setIsSaving(false);

@@ -266,7 +266,7 @@
         <mxCell id="title" value="ERD tổng quan các schema" style="text;html=1;fontSize=16;fontStyle=1;align=center;verticalAlign=middle;fontColor=#1A1A1A;" vertex="1" parent="1">
           <mxGeometry x="0" y="10" width="2014" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="v20" value="Chú giải: PK khoá chính; FK khoá ngoại; UQ duy nhất; ? cho phép NULL.&lt;br&gt;Nét đứt, mũi tên mở: tham chiếu logic liên schema (không có khoá ngoại vật lý).&lt;br&gt;Ghi chú: Mọi schema đều tham chiếu identity.users (user_id, author_id, created_by, updated_by, assigned_by); 21 liên kết này không vẽ để hình đỡ rối, xem ERD từng schema." style="text;html=1;align=left;verticalAlign=top;fontSize=11;fontColor=#1A1A1A;" vertex="1" parent="1">
+        <mxCell id="v20" value="Chú giải: PK khoá chính; FK khoá ngoại; UQ duy nhất; ? cho phép NULL.&lt;br&gt;Nét đứt, mũi tên mở: tham chiếu logic liên schema (không có khoá ngoại vật lý).&lt;br&gt;Ghi chú: hình chỉ vẽ 41 trên 67 bảng tiêu biểu; không vẽ bảng danh mục, bảng nối, bảng outbox và bảng hạ tầng. Schema harness không có bảng." style="text;html=1;align=left;verticalAlign=top;fontSize=11;fontColor=#1A1A1A;" vertex="1" parent="1">
           <mxGeometry x="30" y="642" width="1100" height="56" as="geometry" />
         </mxCell>
       </root>

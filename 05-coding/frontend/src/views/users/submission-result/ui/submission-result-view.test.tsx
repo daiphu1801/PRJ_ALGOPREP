@@ -90,4 +90,25 @@ describe("SubmissionResultView", () => {
     fireEvent.click(first!);
     expect(first).toHaveAttribute("aria-expanded", "true");
   });
+
+  // SR-AC-11: queue hint only for a PENDING submission (mock fixture SB-90430).
+  it("shows the approximate queue line for a PENDING submission", async () => {
+    currentSubmissionId = "SB-90430";
+    await renderView();
+
+    const line = screen.getByText(
+      "Đang chờ chấm: phía trước còn 18 bài, ước tính khoảng 9 giây",
+    );
+    expect(line.closest('[role="status"]')).not.toBeNull();
+  });
+
+  it.each(["SB-90420", "SB-90412", "SB-90403"])(
+    "shows no queue line for %s (judging or final)",
+    async (id) => {
+      currentSubmissionId = id;
+      await renderView();
+
+      expect(screen.queryByText(/Đang chờ chấm/)).not.toBeInTheDocument();
+    },
+  );
 });

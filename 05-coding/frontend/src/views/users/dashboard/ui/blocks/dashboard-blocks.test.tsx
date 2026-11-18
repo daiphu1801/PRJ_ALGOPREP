@@ -1,6 +1,12 @@
 import { describe, expect, it } from "vitest";
 import type { ReactNode } from "react";
-import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { NextIntlClientProvider } from "@/shared/i18n";
 import messages from "../../../../../../messages/vi.json";
@@ -35,10 +41,17 @@ describe("SuggestedProblemsBlock", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Khó" }));
 
+    // The previous rows stay while the filtered ones load, so wait for the shorter table.
+    await waitFor(() =>
+      expect(
+        within(
+          screen.getByRole("table", { name: "Bài toán gợi ý" }),
+        ).getAllByRole("row").length,
+      ).toBeLessThan(rowsBefore),
+    );
     const rowsAfter = within(
-      await screen.findByRole("table", { name: "Bài toán gợi ý" }),
+      screen.getByRole("table", { name: "Bài toán gợi ý" }),
     ).getAllByRole("row").length;
-    expect(rowsAfter).toBeLessThan(rowsBefore);
     expect(screen.getByText(`${rowsAfter - 1} bài`)).toBeInTheDocument();
   });
 });

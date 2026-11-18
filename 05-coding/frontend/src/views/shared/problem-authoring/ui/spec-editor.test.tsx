@@ -1,6 +1,7 @@
 // The "Đặc tả" tab body: one shared signature with a stub preview per language, stdin/stdout formats,
 // matching strategy.
 import { useState } from "react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
   act,
   fireEvent,
@@ -15,6 +16,7 @@ import { toast, useToasts } from "@/shared/lib/toast-store";
 import { SpecEditor } from "./spec-editor";
 
 vi.mock("@/shared/i18n", () => ({
+  useApiErrorMessage: () => () => "apiError",
   useT: () => (key: string, params?: Record<string, unknown>) =>
     params ? `${key} ${JSON.stringify(params)}` : key,
 }));
@@ -37,18 +39,23 @@ const initial: ProblemSpec = {
 
 function Harness() {
   const [spec, setSpec] = useState(initial);
+  const [client] = useState(() => new QueryClient());
   return (
-    <>
+    <QueryClientProvider client={client}>
       <SpecEditor spec={spec} onChange={setSpec} />
       <output data-testid="spec">{JSON.stringify(spec)}</output>
-    </>
+    </QueryClientProvider>
   );
 }
 
 const current = (): ProblemSpec =>
   JSON.parse(screen.getByTestId("spec").textContent!);
-const row = (language: string) =>
-  screen.getByRole("listitem", { name: `spec.language.${language}` });
+const row = (language: string) => {
+  fireEvent.click(
+    screen.getByRole("button", { name: `spec.language.${language}` }),
+  );
+  return screen.getByRole("listitem", { name: `spec.language.${language}` });
+};
 
 beforeEach(() => act(() => toast.clear()));
 

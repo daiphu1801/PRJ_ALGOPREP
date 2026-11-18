@@ -14,32 +14,32 @@
         "role": "actor"
       },
       {
-        "name": "AuthController",
+        "name": "OAuthController",
         "role": "controller",
         "stereo": "presentation"
       },
       {
-        "name": "OAuthCallbackCmd",
+        "name": "CompleteOAuthLoginCommandHandler",
         "role": "service",
         "stereo": "application command"
       },
       {
-        "name": "UserRepo",
+        "name": "UserAccountRepository",
         "role": "repository",
         "stereo": "domain output port"
       },
       {
-        "name": "OAuthIdentityRepo",
+        "name": "OAuthIdentityRepository",
         "role": "repository",
         "stereo": "domain output port"
       },
       {
-        "name": "RefreshRepo",
+        "name": "RefreshTokenRepository",
         "role": "repository",
         "stereo": "domain output port"
       },
       {
-        "name": "IdentityDbAdapter",
+        "name": "JdbcUserAccountRepository",
         "role": "repository",
         "stereo": "infrastructure"
       },
@@ -54,35 +54,35 @@
         "phase": "Giai đoạn 3 - Liên kết email đã xác minh"
       },
       {
-        "from": "OAuthCallbackCmd",
-        "to": "UserRepo",
+        "from": "CompleteOAuthLoginCommandHandler",
+        "to": "UserAccountRepository",
         "text": "Tìm tài khoản theo email nhà cung cấp"
       },
       {
-        "from": "UserRepo",
-        "to": "IdentityDbAdapter",
+        "from": "UserAccountRepository",
+        "to": "JdbcUserAccountRepository",
         "text": "Tra email hiện có"
       },
       {
-        "from": "IdentityDbAdapter",
+        "from": "JdbcUserAccountRepository",
         "to": "PostgreSQL",
         "text": "Đọc tài khoản theo email"
       },
       {
         "from": "PostgreSQL",
-        "to": "IdentityDbAdapter",
+        "to": "JdbcUserAccountRepository",
         "text": "Tài khoản hoặc chưa có",
         "kind": "return"
       },
       {
-        "from": "IdentityDbAdapter",
-        "to": "UserRepo",
+        "from": "JdbcUserAccountRepository",
+        "to": "UserAccountRepository",
         "text": "Tài khoản hoặc chưa có",
         "kind": "return"
       },
       {
-        "from": "UserRepo",
-        "to": "OAuthCallbackCmd",
+        "from": "UserAccountRepository",
+        "to": "CompleteOAuthLoginCommandHandler",
         "text": "Kết quả tìm email",
         "kind": "return"
       },
@@ -91,42 +91,42 @@
           "label": "Đã có tài khoản cùng email?",
           "then": [
             {
-              "from": "OAuthCallbackCmd",
-              "to": "OAuthCallbackCmd",
+              "from": "CompleteOAuthLoginCommandHandler",
+              "to": "CompleteOAuthLoginCommandHandler",
               "text": "Dùng tài khoản hiện có đúng phạm vi"
             }
           ],
           "else": [
             {
-              "from": "OAuthCallbackCmd",
-              "to": "UserRepo",
+              "from": "CompleteOAuthLoginCommandHandler",
+              "to": "UserAccountRepository",
               "text": "Tạo tài khoản không có mật khẩu"
             },
             {
-              "from": "UserRepo",
-              "to": "IdentityDbAdapter",
+              "from": "UserAccountRepository",
+              "to": "JdbcUserAccountRepository",
               "text": "Lưu người học mới"
             },
             {
-              "from": "IdentityDbAdapter",
+              "from": "JdbcUserAccountRepository",
               "to": "PostgreSQL",
               "text": "Ghi tài khoản mới"
             },
             {
               "from": "PostgreSQL",
-              "to": "IdentityDbAdapter",
+              "to": "JdbcUserAccountRepository",
               "text": "Mã tài khoản",
               "kind": "return"
             },
             {
-              "from": "IdentityDbAdapter",
-              "to": "UserRepo",
+              "from": "JdbcUserAccountRepository",
+              "to": "UserAccountRepository",
               "text": "Mã tài khoản",
               "kind": "return"
             },
             {
-              "from": "UserRepo",
-              "to": "OAuthCallbackCmd",
+              "from": "UserAccountRepository",
+              "to": "CompleteOAuthLoginCommandHandler",
               "text": "Mã tài khoản mới",
               "kind": "return"
             }
@@ -134,66 +134,66 @@
         }
       },
       {
-        "from": "OAuthCallbackCmd",
-        "to": "OAuthIdentityRepo",
+        "from": "CompleteOAuthLoginCommandHandler",
+        "to": "UserAccountRepository",
         "text": "Liên kết nhà cung cấp với tài khoản"
       },
       {
-        "from": "OAuthIdentityRepo",
-        "to": "IdentityDbAdapter",
+        "from": "UserAccountRepository",
+        "to": "JdbcUserAccountRepository",
         "text": "Lưu danh tính bên ngoài"
       },
       {
-        "from": "IdentityDbAdapter",
+        "from": "JdbcUserAccountRepository",
         "to": "PostgreSQL",
         "text": "Ghi liên kết với nhà cung cấp"
       },
       {
-        "from": "OAuthCallbackCmd",
-        "to": "OAuthCallbackCmd",
+        "from": "CompleteOAuthLoginCommandHandler",
+        "to": "CompleteOAuthLoginCommandHandler",
         "text": "Kiểm trạng thái cho phép cấp phiên"
       },
       {
-        "from": "OAuthCallbackCmd",
-        "to": "RefreshRepo",
+        "from": "CompleteOAuthLoginCommandHandler",
+        "to": "RefreshTokenRepository",
         "text": "Lưu dấu băm mã làm mới phiên"
       },
       {
-        "from": "RefreshRepo",
-        "to": "IdentityDbAdapter",
+        "from": "RefreshTokenRepository",
+        "to": "JdbcUserAccountRepository",
         "text": "Ghi phiên mới"
       },
       {
-        "from": "IdentityDbAdapter",
+        "from": "JdbcUserAccountRepository",
         "to": "PostgreSQL",
         "text": "Lưu phiên và commit"
       },
       {
         "from": "PostgreSQL",
-        "to": "IdentityDbAdapter",
+        "to": "JdbcUserAccountRepository",
         "text": "Đã lưu",
         "kind": "return"
       },
       {
-        "from": "IdentityDbAdapter",
-        "to": "RefreshRepo",
+        "from": "JdbcUserAccountRepository",
+        "to": "RefreshTokenRepository",
         "text": "Phiên đã tạo",
         "kind": "return"
       },
       {
-        "from": "RefreshRepo",
-        "to": "OAuthCallbackCmd",
+        "from": "RefreshTokenRepository",
+        "to": "CompleteOAuthLoginCommandHandler",
         "text": "Có thể trả phiên",
         "kind": "return"
       },
       {
-        "from": "OAuthCallbackCmd",
-        "to": "AuthController",
+        "from": "CompleteOAuthLoginCommandHandler",
+        "to": "OAuthController",
         "text": "Mã truy cập và mã làm mới riêng",
         "kind": "return"
       },
       {
-        "from": "AuthController",
+        "from": "OAuthController",
         "to": "Sinh viên",
         "text": "Trả mã truy cập; đặt cookie an toàn",
         "kind": "return"

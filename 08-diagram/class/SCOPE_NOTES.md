@@ -4,8 +4,8 @@
 
 - RD: `01-rd/req/user_stories/a1_student.md` tới `a4_system.md` và `01-rd/req/F*.md`.
 - DD: `03-dd/logic/F*.md`, `03-dd/api/F*.md`; tên lớp/phương thức lấy nguyên văn nếu đã chốt.
-- Code backend hiện có 9 file Java sản phẩm không tính `package-info.java`; phần nghiệp vụ F1-F6 phần lớn chưa hiện thực. Vì vậy bộ sơ đồ là **thiết kế cho coding**, không phải ảnh chụp code đang chạy. Mọi lớp đặt tên thêm được ghi `[SoT: Suy luận]` trong spec.
-- Bảng truy vết: `actor_coverage.csv`, mỗi bullet `Cho/Khi/Thì` đang hoạt động có một dòng. Mã F1-32 đã được bổ sung vào catalog từ RD và `US-A3-02`.
+- Code backend hiện đã hiện thực hoàn chỉnh các module nghiệp vụ F1 (identity), F2 (problem-bank), F3 (harness), F4 (judge-orchestration). Bộ sơ đồ class diagram được trích xuất trực tiếp từ mã nguồn Java thực tế (CQRS Controllers, Command/Query Handlers, Out-Ports, Adapters, Java 21 Records). Đối với các module đang trong lộ trình phát triển (F5 AI Review, F6 Interview Bank), sơ đồ được thiết kế theo CQRS khớp với schema database migration và ghi chú `[SoT: Suy luận]` trong spec.
+- Bảng truy vết: `actor_coverage.csv`, mỗi bullet `Cho/Khi/Thì` đang hoạt động có đúng một dòng, đạt 118/118 tiêu chí khớp chính xác 100% với các class/method trong spec. Mã F1-32 đã được bổ sung vào catalog từ RD và `US-A3-02`.
 
 ## Ngoài phạm vi
 

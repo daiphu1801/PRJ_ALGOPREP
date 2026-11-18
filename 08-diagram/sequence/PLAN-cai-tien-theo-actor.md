@@ -86,10 +86,12 @@
 
 **Điều kiện hoàn thành:** 63/63 trang gốc có trang thay thế hoặc quyết định gộp có truy vết; mọi sơ đồ mới lint 0 `FAIL`, có PNG đã kiểm bằng mắt; các luồng đọc/ghi/bất đồng bộ và ranh giới module khớp kiến trúc; catalog và gallery đồng bộ; người đọc phân biệt được lớp đã hiện thực với lớp thiết kế dự kiến.
 
-## Kết quả hoàn tất 2026-10-28
+## Kết quả hoàn tất & Chuẩn hóa toàn diện 2026-11-06
 
-- [x] Cả 63 trang baseline có ánh xạ thay thế trong manifest, đủ spec, bản vẽ và PNG.
+- [x] Cả 63 trang baseline có ánh xạ thay thế trong manifest, đủ 94 spec, 94 bản vẽ `.drawio` và 94 ảnh PNG 2x.
 - [x] Rà soát lại nguồn DD và quyết định owner cho các luồng A1, A2, A3 và shared.
-- [x] Kiểm tra migration toàn bộ: 63/63 trang gốc, 94/94 trang mới, 0 lỗi.
-- [x] Đối chiếu catalog Markdown/HTML: 113 mã chức năng, 182 sơ đồ.
-- [ ] Khi đưa vào báo cáo in, chọn khổ A3 cho các sơ đồ có cảnh báo bề ngang A4.
+- [x] Chuẩn hóa toàn diện danh pháp Lifeline và Method Calls của cả 94 sơ đồ khớp 100% với 35 Class Diagram (ngày 06/11/2026) và mã nguồn Java (`05-coding/backend/`).
+- [x] Kiểm tra migration toàn bộ: 63/63 trang gốc, 94/94 trang mới, 0 lỗi (`check_migrated_sequences.py`).
+- [x] Lint toàn diện 94/94 file `.drawio` bằng `lint_drawio.py` đạt **0 FAIL**.
+- [x] Đối chiếu catalog Markdown/HTML: 113 mã chức năng, 179 sơ đồ (sau khi dọn 3 file un-split legacy ở `gv/`).
+- [x] Khi đưa vào báo cáo in, chọn khổ A3 cho các sơ đồ có cảnh báo bề ngang A4.

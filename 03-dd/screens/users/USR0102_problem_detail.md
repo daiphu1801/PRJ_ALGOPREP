@@ -14,9 +14,9 @@ Bảng 0.1: Bìa tài liệu.
 | Route | `/workspace/{problemId}` (`problemId` là UUID, `DEC-2026-1024-dd-screens-users-core-contract-changes`) |
 | Bounded Context đứng sau | F2 `problem-bank`, F3 `harness`, F4 `judge-orchestration`, đọc thêm F5 `ai-review` |
 | RD nguồn | `01-rd/screens/users/USR0102_problem_detail.md` |
-| BD nguồn | `02-bd/screens/users/USR0102_problem_detail.md` (V0.14) |
+| BD nguồn | `02-bd/screens/users/USR0102_problem_detail.md` (V0.18) |
 | Prototype | `05-coding/frontend/src/views/users/problem-detail/` (chưa có STOMP thật, toàn bộ API mock) |
-| Phiên bản, ngày | V0.1, 2026-10-23 |
+| Phiên bản, ngày | V0.4, 2026-11-16 |
 | Tiêu chí nghiệm thu | `04-tdd/screens/users/USR0102_problem_detail.md` (luồng xuyên module) cộng các `AC` module ghi ở mục 7 |
 
 Bảng 0.2: Lịch sử sửa.
@@ -24,6 +24,9 @@ Bảng 0.2: Lịch sử sửa.
 | Ver | Mục | Nội dung | Ngày |
 | :--- | :--- | :--- | :--- |
 | V0.1 | Toàn bộ | Tạo mới từ prototype đã dựng và DD của F2, F3, F4, F5. Chốt cách nối mock sang endpoint thật, hợp đồng nối lại realtime ở mức màn, danh sách lệch cần chủ dự án quyết | 2026-10-23 |
+| V0.2 | BR-SC-09, P5 | Gỡ danh sách `notes` khỏi thẻ quick-insight (F5 #6 không có `notes`): `problem-detail-view.tsx`, kiểu `SolutionReviewQuickInsight`, mock bài 1 | 2026-11-12 |
+| V0.3 | Bảng 2.1, 3.1, BR-SC-11 (mới), mục 6, Bảng 7.1 (T-PD-31 đến 33), OQ-12 | Thêm dòng "đang chờ chấm" (số bài phía trước, thời gian chờ ước tính) ở bảng kết quả khi lượt nộp còn `PENDING` và quy tắc làm tươi 5 giây (F4-14, quyết định chủ dự án 2026-11-15). **Dự kiến, chưa có mã** | 2026-11-15 |
+| V0.4 | Bảng 1.1, bảng EVT, BR-SC-11, BR-SC-12 (mới), mục 6, Bảng 7.1 (T-PD-34), OQ-12 | Đồng bộ F4-14 đã dựng và kiểm trình duyệt thật 2026-11-16: sửa dòng hook ở Bảng 1.1 (hook thật `useSubmissionProgress` ở `progress.ts:38`), thêm dòng `queue-notice.tsx`, đóng OQ-12; thêm BR-SC-12 và T-PD-34 cho F-01 (chưa có verdict cuối thì ẩn "không đạt", huy hiệu trung tính) | 2026-11-16 |
 
 Bảng 0.3: Viết tắt nguồn trích dẫn dùng trong file này.
 
@@ -56,8 +59,9 @@ Bảng 1.1: Slice của màn.
 | entities | `entities/problem/api/queries.ts` | `useWorkspaceData` (gom 6 query của EVT-1), `useStarterCode`, `useSampleTestcases`, `useRunSample`, `useCreateSubmission`, `useToggleBookmark` | Mới có `useProblemDetail`, `useRunSampleTestcases`, `useCreateSubmission` mock [SoT: EP api/queries.ts:48-83] |
 | entities | `entities/problem/model/submit-schema.ts` | zod của Run Code và Submit (mục 5) | Chưa có |
 | entities | `entities/problem/model/workspace-draft.ts` | Khoá và ghi nháp `localStorage` | Có [SoT: BD:395] |
-| entities | `entities/submission/api/use-submission-progress.ts` | Hook "đăng ký rồi chụp ảnh" cho một `submissionId` (BR-SC-06); **dùng chung với `USR0201`** | Chưa có |
-| entities | `entities/submission/model/progress-reducer.ts` | Hàm thuần áp bản tin theo `seq` (F4:138-144) | Chưa có |
+| entities | `entities/submission/api/progress.ts` | Hook tiến trình `useSubmissionProgress` cho một `submissionId` (BR-SC-06); **dùng chung với `USR0201`** | Có, `05-coding/frontend/src/entities/submission/api/progress.ts:38` (sửa 2026-11-16: bản trước ghi nhầm tên file `use-submission-progress.ts`, "Chưa có") |
+| entities | `entities/submission/ui/queue-notice.tsx` | Thành phần chung `QueueNotice` của dòng hàng đợi F4-14; tái dùng `NoticeTile` của `shared/ui`; dùng chung với `USR0201` (OQ-12) | Có, `05-coding/frontend/src/entities/submission/ui/queue-notice.tsx:11` |
+| entities | `entities/submission/model/progress-reducer.ts` | Hàm thuần áp bản tin theo `seq` (F4:138-144) | Chưa tách thành file riêng; logic áp `seq` hiện nằm trong `05-coding/frontend/src/entities/submission/api/progress.ts:77-80,143` (kiểm 2026-11-16) |
 | shared | `shared/realtime/stomp-client.ts` | Khách STOMP (kết nối, đăng ký, nối lại có lùi), không biết nghiệp vụ | Chưa có [SoT: `05-coding/frontend/src/shared/realtime/README.md:6-9`] |
 | shared | `shared/api` (`useErrorMessage`) | Dịch `error.code` sang chuỗi i18n | Chưa có, comment đã hẹn [SoT: `05-coding/frontend/src/shared/api/api-error.ts:1-3`] |
 
@@ -87,8 +91,9 @@ Bảng 2.1: Sự kiện, endpoint, hook.
 | EVT-1 | F5 mục 6 `GetMySolutionReviewQuickInsight` | `useSolutionReviewQuickInsight` (query **riêng**, BD Sheet 7.1 NO 21) | mock (`solutionReview`) |
 | EVT-10 | F4 mục 5 `RunSampleTestcases` | `useRunSampleTestcases` | mock [SoT: EP api/queries.ts:70-74] |
 | EVT-11 | F4 mục 6 `CreateSubmission` | `useCreateSubmission` | mock [SoT: EP api/queries.ts:79-83] |
-| EVT-11, 12 | F4 mục 2 kênh `/user/queue/submissions` (W1) | `useSubmissionProgress` (đăng ký) | chưa có |
-| EVT-11, 12 | F4 mục 9 `GET /submissions/{submissionId}/progress` (ảnh chụp) | `useSubmissionProgress` (nối lại, dự phòng) | chưa có |
+| EVT-11, 12 | F4 mục 2 kênh `/user/queue/submissions` (W1) | `useSubmissionProgress` (đăng ký) | có, `05-coding/frontend/src/entities/submission/api/progress.ts:125` (`subscribeJudge`, `/user/queue/submissions`); kiểm 2026-11-16 |
+| EVT-11, 12 | F4 mục 9 `GET /submissions/{submissionId}/progress` (ảnh chụp) | `useSubmissionProgress` (nối lại, dự phòng) | có, `05-coding/frontend/src/entities/submission/api/progress.ts:69` (`GET .../progress`); kiểm 2026-11-16 |
+| EVT-23 | F4 mục 9 `GET /submissions/{submissionId}/progress`, trường `queue` (F4-14) | `useSubmissionProgress` (hook tiến trình dùng chung, hiện ở `05-coding/frontend/src/entities/submission/api/progress.ts:38`) | đã dựng FE 2026-11-16 (`05-coding/frontend/src/entities/submission/api/progress.ts:73-76`) |
 | EVT-15 | F2 mục 12 `ToggleMyProblemBookmark` | `useToggleBookmark` | **chưa gọi gì**, state cục bộ [SoT: PV:291-301] |
 | EVT-16, EVT-17, EVT-18, EVT-19, EVT-22 | không gọi API; EVT-17/18 mở F5 ở màn đích, không tự kích hoạt | điều hướng `next/link` | không áp dụng |
 | EVT-3, 6, 7, 8, 9, 13, 14, 20 | không gọi API | state màn | không áp dụng |
@@ -117,6 +122,7 @@ Bảng 3.1: Trạng thái theo vùng.
 | Mã khung | Lỗi lúc mở | `GetStarterCode` lỗi (`HRN-001`, `HRN-003`, `HRN-006`, `5xx`) | Ô soạn mở **trống** và gõ được, kèm toast lỗi; Submit vẫn dùng được. `[SoT: Suy luận]`, BD chỉ nói trường hợp đổi cặp (BD:796) | `apiError.*` |
 | Mã khung | Lỗi khi đổi cặp | như trên, sau EVT-4 hoặc EVT-5 | Giữ cặp cũ và mã cũ, toast lỗi [SoT: BD:796] | `apiError.*` |
 | Giới hạn | Lỗi | `GetEffectiveExecutionLimits` lỗi | **Ẩn dòng giới hạn**, không hiện số khác. BD muốn hiện giới hạn cơ sở nhưng F2 không trả trường đó [SoT: BD:660; F2:462-463], xem OQ-3 | `toolbar.limits` |
+| Bảng kết quả | Chờ trong hàng đợi (F4-14) | lượt nộp (Submit) đang theo dõi ở `PENDING`, `queue` khác `null` | Dòng "Đang chờ chấm: phía trước còn N bài, ước tính khoảng M giây"; chỉ số bài khi `estimatedWaitSeconds = null`; "sắp đến lượt bạn" khi `ahead = 0`; ẩn khi rời `PENDING` hoặc `queue = null`. Không hiện với Run Code | `console.queue.waiting`, `console.queue.waitingWithEstimate`, `console.queue.aboutToStart` (mới) |
 | Tab Bài nộp | Đang tải | | 4 dòng chờ [SoT: BD:622] | |
 | Tab Bài nộp | Rỗng | không có lượt nộp | "Bạn chưa nộp bài này lần nào." | `panel.noSubmissions` |
 | Tab Bài nộp | Lỗi | `ListMySubmissionsForProblem` lỗi (`JDG-V14` không xảy ra vì `limit` cố định) | Lỗi riêng trong tab kèm nút thử lại; hai tab còn lại dùng được [SoT: BD:793] | `common.error` |
@@ -222,12 +228,32 @@ Mười khối dưới là những việc đi qua nhiều sự kiện hoặc kh�
   - "Phân tích bài giải" và "Phỏng vấn giả lập" hiện khi lượt nộp `ACCEPTED` **và** quick-insight không lỗi. Không có endpoint báo "AI đang khả dụng" nên lấy trạng thái quick-insight làm tín hiệu `[SoT: Suy luận]` (OQ-6); hết hạn mức AI do màn đích xử lý.
   - Liên kết trong tab Solution Review trỏ tới `review.submissionId` do F5 trả (báo cáo mới nhất), **không** tới lượt nộp mới nhất của lịch sử như bản dựng [SoT: F5:380; PV:513-528].
   - Màn này không tự kích hoạt F5 (hành động tự chọn ở màn đích, BD:809).
-- **Tab rút gọn:** chỉ hai chỉ số độ phức tạp và liên kết báo cáo đầy đủ; khối nhận xét ngắn trong BD cũ đã bỏ theo RD cập nhật `DEC-2026-1025-dd-workspace-quick-insight-trim`. Prototype còn in `notes` mock cần gỡ khi nối API.
+- **Tab rút gọn:** chỉ hai chỉ số độ phức tạp và liên kết báo cáo đầy đủ; khối nhận xét ngắn trong BD cũ đã bỏ theo RD cập nhật `DEC-2026-1025-dd-workspace-quick-insight-trim`. `notes` đã gỡ khỏi mã và kiểu `SolutionReviewQuickInsight` ngày 2026-11-12 (owner, ponytail bậc 2: F5 #6 không có trường này).
 
 ### BR-SC-10 Sao lưu và hoàn tác nháp trước khi áp dụng mã AI
 
 - **Kích hoạt:** xác nhận “Ghi đè & Mở Workspace” ở `USR0301` và bấm Hoàn tác trong Workspace. Cùng cặp `(problemId, language, model)` dùng khoá nháp của BR-SC-02.
 - **Quy tắc:** trước khi ghi mã đề xuất, `entities/problem` lưu bản mã hiện có vào lịch sử nháp `localStorage` với nhãn “Bản trước khi áp dụng AI Diff”, thời điểm và đúng cặp bài/ngôn ngữ/mô hình. Chỉ khi sao lưu thành công mới ghi mã đề xuất vào nháp và điều hướng; sao lưu lỗi hoặc bộ nhớ trình duyệt bị chặn thì giữ mã hiện có và ở lại màn phân tích. Mở Workspace cho thấy mã đề xuất và một nút Hoàn tác; bấm nút khôi phục đúng bản cũ và cập nhật nháp của cặp đó. Hoàn tác lỗi giữ cả mã hiện tại lẫn bản lịch sử để thử lại. [SoT: `02-bd/screens/users/USR0301_solution_review.md` EVT-6, Sheet 9 NO 7; `DEC-2026-1014-batch7-remaining-open-questions`]
+
+### BR-SC-11 Làm tươi thông tin hàng đợi khi `PENDING` (F4-14)
+
+> **Đã dựng (FE và BE) 2026-11-16, đã kiểm trình duyệt thật** (`06-plan/reports/261116-0100-f4-14-browser-check/report.md`): `05-coding/frontend/src/views/users/problem-detail/ui/problem-detail-view.tsx:803-809` và `05-coding/frontend/src/views/users/problem-detail/ui/run-results-dialog.tsx:68-74`. Nguồn: `01-rd/req/F4_judge-orchestration.md` F4-14; BD Sheet 5 Bảng kết quả NO 12, Sheet 8 EVT-23; hợp đồng ở `03-dd/api/F4_judge-orchestration.md` mục 9.2. Cùng quy tắc với `03-dd/screens/users/USR0201_submission_result.md` BR-SC-07; hai màn dùng chung hook tiến trình.
+
+- **Kích hoạt:** EVT-11 (sau `201`) hoặc BR-SC-06 (mở lại màn khi lượt mới nhất còn `PENDING`), trạng thái đang theo dõi là `PENDING`.
+- **Các bước:** (1) hiện dòng hàng đợi từ `queue` của ảnh chụp đầu tiên của `attach` (BR-SC-05); (2) trong lúc còn `PENDING`, hẹn đọc lại F4 mục 9 mỗi **5 giây** và thay `queue`; kênh STOMP không có bản tin cho `PENDING` (F4 mục 2.3); (3) bản tin `STATUS_CHANGED` đến (vào `COMPILING`) thì đọc ngay một ảnh chụp; (4) ảnh chụp báo `status` khác `PENDING` thì dừng hẹn giờ, ẩn dòng, dải ô testcase theo BR-SC-05; (5) lần đọc lỗi thì giữ dòng cũ, thử lại ở chu kỳ sau, không toast, không tính vào 10 lần hỏi của bước 7 ở BR-SC-05.
+- **Văn bản:** như `USR0201` BR-SC-07; luôn nói "ước tính khoảng".
+- **Không áp dụng cho Run Code:** chạy thử gọi F4 mục 5 đồng bộ, không đi qua hàng đợi chấm.
+- **Hậu điều kiện:** hẹn giờ luôn bị huỷ khi rời `PENDING` hoặc rời màn; không đọc lại ảnh chụp khi lượt đã cuối.
+- **Ghi chú ponytail:** dùng lại hook tiến trình có sẵn (bậc 4); chu kỳ 5 giây là hằng số trong mã (bậc 5). Khi `COMPILING`/`JUDGING` dùng hành vi sẵn có của BR-SC-05, không có dòng hàng đợi.
+
+### BR-SC-12 Chưa có verdict cuối thì không báo "không đạt" (F-01)
+
+> **Đã dựng 2026-11-16.** Nguồn: BD `USR0102` Sheet 5 Khu vực Bảng kết quả NO 2, NO 3 (V0.18). Lỗi F-01: khi lượt nộp còn `PENDING` màn từng hiện "0 đạt · 16 không đạt" màu đỏ và huy hiệu đỏ dù chưa chấm testcase nào.
+
+- **Điều kiện:** verdict của lượt đang xem là một trong `pending`, `compiling`, `running` (hàm `isUnfinished`, `05-coding/frontend/src/views/users/problem-detail/ui/problem-detail-view.tsx:88-90`).
+- **Hành vi:** (1) dòng tóm tắt ở bảng Console chỉ hiện "{n} đạt", ẩn phần "{m} không đạt" (`problem-detail-view.tsx:890-905`), vì "tổng - đạt" lúc này gồm cả testcase chưa chấm; (2) huy hiệu verdict dùng kiểu `neutral` ở bảng Console (`problem-detail-view.tsx:821-829`) và ở hộp thoại Submit (`05-coding/frontend/src/views/users/problem-detail/ui/run-results-dialog.tsx:166-176`); (3) có verdict cuối thì quay về hành vi cũ: xanh khi `accepted`, đỏ khi sai, và hiện đủ "không đạt".
+- **Không đổi RD:** chỉ là cách hiển thị.
+- **Ghi chú ponytail:** dùng lại hàm `isUnfinished` có sẵn, không thêm trạng thái hay trường dữ liệu mới (bậc 4).
 
 ## 5. Kiểm tra phía client
 
@@ -252,7 +278,7 @@ Lệch bắt buộc nêu khác: bản dựng giữ mô hình bằng `"function" 
 
 ## 6. i18n và truy cập
 
-**Tiền tố khoá:** `problemDetail.*` ở `messages/vi.json:261` và `messages/en.json:261`; mã lỗi API ở `apiError.*` dùng chung toàn app (mới). Khoá cần **thêm**: `statement.modelNoteFunction`, `statement.modelNoteStdio` (BD Khu vực D NO 6; bản dựng chưa có câu giải thích mô hình), `console.slowUpdate`, `console.reconnecting`, `console.queued`, `apiError.*` ở mục 3. Khoá `panel.noReview` không còn dùng sau OQ-7.
+**Tiền tố khoá:** `problemDetail.*` ở `messages/vi.json:261` và `messages/en.json:261`; mã lỗi API ở `apiError.*` dùng chung toàn app (mới). Khoá **đã thêm** (F4-14, 2026-11-16, vi và en cùng cấu trúc, ví dụ `messages/vi.json:618-622`; khoá `console.queued` đã liệt kê ở dưới là nhãn trạng thái, khác với ba khoá này): `console.queue.waiting` ("Đang chờ chấm: phía trước còn {ahead} bài" / "Waiting to be judged: {ahead} submission(s) ahead of you"), `console.queue.waitingWithEstimate` ("Đang chờ chấm: phía trước còn {ahead} bài, ước tính khoảng {seconds} giây" / "Waiting to be judged: {ahead} submission(s) ahead, about {seconds} seconds estimated"), `console.queue.aboutToStart` ("Đang chờ chấm: sắp đến lượt bạn" / "Waiting to be judged: you are next"). Khoá cần **thêm** (đợt trước): `statement.modelNoteFunction`, `statement.modelNoteStdio` (BD Khu vực D NO 6; bản dựng chưa có câu giải thích mô hình), `console.slowUpdate`, `console.reconnecting`, `console.queued`, `apiError.*` ở mục 3. Khoá `panel.noReview` không còn dùng sau OQ-7.
 
 **Không đặt tên endpoint, mã quyền hay thuật ngữ backend vào nhãn:** chuỗi cho `JDG-106` nói "Bạn đã nộp quá số lần cho phép trong một giờ, thử lại sau." (BD:838), không nhắc "rate limit" hay mã.
 
@@ -305,6 +331,10 @@ Bảng 7.1: Điểm kiểm thử.
 | T-PD-28 | Normal | EVT-19, 22: điều hướng thẳng không hộp xác nhận; click dòng lịch sử mở `submission_result` | Vitest | PD-AC-06 |
 | T-PD-29 | Normal | EVT-20: kéo `SplitPane` đổi tỉ lệ, nhớ ở `localStorage`, chặn 22-74 và 25-85 | Vitest | TDD màn `PD-AC-12` |
 | T-PD-30 | Normal | Luồng đầy đủ: mở bài, đổi sang C++, nộp, thấy dải ô chạy, Accepted, ba liên kết | Playwright | PD-AC-03, PD-AC-06 |
+| T-PD-31 | Normal | Sau Submit `201` `PENDING` với `queue = { ahead: 18, estimatedWaitSeconds: 9 }`: bảng kết quả hiện dòng đủ cả hai số; `estimatedWaitSeconds = null` chỉ hiện số bài; `ahead = 0` hiện "sắp đến lượt bạn"; Run Code không hiện dòng này | Vitest | PD-AC-14, F4 AC-78, AC-79 |
+| T-PD-32 | Normal | `PENDING`: đọc lại ảnh chụp mỗi 5 giây (giả đồng hồ); `STATUS_CHANGED` đọc ngay; rời `PENDING` thì huỷ hẹn giờ, ẩn dòng, dải ô tô dần | Vitest (giả đồng hồ) | PD-AC-14 |
+| T-PD-33 | Abnormal | Một lần đọc ảnh chụp lỗi khi `PENDING`: giữ dòng cũ, không toast, chu kỳ sau đọc lại; `queue = null` ẩn dòng; không ảnh hưởng 10 lần hỏi của lúc mất kênh | Vitest | PD-AC-14, F4 AC-80 |
+| T-PD-34 | Normal | F-01: Submit `201` còn `PENDING`, đóng hộp thoại: bảng Console hiện "0 đạt", **không** có chữ "không đạt". Test `does not report untouched testcases as failed while PENDING (F-01)` ở `05-coding/frontend/src/views/users/problem-detail/ui/problem-detail-queue.test.tsx:125` (test kiểm cả dòng tóm tắt và kiểu huy hiệu trung tính: lớp `surface-hover`, không có `admin-negative`; đã kiểm bằng đột biến `isUnfinished`, test bị bắt; thêm 2026-11-16. Ảnh chụp trình duyệt thật ở `06-plan/reports/261116-0200-f4-14-browser-check-f01-sau-sua/report.md`; trạng thái `JUDGING` không có ảnh, chỉ dùng chung hàm `isUnfinished`) | Vitest | PD-AC-14 `[SoT: Suy luận]` (F-01 là hành vi cùng bảng kết quả `PENDING`, chưa có `PD-AC` riêng) |
 
 ## 8. Nợ prototype và câu hỏi mở
 
@@ -318,7 +348,7 @@ Bảng 8.1: Lệch giữa prototype và thiết kế, cần làm khi nối thậ
 | P2 | Không STOMP, kết quả sau `setTimeout` | BR-SC-05, BR-SC-06 | PV:13-15, 341-378 |
 | P3 | `lang`, `model`, `tab` ở `useState` | Ghi URL bằng replace | PV:134-137; BD:388, 779 |
 | P4 | Khoá chỉ hai nút Run, Submit lúc `running`; ô soạn không `readOnly` | Khoá ba nhóm chọn và ô soạn (cần S1) | PV:834-841; BD:654 |
-| P5 | Tab Solution Review luôn hiện, in `notes` mock, liên kết theo lượt nộp mới nhất | Ẩn tab khi không có báo cáo; không có `notes`; liên kết theo `review.submissionId` | PV:486-533; BD:593; F5:380 |
+| P5 | Tab Solution Review luôn hiện, in `notes` mock (đã gỡ 2026-11-12), liên kết theo lượt nộp mới nhất | Ẩn tab khi không có báo cáo; không có `notes`; liên kết theo `review.submissionId` | PV:486-533; BD:593; F5:380 |
 | P6 | Nút Lưu bài chỉ đổi state | Gọi `ToggleMyProblemBookmark` lạc quan | PV:291-301 |
 | P7 | Nhãn "Cả hai mô hình khả dụng" ở tab Đề bài | Nhãn **mô hình đang chọn** (BD Khu vực D NO 4) và câu giải thích mô hình (NO 6) | PV:406-413; BD:490, 492 |
 | P8 | "Xem kết quả chấm" chỉ khi `Accepted` | Mọi trạng thái cuối | PV:780-801; BD:674 |
@@ -347,3 +377,16 @@ Bảng 8.2: Câu hỏi mở.
 | OQ-9 | Axios timeout của Run Code | 65 giây (hơn hạn 60 giây của máy chủ) | 5 |
 | OQ-10 | Dữ liệu vào của Sample ở mô hình Bọc hàm: BD muốn tách theo tham số, F2 chỉ trả `parameterNames` và chuỗi input chưa tách (F2:549) | Hiện nguyên chuỗi input trong một khối kèm dòng "Tham số: a, b, c"; không tự tách ở client | 2 |
 | OQ-11 | **Đã chốt 2026-10-24** (`DEC-2026-1024-dd-screens-users-core-contract-changes`): mọi route của học viên dùng `problemId` (UUID); `slug` chỉ để hiển thị | Đã chốt, BD `USR0201` Sheet 3 đã sửa (BD `USR0102` không có route slug) | 4 |
+| OQ-12 | ~~Dòng hàng đợi (F4-14) có ẩn khi ước tính lớn không; dùng chung thành phần với `USR0201` không?~~ **Đã chốt 2026-11-16 (chủ dự án)** | Không ẩn (máy chủ chặn trần 3600 giây; ponytail bậc 5). Dùng chung **một** thành phần `QueueNotice` ở `05-coding/frontend/src/entities/submission/ui/queue-notice.tsx:11` (tái dùng `NoticeTile` của `shared/ui`), như OQ-8 của `03-dd/screens/users/USR0201_submission_result.md`. Đã dựng | 4 |
+
+## Nối API thật (F2-6 phần 2, 2026-11-06)
+
+Bảng dưới liệt kê endpoint màn tiêu thụ và hiện trạng; hợp đồng chỉ định nghĩa ở `03-dd/api/F2_problem-bank.md`.
+
+| Endpoint | Hiện trạng |
+| :--- | :--- |
+| `#11` | `useSetBookmark` (`entities/problem/api/saved-queries.ts`, `real-bookmarks.ts` `realSetBookmarked`); toast sau khi máy chủ trả lời; `PRB-010` giữ nguyên trạng thái nút |
+| `#5`, `#6`, `#7` | Đã nối bởi lát F3/F4 (`fetchWorkspaceProblem`) |
+
+Test đường thật: `views/users/problem-detail/ui/problem-detail-real.test.tsx` (lưu, bỏ lưu, `PRB-010`); `real-bookmarks.test.ts` (`#11`).
+

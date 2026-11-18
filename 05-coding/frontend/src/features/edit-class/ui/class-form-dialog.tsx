@@ -35,7 +35,11 @@ export function ClassFormDialog({
 }: {
   dialog: ClassDialogState;
   onClose: () => void;
-  onSubmit: (form: ClassFormValue) => void;
+  /**
+   * The dialog closes itself once this settles. A promise that rejects keeps it open with what was
+   * typed (the caller has already told the user why); a plain return closes it at once.
+   */
+  onSubmit: (form: ClassFormValue) => void | Promise<void>;
   t: ReturnType<typeof useT>;
 }) {
   // The parent re-mounts this component (via `key`) for every open, so the initial state below is
@@ -52,6 +56,7 @@ export function ClassFormDialog({
   const [endDate, setEndDate] = useState(sched?.endDate ?? "");
   const [note, setNote] = useState(sched?.note ?? "");
   const [touched, setTouched] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   if (!dialog) return null;
 
@@ -71,7 +76,7 @@ export function ClassFormDialog({
     );
   }
 
-  function submit() {
+  async function submit() {
     setTouched(true);
     const problems: string[] = [];
     if (nameEmpty) problems.push(t("validation.nameRequired"));
@@ -100,11 +105,22 @@ export function ClassFormDialog({
       schedule.room ||
       schedule.startDate ||
       schedule.note;
-    onSubmit({
+    const pending = onSubmit({
       name: name.trim(),
       description: description.trim() || undefined,
       schedule: hasSchedule ? schedule : undefined,
     });
+    if (pending) {
+      setSaving(true);
+      try {
+        await pending;
+      } catch {
+        return;
+      } finally {
+        setSaving(false);
+      }
+    }
+    onClose();
   }
 
   return (
@@ -122,7 +138,7 @@ export function ClassFormDialog({
           <Button variant="ghost" size="sm" onClick={onClose}>
             {t("cancel")}
           </Button>
-          <Button size="sm" onClick={submit}>
+          <Button size="sm" disabled={saving} onClick={() => void submit()}>
             {t("popup.saveClass")}
           </Button>
         </>

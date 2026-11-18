@@ -38,12 +38,18 @@ describe("SettingsView", () => {
   // email matches, ignoring case and surrounding spaces.
   it("keeps Cancel enabled and unlocks delete on a trimmed, case-insensitive email match", async () => {
     renderView();
-    fireEvent.click(await screen.findByRole("button", { name: /^Xoá tài khoản/ }));
+    fireEvent.click(
+      await screen.findByRole("button", { name: /^Xoá tài khoản/ }),
+    );
 
     const dialog = await screen.findByRole("dialog");
     const buttons = dialog.querySelectorAll("button");
-    const cancel = screen.getByRole("button", { name: messages.settings.deleteConfirm.cancel });
-    const confirm = screen.getByRole("button", { name: messages.settings.deleteConfirm.confirm });
+    const cancel = screen.getByRole("button", {
+      name: messages.settings.deleteConfirm.cancel,
+    });
+    const confirm = screen.getByRole("button", {
+      name: messages.settings.deleteConfirm.confirm,
+    });
     expect(buttons.length).toBeGreaterThan(1);
     expect(cancel).toBeEnabled();
     expect(confirm).toBeDisabled();
