@@ -2980,6 +2980,7 @@
   },
   "instructorSubmission": {
     "contextLabel": "Bài nộp của học viên",
+    "leftClassBadge": "Đã rời lớp",
     "readOnlyBadge": "Chỉ đọc",
     "readOnlyNote": "Chỉ đọc: bạn đang xem bài nộp của học viên trong lớp mình phụ trách.",
     "breadcrumb": {

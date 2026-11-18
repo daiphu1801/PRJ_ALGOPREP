@@ -40,6 +40,7 @@ import {
   useInstructorClasses,
   useRemoveStudent,
 } from "@/entities/class";
+import { UserAvatar } from "@/entities/user";
 import { useT } from "@/shared/i18n";
 import { toast } from "@/shared/lib/toast-store";
 import {
@@ -349,7 +350,15 @@ export function ClassStudentDetailView({
         <Card title={t("info.contactTitle")} className="h-full">
           <dl className="flex flex-col gap-4 text-sm">
             <InfoItem icon={User} label={t("info.name")}>
-              {student.name}
+              <span className="flex items-center gap-2">
+                <UserAvatar
+                  userId={student.id}
+                  name={student.name}
+                  avatarVersion={student.avatarVersion}
+                  size="sm"
+                />
+                {student.name}
+              </span>
             </InfoItem>
             <InfoItem icon={Mail} label={t("info.email")}>
               {student.email ? (

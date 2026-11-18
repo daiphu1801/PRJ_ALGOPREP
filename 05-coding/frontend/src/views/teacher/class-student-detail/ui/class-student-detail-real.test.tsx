@@ -77,6 +77,10 @@ describe("ClassStudentDetailView with the real API", () => {
     expect((await screen.findAllByText("Trần Bình")).length).toBeGreaterThan(0);
     expect(screen.getByRole("link", { name: "binh@x.vn" })).toBeInTheDocument();
     expect(screen.getByText(m.info.statusValue.absent)).toBeInTheDocument();
+    // The contact card carries the student's picture, initials while there is none (F1-35).
+    expect(screen.getByRole("img", { name: "Trần Bình" })).toHaveTextContent(
+      "TB",
+    );
     const table = await screen.findByRole("table", {
       name: m.assignmentProgress.title,
     });

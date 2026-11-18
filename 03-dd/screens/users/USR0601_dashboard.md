@@ -16,7 +16,7 @@ Bảng 0.1: Bìa tài liệu.
 | RD nguồn | `01-rd/screens/users/USR0601_dashboard.md`; `01-rd/screens/users/USR0501_my_progress.md` (hồ sơ gốc của REQ-01 đến REQ-06, còn hiệu lực) |
 | BD nguồn | `02-bd/screens/users/USR0601_dashboard.md` (V0.14); `02-bd/screens/users/USR0501_my_progress.md` (V0.8, nguồn đối chiếu của Khu vực F, G, H) |
 | Prototype | `05-coding/frontend/src/views/users/dashboard/` (khối giao diện chạy, dữ liệu mock), `entities/progress/` |
-| Phiên bản, ngày | V0.1, 2026-10-24 |
+| Phiên bản, ngày | V0.3, 2026-11-18 |
 | Tiêu chí nghiệm thu | `04-tdd/screens/users/USR0601_dashboard.md` (luồng xuyên module) cộng các `AC` module ghi ở mục 7 |
 
 Bảng 0.2: Lịch sử sửa.
@@ -25,6 +25,7 @@ Bảng 0.2: Lịch sử sửa.
 | :--- | :--- | :--- | :--- |
 | V0.1 | Toàn bộ | Tạo mới từ prototype đã dựng, BD V0.14 và DD F1, F2, F4, F5, F6. Chốt cách thay hai endpoint `GetMyProgressOverview`, `GetMyTopicProgress` mà F1 không có bằng phép ghép F1 + F2 + F4; chốt phạm vi `range`; chốt một phép tính điểm năng lực; chốt trạng thái suy giảm từng khối; nêu các giá trị chưa có nguồn thật | 2026-10-24 |
 | V0.2 | Mục 2 (Bảng 2.1) | Ghi chú FE 2026-11-12 (M5, chưa duyệt hình): nối F5 mục 13 (`useInterviewSummary`) và F6 mục 8 (`useInterviewTopicProgress`); bảng phụ `InterviewTopicsTable` đặt dưới hai cột chính, không nhận `range`, ba cột Chủ đề, Đã thử (`{số} / {số}` kèm thanh), Lần ôn cuối (`-` nếu chưa luyện); lỗi chỉ làm hỏng riêng bảng. Gỡ nợ P6. Chuỗi `dashboard.interviewTopics.*`. Test `interview-topics-table.test.tsx`, `progress-queries.test.ts` | 2026-11-12 |
+| V0.3 | Mục 3 (Bảng 3.1) | Thêm dòng trạng thái ảnh đại diện ở lời chào (F1-35): dùng chung truy vấn hồ sơ đã cache với header, không thêm request (owner chấp nhận 2026-11-18). Chỉ sửa tài liệu, không đổi hợp đồng API. | 2026-11-18 |
 
 Bảng 0.3: Viết tắt nguồn trích dẫn.
 
@@ -111,6 +112,7 @@ Bảng 3.1: Trạng thái theo khối. Khoá i18n có tiền tố `dashboard.` h
 | Toàn trang | Chưa đăng nhập | `401` sau khi làm mới token thất bại | Chuyển về `auth` (xử lý ở `shared/api/client.ts`) | không áp dụng |
 | Toàn trang | Không đúng khu | vai trò khác `STUDENT` vào `/dashboard` | Layout khu Người học chuyển về khu của vai trò đó, không render màn [SoT: Suy luận, theo `entities/user/model/area.ts`] | không áp dụng |
 | A | Tên chưa có | `GetMyProfile` đang tải hoặc lỗi | Câu "Chào bạn, tiếp tục nhé", không toast | `greeting.title` |
+| A | Ảnh đại diện chưa có | `GetMyProfile` đang tải hoặc lỗi, `avatarVersion` rỗng, hoặc tải ảnh lỗi | Hồ sơ chưa tải: không hiện ảnh; còn lại hiện chữ viết tắt, không biểu tượng ảnh hỏng, không toast. Ảnh lấy từ truy vấn hồ sơ đã cache (dùng chung với header, không thêm request), hợp đồng `03-dd/api/F1_identity.md` mục 0.9.5 | `greeting.avatar` |
 | A | Chưa có dữ liệu luyện tập | không chủ đề nào có điểm (BR-SC-04) | Câu thay chỗ dòng điểm yếu, không số 0 giả | `greeting.noData` |
 | A | Nút | F4 mục 11 lỗi hoặc không có bài hợp lệ | Nhãn "Bắt đầu giải bài" dẫn `/problems`; **không** vô hiệu nút, không toast (BR-SC-06) | `greeting.btnStart` |
 | B | Lỗi riêng từng thẻ | ba thẻ F1/F4 và thẻ F5 là hai nhóm query khác nhau | Thẻ lỗi hiện nút thử lại riêng; thẻ khác nguyên | `errorGeneric`, `retry` |

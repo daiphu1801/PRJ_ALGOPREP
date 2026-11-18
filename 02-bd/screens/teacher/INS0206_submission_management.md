@@ -63,7 +63,7 @@
 | Mã chức năng RD | Chưa cấp mã `Fx-nn` (206-Q10, `DEC-2026-1014-instructor-submissions-list-rules` mục 10) |
 | Trục tài liệu | Màn hình (`02-bd/screens/`) |
 | Actor | A2 (`INSTRUCTOR`) |
-| Phiên bản | V0.6 |
+| Phiên bản | V0.7 |
 | Người tạo | Nhóm phát triển AlgoPrep |
 | Ngày tạo | 2026/10/14 |
 | Người cập nhật | Nhóm phát triển AlgoPrep |
@@ -81,6 +81,7 @@
 | V0.4 | Sheet 4.4 (Hiện trạng bản dựng NO 11) | Dựng prototype trang kết quả của giảng viên (`from=`, breadcrumb, sidebar). Dòng 11: nút Xem bài nộp nay mang `from=submissions`; trang kết quả giảng viên đã có breadcrumb theo `from` và lùi lịch sử bằng `router.back()` khi mở từ danh sách. Các dòng còn nợ giữ nguyên. Không đổi yêu cầu hay quyết định thiết kế. **Chưa duyệt hình** | 2026/10/14 | AI |
 | V0.5 | Sheet 4.4 (Hiện trạng bản dựng NO 11) | Dựng prototype Phase 4-5 (bài giao theo lớp, phân trang 20, from=). Dòng 11: liên kết tên học viên còn trong lớp nay mang `?from=submissions`, nên trang chi tiết học viên (`INS0204`) sáng mục "Bài nộp" ở sidebar (khớp Sheet 9 NO 6). Không đổi yêu cầu hay quyết định thiết kế. **Chưa duyệt hình** | 2026/10/18 | AI |
 | V0.6 | Sheet 4 (4.2, 4.4 NO 13), 5 (B NO 2), 7 (7.1 NO 19, 7.2 NO 7, 7.3 NO 4) | Sửa 2026-11-18 (F1-35, `DEC-2026-1117-user-avatar-upload`, chưa duyệt hình). Cột "Học viên" của bảng bài nộp nay hiện ảnh đại diện thật (hoặc chữ viết tắt khi chưa có ảnh hoặc ảnh lỗi), đọc `avatarVersion` của `ListInstructorSubmissions` (F4 mục 13.3). | 2026/11/18 | Claude |
+| V0.7 | Sheet 3 (đích Xem bài nộp), 4.5 (bảng slice) | Sửa 2026-11-18 (chưa duyệt hình). Ghi chú học viên đã rời lớp: trang kết quả giữ tên, ảnh, tên lớp trong thẻ ngữ cảnh và có huy hiệu "Đã rời lớp" (theo `USR0201` V0.16); bảng danh sách của INS0206 không đổi (vẫn hiện ảnh). Sửa bảng slice: bỏ nhắc `initialsOfClassStudent` mà view không dùng. | 2026/11/18 | Claude |
 
 ---
 
@@ -136,7 +137,7 @@
 
 [Giá trị trả về] Không có.
 
-[Khi thành công] Mở trang kết quả; sidebar giữ sáng "Bài nộp". Học viên đã rời lớp thì trang vẫn mở bình thường (không 404), vì bài nộp làm lúc còn trong lớp
+[Khi thành công] Mở trang kết quả; sidebar giữ sáng "Bài nộp". Học viên đã rời lớp thì trang vẫn mở bình thường (không 404), thẻ ngữ cảnh ở đó **giữ tên, ảnh và tên lớp** (không còn là liên kết) kèm huy hiệu "Đã rời lớp" [Nguồn: 02-bd/screens/users/USR0201_submission_result.md, Ngữ cảnh NO 2, V0.16], vì bài nộp làm lúc còn trong lớp
 (REQ-13 [Nguồn: 01-rd/screens/teacher/INS0206_submission_management.md:133]).
 
 [Khi huỷ] Không có.
@@ -311,7 +312,8 @@ Bảng này ghi chỗ bản dựng lệch thiết kế ở trên; **không phả
 | Trang | `views/teacher/submission-management` (`ui/submission-management-view.tsx`, `model/rows.ts`); route `app/(instructor)/instructor/submissions/page.tsx` | Đã dựng [Nguồn: 05-coding/frontend/src/views/teacher/submission-management/index.ts:1] |
 | Khung Giảng viên | `widgets/app-shell` (`instructor-nav.ts`, mục `submissions`) | `_shell.md` |
 | Kiểu và bộ lọc kết quả, màu huy hiệu trạng thái | `entities/submission` (`result-filter.ts`, `status-variant.ts`) | Dùng chung với bảng lịch sử của `INS0204` [Nguồn: 05-coding/frontend/src/entities/submission/model/result-filter.ts:3-28; status-variant.ts:4-16] |
-| Danh sách lớp cho bộ lọc, chữ cái đầu của tên | `entities/class` (`useInstructorClasses`, `initialsOfClassStudent`) | Đã dùng ở view |
+| Danh sách lớp cho bộ lọc | `entities/class` (`useInstructorClasses`, `useClassStudents`) | Đã dùng ở view [Nguồn: 05-coding/frontend/src/views/teacher/submission-management/ui/submission-management-view.tsx:16]; V0.7: bỏ nhắc `initialsOfClassStudent`, view không dùng hàm này (chữ viết tắt do `UserAvatar` tự ghép) |
+| Ảnh đại diện học viên | `entities/user` (`UserAvatar`) | Dùng ở cột Học viên [Nguồn: 05-coding/frontend/src/views/teacher/submission-management/ui/submission-management-view.tsx:10,107-112] |
 | Thành phần UI | `shared/ui` (`DataTable`, `FilterMenu`, `Pagination`, `IconAction`, `PageHeader`, `Badge`, `TextField`, `Card`) | "Shared first" của `CLAUDE.md` |
 | Truy vấn danh sách thật | `entities/submission` (hook gọi `ListInstructorSubmissions`) | `[SoT: Suy luận]`, thay `buildSubmissionRows`; chốt ở DD màn hình |
 

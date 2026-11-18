@@ -2980,6 +2980,7 @@
   },
   "instructorSubmission": {
     "contextLabel": "Learner's submission",
+    "leftClassBadge": "Left the class",
     "readOnlyBadge": "Read-only",
     "readOnlyNote": "Read-only: you are viewing a submission of a learner in a class you teach.",
     "breadcrumb": {

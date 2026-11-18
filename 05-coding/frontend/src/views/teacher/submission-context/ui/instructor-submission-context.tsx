@@ -160,7 +160,8 @@ export function InstructorSubmissionContext({
     return (
       <ContextCard
         submission={submission}
-        refs={context && !context.leftClass ? context : undefined}
+        refs={context}
+        leftClass={context?.leftClass}
         studentName={context?.studentName}
         avatarVersion={context?.studentAvatarVersion}
         className={context?.className}
@@ -203,9 +204,12 @@ function ContextCard({
   studentName,
   avatarVersion,
   className,
+  leftClass,
 }: {
   submission: SubmissionRef;
   refs?: { studentId: string; classId: string };
+  /** The student left the class: name and picture stay (the work is theirs), the name stops being a link. */
+  leftClass?: boolean;
   studentName?: string | null;
   avatarVersion?: number | null;
   className?: string | null;
@@ -225,30 +229,39 @@ function ContextCard({
           />
           <div className="min-w-0">
             <p className="truncate text-[15px] font-semibold">
-              <Link
-                href={`/instructor/classes/${refs.classId}/students/${refs.studentId}`}
-                className="hover:underline"
-              >
-                {studentName ?? refs.studentId}
-              </Link>
+              {leftClass ? (
+                <span>{studentName ?? refs.studentId}</span>
+              ) : (
+                <Link
+                  href={`/instructor/classes/${refs.classId}/students/${refs.studentId}`}
+                  className="hover:underline"
+                >
+                  {studentName ?? refs.studentId}
+                </Link>
+              )}
               <span className="font-normal text-[var(--color-text-muted)]">
                 {" · "}
                 {submission.problemTitle}
               </span>
             </p>
             <p className="text-[12.5px] text-[var(--color-text-muted)]">
-              <Link
-                href={`/instructor/classes/${refs.classId}`}
-                className="hover:underline"
-              >
-                {className ?? refs.classId}
-              </Link>
+              {leftClass ? (
+                <span>{className ?? refs.classId}</span>
+              ) : (
+                <Link
+                  href={`/instructor/classes/${refs.classId}`}
+                  className="hover:underline"
+                >
+                  {className ?? refs.classId}
+                </Link>
+              )}
             </p>
           </div>
         </div>
       ) : (
         <p className="text-[15px] font-semibold">{submission.problemTitle}</p>
       )}
+      {leftClass ? <Badge variant="warn">{t("leftClassBadge")}</Badge> : null}
       <Badge variant="neutral">{t("readOnlyBadge")}</Badge>
       <p className="min-w-[200px] flex-1 text-[12.5px] text-[var(--color-text-muted)]">
         {t("readOnlyNote")}
