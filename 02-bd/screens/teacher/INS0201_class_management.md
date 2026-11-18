@@ -50,7 +50,7 @@
 | Tên vật lý (slug) | `class_management` |
 | Trục tài liệu | Màn hình (`02-bd/screens/`) |
 | Actor | A2 (`INSTRUCTOR`) |
-| Phiên bản | V0.14 |
+| Phiên bản | V0.16 |
 | Người tạo | Nhóm phát triển AlgoPrep |
 | Ngày tạo | 2026/09/21 |
 | Người cập nhật | Nhóm phát triển AlgoPrep |
@@ -78,6 +78,7 @@
 | V0.13 | Sheet 4 (4.4, mục Hiện trạng bản dựng mới) | Dựng prototype Phase 4-5 (bài giao theo lớp, phân trang 20, from=). Chỉ ghi hiện trạng: quy tắc "bấm lại thẻ lớp đang chọn thì bỏ chọn" (V0.10) chưa áp dụng được vì bản dựng không có chọn thẻ lớp; sau khi tạo lớp bản dựng chuyển sang trang chi tiết lớp, nút Quay lại về danh sách lớp (đúng Q2 của `INS0205`). Không đổi yêu cầu hay quyết định thiết kế. **Chưa duyệt hình** | 2026/10/18 | AI |
 | V0.14 | Sheet 4 (Hiện trạng bản dựng), 5 Khu vực C | Sửa 2026-11-02 (task #12, nối FE với API thật). (1) Màn gọi F1 #19 đến #22; hộp thoại tạo/sửa giữ nội dung khi máy chủ từ chối. (2) Ba cột hoàn thành, điểm TB, vắng bài chỉ hiện khi có số liệu F4 (#56 chưa làm). Không có câu hỏi mở mới. |
 | V0.15 | Sheet 4 (Hiện trạng bản dựng), 5 Khu vực C | Sửa 2026-11-07 (F1-7, nối FE). Màn đọc F1 #56 (`useInstructorClassSummary`): ba cột hoàn thành, điểm TB, vắng bài hiện với API thật. Lớp chưa giao bài có `completionPercent = null` nên cột hiện "-", không phải 0%. Khi F4 lỗi (`503 IDT-507`) màn lùi về danh sách #19 và ẩn ba cột. Chưa duyệt hình. Câu hỏi mở còn lại: `INS0101` vẫn đọc #19 (chưa đổi sang #56). |
+| V0.16 | Sheet 5 Khu vực D NO 4, 7.1 NO 20 | Sửa 2026-11-18 (owner chốt): bỏ ô chữ cái đầu sinh ở giao diện khỏi mô tả cột "Học viên"; màn này không hiện ảnh đại diện (F1-35), việc hiện ảnh ở INS0203, INS0204, INS0205 không đổi. Chưa duyệt hình. |
 
 ---
 
@@ -399,7 +400,7 @@ học viên, và liên kết tên học viên sang `class_student_detail`. Vị 
 | | 1 | Tiêu đề khối | `classManagement.studentList.title` | - | - | Label | String | - | - | O | Danh sách học viên | - | Tiêu đề khối bảng học viên<br>[Nguồn giá trị] Nhãn tĩnh i18n<br>[EVT liên quan] - |
 | | 2 | Tab lọc theo lớp | `classManagement.studentList.classTabs` | `identity.classes` | `id`, `name` | Button | List | - | - | I/O | Tất cả | - | Cụm tab: mục "Tất cả" cố định cộng một mục cho mỗi lớp phụ trách<br>[Nguồn giá trị] Mục "Tất cả" là nhãn tĩnh i18n; các mục còn lại lấy `classes.name`<br>[EVT liên quan] EVT-15 |
 | | 3 | Bảng học viên | `classManagement.studentList.table` | `identity.class_enrollments` | - | List | List | - | - | O | rỗng | - | Học viên **còn trong lớp** (`left_at IS NULL`, V0.11) thuộc các lớp phụ trách, lọc theo tab đang chọn; phân trang 20 dòng mỗi trang (V0.10, NO 11)<br>[Nguồn giá trị] Kết quả gọi `ListClassStudents`<br>[EVT liên quan] EVT-1, EVT-14, EVT-15, EVT-20 |
-| | 4 | Học viên | `classManagement.studentList.col.studentName` | `identity.users` | `display_name` | Link | String | 100 | - | O | - | Chữ cái đầu + tên | Tên hiển thị kèm ô chữ cái đầu; bấm vào mở màn `class_student_detail` (F1-27)<br>[Công thức] Ô chữ cái đầu ghép từ hai ký tự đầu của hai từ cuối trong `display_name`; ảnh đại diện thật chưa có nguồn nên dùng chữ cái đầu `[Suy luận]`<br>[EVT liên quan] EVT-16 |
+| | 4 | Học viên | `classManagement.studentList.col.studentName` | `identity.users` | `display_name` | Link | String | 100 | - | O | - | Tên | Tên hiển thị, màn này không hiện ảnh đại diện; bấm vào mở màn `class_student_detail` (F1-27)<br>[Nguồn giá trị] `display_name`; không dùng ảnh đại diện ở màn này (chốt 2026-11-18, tiêu chí ponytail bậc 3), ảnh học viên hiện ở INS0203, INS0204, INS0205<br>[EVT liên quan] EVT-16 |
 | | 5 | Lớp | `classManagement.studentList.col.className` | `identity.classes` | `name` | ListColumn | String | 120 | - | O | - | - | Lớp mà dòng này thuộc về<br>[Nguồn giá trị] Cột `name` của lớp gắn với dòng `class_enrollments`<br>[EVT liên quan] - |
 | | 6 | Điểm TB | `classManagement.studentList.col.avgScore` | `judge.submissions` | `status`, `problem_id`, `user_id` | ListColumn | Number | 4 | - | O | - | Một chữ số thập phân, thang 10 | Điểm trung bình của học viên<br>[Công thức] `accepted_count` chia `total_submissions` rồi nhân 10 [Nguồn: DEC-2026-0830-class-progress-dashboard]. Chưa có bài nộp nào thì hiển thị `-`. Read model toàn cục, xem Q4<br>[EVT liên quan] - |
 | | 7 | Hoàn thành | `classManagement.studentList.col.completion` | - | - | ListColumn | Number | 3 | - | O | - | `{số}%` | Tỉ lệ bài đã giao mà học viên đã Accepted<br>[Công thức] Số bài đã giao cho lớp mà học viên Accepted ít nhất một lần chia tổng số bài đã giao [Nguồn: DEC-2026-0830-class-progress-dashboard]. Xem Q2<br>[EVT liên quan] - |
@@ -530,7 +531,7 @@ học viên, và liên kết tên học viên sang `class_student_detail`. Vị 
 | 17 | `ClassInviteCodeDto` | `expiresAt` | Date | `identity.class_invite_codes` | `expires_at` | Popup "Mã mời" | Có | [Chuyển đổi] Hiển thị "Hết hạn {ngày}"; đã quá hạn thì hiển thị nhãn "Hết hạn". Hạn dùng **cố định 7 ngày** kể từ lúc tạo, máy chủ tự đặt, không có ô nhập hạn (V0.10, `DEC-2026-1014-instructor-batch3-4-contracts-and-removal`, Q5 đóng). |
 | 18 | `ClassInviteCodeDto` | `createdAt` | Date | `identity.class_invite_codes` | `created_at` | Popup "Mã mời" | Có | [Chuyển đổi] Dùng để sắp xếp giảm dần. |
 | 19 | `ClassStudentRowDto` | `studentId` | UUID | `identity.class_enrollments` | `student_id` | - | Không | [Đích] Tham số của `RemoveStudentFromClass` và của điều hướng sang `class_student_detail`. |
-| 20 | `ClassStudentRowDto` | `displayName` | String | `identity.users` | `display_name` | Bảng "Học viên" | Có | [Chuyển đổi] Sinh thêm ô chữ cái đầu ở phía giao diện, không lưu trong DB. |
+| 20 | `ClassStudentRowDto` | `displayName` | String | `identity.users` | `display_name` | Bảng "Học viên" | Có | [Chuyển đổi] Không có; màn này không hiện ảnh đại diện. |
 | 21 | `ClassStudentRowDto` | `classId`, `className` | UUID, String | `identity.classes` | `id`, `name` | Bảng "Lớp" | Có | [Chuyển đổi] Cột ẩn khi đang lọc theo một lớp cụ thể. |
 | 22 | `ClassStudentRowDto` | `avgScore` | Number | `judge.submissions` | `status`, `problem_id`, `user_id` | Bảng "Điểm TB" | Có | [Chuyển đổi] Chưa có lượt nộp nào thì trả rỗng, giao diện hiển thị `-`. |
 | 23 | `ClassStudentRowDto` | `completionPercent` | Number | - | - | Bảng "Hoàn thành" | Có | [Nguồn] Cùng nguồn với NO 3, tính theo cặp học viên và lớp. |
