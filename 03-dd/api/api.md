@@ -54,6 +54,9 @@ Bảng 3: Endpoint của `identity`. Cột # là số thứ tự trong `03-dd/ap
 | 8 | POST | `/api/v1/identity/auth/password/reset` | Xác nhận OTP + đặt mật khẩu mới (F1-17) |
 | 9 | GET | `/api/v1/identity/me/profile` | Tải hồ sơ, trạng thái mật khẩu, danh sách provider đã liên kết |
 | 10 | PATCH | `/api/v1/identity/me/profile` | Cập nhật hồ sơ, **trừ** `email` |
+| 74 | PUT | `/api/v1/identity/me/avatar` | Tải lên hoặc thay ảnh đại diện của chính mình (F1-35) |
+| 75 | DELETE | `/api/v1/identity/me/avatar` | Xoá ảnh đại diện của chính mình |
+| 76 | GET | `/api/v1/identity/users/{userId}/avatar` | Byte ảnh đại diện của một người, cho mọi người dùng đã đăng nhập |
 | 11 | POST | `/api/v1/identity/me/email-change/request` | Yêu cầu đổi email, gửi OTP tới email mới |
 | 12 | POST | `/api/v1/identity/me/email-change/confirm` | Xác nhận OTP, đổi `email` |
 | 13 | POST | `/api/v1/identity/me/password` | Đổi mật khẩu (đã có) hoặc đặt mật khẩu lần đầu (tài khoản chỉ OAuth) |
@@ -83,6 +86,7 @@ Bảng 3: Endpoint của `identity`. Cột # là số thứ tự trong `03-dd/ap
 | 35 | GET | `/api/v1/identity/admin/users?status=&role=&q=&page=&pageSize=` | Danh sách người dùng, lọc + phân trang |
 | 36 | PATCH | `/api/v1/identity/admin/users/{userId}/role` | Đổi vai trò (F1-13) |
 | 37 | PATCH | `/api/v1/identity/admin/users/{userId}/status` | Khoá/mở khoá tài khoản (F1-13) |
+| 77 | DELETE | `/api/v1/identity/admin/users/{userId}/avatar` | Gỡ ảnh đại diện của một người khác (F1-35) |
 | 38 | POST | `/api/v1/identity/admin/users/{userId}/reset-password` | Đặt lại mật khẩu hộ (F1-13) |
 | 39 | GET | `/api/v1/identity/admin/audit-logs` | Tìm/lọc nhật ký bằng cursor |
 | 40 | GET | `/api/v1/identity/admin/audit-logs/export` | Xuất CSV streaming, sáu cột tuỳ chọn |

@@ -19,12 +19,12 @@
 // class's tab.
 "use client";
 
+import { UserAvatar } from "@/entities/user";
 import { UserMinus } from "lucide-react";
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
-  initialsOfClassStudent,
   type ClassStudent,
   useInstructorClasses,
   useInstructorStudentPage,
@@ -133,12 +133,12 @@ export function ClassProgressView() {
           href={`/instructor/classes/${row.classId}/students/${row.id}?from=students`}
           className="flex items-center gap-2.5 font-semibold hover:underline"
         >
-          <span
-            aria-hidden="true"
-            className="glass-surface flex h-[28px] w-[28px] shrink-0 items-center justify-center rounded-full border border-[var(--color-border)] text-[11px] font-semibold"
-          >
-            {initialsOfClassStudent(row.name)}
-          </span>
+          <UserAvatar
+            userId={row.id}
+            name={row.name}
+            avatarVersion={row.avatarVersion}
+            size="sm"
+          />
           {row.name}
         </Link>
       ),

@@ -59,7 +59,9 @@ class MyExportController {
     this.exportTranscripts = exportTranscripts;
   }
 
-  record PersonalDataResponse(MyProfileController.ProfileResponse profile, MySettings settings) {}
+  /** {@code hasAvatar} only says whether an avatar exists; no bytes and no object key (F1-35). */
+  record PersonalDataResponse(
+      MyProfileController.ProfileResponse profile, MySettings settings, boolean hasAvatar) {}
 
   @GetMapping
   ResponseEntity<?> export(
@@ -76,7 +78,9 @@ class MyExportController {
         .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"algoprep-profile.json\"")
         .body(
             new PersonalDataResponse(
-                MyProfileController.ProfileResponse.of(data.profile()), data.settings()));
+                MyProfileController.ProfileResponse.of(data.profile()),
+                data.settings(),
+                data.profile().avatarVersion() != null));
   }
 
   @GetMapping("/interview-transcripts")

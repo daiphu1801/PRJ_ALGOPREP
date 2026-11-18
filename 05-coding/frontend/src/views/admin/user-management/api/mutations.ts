@@ -3,6 +3,7 @@
 // list is refetched afterwards, so the counters and the rows come back from the server.
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { isMockMode, withMockData } from "@/shared/api";
+import { removeUserAvatar } from "@/entities/user";
 import type { AdminUser, AdminUserRole } from "../model/types";
 import { ADMIN_USERS_KEY } from "./queries";
 import {
@@ -63,6 +64,10 @@ export function useAdminUserActions() {
         () => realResetUserPassword(input),
       ),
   });
+  const removeAvatar = useMutation({
+    mutationFn: (input: { id: string }) => removeUserAvatar(input.id),
+    onSuccess: refresh,
+  });
   const create = useMutation({
     mutationFn: (input: CreateInput): Promise<AdminUser> =>
       withMockData<AdminUser>(
@@ -86,6 +91,7 @@ export function useAdminUserActions() {
     lock: lock.mutateAsync,
     unlock: unlock.mutateAsync,
     resetPassword: resetPassword.mutateAsync,
+    removeAvatar: removeAvatar.mutateAsync,
     create: create.mutateAsync,
   };
 }

@@ -45,7 +45,9 @@ const dto = (
   displayName: string,
   baseCategory: string,
   status = "ACTIVE",
+  avatarVersion?: number,
 ) => ({
+  avatarVersion,
   id,
   displayName,
   email: `${id}@x.test`,
@@ -209,6 +211,58 @@ describe("AdminUserManagementView with the real API", () => {
     );
     await waitFor(() => expect(listCalls().length).toBeGreaterThan(before));
     expect(toasts().at(-1)?.[0]).toBe("success");
+  });
+
+  it("offers Remove photo only for a row with a picture and removes it through #77 (USRM-07)", async () => {
+    serve([
+      dto("an", "An Hoc", "STUDENT", "ACTIVE", 1700000000000),
+      dto("binh", "Binh Day", "INSTRUCTOR"),
+    ]);
+    apiMock.getBlob.mockResolvedValue(new Blob(["x"]));
+    apiMock.delete.mockResolvedValue(undefined);
+    const toasts = watch();
+    await open();
+    expect(
+      screen.queryByRole("button", {
+        name: m.actionRemoveAvatarFor.replace("{name}", "Binh Day"),
+      }),
+    ).toBeNull();
+    const before = listCalls().length;
+
+    fireEvent.click(rowAction(m.actionRemoveAvatarFor, "An Hoc"));
+    fireEvent.click(
+      within(screen.getByRole("dialog")).getByRole("button", {
+        name: m.removeAvatarAction,
+      }),
+    );
+
+    await waitFor(() =>
+      expect(apiMock.delete).toHaveBeenCalledWith(`${USERS}/an/avatar`),
+    );
+    await waitFor(() => expect(listCalls().length).toBeGreaterThan(before));
+    expect(toasts().at(-1)).toEqual([
+      "success",
+      m.removeAvatarDone.replace("{name}", "An Hoc"),
+    ]);
+  });
+
+  it("reports a missing permission when Remove photo is refused (USRM-07)", async () => {
+    serve([dto("an", "An Hoc", "STUDENT", "ACTIVE", 5)]);
+    apiMock.getBlob.mockResolvedValue(new Blob(["x"]));
+    apiMock.delete.mockRejectedValue(new ApiError("IDT-445", 403));
+    const toasts = watch();
+    await open();
+
+    fireEvent.click(rowAction(m.actionRemoveAvatarFor, "An Hoc"));
+    fireEvent.click(
+      within(screen.getByRole("dialog")).getByRole("button", {
+        name: m.removeAvatarAction,
+      }),
+    );
+
+    await waitFor(() =>
+      expect(toasts().at(-1)).toEqual(["error", apiErrors["IDT-445"]]),
+    );
   });
 
   it("shows the server reason when a lock is refused and keeps the row active", async () => {

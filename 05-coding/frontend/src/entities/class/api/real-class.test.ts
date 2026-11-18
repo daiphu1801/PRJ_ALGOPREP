@@ -187,6 +187,7 @@ describe("invite codes, roster and leaving (#23, #24, #26, #27)", () => {
       id: "s1",
       classId: "c1",
       name: "An",
+      avatarVersion: null,
       email: "an@x.vn",
       phone: undefined,
       joinedAt: "2026-11-01T03:00:00Z",

@@ -41,7 +41,8 @@ public final class ClassMetricViews {
       String displayName,
       ClassStudentStatus status,
       String reasonCode,
-      int reasonValue) {}
+      int reasonValue,
+      Long avatarVersion) {}
 
   /** #59: one page of (class, student) rows. */
   public record StudentPage(

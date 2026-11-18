@@ -3,7 +3,9 @@
  * browser as another site, so "starts with /" alone would let `?redirect=//evil.example` send a
  * freshly signed-in user away.
  */
-export function isSafeRedirect(path: string | null | undefined): path is string {
+export function isSafeRedirect(
+  path: string | null | undefined,
+): path is string {
   return (
     typeof path === "string" &&
     path.startsWith("/") &&

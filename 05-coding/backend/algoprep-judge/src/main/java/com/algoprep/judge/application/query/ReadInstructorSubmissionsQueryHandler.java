@@ -65,7 +65,8 @@ class ReadInstructorSubmissionsQueryHandler
                       s.score() == null ? null : s.passed(),
                       s.score() == null ? null : s.total(),
                       s.submittedAt(),
-                      m.leftAt() != null);
+                      m.leftAt() != null,
+                      m.avatarVersion());
                 })
             .toList();
     return new Page<>(rows, page, 20, count);

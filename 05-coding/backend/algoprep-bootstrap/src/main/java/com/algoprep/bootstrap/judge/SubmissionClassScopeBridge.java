@@ -27,7 +27,8 @@ class SubmissionClassScopeBridge implements ClassScopeReadPort {
                       m.studentId(),
                       m.studentName(),
                       m.joinedAt(),
-                      m.leftAt()))
+                      m.leftAt(),
+                      m.avatarVersion()))
           .toList();
     } catch (RuntimeException failure) {
       throw new IllegalStateException("Submission class scope unavailable");

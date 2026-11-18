@@ -73,3 +73,4 @@ export { SeeAllLink } from "./charts/see-all-link";
 export { RadarChart } from "./charts/radar-chart";
 export { ActivityHeatmap } from "./charts/activity-heatmap";
 export { QueryBoundary, QueryError } from "./feedback/query-boundary";
+export { Avatar, type AvatarSize } from "./data/avatar";

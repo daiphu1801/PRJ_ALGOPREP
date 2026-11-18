@@ -143,6 +143,22 @@ Máy chủ kiểm lại mọi giá trị dù client đã chặn (`DEC-2026-1102-
 
 Thứ tự kiểm ở #36 và #37: hình dạng thân (`IDT-V26`) trước, rồi người dùng (`IDT-450`), rồi bất biến ADMIN cuối (`IDT-432`), rồi xác nhận tự ảnh hưởng (`IDT-V21`).
 
+## 15. Ảnh đại diện (#74) — thêm 2026-11-17, F1-35
+
+Nguồn: `DEC-2026-1117-user-avatar-upload`, RD F1-35 mục 1, `02-bd/security/F1_identity.md` mục 6.1. Thứ tự kiểm ở máy chủ cũng là thứ tự dưới đây; vi phạm đầu tiên dừng ngay.
+
+| # | Trường | Luật | Mã lỗi | Nơi kiểm |
+| :-: | :--- | :--- | :--- | :--- |
+| 1 | Yêu cầu | Là `multipart/form-data` và có **đúng một** part tên `file` | `IDT-V32` (400) | Máy chủ |
+| 2 | `file` kích thước | Tối đa 524288 byte (512 KB); đếm khi đọc luồng, đọc tới 524289 byte để biết vượt; không chỉ tin `Content-Length` | `IDT-V30` (413) | Máy chủ; giao diện kiểm sau khi thu nhỏ |
+| 3 | `file` định dạng | Theo **byte đầu tệp**: PNG `89 50 4E 47 0D 0A 1A 0A`; JPEG `FF D8 FF`; WebP `52 49 46 46` ở byte 0 đến 3 và `57 45 42 50` ở byte 8 đến 11. Không tin `Content-Type` của part, không tin phần mở rộng tên tệp. SVG và mọi kiểu khác bị từ chối | `IDT-V29` (422) | Máy chủ |
+| 4 | `file` điểm ảnh | Chiều rộng và chiều cao đọc từ tiêu đề tệp, mỗi chiều từ 1 đến 1024. PNG: khối `IHDR` (byte 16 đến 23, big-endian). JPEG: quét đến khối `SOF` đầu tiên (mã `C0` đến `CF` trừ `C4`, `C8`, `CC`). WebP: `VP8 ` (lossy), `VP8L` (lossless), `VP8X` (canvas, 24 bit cộng 1). Không đọc được hoặc ngoài khoảng | `IDT-V31` (422) | Máy chủ |
+| 5 | Tần suất | Tối đa 10 lần đổi hoặc xoá (#74, #75) mỗi giờ cho mỗi người | `IDT-452` (429) | Máy chủ |
+
+Máy chủ **không** giải mã hay chuyển đổi ảnh; chỉ đọc tiêu đề. Tên tệp người dùng gửi lên bị bỏ, khoá đối tượng do hệ thống sinh (BR-25).
+
+**Quy tắc phía giao diện (zod, khớp bảng trên)**: tệp được chọn phải có `type` thuộc `image/png`, `image/jpeg`, `image/webp`; kích thước tệp **gốc** tối đa 10 MB (chặn tệp quá lớn trước khi giải mã trong trình duyệt, `[SoT: Suy luận]`, hằng số trong mã); sau khi thu nhỏ về 256 x 256 bằng canvas và xuất `image/webp` chất lượng 0,9 (dự phòng `image/jpeg` khi trình duyệt không xuất được WebP), kích thước kết quả phải tối đa 512 KB. Phần kiểm ở giao diện chỉ để báo lỗi sớm; máy chủ luôn kiểm lại.
+
 ## Tham chiếu
 
 `02-bd/security/F1_identity.md`, `03-dd/api/F1_identity.md`, `03-dd/logic/F1_identity.md`,

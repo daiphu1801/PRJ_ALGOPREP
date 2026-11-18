@@ -15,6 +15,8 @@ export type SubmissionRow = {
   submissionId: string;
   studentId: string;
   studentName: string;
+  /** Picture version of the learner (absent or null: no picture). */
+  studentAvatarVersion?: number | null;
   classId: string;
   className: string;
   /** The learner left the class: the history stays, the row carries "Đã rời lớp" and no student link. */
@@ -53,6 +55,7 @@ export function buildSubmissionRows(
           submissionId: id,
           studentId: student.id,
           studentName: student.name,
+          studentAvatarVersion: student.avatarVersion ?? null,
           classId: student.classId,
           className: student.className,
           leftClass: student.leftAt !== undefined,

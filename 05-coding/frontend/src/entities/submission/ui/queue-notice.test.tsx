@@ -3,20 +3,22 @@ import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { QueueNotice } from "./queue-notice";
 
-const t = (
-  key: string,
-  values: { ahead: number; seconds: number },
-) => `${key}:${values.ahead}:${values.seconds}`;
+const t = (key: string, values: { ahead: number; seconds: number }) =>
+  `${key}:${values.ahead}:${values.seconds}`;
 
 describe("QueueNotice", () => {
   it("shows the ahead count and the estimate", () => {
-    render(<QueueNotice queue={{ ahead: 18, estimatedWaitSeconds: 9 }} t={t} />);
+    render(
+      <QueueNotice queue={{ ahead: 18, estimatedWaitSeconds: 9 }} t={t} />,
+    );
     expect(screen.getByRole("status")).toHaveTextContent(
       "waitingWithEstimate:18:9",
     );
   });
   it("shows only the count when the estimate is null", () => {
-    render(<QueueNotice queue={{ ahead: 4, estimatedWaitSeconds: null }} t={t} />);
+    render(
+      <QueueNotice queue={{ ahead: 4, estimatedWaitSeconds: null }} t={t} />,
+    );
     expect(screen.getByRole("status")).toHaveTextContent("waiting:4");
   });
   it("shows the about-to-start line when nobody is ahead", () => {

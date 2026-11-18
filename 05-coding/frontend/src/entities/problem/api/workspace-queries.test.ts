@@ -93,9 +93,12 @@ describe("workspace API contracts", () => {
     function answer(overrides: Record<string, unknown> = {}) {
       get.mockImplementation(async (path: string) => {
         const key = path.split("/").pop() as string;
-        const value = { overview, "execution-limits": limits, mine: { items: [] }, ...overrides }[
-          key === "mine" ? "mine" : key
-        ];
+        const value = {
+          overview,
+          "execution-limits": limits,
+          mine: { items: [] },
+          ...overrides,
+        }[key === "mine" ? "mine" : key];
         if (value instanceof Error) throw value;
         return value;
       });

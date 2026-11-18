@@ -62,7 +62,8 @@ class ClassMembershipController {
       String status,
       Double avgScore,
       Integer completionPercent,
-      String lastSubmittedAt) {
+      String lastSubmittedAt,
+      Long avatarVersion) {
 
     static StudentResponse of(ClassStudentRow r) {
       ClassRosterEntry e = r.student();
@@ -78,7 +79,8 @@ class ClassMembershipController {
           figures && r.completion() != null ? r.completionPercent() : null,
           figures && r.metrics().lastSubmittedAt() != null
               ? r.metrics().lastSubmittedAt().toString()
-              : null);
+              : null,
+          e.avatarVersion());
     }
   }
 

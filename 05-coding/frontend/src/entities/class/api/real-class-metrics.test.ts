@@ -158,6 +158,7 @@ describe("realListInstructorStudents (#59)", () => {
     expect(page.rows[0]).toEqual({
       id: "s1",
       name: "Nguyễn Văn An",
+      avatarVersion: null,
       classId: "c1",
       className: "Lớp A",
       avgScore: 7.5,
@@ -219,6 +220,7 @@ describe("realGetClassStudent (#28)", () => {
     expect(student).toEqual({
       id: "s1",
       name: "Binh",
+      avatarVersion: null,
       classId: "c1",
       className: "Lớp A",
       email: "b@x.vn",

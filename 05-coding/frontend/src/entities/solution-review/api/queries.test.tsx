@@ -57,7 +57,10 @@ describe("useSolutionReview (real)", () => {
     client.setQueryData(["solution-review", "quick-insight", "p1"], null);
     client.setQueryData(["student-dashboard", "recent-reviews"], []);
 
-    const { result } = renderHook(() => useSolutionReview(SUBMISSION, "ready"), { wrapper });
+    const { result } = renderHook(
+      () => useSolutionReview(SUBMISSION, "ready"),
+      { wrapper },
+    );
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
     for (const key of [
@@ -67,7 +70,10 @@ describe("useSolutionReview (real)", () => {
     ]) {
       expect(client.getQueryState(key)?.isInvalidated).toBe(true);
     }
-    expect(client.getQueryState(["solution-review", SUBMISSION, "ready"])?.isInvalidated).toBe(false);
+    expect(
+      client.getQueryState(["solution-review", SUBMISSION, "ready"])
+        ?.isInvalidated,
+    ).toBe(false);
     expect(apiMock.post).toHaveBeenCalledTimes(1);
   });
 
@@ -76,10 +82,15 @@ describe("useSolutionReview (real)", () => {
     const { client, wrapper } = setup();
     client.setQueryData(["solution-review", "problem-ids"], new Set());
 
-    const { result } = renderHook(() => useSolutionReview(SUBMISSION, "ready"), { wrapper });
+    const { result } = renderHook(
+      () => useSolutionReview(SUBMISSION, "ready"),
+      { wrapper },
+    );
     await waitFor(() => expect(result.current.isError).toBe(true));
 
-    expect(client.getQueryState(["solution-review", "problem-ids"])?.isInvalidated).toBe(false);
+    expect(
+      client.getQueryState(["solution-review", "problem-ids"])?.isInvalidated,
+    ).toBe(false);
   });
 });
 

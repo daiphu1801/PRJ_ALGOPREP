@@ -1,7 +1,13 @@
 // Mock-mode smoke tests of the two login screens (shared AuthView and AdminAuthView): the title per
 // mode, switching between login and signup, the dev quick-login panel and the loading overlay that
 // runs before the redirect. The identity API is not involved: NEXT_PUBLIC_MOCK_DATA is on.
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { withTestProviders } from "@/shared/test/render-with-providers";
 import viMessages from "../../../../../messages/vi.json";
@@ -15,11 +21,14 @@ vi.mock("next/navigation", () => ({
   useSearchParams: () => nav.search,
 }));
 
+import { authLoading } from "@/features/auth-by-credentials";
 import { AuthView } from "./auth-view";
 
 const a = viMessages.auth;
 
 beforeEach(() => {
+  // The overlay state is module-level and outlives a test that ends on a successful sign-in.
+  act(() => authLoading.clear());
   nav.push.mockReset();
   nav.search = new URLSearchParams();
 });
@@ -83,9 +92,11 @@ describe("AuthView", () => {
       timeout: 6000,
     });
     expect(nav.push.mock.calls[0]![0]).toBe("/dashboard");
-    await waitFor(() =>
-      expect(screen.queryByRole("status")).not.toBeInTheDocument(),
-    );
+    // The overlay stays through the navigation, so the form does not flash back; it is dropped
+    // once the app has left the sign-in page (AuthLoadingReset).
+    expect(screen.getByRole("status")).toHaveTextContent(a.loadingTitle);
+    act(() => authLoading.clearIfLeft("/dashboard"));
+    expect(screen.queryByRole("status")).not.toBeInTheDocument();
   }, 10000);
 
   it("honours a safe redirect query over the role home", async () => {

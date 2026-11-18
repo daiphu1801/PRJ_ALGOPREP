@@ -30,14 +30,16 @@ class JdbcMyProfileRepository implements MyProfileRepository {
         SELECT u.display_name, u.email, u.school_or_company, u.current_position,
                u.target_position, u.default_language, u.phone, u.password_hash IS NOT NULL
                  AS has_password, u.password_changed_at, u.created_at, u.must_change_password,
-               r.name AS role_name
+               r.name AS role_name, av.updated_at AS avatar_updated_at
         FROM identity.users u JOIN identity.roles r ON r.id = u.role_id
+          LEFT JOIN identity.user_avatars av ON av.user_id = u.id
         WHERE u.id = :id
         """)
         .param("id", userId)
         .query(
             (rs, n) -> {
               Timestamp changed = rs.getTimestamp("password_changed_at");
+              Timestamp avatar = rs.getTimestamp("avatar_updated_at");
               return new MyProfile(
                   userId,
                   rs.getString("display_name"),
@@ -52,7 +54,8 @@ class JdbcMyProfileRepository implements MyProfileRepository {
                   providers(client, userId),
                   rs.getTimestamp("created_at").toInstant(),
                   rs.getString("role_name"),
-                  rs.getBoolean("must_change_password"));
+                  rs.getBoolean("must_change_password"),
+                  avatar == null ? null : avatar.toInstant().toEpochMilli());
             })
         .optional();
   }

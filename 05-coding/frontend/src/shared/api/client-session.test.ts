@@ -66,8 +66,12 @@ it("rejects a late successful HTTP response after the active session changed", a
 
 it("captures the original session before a same-turn account switch", async () => {
   const task = await pendingRequest();
-  const request = task.api.post("/identity/me/profile", { displayName: "private A edit" });
-  const rejected = expect(request).rejects.toMatchObject({ code: "ERR_CANCELED" });
+  const request = task.api.post("/identity/me/profile", {
+    displayName: "private A edit",
+  });
+  const rejected = expect(request).rejects.toMatchObject({
+    code: "ERR_CANCELED",
+  });
   task.tokenStore.set("token-B");
   await task.ready;
   task.dispatch("ok");
@@ -110,9 +114,15 @@ it("cannot restore an old refresh token into the new session", async () => {
 it("does not replay a mutation if the refresh cookie now belongs to a different account", async () => {
   const task = await pendingRequest();
   const refreshedB = `header.${btoa(JSON.stringify({ sub: "B" }))}.signature`;
-  vi.spyOn(axios, "post").mockResolvedValue({ data: { accessToken: refreshedB } });
-  const request = task.api.post("/identity/me/profile", { displayName: "private A edit" });
-  const rejected = expect(request).rejects.toMatchObject({ code: "ERR_CANCELED" });
+  vi.spyOn(axios, "post").mockResolvedValue({
+    data: { accessToken: refreshedB },
+  });
+  const request = task.api.post("/identity/me/profile", {
+    displayName: "private A edit",
+  });
+  const rejected = expect(request).rejects.toMatchObject({
+    code: "ERR_CANCELED",
+  });
   await task.ready;
   task.dispatch("unauthorized");
   await rejected;

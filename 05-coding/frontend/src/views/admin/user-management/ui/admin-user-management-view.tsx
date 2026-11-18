@@ -31,10 +31,10 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { KeyRound, Lock, LockOpen, UserCog } from "lucide-react";
+import { ImageOff, KeyRound, Lock, LockOpen, UserCog } from "lucide-react";
+import { UserAvatar } from "@/entities/user";
 import {
   ADMIN_USERS_PAGE_SIZE,
-  initialsOf,
   useAdminUserActions,
   useAdminUserPage,
   type AdminUser,
@@ -155,6 +155,7 @@ function AdminUserManagementInner({
   const [unlockTargets, setUnlockTargets] = useState<AdminUser[] | null>(null);
   const [roleTarget, setRoleTarget] = useState<AdminUser | null>(null);
   const [resetTarget, setResetTarget] = useState<AdminUser | null>(null);
+  const [avatarTarget, setAvatarTarget] = useState<AdminUser | null>(null);
 
   // Role, status and free text combine with AND — same as the mockup's own filter (dc.html:449-453).
   const users = useMemo(() => {
@@ -333,6 +334,27 @@ function AdminUserManagementInner({
     );
   }
 
+  async function applyRemoveAvatar() {
+    const target = avatarTarget;
+    setAvatarTarget(null);
+    if (!target) return;
+    try {
+      await actions.removeAvatar({ id: target.id });
+    } catch (error) {
+      // A missing USER_MANAGEMENT:UPDATE cell comes back as IDT-445 and reads like the sibling buttons.
+      toast.error(apiMessage(error));
+      return;
+    }
+    setAccounts((previous) =>
+      previous.map((account) =>
+        account.id === target.id
+          ? { ...account, avatarVersion: null }
+          : account,
+      ),
+    );
+    toast.success(t("removeAvatarDone", { name: target.name }));
+  }
+
   async function createAccount(input: {
     name: string;
     email: string;
@@ -410,12 +432,12 @@ function AdminUserManagementInner({
       header: t("columnUser"),
       render: (user) => (
         <div className="flex min-w-0 items-center gap-2.5">
-          <span
-            aria-hidden="true"
-            className="glass-surface flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-full border border-[var(--color-border)] text-[11px] font-semibold"
-          >
-            {initialsOf(user.name)}
-          </span>
+          <UserAvatar
+            userId={user.id}
+            name={user.name}
+            avatarVersion={user.avatarVersion}
+            size="sm"
+          />
           <span className="min-w-0">
             <span className="block truncate font-semibold">{user.name}</span>
             <span className="block truncate font-mono text-[11px] text-[var(--color-text-subtle)]">
@@ -440,7 +462,7 @@ function AdminUserManagementInner({
     {
       key: "status",
       header: t("columnStatus"),
-      width: "132px",
+      width: "166px",
       align: "right",
       render: (user) => (
         <span
@@ -477,6 +499,14 @@ function AdminUserManagementInner({
             ariaLabel={t("actionResetPasswordFor", { name: user.name })}
             onClick={() => setResetTarget(user)}
           />
+          {user.avatarVersion != null ? (
+            <IconAction
+              icon={ImageOff}
+              label={t("actionRemoveAvatar")}
+              ariaLabel={t("actionRemoveAvatarFor", { name: user.name })}
+              onClick={() => setAvatarTarget(user)}
+            />
+          ) : null}
           {user.status === "locked" ? (
             <IconAction
               icon={LockOpen}
@@ -703,6 +733,18 @@ function AdminUserManagementInner({
             },
           )}
         </p>
+      </ConfirmDialog>
+
+      <ConfirmDialog
+        open={avatarTarget !== null}
+        onClose={() => setAvatarTarget(null)}
+        onConfirm={applyRemoveAvatar}
+        title={t("removeAvatarTitle", { name: avatarTarget?.name ?? "" })}
+        confirmLabel={t("removeAvatarAction")}
+        cancelLabel={t("cancel")}
+        destructive
+      >
+        <p>{t("removeAvatarBody")}</p>
       </ConfirmDialog>
 
       {/* Unlock is not destructive — it restores access — so it needs a plain confirmation and no

@@ -394,7 +394,9 @@ describe("ProblemAuthoringView spec tab (F2-03, F2-04)", () => {
   it("shows the starter-code preview of each language for the sample problem", async () => {
     await openSpecTab();
     for (const language of ["java", "cpp", "python"]) {
-      fireEvent.click(screen.getByRole("button", { name: `spec.language.${language}` }));
+      fireEvent.click(
+        screen.getByRole("button", { name: `spec.language.${language}` }),
+      );
       expect(
         screen.getByRole("listitem", { name: `spec.language.${language}` }),
       ).toBeInTheDocument();

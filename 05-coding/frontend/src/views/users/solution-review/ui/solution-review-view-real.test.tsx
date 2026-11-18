@@ -98,10 +98,12 @@ const judgeDetail = (over: Record<string, unknown> = {}) => ({
   ...over,
 });
 
-function serve(opts: {
-  review?: () => unknown | Error;
-  detail?: () => unknown | Error;
-} = {}) {
+function serve(
+  opts: {
+    review?: () => unknown | Error;
+    detail?: () => unknown | Error;
+  } = {},
+) {
   apiMock.post.mockImplementation(async (path: string) => {
     if (path !== REVIEW_PATH) throw new Error(`unexpected POST ${path}`);
     const value = (opts.review ?? (() => review()))();
@@ -171,11 +173,13 @@ describe("SolutionReviewView with the real API", () => {
     await screen.findByText("Two Sum thật");
 
     fireEvent.click(screen.getByRole("button", { name: m.applyCta }));
-    fireEvent.click(screen.getByRole("button", { name: m.applyConfirmConfirm }));
-
-    expect(window.localStorage.getItem("algoprep-draft:p1:python:stdio")).toContain(
-      "seen.get(a)",
+    fireEvent.click(
+      screen.getByRole("button", { name: m.applyConfirmConfirm }),
     );
+
+    expect(
+      window.localStorage.getItem("algoprep-draft:p1:python:stdio"),
+    ).toContain("seen.get(a)");
     expect(push).toHaveBeenCalledWith("/workspace/p1");
   });
 
@@ -185,9 +189,13 @@ describe("SolutionReviewView with the real API", () => {
 
     expect(await screen.findByText("O(n^2)")).toBeInTheDocument();
     await waitFor(() =>
-      expect(screen.getAllByText(m.sourceUnavailable).length).toBeGreaterThan(0),
+      expect(screen.getAllByText(m.sourceUnavailable).length).toBeGreaterThan(
+        0,
+      ),
     );
-    expect(screen.queryByRole("group", { name: m.diffTitle })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("group", { name: m.diffTitle }),
+    ).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: m.applyCta })).toBeDisabled();
   });
 
@@ -197,7 +205,9 @@ describe("SolutionReviewView with the real API", () => {
 
     expect(await screen.findByText("O(n^2)")).toBeInTheDocument();
     await waitFor(() =>
-      expect(screen.getAllByText(m.sourceUnavailable).length).toBeGreaterThan(0),
+      expect(screen.getAllByText(m.sourceUnavailable).length).toBeGreaterThan(
+        0,
+      ),
     );
     expect(screen.getByRole("button", { name: m.applyCta })).toBeDisabled();
   });
@@ -217,12 +227,15 @@ describe("SolutionReviewView with the real API", () => {
 
   it("hides the diff card and Apply when the approach is already optimal (codeDiff null)", async () => {
     serve({
-      review: () => review({ verdict: "OPTIMAL", isApproachOptimal: true, codeDiff: null }),
+      review: () =>
+        review({ verdict: "OPTIMAL", isApproachOptimal: true, codeDiff: null }),
     });
     render(withTestProviders(<SolutionReviewView />));
 
     await screen.findByText("Two Sum thật");
-    expect(screen.queryByRole("button", { name: m.applyCta })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: m.applyCta }),
+    ).not.toBeInTheDocument();
     expect(screen.queryByText(m.diffTitle)).not.toBeInTheDocument();
   });
 
@@ -231,47 +244,64 @@ describe("SolutionReviewView with the real API", () => {
       ["AIR-101", 404],
       ["AIR-102", 422],
       ["AIR-302", 403],
-    ])("%s opens one merged notice with no Retry and a toast", async (code, status) => {
-      serve({ review: () => new ApiError(code, status) });
-      const toasts = toastsOf();
-      render(withTestProviders(<SolutionReviewView />));
+    ])(
+      "%s opens one merged notice with no Retry and a toast",
+      async (code, status) => {
+        serve({ review: () => new ApiError(code, status) });
+        const toasts = toastsOf();
+        render(withTestProviders(<SolutionReviewView />));
 
-      expect(await screen.findByText(m.errorUnavailableTitle)).toBeInTheDocument();
-      expect(screen.queryByRole("button", { name: m.retry })).not.toBeInTheDocument();
-      expect(screen.getByRole("link", { name: m.backToSubmissions })).toHaveAttribute(
-        "href",
-        "/submissions",
-      );
-      expect(lastToast(toasts)).toBe(m.toast.unavailable);
-      expect(reviewCalls()).toHaveLength(1);
-    });
+        expect(
+          await screen.findByText(m.errorUnavailableTitle),
+        ).toBeInTheDocument();
+        expect(
+          screen.queryByRole("button", { name: m.retry }),
+        ).not.toBeInTheDocument();
+        expect(
+          screen.getByRole("link", { name: m.backToSubmissions }),
+        ).toHaveAttribute("href", "/submissions");
+        expect(lastToast(toasts)).toBe(m.toast.unavailable);
+        expect(reviewCalls()).toHaveLength(1);
+      },
+    );
 
     it("AIR-401 shows the budget notice, no Retry, a link out and a toast", async () => {
       serve({ review: () => new ApiError("AIR-401", 429) });
       const toasts = toastsOf();
       render(withTestProviders(<SolutionReviewView />));
 
-      expect(await screen.findByText(m.errorBudgetLockedTitle)).toBeInTheDocument();
-      expect(screen.queryByRole("button", { name: m.retry })).not.toBeInTheDocument();
+      expect(
+        await screen.findByText(m.errorBudgetLockedTitle),
+      ).toBeInTheDocument();
+      expect(
+        screen.queryByRole("button", { name: m.retry }),
+      ).not.toBeInTheDocument();
       expect(lastToast(toasts)).toBe(m.toast.budgetLocked);
     });
 
     it("AIR-402 waits for retryAfterSeconds: Retry is disabled with a countdown, then enabled", async () => {
       serve({
-        review: () => new ApiError("AIR-402", 429, "x", { retryAfterSeconds: 2 }),
+        review: () =>
+          new ApiError("AIR-402", 429, "x", { retryAfterSeconds: 2 }),
       });
       const toasts = toastsOf();
       render(withTestProviders(<SolutionReviewView />));
 
-      expect(await screen.findByText(m.errorRateLimitedTitle)).toBeInTheDocument();
+      expect(
+        await screen.findByText(m.errorRateLimitedTitle),
+      ).toBeInTheDocument();
       expect(screen.getByText(/Hãy thử lại sau 2 giây/)).toBeInTheDocument();
       const wait = screen.getByRole("button", { name: "Thử lại sau 2 giây" });
       expect(wait).toBeDisabled();
-      expect(lastToast(toasts)).toBe("Bạn yêu cầu hơi nhanh. Thử lại sau 2 giây.");
+      expect(lastToast(toasts)).toBe(
+        "Bạn yêu cầu hơi nhanh. Thử lại sau 2 giây.",
+      );
       // The AIR-402 text of the shared map exists too, in case another screen shows it.
       expect(errors["AIR-402"]).toBeTruthy();
 
-      expect(await screen.findByRole("button", { name: m.retry }, { timeout: 4000 })).toBeEnabled();
+      expect(
+        await screen.findByRole("button", { name: m.retry }, { timeout: 4000 }),
+      ).toBeEnabled();
       expect(reviewCalls()).toHaveLength(1);
     });
 
@@ -279,36 +309,49 @@ describe("SolutionReviewView with the real API", () => {
       serve({ review: () => new ApiError("AIR-404", 429) });
       render(withTestProviders(<SolutionReviewView />));
 
-      expect(await screen.findByRole("button", { name: "Thử lại sau 20 giây" })).toBeDisabled();
+      expect(
+        await screen.findByRole("button", { name: "Thử lại sau 20 giây" }),
+      ).toBeDisabled();
       expect(errors["AIR-404"]).toBeTruthy();
     });
 
     it.each([
       ["AIR-501", 503],
       ["AIR-502", 502],
-    ])("%s is transient: warning, a toast, and one Retry that calls once more", async (code, status) => {
-      let attempt = 0;
+    ])(
+      "%s is transient: warning, a toast, and one Retry that calls once more",
+      async (code, status) => {
+        let attempt = 0;
+        serve({
+          review: () =>
+            attempt++ === 0 ? new ApiError(code, status) : review(),
+        });
+        const toasts = toastsOf();
+        render(withTestProviders(<SolutionReviewView />));
+
+        expect(
+          await screen.findByText(m.errorTransientTitle),
+        ).toBeInTheDocument();
+        expect(lastToast(toasts)).toBe(m.toast.transientError);
+        fireEvent.click(screen.getByRole("button", { name: m.retry }));
+
+        expect(await screen.findByText("Two Sum thật")).toBeInTheDocument();
+        expect(reviewCalls()).toHaveLength(2);
+        expect(errors[code as "AIR-501" | "AIR-502"]).toBeTruthy();
+      },
+    );
+
+    it("a failure with an unknown code shows the generic text from apiErrors, never the server text", async () => {
       serve({
-        review: () => (attempt++ === 0 ? new ApiError(code, status) : review()),
+        review: () =>
+          new ApiError("UNKNOWN_ERROR", 0, "ECONNRESET stack trace"),
       });
       const toasts = toastsOf();
       render(withTestProviders(<SolutionReviewView />));
 
-      expect(await screen.findByText(m.errorTransientTitle)).toBeInTheDocument();
-      expect(lastToast(toasts)).toBe(m.toast.transientError);
-      fireEvent.click(screen.getByRole("button", { name: m.retry }));
-
-      expect(await screen.findByText("Two Sum thật")).toBeInTheDocument();
-      expect(reviewCalls()).toHaveLength(2);
-      expect(errors[code as "AIR-501" | "AIR-502"]).toBeTruthy();
-    });
-
-    it("a failure with an unknown code shows the generic text from apiErrors, never the server text", async () => {
-      serve({ review: () => new ApiError("UNKNOWN_ERROR", 0, "ECONNRESET stack trace") });
-      const toasts = toastsOf();
-      render(withTestProviders(<SolutionReviewView />));
-
-      expect(await screen.findByText(m.errorTransientTitle)).toBeInTheDocument();
+      expect(
+        await screen.findByText(m.errorTransientTitle),
+      ).toBeInTheDocument();
       expect(lastToast(toasts)).toBe(errors.UNKNOWN_ERROR);
       expect(screen.queryByText(/ECONNRESET/)).not.toBeInTheDocument();
     });
@@ -317,7 +360,8 @@ describe("SolutionReviewView with the real API", () => {
       vi.useFakeTimers({ shouldAdvanceTime: true });
       let attempt = 0;
       serve({
-        review: () => (attempt++ === 0 ? new ApiError("AIR-103", 409) : review()),
+        review: () =>
+          attempt++ === 0 ? new ApiError("AIR-103", 409) : review(),
       });
       const toasts = toastsOf();
       render(withTestProviders(<SolutionReviewView />));
@@ -342,7 +386,9 @@ describe("SolutionReviewView with the real API", () => {
       render(withTestProviders(<SolutionReviewView />));
 
       expect(screen.getByText(m.loadingLabel)).toBeInTheDocument();
-      expect(screen.queryByRole("button", { name: m.retry })).not.toBeInTheDocument();
+      expect(
+        screen.queryByRole("button", { name: m.retry }),
+      ).not.toBeInTheDocument();
       expect(reviewCalls()).toHaveLength(1);
     });
   });

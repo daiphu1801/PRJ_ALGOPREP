@@ -311,7 +311,7 @@ class SubmissionReadHandlersTest {
     var scope = new InstructorSubmissionScope(scopePort, assignments);
     var member =
         new Membership(
-            classId, "Class", owner, "Student", now.minusSeconds(20), now.plusSeconds(20));
+            classId, "Class", owner, "Student", now.minusSeconds(20), now.plusSeconds(20), 1700L);
     when(scopePort.read(owner)).thenReturn(List.of(member));
     when(assignments.listAssignments(any()))
         .thenReturn(
@@ -330,6 +330,13 @@ class SubmissionReadHandlersTest {
                 .getFirst()
                 .leftClass())
         .isTrue();
+    assertThat(
+            handler
+                .list(owner, new Filters("sum", "failed", null, "1", classId))
+                .items()
+                .getFirst()
+                .avatarVersion())
+        .isEqualTo(1700L);
     assertThat(handler.detail(owner, id).member()).isEqualTo(member);
     assertThat(handler.classHistory(owner, classId, owner, "1").items().getFirst().problemTitle())
         .isEqualTo("Sum");

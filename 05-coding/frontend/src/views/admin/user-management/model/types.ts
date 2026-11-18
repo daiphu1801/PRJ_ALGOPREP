@@ -13,6 +13,8 @@ export type AdminUser = {
   /** Email doubles as the row key — the mockup keys its selection map the same way. */
   email: string;
   name: string;
+  /** Picture version (F1 #35); absent or null means no picture. */
+  avatarVersion?: number | null;
   role: AdminUserRole;
   /** Absent with the real API: no read model yet (F4), so nothing is shown instead of a made-up zero. */
   solvedCount?: number;
@@ -59,11 +61,3 @@ export type AdminUserPage = {
   totalUsers: number;
   totalPages: number;
 };
-
-export function initialsOf(name: string): string {
-  return name
-    .split(" ")
-    .slice(-2)
-    .map((word) => word[0] ?? "")
-    .join("");
-}

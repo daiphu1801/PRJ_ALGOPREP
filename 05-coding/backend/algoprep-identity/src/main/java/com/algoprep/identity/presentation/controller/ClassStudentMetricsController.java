@@ -48,7 +48,8 @@ class ClassStudentMetricsController {
       String className,
       String joinedAt,
       String status,
-      List<AssignmentProgress> assignmentProgress) {}
+      List<AssignmentProgress> assignmentProgress,
+      Long avatarVersion) {}
 
   record ProgressResponse(
       UUID classId,
@@ -84,7 +85,8 @@ class ClassStudentMetricsController {
         row.className(),
         row.student().joinedAt().toString(),
         row.status().name(),
-        assigned);
+        assigned,
+        row.student().avatarVersion());
   }
 
   @GetMapping("/progress")

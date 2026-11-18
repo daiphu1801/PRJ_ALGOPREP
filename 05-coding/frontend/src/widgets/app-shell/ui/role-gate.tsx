@@ -2,11 +2,7 @@
 
 import { useEffect, type ReactNode } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import {
-  HOME_PATH_BY_ROLE,
-  ROLE_BY_AREA,
-  type AppArea,
-} from "@/entities/user";
+import { HOME_PATH_BY_ROLE, ROLE_BY_AREA, type AppArea } from "@/entities/user";
 import { isMockMode, tokenStore } from "@/shared/api";
 import { readBaseCategory } from "@/shared/lib";
 import { LOGIN_PATH_BY_AREA } from "../model/login-path";

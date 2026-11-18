@@ -8,7 +8,7 @@
 import { useMockMutation, useMockQuery } from "@/shared/api";
 import type {
   AcceptedSubmissionOption,
-  BankQuestionOption,
+  BankQuestionPage,
   InterviewResult,
   InterviewStage,
 } from "../model/types";
@@ -35,9 +35,9 @@ export const useAcceptedSubmissionOptions = () =>
   });
 
 export const useBankQuestionOptions = () =>
-  useMockQuery<BankQuestionOption[]>({
+  useMockQuery<BankQuestionPage>({
     queryKey: ["mock-interview", "bank-questions"],
-    mock: () => BANK_QUESTIONS,
+    mock: () => ({ items: BANK_QUESTIONS, total: BANK_QUESTIONS.length }),
     real: realListBankQuestionOptions,
     spec: SPEC,
   });

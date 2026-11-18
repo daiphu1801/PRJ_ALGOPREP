@@ -14,11 +14,11 @@
 // paging — a column grid would fight that shape rather than help it.
 "use client";
 
+import { UserAvatar } from "@/entities/user";
 import { useMemo, useState } from "react";
 import {
   AUDIT_CATEGORIES,
   LOAD_MORE_COUNT,
-  initialsOf,
   useActiveAdmins,
   useAuditLive,
   useAuditLog,
@@ -349,12 +349,12 @@ export function AdminSystemLogView() {
                       label={admin.name}
                       description={admin.meta}
                       leading={
-                        <span
-                          aria-hidden="true"
-                          className="glass-surface flex h-[26px] w-[26px] items-center justify-center rounded-full border border-[var(--color-border)] text-[10.5px] font-semibold"
-                        >
-                          {initialsOf(admin.name)}
-                        </span>
+                        <UserAvatar
+                          userId={admin.id}
+                          name={admin.name}
+                          avatarVersion={admin.avatarVersion}
+                          size="sm"
+                        />
                       }
                     >
                       <span

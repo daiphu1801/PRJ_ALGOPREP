@@ -39,14 +39,16 @@ describe("entry tab sources", () => {
     expect(await realListAcceptedSubmissionOptions()).toEqual([]);
   });
 
-  it("maps the first bank page to id and title", async () => {
+  it("maps the first bank page to id and title and keeps the bank size", async () => {
     get.mockResolvedValue({
       items: [{ id: "q1", title: "LRU", topic: {}, level: {} }],
       page: {},
+      meta: { shown: 1, total: 24 },
     });
-    expect(await realListBankQuestionOptions()).toEqual([
-      { id: "q1", title: "LRU" },
-    ]);
+    expect(await realListBankQuestionOptions()).toEqual({
+      items: [{ id: "q1", title: "LRU" }],
+      total: 24,
+    });
     expect(get).toHaveBeenCalledExactlyOnceWith("/interview-bank/questions", {
       page: 1,
     });

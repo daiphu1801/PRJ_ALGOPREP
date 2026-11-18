@@ -7,16 +7,13 @@
 // No stat-card strip (owner rule 2026-10-13): the list is the screen.
 "use client";
 
+import { UserAvatar } from "@/entities/user";
 import { useMemo, useState } from "react";
 import { isMockMode } from "@/shared/api";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Eye } from "lucide-react";
-import {
-  initialsOfClassStudent,
-  useClassStudents,
-  useInstructorClasses,
-} from "@/entities/class";
+import { useClassStudents, useInstructorClasses } from "@/entities/class";
 import {
   matchesResultFilter,
   SUBMISSION_STATUS_VARIANT,
@@ -107,12 +104,12 @@ export function SubmissionManagementView() {
       render: (row) => {
         const identity = (
           <>
-            <span
-              aria-hidden="true"
-              className="glass-surface flex h-[28px] w-[28px] shrink-0 items-center justify-center rounded-full border border-[var(--color-border)] text-[11px] font-semibold"
-            >
-              {initialsOfClassStudent(row.studentName)}
-            </span>
+            <UserAvatar
+              userId={row.studentId}
+              name={row.studentName}
+              avatarVersion={row.studentAvatarVersion}
+              size="sm"
+            />
             {row.studentName}
           </>
         );

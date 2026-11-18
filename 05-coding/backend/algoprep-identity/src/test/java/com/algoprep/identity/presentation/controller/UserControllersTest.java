@@ -157,7 +157,8 @@ class UserControllersTest {
           List.of("GITHUB"),
           now,
           "Student",
-          false);
+          false,
+          null);
 
   // ------------------------------------------------------------ session
 
@@ -284,7 +285,7 @@ class UserControllersTest {
     var withChange =
         new MyProfile(
             me, "An", "a@b.c", null, null, null, "JAVA", null, true, now, List.of(), now, "Student",
-            true);
+            true, null);
     assertThat(MyProfileController.ProfileResponse.of(withChange).passwordChangedAt())
         .isEqualTo(now.toString());
 
@@ -452,7 +453,7 @@ class UserControllersTest {
   }
 
   private ClassStudentRow row(Double completion, boolean withMetrics, Instant lastSubmitted) {
-    var entry = new ClassRosterEntry(other, "An", "a@b.c", "09", now);
+    var entry = new ClassRosterEntry(other, "An", "a@b.c", "09", now, 1700L);
     StudentMetrics metrics =
         withMetrics
             ? new StudentMetrics(
@@ -487,6 +488,7 @@ class UserControllersTest {
     assertThat(c.generate(jwt, other.toString()).code()).isEqualTo("CODE");
     assertThat(c.codes(jwt, other.toString()).items()).hasSize(1);
     var students = c.students(jwt, other.toString()).items();
+    assertThat(students.get(0).avatarVersion()).isEqualTo(1700L);
     assertThat(students).hasSize(3);
     assertThat(students.get(0).completionPercent()).isEqualTo(50);
     assertThat(students.get(0).lastSubmittedAt()).isEqualTo(now.toString());
@@ -513,6 +515,7 @@ class UserControllersTest {
         .thenReturn(new ClassProgress(other, "Algo", 5, 40, 6.5, counts));
     var c = new ClassStudentMetricsController(profileUc, progressUc);
     var detail = c.profile(jwt, other.toString(), me.toString());
+    assertThat(detail.avatarVersion()).isEqualTo(1700L);
     assertThat(detail.assignmentProgress()).hasSize(2);
     assertThat(detail.assignmentProgress().get(0).bestVerdict()).isNull();
     assertThat(detail.assignmentProgress().get(1).bestVerdict()).isEqualTo("ACCEPTED");
@@ -537,7 +540,8 @@ class UserControllersTest {
             new ScoreTrend(
                 null, null, List.of(new TrendPoint(LocalDate.parse("2026-04-20"), 7.5))));
     var needs =
-        new AttentionStudent(other, me, "An", ClassStudentStatus.values()[0], "NO_SUBMISSION", 7);
+        new AttentionStudent(
+            other, me, "An", ClassStudentStatus.values()[0], "NO_SUBMISSION", 7, null);
     when(attention.list(me, other)).thenReturn(List.of(needs));
     when(students.list(any()))
         .thenReturn(
@@ -553,6 +557,7 @@ class UserControllersTest {
     var page = c.students(jwt, other.toString(), "an", 2, 10);
     assertThat(page.page().totalCount()).isEqualTo(12);
     assertThat(page.items().get(0).lastSubmittedAt()).isEqualTo(now.toString());
+    assertThat(page.items().get(0).avatarVersion()).isEqualTo(1700L);
     assertThat(page.items().get(1).lastSubmittedAt()).isNull();
     ArgumentCaptor<InstructorStudentsQuery> cap =
         ArgumentCaptor.forClass(InstructorStudentsQuery.class);

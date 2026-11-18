@@ -50,6 +50,8 @@ export type SubmissionDetail = {
   instructorContext?: {
     studentId: string;
     studentName: string;
+    /** Picture version of the learner (absent or null: no picture). */
+    studentAvatarVersion?: number | null;
     classId: string;
     className: string;
     leftClass: boolean;

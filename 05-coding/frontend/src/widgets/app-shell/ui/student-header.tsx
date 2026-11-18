@@ -8,6 +8,7 @@ import { BrandMark, ThemeLangSwitcher } from "@/shared/ui";
 import { useT } from "@/shared/i18n";
 import { cn } from "@/shared/lib";
 import { Menu, User, X } from "lucide-react";
+import { UserAvatar, useMyProfile } from "@/entities/user";
 import { JudgeEngineTag } from "./judge-engine-tag";
 import { STUDENT_MENU_ITEMS, STUDENT_NAV_ITEMS } from "../model/student-nav";
 import { LOGOUT_ITEM_KEY, useSignOut } from "../model/use-sign-out";
@@ -30,6 +31,7 @@ export function StudentHeader() {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
   const signOut = useSignOut();
+  const profile = useMyProfile("student").data;
   // Separate from `menuOpen` (the avatar dropdown): this is the narrow-viewport nav drawer that
   // 02-bd/screens/users/_shell.md mục 6 Q5 specifies — below the breakpoint the nav items collapse
   // behind one button while the brand and the user block stay put.
@@ -121,11 +123,21 @@ export function StudentHeader() {
               onClick={() => setMenuOpen((open) => !open)}
               aria-expanded={menuOpen}
               aria-label={t("accountMenu")}
-              className="flex h-8 w-8 items-center justify-center rounded-full border border-[var(--color-border)] bg-[var(--color-surface-hover)] text-[11.5px] font-semibold text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
+              className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full border border-[var(--color-border)] bg-[var(--color-surface-hover)] text-[11.5px] font-semibold text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
             >
-              {/* Real initials wait on app/providers/auth-provider.tsx — a generic glyph rather
-                  than inventing a specific person's name, same call as AdminToolbar. */}
-              <User aria-hidden="true" className="h-4 w-4" />
+              {/* The signed-in learner's picture or initials once the profile has loaded; a generic
+                  glyph until then, rather than inventing a person's name. */}
+              {profile ? (
+                <UserAvatar
+                  userId={profile.userId}
+                  name={profile.displayName}
+                  avatarVersion={profile.avatarVersion}
+                  size="sm"
+                  className="border-0"
+                />
+              ) : (
+                <User aria-hidden="true" className="h-4 w-4" />
+              )}
             </button>
 
             {menuOpen && (

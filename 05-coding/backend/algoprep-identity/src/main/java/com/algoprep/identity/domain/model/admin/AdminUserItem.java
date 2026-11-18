@@ -14,6 +14,7 @@ import java.util.UUID;
  *     identity.user_problem_best_score}; 0 for an account with no row
  * @param totalSubmissions {@code identity.user_submission_stats.total_submissions}; 0 for an
  *     account with no row
+ * @param avatarVersion epoch milliseconds of {@code user_avatars.updated_at}, null without avatar
  */
 public record AdminUserItem(
     UUID id,
@@ -27,4 +28,5 @@ public record AdminUserItem(
     boolean hasPassword,
     boolean anonymized,
     long solvedCount,
-    long totalSubmissions) {}
+    long totalSubmissions,
+    Long avatarVersion) {}

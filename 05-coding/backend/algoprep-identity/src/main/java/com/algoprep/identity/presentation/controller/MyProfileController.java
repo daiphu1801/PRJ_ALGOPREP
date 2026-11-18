@@ -52,7 +52,8 @@ class MyProfileController {
       List<String> linkedProviders,
       String joinedAt,
       String roleName,
-      boolean mustChangePassword) {
+      boolean mustChangePassword,
+      Long avatarVersion) {
 
     static ProfileResponse of(MyProfile p) {
       return new ProfileResponse(
@@ -69,7 +70,8 @@ class MyProfileController {
           p.linkedProviders(),
           p.joinedAt().toString(),
           p.roleName(),
-          p.mustChangePassword());
+          p.mustChangePassword(),
+          p.avatarVersion());
     }
   }
 

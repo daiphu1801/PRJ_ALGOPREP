@@ -17,7 +17,10 @@ import {
   fakeDeleteMyAccount,
   fakeExportInterviewTranscripts,
   fakeExportMyData,
+  fakeRemoveMyAvatar,
+  fakeRemoveUserAvatar,
   fakeRequestEmailChange,
+  fakeUploadMyAvatar,
   fakeUpdateInterviewPreferences,
   fakeUpdateMyProfile,
   fakeUpdateMySettings,
@@ -32,6 +35,11 @@ import {
   type ExportedFile,
   realExportMyData,
 } from "./real-export";
+import {
+  realRemoveMyAvatar,
+  realRemoveUserAvatar,
+  realUploadMyAvatar,
+} from "./real-avatar";
 import { realChangeMyPassword } from "./real-password";
 import { realUpdateMyProfile } from "./real-profile";
 import {
@@ -102,3 +110,21 @@ export const deleteMyAccount = (emailConfirmation: string) =>
     () => fakeDeleteMyAccount(emailConfirmation),
     () => realDeleteMyAccount(emailConfirmation),
   );
+
+/** F1 #74: the downscaled picture (blob plus the file name that matches its type). */
+export const uploadMyAvatar = (
+  blob: Blob,
+  filename = "avatar.webp",
+): Promise<{ avatarVersion: number }> =>
+  withMockData(
+    () => fakeUploadMyAvatar(blob),
+    () => realUploadMyAvatar(blob, filename),
+  );
+
+/** F1 #75. */
+export const removeMyAvatar = (): Promise<void> =>
+  withMockData(fakeRemoveMyAvatar, realRemoveMyAvatar);
+
+/** F1 #77, admin only. */
+export const removeUserAvatar = (userId: string): Promise<void> =>
+  withMockData(fakeRemoveUserAvatar, () => realRemoveUserAvatar(userId));

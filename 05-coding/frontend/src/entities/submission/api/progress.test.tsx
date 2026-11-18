@@ -140,7 +140,10 @@ describe("PENDING queue polling (SR-AC-11, PD-AC-14)", () => {
     await act(async () => {});
     expect(callbacks.progress).toHaveBeenLastCalledWith(pending);
     expect(get).toHaveBeenCalledTimes(1);
-    const next = { ...pending, queue: { ahead: 3, estimatedWaitSeconds: null } };
+    const next = {
+      ...pending,
+      queue: { ahead: 3, estimatedWaitSeconds: null },
+    };
     get.mockResolvedValue(next);
     await act(async () => {
       await vi.advanceTimersByTimeAsync(5000);

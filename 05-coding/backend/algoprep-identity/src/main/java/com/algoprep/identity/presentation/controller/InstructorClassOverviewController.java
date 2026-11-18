@@ -84,7 +84,8 @@ class InstructorClassOverviewController {
       String status,
       int streakDays,
       List<Double> trendPoints,
-      String lastSubmittedAt) {}
+      String lastSubmittedAt,
+      Long avatarVersion) {}
 
   record PageMeta(int page, int pageSize, long totalCount, int totalPages) {}
 
@@ -173,6 +174,7 @@ class InstructorClassOverviewController {
         r.status().name(),
         m.streakDays(),
         ClassProgressRules.weeklyScores(List.of(r)),
-        m.lastSubmittedAt() == null ? null : m.lastSubmittedAt().toString());
+        m.lastSubmittedAt() == null ? null : m.lastSubmittedAt().toString(),
+        r.student().avatarVersion());
   }
 }

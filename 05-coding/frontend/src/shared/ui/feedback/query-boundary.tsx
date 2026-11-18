@@ -22,7 +22,11 @@ type QueryBoundaryProps<T> = {
 };
 
 /** Error block with retry, for views that render their own loading state but must not hide a failure. */
-export function QueryError({ query }: { query: Pick<QueryLike<unknown>, "refetch"> }) {
+export function QueryError({
+  query,
+}: {
+  query: Pick<QueryLike<unknown>, "refetch">;
+}) {
   const t = useT("common");
   return (
     <ErrorState>

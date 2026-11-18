@@ -27,6 +27,7 @@ export function useInstructorSubmissionPage(params: {
           submissionId: string;
           studentId: string;
           studentName: string;
+          avatarVersion?: number | null;
           classId: string;
           className: string;
           problemTitle: string;
@@ -45,6 +46,7 @@ export function useInstructorSubmissionPage(params: {
           submissionId: item.submissionId,
           studentId: item.studentId,
           studentName: item.studentName,
+          studentAvatarVersion: item.avatarVersion ?? null,
           classId: item.classId,
           className: item.className,
           leftClass: item.leftClass,

@@ -237,24 +237,34 @@ function InterviewScreen({ session }: { session: InterviewSession }) {
 
               {session.entryType === "bank" ? (
                 <QueryBoundary query={bankQuery}>
-                  {(questions) =>
+                  {({ items: questions, total }) =>
                     questions.length === 0 ? (
                       <p className="text-[13px] text-[var(--color-text-muted)]">
                         {t("emptyBank")}
                       </p>
                     ) : (
-                      <ul className="flex flex-col gap-2">
-                        {questions.map((question) => (
-                          <li key={question.id}>
-                            <PickRow
-                              icon={SourceIcon}
-                              selected={session.questionId === question.id}
-                              onPick={() => session.setQuestionId(question.id)}
-                              title={question.title}
-                            />
-                          </li>
-                        ))}
-                      </ul>
+                      <>
+                        <ul className="flex flex-col gap-2">
+                          {questions.map((question) => (
+                            <li key={question.id}>
+                              <PickRow
+                                icon={SourceIcon}
+                                selected={session.questionId === question.id}
+                                onPick={() =>
+                                  session.setQuestionId(question.id)
+                                }
+                                title={question.title}
+                              />
+                            </li>
+                          ))}
+                        </ul>
+                        <Link
+                          href="/interview-bank"
+                          className="mt-3 inline-block text-[13px] font-semibold text-[var(--color-primary)] hover:underline"
+                        >
+                          {t("viewAllBank", { total })}
+                        </Link>
+                      </>
                     )
                   }
                 </QueryBoundary>
@@ -407,7 +417,8 @@ function InterviewScreen({ session }: { session: InterviewSession }) {
         ? submissionsQuery.data?.find((s) => s.id === session.submissionId)
             ?.problemTitle
         : session.entryType === "bank"
-          ? bankQuery.data?.find((q) => q.id === session.questionId)?.title
+          ? bankQuery.data?.items.find((q) => q.id === session.questionId)
+              ?.title
           : topicList
               .filter((topic) => session.customTopics.includes(topic.key))
               .map((topic) => topic.label)

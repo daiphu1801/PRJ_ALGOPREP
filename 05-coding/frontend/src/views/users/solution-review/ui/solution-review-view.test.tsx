@@ -43,8 +43,12 @@ describe("SolutionReviewView", () => {
 
     expect(await screen.findByText("Chủ đề nên học tiếp")).toBeInTheDocument();
     // "hash map" is also a topic badge in the page header, so read the chips from the list items.
-    const chips = screen.getAllByRole("listitem").map((item) => item.textContent);
-    expect(chips).toEqual(expect.arrayContaining(["hash map", "two pointers", "3Sum"]));
+    const chips = screen
+      .getAllByRole("listitem")
+      .map((item) => item.textContent);
+    expect(chips).toEqual(
+      expect.arrayContaining(["hash map", "two pointers", "3Sum"]),
+    );
     const cta = screen.getByRole("link", { name: "Mở ngân hàng câu hỏi" });
     expect(cta).toHaveAttribute("href", "/interview-bank");
   });
@@ -75,7 +79,9 @@ describe("SolutionReviewView", () => {
     await waitFor(() =>
       expect(screen.queryByText("Thử lại")).not.toBeInTheDocument(),
     );
-    expect(await screen.findByText(/Về Bài đã nộp|backToSubmissions/)).toBeInTheDocument();
+    expect(
+      await screen.findByText(/Về Bài đã nộp|backToSubmissions/),
+    ).toBeInTheDocument();
     expect(screen.queryByText("1. Two Sum")).not.toBeInTheDocument();
   });
 
@@ -83,8 +89,12 @@ describe("SolutionReviewView", () => {
     renderView();
 
     await screen.findByText("1. Two Sum");
-    fireEvent.click(screen.getByRole("button", { name: "Áp dụng vào Workspace" }));
-    fireEvent.click(screen.getByRole("button", { name: "Ghi đè & Mở Workspace" }));
+    fireEvent.click(
+      screen.getByRole("button", { name: "Áp dụng vào Workspace" }),
+    );
+    fireEvent.click(
+      screen.getByRole("button", { name: "Ghi đè & Mở Workspace" }),
+    );
 
     const saved = window.localStorage.getItem(
       "algoprep-draft:1:python:function",

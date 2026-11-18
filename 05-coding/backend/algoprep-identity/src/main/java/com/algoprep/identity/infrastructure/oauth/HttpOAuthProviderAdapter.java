@@ -114,7 +114,8 @@ class HttpOAuthProviderAdapter implements OAuthProviderPort {
         String.valueOf(user.path("id").asLong()),
         email == null ? null : email.toLowerCase(Locale.ROOT),
         verified,
-        name);
+        name,
+        text(user.path("avatar_url")));
   }
 
   private OAuthProfile google(String token) {
@@ -130,7 +131,12 @@ class HttpOAuthProviderAdapter implements OAuthProviderPort {
         user.path("sub").asString(),
         email == null ? null : email.toLowerCase(Locale.ROOT),
         user.path("email_verified").asBoolean(false),
-        user.path("name").isString() ? user.path("name").asString() : null);
+        user.path("name").isString() ? user.path("name").asString() : null,
+        text(user.path("picture")));
+  }
+
+  private static String text(JsonNode node) {
+    return node.isString() && !node.asString().isBlank() ? node.asString() : null;
   }
 
   private JsonNode get(String url, String token) {

@@ -173,9 +173,9 @@ describe("writes (#9, #10)", () => {
 describe("bookmark state (#11)", () => {
   it("sends the wanted state, not a flip, and returns what the server holds", async () => {
     put.mockResolvedValue({ bookmarked: true });
-    expect(
-      await realSetBookmarked({ problemId: "p1", bookmarked: true }),
-    ).toBe(true);
+    expect(await realSetBookmarked({ problemId: "p1", bookmarked: true })).toBe(
+      true,
+    );
     expect(put).toHaveBeenCalledWith(`${BASE}/p1/state`, { bookmarked: true });
   });
 

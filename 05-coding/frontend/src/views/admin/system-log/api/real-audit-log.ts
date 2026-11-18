@@ -93,6 +93,7 @@ export async function realFetchActiveAdmins(): Promise<ActiveAdmin[]> {
     items: {
       actorUserId: string;
       displayName: string;
+      avatarVersion?: number | null;
       roleName: string;
       actionCount: number;
       lastActionAt: string;
@@ -101,6 +102,7 @@ export async function realFetchActiveAdmins(): Promise<ActiveAdmin[]> {
   return items.map((admin) => ({
     id: admin.actorUserId,
     name: admin.displayName,
+    avatarVersion: admin.avatarVersion ?? null,
     meta: `${admin.roleName} · ${admin.actionCount} hành động`,
     lastActionAt: formatRelativeVN(admin.lastActionAt),
   }));

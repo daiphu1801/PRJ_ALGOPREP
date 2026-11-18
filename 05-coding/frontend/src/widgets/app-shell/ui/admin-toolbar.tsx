@@ -13,10 +13,13 @@ import { AreaToolbar } from "./area-toolbar";
  */
 export function AdminToolbar() {
   const t = useT("adminNav");
-  const name = useMyProfile("admin").data?.displayName;
+  const profile = useMyProfile("admin").data;
+  const name = profile?.displayName;
   return (
     <AreaToolbar
       name={name || t("identityNamePlaceholder")}
+      userId={name ? profile?.userId : undefined}
+      avatarVersion={profile?.avatarVersion}
       roleLabel={t("adminIdentityPlaceholder")}
       items={ADMIN_NAV_MISC.map(({ key, href, labelKey, icon }) => ({
         key,

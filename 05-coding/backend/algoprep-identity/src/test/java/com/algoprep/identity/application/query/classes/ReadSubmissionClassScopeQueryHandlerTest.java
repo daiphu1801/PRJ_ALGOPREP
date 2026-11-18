@@ -15,7 +15,7 @@ class ReadSubmissionClassScopeQueryHandlerTest {
   void preservesEmptyClassesAndHistoricalMemberships() {
     var repository = mock(SubmissionClassScopeRepository.class);
     var instructor = UUID.randomUUID();
-    var empty = new SubmissionClassScope(UUID.randomUUID(), "Empty", null, null, null, null);
+    var empty = new SubmissionClassScope(UUID.randomUUID(), "Empty", null, null, null, null, null);
     when(repository.read(instructor)).thenReturn(List.of(empty));
     assertThat(new ReadSubmissionClassScopeQueryHandler(repository).read(instructor))
         .containsExactly(empty);

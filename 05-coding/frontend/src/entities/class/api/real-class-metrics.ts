@@ -78,6 +78,7 @@ type StudentRowDto = {
   className: string;
   studentId: string;
   displayName: string;
+  avatarVersion?: number | null;
   joinedAt: string;
   completionPercent: number;
   avgScore: number | null;
@@ -95,6 +96,7 @@ function toStudent(dto: StudentRowDto): ClassStudent {
   return {
     id: dto.studentId,
     name: dto.displayName,
+    avatarVersion: dto.avatarVersion ?? null,
     classId: dto.classId,
     className: dto.className,
     avgScore: dto.avgScore,
@@ -140,6 +142,7 @@ type ProfileDto = {
   classId: string;
   studentId: string;
   displayName: string;
+  avatarVersion?: number | null;
   email: string | null;
   phone: string | null;
   className: string;
@@ -164,6 +167,7 @@ export async function realGetClassStudent(
     return {
       id: dto.studentId,
       name: dto.displayName,
+      avatarVersion: dto.avatarVersion ?? null,
       classId: dto.classId,
       className: dto.className,
       email: dto.email ?? undefined,

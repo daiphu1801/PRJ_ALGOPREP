@@ -35,7 +35,9 @@ export function InProgressList({
 
   if (shown.length === 0) {
     return (
-      <p className="text-[12.5px] text-[var(--color-text-muted)]">{emptyText}</p>
+      <p className="text-[12.5px] text-[var(--color-text-muted)]">
+        {emptyText}
+      </p>
     );
   }
 

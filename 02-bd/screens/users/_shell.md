@@ -1,5 +1,7 @@
 # BD — Khung điều hướng dùng chung khu Người học (`_shell`)
 
+> **Cập nhật 2026-11-18 (Claude), phiên bản ghi chú V0.5:** áp `DEC-2026-1117-user-avatar-upload` (F1-35). Nút mở menu người dùng ở header nay hiện ảnh đại diện thật của học viên (hoặc chữ viết tắt khi chưa có ảnh hoặc ảnh lỗi); sửa dòng "Menu người dùng" ở mục 2.1. Chưa duyệt hình. Câu hỏi mở còn lại của khung: không có (mục 6 đã đóng cả 5 câu).
+
 > **Cập nhật 2026-10-23 (Claude), phiên bản ghi chú V0.4:** ghi quyết định owner `DEC-2026-1023-student-class-screens` (owner yêu cầu 2026-10-23: giao diện học viên chưa có màn nào cho lớp). Thanh nav chính có **bảy mục**: thêm mục thứ 7 "Lớp của tôi" dẫn tới `my_classes` (`USR0701`, `/classes`), đặt ở **header, không đặt trong menu avatar**; mục sáng với mọi đường dẫn bắt đầu bằng `/classes/` (khớp tiền tố, `widgets/app-shell/ui/student-header.tsx:51-52`), gồm cả chi tiết lớp `my_class_detail` (`USR0702`, `/classes/{classId}`). Sửa mục 1, 2.1, 2.2 (tiêu đề, bảng, ghi chú), 2.3 và 2.5. Ngăn kéo hamburger dưới `lg` dùng chung danh sách `STUDENT_NAV_ITEMS` nên tự có mục thứ 7 (`student-header.tsx:83,177`), không có đoạn riêng liệt kê mục trong file này. Nguồn bản dựng: `widgets/app-shell/model/student-nav.ts:42-43`, nhãn `messages/vi.json:44`. Chưa duyệt hình.
 
 > **Cập nhật 2026-10-20 (Claude), phiên bản ghi chú V0.3:** ghi quyết định owner `DEC-2026-1020-student-workspace-split-and-password-in-settings` [Nguồn: .nexa/control/decision-registry.md:4233-4261]. (1) Mục nav "Workspace" nay dẫn tới trang đầu `/workspace` (màn mới `USR0105`, slug `workspace_home`), **không còn chuyển hướng** vào bài đang làm dở; màn soạn mã `USR0102` chuyển sang `/workspace/{problemId}` và thanh nav vẫn sáng mục Workspace cho mọi đường dẫn bắt đầu bằng `/workspace/` (khớp tiền tố, `widgets/app-shell/ui/student-header.tsx:51-52`). Trang chỉ-đọc `/problems/{problemId}` là màn mới `USR0104` (slug `problem_overview`). Sửa mục 2.2, 2.3, 2.5, mục 6 Q2. (2) Thêm mục 5.1 ghi bộ token nền sáng của khu Người học (`app/globals.css:654-673`). (3) Sửa các dòng trích dẫn mã đã lệch: `globals.css:705-733` (trước ghi `684-712`), `student-header.tsx` và `student-footer.tsx` ở Q3, Q5 và mục 3. Chưa duyệt hình cho bảng token mục 5.1. File này không có bảng lịch sử sửa đổi (xem ghi chú ngay dưới), nên mốc phiên bản ghi ở đây.
@@ -53,7 +55,7 @@ Một hàng ngang, `position: sticky` bám đỉnh trang
 | Thương hiệu | "AlgoPrep" kèm thẻ phụ "GO-JUDGE" |
 | Nav chính | 7 mục chính, xem mục 2.2 |
 | Chuyển theme & ngôn ngữ | Hai nút chuyển nhanh Sáng/Tối và VI/EN đặt trước avatar (chốt 2026-09-22 bởi `DEC-2026-0922-users-and-admin-conflict-resolutions`) |
-| Menu người dùng | Avatar chữ cái + tên + email, mở ra 5 mục, xem mục 2.3 |
+| Menu người dùng | Ảnh đại diện (hoặc chữ viết tắt) + tên + email, mở ra 5 mục, xem mục 2.3. Trước khi hồ sơ tải xong hiện biểu tượng người chung, không bịa tên; chưa có ảnh hoặc ảnh tải lỗi thì hiện chữ viết tắt, không hiện biểu tượng ảnh hỏng (V0.5, F1-35). Nguồn: `avatarVersion` của hồ sơ, hợp đồng ở `03-dd/api/F1_identity.md` mục 0.9.5. Hiện trạng bản dựng (chưa duyệt hình): `05-coding/frontend/src/widgets/app-shell/ui/student-header.tsx:126-142` |
 
 ### 2.2. Bảy mục nav chính
 

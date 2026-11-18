@@ -49,6 +49,8 @@ export type ActiveAdmin = {
   /** The admin's user id (real data); two admins can share a display name. */
   id?: string;
   name: string;
+  /** Picture version (F1 #64); absent or null means no picture. */
+  avatarVersion?: number | null;
   /** Role plus action count, e.g. "Quản trị viên · 28 hành động". */
   meta: string;
   /** Relative time of their last action. */
@@ -77,11 +79,3 @@ export type LogRetention = {
   retentionDays: number;
   expiry: "delete" | "archive";
 };
-
-export function initialsOf(name: string): string {
-  return name
-    .split(" ")
-    .slice(-2)
-    .map((word) => word[0] ?? "")
-    .join("");
-}

@@ -24,7 +24,8 @@ public final class SubmissionReads {
       UUID studentId,
       String studentName,
       Instant joinedAt,
-      Instant leftAt) {}
+      Instant leftAt,
+      Long avatarVersion) {}
 
   public record Window(Membership member, ClassAssignment assignment) {}
 
@@ -134,7 +135,8 @@ public final class SubmissionReads {
       Integer passedCount,
       Integer totalCount,
       Instant submittedAt,
-      boolean leftClass) {}
+      boolean leftClass,
+      Long avatarVersion) {}
 
   public record ClassHistory(
       UUID submissionId,

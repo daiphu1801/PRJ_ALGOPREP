@@ -4,6 +4,7 @@
 import Link from "next/link";
 import { useMyInProgress } from "@/entities/problem";
 import { useTopicProgress } from "@/entities/progress";
+import { UserAvatar, useMyProfile } from "@/entities/user";
 import { pickWeakestTopic, scoreTopics } from "../../model/derive-skill-radar";
 import { useT } from "@/shared/i18n";
 import { Button, Skeleton } from "@/shared/ui";
@@ -26,6 +27,7 @@ import { Button, Skeleton } from "@/shared/ui";
  */
 export function GreetingBlock() {
   const t = useT("dashboard");
+  const profile = useMyProfile("student").data;
   // The greeting's weakest-topic callout is a global statement, not a windowed one, so it reads the
   // widest range rather than following any tab.
   const topicsQuery = useTopicProgress("all");
@@ -42,26 +44,36 @@ export function GreetingBlock() {
 
   return (
     <div className="mb-5 flex flex-wrap items-end justify-between gap-6">
-      <div className="min-w-0">
-        <h2 className="mb-1.5 text-[22px] font-bold tracking-[-0.02em]">
-          {t("greeting.title")}
-        </h2>
-        {topicsQuery.isLoading ? (
-          <Skeleton className="h-5 w-[320px]" />
-        ) : topicsQuery.isError ? null : weakest ? (
-          <p className="text-sm text-[var(--color-text-muted)]">
-            {t("greeting.weakestTopic", {
-              topic: weakest.topicName,
-              rate: weakest.score,
-              count: scored.length,
-            })}
-          </p>
-        ) : (
-          // REQ-08: a brand-new account has no topic data — say so instead of naming a fake weak spot.
-          <p className="text-sm text-[var(--color-text-muted)]">
-            {t("greeting.noData")}
-          </p>
-        )}
+      <div className="flex min-w-0 items-center gap-3.5">
+        {profile ? (
+          <UserAvatar
+            userId={profile.userId}
+            name={profile.displayName}
+            avatarVersion={profile.avatarVersion}
+            size="lg"
+          />
+        ) : null}
+        <div className="min-w-0">
+          <h2 className="mb-1.5 text-[22px] font-bold tracking-[-0.02em]">
+            {t("greeting.title")}
+          </h2>
+          {topicsQuery.isLoading ? (
+            <Skeleton className="h-5 w-[320px]" />
+          ) : topicsQuery.isError ? null : weakest ? (
+            <p className="text-sm text-[var(--color-text-muted)]">
+              {t("greeting.weakestTopic", {
+                topic: weakest.topicName,
+                rate: weakest.score,
+                count: scored.length,
+              })}
+            </p>
+          ) : (
+            // REQ-08: a brand-new account has no topic data — say so instead of naming a fake weak spot.
+            <p className="text-sm text-[var(--color-text-muted)]">
+              {t("greeting.noData")}
+            </p>
+          )}
+        </div>
       </div>
 
       <Button asChild variant="cta" size="sm">

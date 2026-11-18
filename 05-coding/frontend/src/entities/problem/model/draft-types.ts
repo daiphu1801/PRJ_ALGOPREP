@@ -157,7 +157,8 @@ export type ServerState = {
 };
 
 /** Why a generated input was thrown away instead of becoming a draft testcase. */
-export type DroppedReason = "invalidConstraint" | "referenceFailed" | "timeout" | "duplicateInput";
+export type DroppedReason =
+  "invalidConstraint" | "referenceFailed" | "timeout" | "duplicateInput";
 
 /** `GenerateTestcasesWithAi` request (BD SHR0202 EVT-16). Never carries the reference solution. */
 export type GenerateTestcasesInput = {
@@ -171,7 +172,7 @@ export type GenerateTestcasesInput = {
 
 /** `GenerateTestcasesWithAi` response: new unapproved draft rows plus what was discarded. */
 export type GenerateTestcasesResult = {
-  aiGeneration?: {used: number; limit: number};
+  aiGeneration?: { used: number; limit: number };
   problemUpdatedAt?: string;
   testcases: Testcase[];
   dropped: { reason: DroppedReason; count: number }[];

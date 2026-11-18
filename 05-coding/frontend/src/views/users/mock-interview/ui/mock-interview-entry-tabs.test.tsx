@@ -64,7 +64,7 @@ describe("USR0302 entry tabs (real)", () => {
   });
 
   it("shows the empty copy when there is no Accepted submission", async () => {
-    script({ items: [] }, { items: [] });
+    script({ items: [] }, { items: [], meta: { shown: 0, total: 0 } });
     render(withTestProviders(<MockInterviewView />));
     expect(await screen.findByText(m.emptySubmissions)).toBeInTheDocument();
   });
@@ -72,11 +72,18 @@ describe("USR0302 entry tabs (real)", () => {
   it("lists the first bank page under the bank tab", async () => {
     script(
       { items: [] },
-      { items: [{ id: "q-1", title: "Thiết kế LRU Cache" }] },
+      {
+        items: [{ id: "q-1", title: "Thiết kế LRU Cache" }],
+        meta: { shown: 24, total: 24 },
+      },
     );
     render(withTestProviders(<MockInterviewView />));
     fireEvent.click(await screen.findByRole("button", { name: m.tab.bank }));
     expect(await screen.findByText("Thiết kế LRU Cache")).toBeInTheDocument();
+    // The list is a shortlist: the link to the whole bank carries the bank size (DD USR0302 Q-302-1).
+    expect(
+      screen.getByRole("link", { name: "Xem toàn bộ 24 câu hỏi" }),
+    ).toHaveAttribute("href", "/interview-bank");
   });
 
   it("shows the generic retry block when the bank list fails", async () => {

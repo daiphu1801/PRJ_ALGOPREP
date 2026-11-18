@@ -167,7 +167,9 @@ describe("ChangePasswordDialog", () => {
   });
 
   it("never calls the server for a password that is too short", () => {
-    render(withTestProviders(<ChangePasswordDialog hasPassword onClose={onClose} />));
+    render(
+      withTestProviders(<ChangePasswordDialog hasPassword onClose={onClose} />),
+    );
     fill(d.currentPassword, "OldPass123");
     fill(d.newPassword, "a1");
     fill(d.confirmPassword, "a1");

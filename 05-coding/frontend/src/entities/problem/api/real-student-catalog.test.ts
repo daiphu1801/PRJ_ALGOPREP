@@ -362,7 +362,10 @@ describe("realSuggestedProblems (#12)", () => {
 
   it("sends no filter for 'all' and maps the rows, keeping an unknown AC rate null", async () => {
     get.mockResolvedValue({
-      items: [row, { ...row, problemId: "p10", topicName: null, solveState: null }],
+      items: [
+        row,
+        { ...row, problemId: "p10", topicName: null, solveState: null },
+      ],
       topicScores: [],
       rankingAvailable: true,
     });

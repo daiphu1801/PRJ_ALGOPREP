@@ -43,6 +43,7 @@ email/tên hiển thị; ba trường tự khai này có thể gắn với một
 nộp/phiên phỏng vấn — các bảng ở module khác giữ nguyên `user_id` để không vỡ thống kê lớp
 (`01-rd/req/F1_identity.md:262-268`, F1-16). **Sửa 2026-10-22 (đồng bộ DB, phase 1):** sửa số dòng RD trích sai (`200-202`).
 **Sửa 2026-10-22 (đồng bộ DB, phase 2, DEC-2026-1022-identity-schema-sync):** thêm điều kiện `deactivation_source = 'SELF'` và phần xoá `oauth_identities`/trường tự khai.
+**Ảnh đại diện (bổ sung 2026-11-17, `DEC-2026-1117-user-avatar-upload`, sửa vòng 2 cùng ngày):** khi người dùng bấm xoá tài khoản, **cùng giao dịch** đặt `status = 'DEACTIVATED'` cũng xoá dòng `user_avatars` của user, và xoá đối tượng ảnh trong MinIO sau khi commit (mục 1.16, `02-bd/storage/F1_identity.md` mục 4). Job ẩn danh hoá **không** còn việc gì với ảnh. Owner chốt 2026-11-17 (Q-AV-1); khôi phục tài khoản trong 30 ngày ân hạn không lấy lại ảnh.
 **Chênh lệch tài liệu cần sửa ở nơi khác (không sửa ở đây):** `03-dd/logic/F1_identity.md` BR-08 (`:122-131`) bước 1 quét `status = 'DEACTIVATED' AND deactivated_at <= now() - 30 ngày` **không có** `deactivation_source`, nên theo DD hiện hành job vẫn ẩn danh cả tài khoản Admin khoá; bước 2 chưa xoá `oauth_identities`; bước 1 của đường tự xoá (`:117`) chưa đặt `deactivation_source = 'SELF'`. `02-bd/architecture/F1_identity.md:31, 99` chỉ nêu "khoá mềm → ẩn danh hoá" và ân hạn 30 ngày, không phân biệt nguồn khoá.
 
 ### 1.2. `roles`
@@ -183,6 +184,8 @@ không lọc được theo câu truy vấn; nếu sau này cần thống kê "kh
 chứ không sửa ngược bản ghi cũ. Mở khoá **không** có lý do — nên cấu trúc `after_json` của hai hành
 động này không giống nhau, và màn nhật ký phải hiển thị khác nhau `[SoT: Suy luận]`.
 
+**Bổ sung 2026-11-17 (`DEC-2026-1117-user-avatar-upload`, Q-AV-4) — loại `action_type` `USER_AVATAR_REMOVED`:** ghi một dòng mỗi lần quản trị viên gỡ ảnh đại diện của người khác, `actor_user_id` = quản trị viên, `target_type = 'USER'`, `target_id` = `users.id` của người bị gỡ, `before_json = {"hadAvatar": true}`, `after_json` rỗng; **không** lưu khoá đối tượng hay nội dung ảnh. Người dùng tự gỡ hoặc đổi ảnh của chính mình **không** ghi dòng này (nhật ký này là hành động quản trị). Nhóm phân loại hiển thị do `ADM0403` chốt `[SoT: Suy luận]` (đề xuất cùng nhóm với khoá/mở khoá tài khoản).
+
 **Bổ sung 2026-10-11 (H4) — ánh xạ `action_type` ra phần hiển thị:** một enum `AuditAction` trong module
 `identity` mang, cho từng `action_type`, ba thứ: nhóm phân loại hiển thị, tên dịch vụ và khoá i18n của mẫu
 câu. Giao diện dựng câu nội dung từ khoá đó cộng tham số lấy từ `after_json`; **không** thêm cột `category`,
@@ -295,12 +298,28 @@ Không phải cột mới (quy tắc hiển thị hoặc tính ở tầng ứng 
 tiếp ngày, biểu đồ, lưới 12 tháng) dùng một múi giờ hệ thống cố định **UTC+7**; cột thời gian vẫn là
 `TIMESTAMPTZ`, quy đổi chỉ khi cắt ngày. Cùng quy tắc với `judge-orchestration`.
 
+### 1.16. `user_avatars` (F1-35, thêm 2026-11-17, `DEC-2026-1117-user-avatar-upload`)
+
+Một dòng cho mỗi người **có** ảnh đại diện; không có ảnh thì không có dòng. Byte ảnh nằm ở MinIO (`02-bd/storage/F1_identity.md`), bảng chỉ giữ siêu dữ liệu. Tách khỏi `users` để truy vấn danh sách người dùng không kéo theo cột này và để "chưa có ảnh" là vắng dòng, không phải một cột NULL.
+
+| Cột | Kiểu | Ghi chú |
+| :--- | :--- | :--- |
+| `user_id` | UUID PK, FK → `users.id` | Một người một ảnh. Theo quy ước ON DELETE toàn schema (đầu mục 1) dùng **NO ACTION**: `users` không bị xoá cứng |
+| `object_key` | VARCHAR(200) NOT NULL | Khoá đối tượng trong bucket `algoprep-avatars`: `users/<user_id>/<avatar_id>.<ext>` (`02-bd/storage/F1_identity.md` mục 2). Không chứa tên tệp của người dùng |
+| `content_type` | VARCHAR(20) NOT NULL, CHECK trong (`image/png`, `image/jpeg`, `image/webp`) | Phát hiện từ byte đầu tệp, **không** lấy từ tiêu đề gửi lên (`02-bd/security/F1_identity.md` mục 6.1) |
+| `size_bytes` | INTEGER NOT NULL, CHECK từ 1 đến 524288 | Tối đa 512 KB, khớp F1-35 mục 1 |
+| `updated_at` | TIMESTAMPTZ NOT NULL | Đổi ở mỗi lần thêm hoặc thay ảnh. Là gốc của giá trị phiên bản ảnh mà các API có người trả về để trình duyệt làm mới cache (`avatarVersion`, DD chốt biểu diễn) |
+
+Chỉ mục: khoá chính `user_id` là đủ, không có truy vấn nào tìm theo cột khác.
+
+**Phiên bản ảnh đi qua ranh giới module.** Danh sách có người ở module khác (ví dụ bài nộp của học viên ở `judge-orchestration`) không được nối thẳng sang schema `identity`; `avatarVersion` chạy qua cổng đọc mà `identity` đã khai báo cho từng danh sách đó. Cổng nào và DTO nào mang giá trị do DD chốt `[SoT: Suy luận]`.
+
 ## 4. Migration — thứ tự tạo bảng
 
 (Sửa 2026-10-22, phase 2: không có bảng hay khoá ngoại mới; chỉ thêm cột `users.must_change_password`/`deactivation_source`, `user_submission_stats.top_language`/`language_counts`, chỉ mục `refresh_tokens(issued_at)`, nên thứ tự dưới đây giữ nguyên; hai cột `ENUM`/`BOOLEAN` của `users` nằm trong migration tạo `users`.)
 
 `roles` → `functions`/`actions` (seed) → `users` → `permissions` (vì `permissions.updated_by` là khoá ngoại tới `users`; seed ma trận chèn sau bước này) → `user_preferences` → `oauth_identities` →
-`refresh_tokens` → `classes` → `class_invite_codes` → `class_enrollments` → `system_audit_logs` → `system_settings` →
+`refresh_tokens` → `classes` → `class_invite_codes` → `class_enrollments` → `system_audit_logs` → `system_settings` → `user_avatars` (migration `V1.006__user_avatars.sql`, sau `V1.005__session_revocations.sql`) →
 các bảng read model (mục 1.12).
 
 **Tài khoản `ADMIN` đầu tiên (bổ sung 2026-10-23, `DEC-2026-1023-db-actor-review-fixes`, ponytail bậc 6):** màn quản lý người dùng không tạo được `ADMIN` (`01-rd/req/F1_identity.md:72-75`), nên nếu không có đường khác thì triển khai xong không ai vào được khu quản trị. Đường duy nhất là **seed lúc khởi động ứng dụng**, không phải migration SQL: khi bảng `users` **chưa có người dùng nào gán role `ADMIN`**, một bước khởi động (runner của `algoprep-identity`) tạo một tài khoản `ADMIN` từ hai biến môi trường `ALGOPREP_BOOTSTRAP_ADMIN_EMAIL` và `ALGOPREP_BOOTSTRAP_ADMIN_PASSWORD` (tên biến `[SoT: Suy luận]`, DD chốt). Quy tắc: (1) **không đặt mật khẩu trong file migration** để không lộ băm mật khẩu trong kho mã; (2) tài khoản khởi tạo giống luồng Admin tạo (F1-13): `status = PENDING_VERIFICATION`, `must_change_password = true`, chuyển `ACTIVE` ở lần đăng nhập đầu bằng mật khẩu này (mục 1.1); (3) chạy lại khi đã có `ADMIN` thì **không làm gì** (idempotent), nên đổi biến môi trường sau đó không đổi mật khẩu; (4) **không ghi `system_audit_logs`** vì `actor_user_id` NOT NULL và không có người thao tác (cùng lý do job ẩn danh hoá, mục 1.11); (5) thiếu một trong hai biến khi chưa có `ADMIN` thì ứng dụng **dừng khởi động** kèm thông báo rõ, không chạy với hệ thống không có quản trị viên. Không thêm cột hay bảng.

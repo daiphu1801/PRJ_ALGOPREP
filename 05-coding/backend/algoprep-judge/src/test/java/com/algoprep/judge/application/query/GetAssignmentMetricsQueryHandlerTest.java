@@ -54,11 +54,11 @@ class GetAssignmentMetricsQueryHandlerTest {
     when(classes.read(instructor))
         .thenReturn(
             List.of(
-                new Membership(classA, "A", student, "S", start, null),
-                new Membership(classB, "B", student, "S", start, null),
+                new Membership(classA, "A", student, "S", start, null, null),
+                new Membership(classB, "B", student, "S", start, null, null),
                 new Membership(
-                    classA, "A", UUID.randomUUID(), "Former", start, start.plusSeconds(100)),
-                new Membership(classB, "B", null, null, null, null)));
+                    classA, "A", UUID.randomUUID(), "Former", start, start.plusSeconds(100), null),
+                new Membership(classB, "B", null, null, null, null, null)));
     when(repository.problemMetrics(any()))
         .thenReturn(Map.of(problem, new ClassProblemMetric(0, null)));
     assertThat(handler.read(query(Set.of(classA), List.of(period(classA), period(classB)))))
@@ -77,7 +77,7 @@ class GetAssignmentMetricsQueryHandlerTest {
   @Test
   void p6RejectsForeignTabsAndForeignAssignmentsEvenWhenNotSelected() {
     when(classes.read(instructor))
-        .thenReturn(List.of(new Membership(classA, "A", null, null, null, null)));
+        .thenReturn(List.of(new Membership(classA, "A", null, null, null, null, null)));
     assertThatThrownBy(() -> handler.read(query(Set.of(classB), List.of())))
         .isInstanceOf(AssignmentMetricsUnavailableException.class)
         .hasNoCause();

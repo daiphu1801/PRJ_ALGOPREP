@@ -31,7 +31,9 @@ vi.mock("next/navigation", () => ({
 import { instructorLogin, type AuthMode } from "@/entities/auth";
 import { apiMock, resetApiMock } from "@/shared/test/real-api";
 import { AuthForm } from "./auth-form";
+import { AuthLoadingOverlay } from "./auth-loading-overlay";
 import { useAuthFlow } from "../model/use-auth-flow";
+import { authLoading } from "../model/loading-store";
 
 const a = viMessages.auth;
 const apiErrors = viMessages.apiErrors as Record<string, string>;
@@ -62,8 +64,23 @@ function Harness({
   return <AuthForm flow={flow} showOAuth={false} />;
 }
 
+// The views (auth-view, admin-auth-view, instructor-auth-view) mount the overlay next to the form.
+function OverlayHarness() {
+  const flow = useAuthFlow("login");
+  return (
+    <>
+      <AuthForm flow={flow} showOAuth={false} />
+      {flow.loadingStep !== null && (
+        <AuthLoadingOverlay currentStep={flow.loadingStep} />
+      )}
+    </>
+  );
+}
+
 function renderMode(mode: AuthMode, instructor = false) {
-  return render(withTestProviders(<Harness mode={mode} instructor={instructor} />));
+  return render(
+    withTestProviders(<Harness mode={mode} instructor={instructor} />),
+  );
 }
 
 function watch() {
@@ -94,6 +111,7 @@ function submitSignup() {
 }
 
 beforeEach(() => {
+  act(() => authLoading.clear());
   resetApiMock();
   push.mockReset();
   tokenStore.set(null);
@@ -206,6 +224,47 @@ describe("login", () => {
       expect(tokenStore.get()).toBe("jwt-1");
       expect(push).toHaveBeenCalledTimes(1);
     });
+
+    it("keeps the loading overlay up when signing in remounts the screen, until the page is left", async () => {
+      reply({
+        [`${AUTH}/login`]: {
+          accessToken: "jwt-1",
+          user: { baseCategory: "STUDENT", mustChangePassword: false },
+        },
+      });
+      const view = render(withTestProviders(<OverlayHarness key="a" />));
+
+      submitLogin();
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(600);
+      });
+      expect(screen.getByText(a.loadingTitle)).toBeInTheDocument();
+
+      // QueryProvider remounts the subtree when the token changes: the form comes back empty.
+      view.rerender(withTestProviders(<OverlayHarness key="b" />));
+      expect(screen.getByText(a.loadingTitle)).toBeInTheDocument();
+
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(2500);
+      });
+      expect(push).toHaveBeenCalledTimes(1);
+      // Still up after the push, so the form does not flash back before the next screen is ready.
+      expect(screen.getByText(a.loadingTitle)).toBeInTheDocument();
+
+      act(() => authLoading.clearIfLeft("/dashboard"));
+      expect(screen.queryByText(a.loadingTitle)).not.toBeInTheDocument();
+    });
+  });
+
+  it("clears the overlay state when sign-in fails", async () => {
+    reply({ [`${AUTH}/login`]: fail("IDT-401", 401) });
+    render(withTestProviders(<OverlayHarness />));
+
+    submitLogin();
+    await waitFor(() => expect(apiMock.post).toHaveBeenCalled());
+    await waitFor(() =>
+      expect(screen.queryByText(a.loadingTitle)).not.toBeInTheDocument(),
+    );
   });
 });
 
@@ -227,7 +286,10 @@ describe("restore a self-deleted account", () => {
     click(a.deactivatedBannerCancel);
 
     await waitFor(() =>
-      expect(read().at(-1)).toEqual(["success", a.notice.deactivationCancelled]),
+      expect(read().at(-1)).toEqual([
+        "success",
+        a.notice.deactivationCancelled,
+      ]),
     );
     expect(apiMock.post).toHaveBeenLastCalledWith(
       `${AUTH}/deactivation/restore`,
@@ -288,17 +350,20 @@ describe("sign-up", () => {
     invalid(label);
   });
 
-  it.each(["IDT-V11", "IDT-503"])("shows apiErrors.%s as a toast", async (code) => {
-    const read = watch();
-    reply({ [`${AUTH}/register`]: fail(code, 503) });
-    renderMode("signup");
+  it.each(["IDT-V11", "IDT-503"])(
+    "shows apiErrors.%s as a toast",
+    async (code) => {
+      const read = watch();
+      reply({ [`${AUTH}/register`]: fail(code, 503) });
+      renderMode("signup");
 
-    submitSignup();
+      submitSignup();
 
-    await waitFor(() =>
-      expect(read().at(-1)).toEqual(["error", apiErrors[code]]),
-    );
-  });
+      await waitFor(() =>
+        expect(read().at(-1)).toEqual(["error", apiErrors[code]]),
+      );
+    },
+  );
 
   it("sends exactly e-mail, password and name, then moves to the e-mail code step", async () => {
     const read = watch();
@@ -343,25 +408,30 @@ describe("e-mail code step", () => {
       expect(read().at(-1)).toEqual(["error", a.errors.otpInvalid]),
     );
     invalid(a.otpLabel);
-    expect(screen.getByText(a.otpAttemptsLeft.replace("{count}", "4"))).toBeInTheDocument();
+    expect(
+      screen.getByText(a.otpAttemptsLeft.replace("{count}", "4")),
+    ).toBeInTheDocument();
     expect(apiMock.post).toHaveBeenLastCalledWith(`${AUTH}/email/verify`, {
       email: "learner@example.com",
       otp: "123456",
     });
   });
 
-  it.each(["IDT-503", "IDT-V11"])("shows apiErrors.%s when confirming fails", async (code) => {
-    const read = watch();
-    await reachCodeStep();
-    reply({ [`${AUTH}/email/verify`]: fail(code, 503) });
-    type(a.otpLabel, "123456");
+  it.each(["IDT-503", "IDT-V11"])(
+    "shows apiErrors.%s when confirming fails",
+    async (code) => {
+      const read = watch();
+      await reachCodeStep();
+      reply({ [`${AUTH}/email/verify`]: fail(code, 503) });
+      type(a.otpLabel, "123456");
 
-    click(a.verifyEmailSubmit);
+      click(a.verifyEmailSubmit);
 
-    await waitFor(() =>
-      expect(read().at(-1)).toEqual(["error", apiErrors[code]]),
-    );
-  });
+      await waitFor(() =>
+        expect(read().at(-1)).toEqual(["error", apiErrors[code]]),
+      );
+    },
+  );
 
   it("a right code returns to login with the e-mail filled", async () => {
     const read = watch();
@@ -374,7 +444,9 @@ describe("e-mail code step", () => {
     await waitFor(() =>
       expect(read().at(-1)).toEqual(["success", a.notice.emailVerified]),
     );
-    expect(screen.getByLabelText(a.emailLabel)).toHaveValue("learner@example.com");
+    expect(screen.getByLabelText(a.emailLabel)).toHaveValue(
+      "learner@example.com",
+    );
   });
 
   it("resend: success toasts, IDT-V12 and IDT-503 show their apiErrors text", async () => {
@@ -386,9 +458,12 @@ describe("e-mail code step", () => {
     await waitFor(() =>
       expect(read().at(-1)).toEqual(["success", a.notice.codeResent]),
     );
-    expect(apiMock.post).toHaveBeenLastCalledWith(`${AUTH}/email/verify/resend`, {
-      email: "learner@example.com",
-    });
+    expect(apiMock.post).toHaveBeenLastCalledWith(
+      `${AUTH}/email/verify/resend`,
+      {
+        email: "learner@example.com",
+      },
+    );
   });
 
   it.each(["IDT-V12", "IDT-503"])("resend shows apiErrors.%s", async (code) => {
@@ -465,7 +540,9 @@ describe("forgot password", () => {
       expect(read().at(-1)).toEqual(["error", a.errors.otpInvalid]),
     );
     invalid(a.otpLabel);
-    expect(screen.getByText(a.otpAttemptsLeft.replace("{count}", "4"))).toBeInTheDocument();
+    expect(
+      screen.getByText(a.otpAttemptsLeft.replace("{count}", "4")),
+    ).toBeInTheDocument();
   });
 
   it("step 2: IDT-503 shows apiErrors", async () => {

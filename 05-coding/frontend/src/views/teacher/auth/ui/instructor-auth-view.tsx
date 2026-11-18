@@ -80,10 +80,7 @@ function InstructorAuthViewContent() {
         </div>
 
         <AuthAsidePanel
-          badges={[
-            tInstructor("badgeClasses"),
-            tInstructor("badgeProgress"),
-          ]}
+          badges={[tInstructor("badgeClasses"), tInstructor("badgeProgress")]}
           title={tInstructor("asideTitle")}
           description={tInstructor("asideDescription")}
         >

@@ -54,10 +54,7 @@ export function describeChanges(
       };
     })
     .filter(
-      (change) =>
-        change.instruction ||
-        change.model ||
-        change.guards > 0,
+      (change) => change.instruction || change.model || change.guards > 0,
     );
 }
 
@@ -69,9 +66,7 @@ export function pendingByFeature(
   const counts: PendingCounts = { review: 0, interview: 0, testcase: 0 };
   for (const change of describeChanges(saved, draft)) {
     counts[change.feature] =
-      (change.instruction ? 1 : 0) +
-      (change.model ? 1 : 0) +
-      change.guards;
+      (change.instruction ? 1 : 0) + (change.model ? 1 : 0) + change.guards;
   }
   return counts;
 }

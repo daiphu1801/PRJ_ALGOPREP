@@ -890,7 +890,7 @@ BR-JD-13. `ProblemTopicReadPort.getProblemIdsByTopics(topicIds)` trả quan hệ
 
 ### 13.3 Response 200
 
-Dạng phân trang chung. `items[]` (`SubmissionListItemDto`): `submissionId`, `studentId`, `studentName`, `classId`, `className`, `problemId`, `problemTitle`, `language`, `status`, `passedCount`, `totalCount` (cả hai null khi `scoreRatio` rỗng), `submittedAt`, `leftClass` (`INS0206` Sheet 7.1 dòng 457-469). **Không** có `sourceCode`, `compileErrorMessage`, nội dung testcase hay dòng `submission_testcase_results` (`INS0206` Sheet 9 NO 4 dòng 545). Sắp `submitted_at` giảm dần, cố định.
+Dạng phân trang chung. `items[]` (`SubmissionListItemDto`): `submissionId`, `studentId`, `studentName`, `classId`, `className`, `problemId`, `problemTitle`, `language`, `status`, `passedCount`, `totalCount` (cả hai null khi `scoreRatio` rỗng), `submittedAt`, `leftClass` (`INS0206` Sheet 7.1 dòng 457-469), `avatarVersion` (số nguyên hoặc `null`, **thêm 2026-11-17**, DD api F1 mục 0.9.5; lấy cùng nguồn với `studentName` qua `ClassScopeReadPort`; **Triển khai 2026-11-17**). **Không** có `sourceCode`, `compileErrorMessage`, nội dung testcase hay dòng `submission_testcase_results` (`INS0206` Sheet 9 NO 4 dòng 545). Sắp `submitted_at` giảm dần, cố định.
 
 Phân loại `result`: `accepted` = `ACCEPTED`; `failed` = trạng thái cuối khác `ACCEPTED` và khác `SYSTEM_ERROR` (`INS0206` Sheet 9 NO 10 dòng 551); `PENDING`, `COMPILING`, `JUDGING`, `SYSTEM_ERROR` chỉ hiện ở `all`.
 
@@ -944,7 +944,7 @@ BR-JD-10: `ClassScopeReadPort.getInstructorScope`, `ClassAssignmentReadPort.list
 
 ### 14.3 Response 200
 
-Cùng `SubmissionDetailDto` (mục 8.3), **thêm** `studentId`, `studentName`, `classId`, `className`, `leftClass`; **bỏ** `beatsPercent`, `beatsSampleSize` (`USR0201` dòng 548, 539). Giữ `sourceCode` (A2 được đọc mã nguồn, A2-4 dòng 560). Quy tắc testcase ẩn **áp nguyên vẹn** như bài nộp của học viên.
+Cùng `SubmissionDetailDto` (mục 8.3), **thêm** `studentId`, `studentName`, `classId`, `className`, `leftClass`, `avatarVersion` (**thêm 2026-11-17**, mục 13.3; **Triển khai 2026-11-17**); **bỏ** `beatsPercent`, `beatsSampleSize` (`USR0201` dòng 548, 539). Giữ `sourceCode` (A2 được đọc mã nguồn, A2-4 dòng 560). Quy tắc testcase ẩn **áp nguyên vẹn** như bài nộp của học viên.
 
 ### 14.4 Lỗi
 

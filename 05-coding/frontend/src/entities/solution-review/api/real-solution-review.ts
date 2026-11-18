@@ -78,7 +78,8 @@ export function toSolutionReview(wire: ReviewWire): SolutionReviewDetail {
   return {
     submissionId: wire.submissionId,
     problemId: wire.problemId,
-    languageKey: wire.language.toLowerCase() as SolutionReviewDetail["languageKey"],
+    languageKey:
+      wire.language.toLowerCase() as SolutionReviewDetail["languageKey"],
     readabilityScore: wire.readabilityScore,
     createdAt: wire.createdAt,
     schemaVersion: wire.schemaVersion,

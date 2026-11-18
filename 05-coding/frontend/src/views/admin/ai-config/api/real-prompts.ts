@@ -157,7 +157,9 @@ export function toPage(
   };
 }
 
-async function getHistory(feature: AiFeatureKey): Promise<PromptVersionEntry[]> {
+async function getHistory(
+  feature: AiFeatureKey,
+): Promise<PromptVersionEntry[]> {
   return toHistory(
     feature,
     await api.get<HistoryDto>(`${BASE}/${FEATURE_CODE[feature]}/history`),

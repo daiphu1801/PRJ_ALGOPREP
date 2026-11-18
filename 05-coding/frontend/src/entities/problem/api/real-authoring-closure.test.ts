@@ -142,12 +142,10 @@ describe("F2 authoring closure real boundaries", () => {
         },
       ],
     });
-    const fetch = vi
-      .fn()
-      .mockResolvedValue({
-        ok: true,
-        arrayBuffer: async () => new TextEncoder().encode(contents).buffer,
-      });
+    const fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      arrayBuffer: async () => new TextEncoder().encode(contents).buffer,
+    });
     vi.stubGlobal("fetch", fetch);
     const row = await realReadTestcaseContent(P, "case-1");
     expect(http.get).toHaveBeenCalledWith(BASE);

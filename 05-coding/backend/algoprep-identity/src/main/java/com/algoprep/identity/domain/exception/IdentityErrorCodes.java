@@ -129,5 +129,26 @@ public final class IdentityErrorCodes {
   /** Valid JWT but {@code baseCategory} is not ADMIN on an admin-only endpoint (HTTP 403). */
   public static final String ADMIN_ONLY = "IDT-447";
 
+  /** Avatar is not a PNG, JPEG or WebP by its first bytes, SVG included (HTTP 422). */
+  public static final String AVATAR_FORMAT_INVALID = "IDT-V29";
+
+  /** Avatar is larger than 512 KB (HTTP 413). */
+  public static final String AVATAR_TOO_LARGE = "IDT-V30";
+
+  /** Avatar pixel size is over 1024 x 1024 or unreadable from the header (HTTP 422). */
+  public static final String AVATAR_DIMENSIONS_INVALID = "IDT-V31";
+
+  /** Avatar upload is not multipart with exactly one {@code file} part (HTTP 400). */
+  public static final String AVATAR_REQUEST_INVALID = "IDT-V32";
+
+  /** No avatar to show for that user, whatever the reason (HTTP 404). */
+  public static final String AVATAR_NOT_FOUND = "IDT-451";
+
+  /** More than 10 avatar changes or removals in an hour (HTTP 429). */
+  public static final String AVATAR_RATE_LIMITED = "IDT-452";
+
+  /** Object storage could not serve an avatar call (HTTP 503). */
+  public static final String AVATAR_STORAGE_UNAVAILABLE = "IDT-511";
+
   private IdentityErrorCodes() {}
 }

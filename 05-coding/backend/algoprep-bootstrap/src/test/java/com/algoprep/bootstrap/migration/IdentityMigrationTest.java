@@ -62,7 +62,8 @@ class IdentityMigrationTest {
           "user_daily_submission_stats",
           "identity_recent_activity",
           "processed_domain_events",
-          "outbox_events");
+          "outbox_events",
+          "user_avatars");
 
   @Container @ServiceConnection
   static final PostgreSQLContainer POSTGRES =
@@ -77,7 +78,7 @@ class IdentityMigrationTest {
   @Autowired private Flyway flyway;
 
   @Test
-  @DisplayName("creates exactly the 20 identity tables including session revocation tombstones")
+  @DisplayName("creates exactly the 21 identity tables including session revocation and avatars")
   void createsAllTables() {
     List<String> tables =
         jdbc.queryForList(

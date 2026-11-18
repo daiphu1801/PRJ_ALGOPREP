@@ -79,10 +79,7 @@ describe("DeleteAccountDialog", () => {
     confirmDeletion();
 
     await waitFor(() =>
-      expect(read().at(-1)).toEqual([
-        "error",
-        s.errors.confirmPhraseMismatch,
-      ]),
+      expect(read().at(-1)).toEqual(["error", s.errors.confirmPhraseMismatch]),
     );
     expect(push).not.toHaveBeenCalled();
   });

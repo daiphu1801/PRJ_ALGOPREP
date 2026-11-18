@@ -26,6 +26,7 @@ export type AdminUserListParams = {
 type UserDto = {
   id: string;
   displayName: string;
+  avatarVersion?: number | null;
   email: string;
   baseCategory: "STUDENT" | "INSTRUCTOR" | "ADMIN";
   status: "ACTIVE" | "PENDING_VERIFICATION" | "DEACTIVATED";
@@ -68,6 +69,7 @@ export function toAdminUser(dto: UserDto): AdminUser {
   return {
     id: dto.id,
     name: dto.displayName,
+    avatarVersion: dto.avatarVersion ?? null,
     email: dto.email,
     role: ROLE_OF[dto.baseCategory],
     status: STATUS_OF[dto.status],

@@ -84,6 +84,8 @@
 | V1.0 | Câu hỏi mở | Đóng Q11 theo xác nhận của chủ dự án 2026-10-29: Hồ sơ giữ nguyên, không thêm gợi ý. Không đổi bố cục hay hành vi | 2026/10/29 | Claude |
 | V1.1 | Sheet 5 (Khu vực B NO 11, G NO 4, 5), Sheet 6 (B NO 11), Sheet 7 (7.1 NO 16, 17), Sheet 8 (EVT-6, 7), Sheet 9 (NO 15) | Dựng phần nợ F1 trên bản dựng nối API thật (`DD F1_identity` #10 đến #12; **chưa duyệt hình**). (1) Popup email: nút "Gửi lại mã" khoá 60 giây và đếm ngược hiệu lực 10 phút chạy ở client; hết hạn thì khoá nút "Xác nhận"; gửi lại gọi lại `RequestMyEmailChange` cho cùng email, máy chủ giữ cooldown (`IDT-V12`) và hạn mức 3 lần/24 giờ (`IDT-V05`, tính cả gửi lại, `DEC-2026-1025-dd-email-resend-budget`), lỗi hiện qua `apiErrors`. (2) Thêm ô "Số điện thoại" (V0.4 ghi "chưa dựng", nay đã dựng): bỏ khoảng trắng hai đầu, chỉ chữ số, khoảng trắng và `+ - ( )`, tối đa 20, rỗng thì xoá về NULL; sai thì tô ô và toast `IDT-V13`. Bản dựng đặt ô **sau "Vị trí mục tiêu"** (không phải sau "Trường / công ty" như V0.4) để lưới hai cột giữ cặp Email - Trường / công ty. (3) Mã lỗi kiểm nhập liệu của `UpdateMyProfile` (`IDT-V19`, `V20`, `V09`, `V07`, `V08`, `V13`) tô đúng ô và hiện toast từ `apiErrors`; trước đây mọi lỗi lưu hồ sơ chỉ hiện câu chung "Không lưu được hồ sơ". | 2026/11/01 | Claude |
 | V1.2 | Hiện trạng | 2026-11-12 (M5, chưa duyệt hình): ô "Phiên phỏng vấn" (Khu vực E) đọc F5 mục 13 thật (`entities/progress/api/real-interview-summary.ts:23`, qua `useInterviewSummary`); không đổi bố cục | 2026-11-12 | Claude |
+| V1.3 | Sheet 4 (4.2, 4.3), Sheet 5 (Khu vực A NO 1, 4 đến 8), Sheet 6 (Khu vực A), Sheet 7 (7.1 NO 19, 20; 7.2 NO 7; 7.3 NO 8 đến 10), Sheet 8 (EVT-12, EVT-15, EVT-17 đến EVT-19), Sheet 9 (NO 13, 16 đến 18), Câu hỏi mở (Q12), Tham chiếu | Đảo ngược quyết định 2026-10-18 theo owner 2026-11-17 (`DEC-2026-1117-user-avatar-upload`, RD F1-35, USR0502 REQ-07 đến REQ-12): màn Hồ sơ có ảnh đại diện thật. NO 1 đổi thành ảnh (hoặc chữ viết tắt khi chưa có ảnh, ID mới `profile.identityCard.avatar`); NO 4 "Đổi ảnh" dùng lại; thêm NO 5 "Xoá ảnh", NO 6 "Xem trước", NO 7 "Lưu ảnh", NO 8 "Huỷ ảnh đã chọn"; EVT-12 dùng lại cho chọn tệp, thêm EVT-17 xoá ảnh, EVT-18 lưu ảnh, EVT-19 huỷ ảnh đã chọn; ảnh đã chọn chưa lưu tính là thay đổi chưa lưu (EVT-15, Sheet 9 NO 13); thêm bảng `identity.user_avatars` (bảng 7), ba endpoint `UploadMyAvatar`, `RemoveMyAvatar`, `GetUserAvatar`, hai DTO. Owner chốt Q12: có bước xem trước rồi Lưu. Bản dựng chưa có chức năng này; chưa duyệt hình | 2026/11/17 | Claude |
+| V1.4 | Hiện trạng (Sheet 5 Khu vực A NO 1, 4 đến 8; Sheet 8 EVT-12, 15, 17 đến 19) | Dựng FE ảnh đại diện nối API thật (`DD F1_identity` #74 đến #76): `features/edit-my-avatar`, `Avatar`, `UserAvatar`, `getBlob`. Ảnh xem trước tính là thay đổi chưa lưu qua `useUnsavedChangesGuard` đặt ngay trong `AvatarEditor` (khối biểu mẫu hồ sơ vẫn chưa có guard, nợ P3 của DD). Chỉ kiểm bằng Vitest; chưa duyệt hình | 2026/11/17 | Claude |
 
 ---
 
@@ -246,6 +248,7 @@ tập: 3 dòng. Danh sách phương thức đăng nhập đã liên kết: tối
 - ~~`ChangeMyPasswordInput`~~ — đã chuyển sang `USR0503` (V0.9)
 - `MyProgressOverviewDto` — dùng lại của `my_progress` [Nguồn: 02-bd/screens/users/USR0501_my_progress.md:201]
 - `MyInterviewSummaryDto` — dùng lại của `my_progress` [Nguồn: 02-bd/screens/users/USR0501_my_progress.md:206]
+- `UploadMyAvatarInput` — tệp ảnh đã thu nhỏ gửi lên khi đổi ảnh (V1.3, F1-35)
 
 `[Suy luận]` — tên DTO mới do BD này đề xuất, `03-dd/api/F1_identity.md` chốt lại. Hai DTO dùng lại **không
 đặt tên thứ hai**: cùng dữ liệu, cùng phạm vi khoá cứng theo người đăng nhập.
@@ -254,7 +257,7 @@ Ba DTO này **không** dùng lại DTO của màn quản trị `admin_user_manag
 `identity.users`: khác phạm vi (một người so với toàn hệ thống), khác tập trường và khác mô hình phân
 quyền [Nguồn: 02-bd/screens/admin/ADM0201_user_management.md:343].
 
-### 4.3 Bảng dữ liệu liên quan (6)
+### 4.3 Bảng dữ liệu liên quan (7)
 
 | NO | Bảng | Ghi chú |
 | --: | :--- | :--- |
@@ -264,8 +267,9 @@ quyền [Nguồn: 02-bd/screens/admin/ADM0201_user_management.md:343].
 | 4 | `identity.user_problem_best_score` | [Nguồn: 02-bd/database/F1_identity.md:111-112] |
 | 5 | `identity.user_submission_stats` | [Nguồn: 02-bd/database/F1_identity.md:113-114] |
 | 6 | `ai.interview_sessions` | [Nguồn: 02-bd/database/F5_ai-review.md:66-83] |
+| 7 | `identity.user_avatars` | Siêu dữ liệu ảnh đại diện, thêm V1.3 [Nguồn: 02-bd/database/F1_identity.md mục 1.16] |
 
-Ngoài sáu bảng trên, luồng đổi email dùng một khoá Redis có TTL 10 phút chứ không có bảng Postgres
+Ngoài bảy bảng trên, luồng đổi email dùng một khoá Redis có TTL 10 phút chứ không có bảng Postgres
 [Nguồn: 02-bd/database/F1_identity.md:80-83,134]. Khoá Redis không phải bảng dữ liệu nên không đánh số ở đây
 và ở mục 7.2.
 
@@ -340,10 +344,14 @@ i18n, không phải yêu cầu hiển thị song ngữ cùng lúc — cùng kế
 | Khu vực | NO | Tên item | ID item | Bảng DB | Cột DB | Loại UI | Kiểu | Độ dài | Bắt buộc | I/O | Giá trị mặc định | Định dạng | Ghi chú |
 | :--- | --: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :-: | :-: | :--- | :--- | :--- |
 | Khối danh tính | | | | | | | | | | | | | |
-| | 1 | Avatar chữ viết tắt | `profile.identityCard.initials` | `identity.users` | `display_name` | Label | String | 2 | - | O | - | 2 ký tự in hoa | Vòng tròn chữ cái đầu thay ảnh đại diện<br>[Công thức] Ghép ký tự đầu của hai từ cuối trong `display_name`, viết hoa — cùng quy tắc đã dùng ở khu Giảng viên và khu Quản trị [Nguồn: 02-bd/screens/teacher/INS0201_class_management.md:359; 02-bd/screens/admin/ADM0201_user_management.md:343]. **Không làm ảnh đại diện thật** (không cột DB nào) — Q1 đã chốt 2026-10-18 (owner)<br>[EVT liên quan] EVT-1 |
+| | 1 | Ảnh đại diện (hoặc chữ viết tắt) | `profile.identityCard.avatar` | `identity.user_avatars`; `identity.users` | `updated_at`; `display_name` | Label | String | - | - | O | Chữ viết tắt | Ảnh vuông bo tròn, hoặc 2 ký tự in hoa | Hiện ảnh của chính người đăng nhập; chưa có ảnh hoặc ảnh tải lỗi thì hiện chữ viết tắt (F1-35 mục 2)<br>[Nguồn giá trị] Có ảnh khi `MyProfileDto.avatarVersion` khác rỗng (cột `user_avatars.updated_at`, mục 7.1 NO 19); ảnh tải qua `GetUserAvatar` theo `userId` và `avatarVersion` (mục 7.3 NO 10)<br>[Công thức] Chữ viết tắt: ghép ký tự đầu của hai từ cuối trong `display_name`, viết hoa — quy tắc đã dùng ở khu Giảng viên và khu Quản trị<br>[Ghi chú ID] ID cũ `profile.identityCard.initials` thay bằng ID này từ V1.3<br>[EVT liên quan] EVT-1, EVT-4, EVT-12, EVT-17<br>[Hiện trạng bản dựng] Đã dựng 2026-11-17, chưa duyệt hình: `AvatarEditor` trong `identity-card.tsx` vẽ `UserAvatar` (ảnh qua F1 #76, rơi về chữ viết tắt khi chưa có ảnh hoặc tải lỗi), nối API thật (`05-coding/frontend/src/features/edit-my-avatar/ui/avatar-editor.tsx`) |
 | | 2 | Tên hiển thị | `profile.identityCard.displayName` | `identity.users` | `display_name` | Label | String | 100 | - | O | - | - | Tên hiển thị của người đang đăng nhập [Nguồn: 09-layoutBase/Trang cá nhân.dc.html:104]<br>[Nguồn giá trị] Cột `display_name` [Nguồn: 02-bd/database/F1_identity.md:16]<br>[EVT liên quan] EVT-1, EVT-4 |
 | | 3 | Email | `profile.identityCard.email` | `identity.users` | `email` | Label | String | 254 | - | O | - | - | Email đăng nhập hiện hành — **không** phải email mới đang chờ xác thực [Nguồn: 09-layoutBase/Trang cá nhân.dc.html:105]<br>[Nguồn giá trị] Cột `email` [Nguồn: 02-bd/database/F1_identity.md:14]<br>[EVT liên quan] EVT-1, EVT-6 |
-| | 4 | ~~Đổi ảnh~~ | ~~`profile.identityCard.btnChangePhoto`~~ | - | - | - | - | - | - | - | - | - | **ĐÃ BỎ 2026-10-18 (owner, theo đề xuất)**: không có nút "Đổi ảnh", không làm ảnh đại diện thật, không cột `avatar_url`, không thư mục lưu trữ. Giữ số NO để không lệch tham chiếu; ID item không còn dùng. Prototype dựng nút này không gắn hành vi [Nguồn: 09-layoutBase/Trang cá nhân.dc.html:108]; bản dựng không có nút [Nguồn: 05-coding/frontend/src/views/users/profile/ui/identity-card.tsx:33-46]. Tiêu chí ponytail bậc 1, 2 — xem Câu hỏi mở Q1<br>[EVT liên quan] EVT-12 (đã bỏ) |
+| | 4 | Đổi ảnh | `profile.identityCard.btnChangePhoto` | - | - | Button | - | - | - | I | - | Đổi ảnh | Mở hộp chọn tệp ảnh của trình duyệt (gợi ý PNG, JPEG, WebP); chọn xong thì kiểm sơ bộ, thu nhỏ và hiện bản xem trước (NO 6), **chưa gửi gì lên máy chủ**<br>[Nguồn giá trị] Nhãn tĩnh i18n. **Dùng lại từ V1.3** sau khi owner đảo quyết định 2026-10-18 (bản cũ đã bỏ, `DEC-2026-1117-user-avatar-upload`)<br>[EVT liên quan] EVT-12<br>[Hiện trạng bản dựng] Đã dựng 2026-11-17, chưa duyệt hình (`05-coding/frontend/src/features/edit-my-avatar/ui/avatar-editor.tsx`, `model/use-edit-avatar.ts`); kiểm bằng Vitest, chưa chụp Playwright trên bản chạy thật |
+| | 5 | Xoá ảnh | `profile.identityCard.btnRemovePhoto` | - | - | Button | - | - | - | I | - | Xoá ảnh | Xoá ảnh đang dùng, trả mọi nơi về chữ viết tắt; chỉ hiện khi đang có ảnh<br>[Nguồn giá trị] Nhãn tĩnh i18n; điều kiện hiện lấy từ `avatarVersion` khác rỗng<br>[EVT liên quan] EVT-17<br>[Hiện trạng bản dựng] Đã dựng 2026-11-17, chưa duyệt hình (`05-coding/frontend/src/features/edit-my-avatar/ui/avatar-editor.tsx`, `model/use-edit-avatar.ts`); kiểm bằng Vitest, chưa chụp Playwright trên bản chạy thật |
+| | 6 | Xem trước ảnh đã chọn | `profile.identityCard.preview` | - | - | Label | String | - | - | O | Ẩn | Ảnh vuông bo tròn | Bản xem trước của tệp vừa chọn, thay chỗ NO 1 cho tới khi Lưu hoặc Huỷ<br>[Nguồn giá trị] Ảnh đã thu nhỏ trong bộ nhớ của trình duyệt, chưa lưu ở đâu<br>[EVT liên quan] EVT-12, EVT-18, EVT-19<br>[Hiện trạng bản dựng] Đã dựng 2026-11-17, chưa duyệt hình (`05-coding/frontend/src/features/edit-my-avatar/ui/avatar-editor.tsx`, `model/use-edit-avatar.ts`); kiểm bằng Vitest, chưa chụp Playwright trên bản chạy thật |
+| | 7 | Lưu ảnh | `profile.identityCard.btnSavePhoto` | - | - | Button | - | - | - | I | - | Lưu ảnh | Gửi ảnh đang xem trước lên máy chủ; chỉ hiện khi có ảnh đã chọn<br>[Nguồn giá trị] Nhãn tĩnh i18n<br>[EVT liên quan] EVT-18<br>[Hiện trạng bản dựng] Đã dựng 2026-11-17, chưa duyệt hình (`05-coding/frontend/src/features/edit-my-avatar/ui/avatar-editor.tsx`, `model/use-edit-avatar.ts`); kiểm bằng Vitest, chưa chụp Playwright trên bản chạy thật |
+| | 8 | Huỷ ảnh đã chọn | `profile.identityCard.btnCancelPhoto` | - | - | Button | - | - | - | I | - | Huỷ | Bỏ ảnh đã chọn, trả khối danh tính về ảnh hiện tại; chỉ hiện khi có ảnh đã chọn<br>[Nguồn giá trị] Nhãn tĩnh i18n<br>[EVT liên quan] EVT-19<br>[Hiện trạng bản dựng] Đã dựng 2026-11-17, chưa duyệt hình (`05-coding/frontend/src/features/edit-my-avatar/ui/avatar-editor.tsx`, `model/use-edit-avatar.ts`); kiểm bằng Vitest, chưa chụp Playwright trên bản chạy thật |
 
 ### Khu vực B — Biểu mẫu thông tin cá nhân
 
@@ -446,10 +454,14 @@ i18n, không phải yêu cầu hiển thị song ngữ cùng lúc — cùng kế
 | Khu vực | NO | Tên item | Hiển thị | Ghi chú |
 | :--- | --: | :--- | :-: | :--- |
 | Khối danh tính | | | | |
-| | 1 | Avatar chữ viết tắt | Có | [Điều kiện hiển thị] Trong lúc tải hiển thị khung chờ tại chỗ.<br>[Tự động đặt] Tính lại ngay khi "Họ và tên" được lưu thành công, không chờ tải lại màn. |
+| | 1 | Ảnh đại diện (hoặc chữ viết tắt) | Có | [Điều kiện hiển thị] Trong lúc tải hiển thị khung chờ tại chỗ; ảnh tải lỗi hoặc chưa có thì hiện chữ viết tắt, không hiện biểu tượng ảnh hỏng.<br>[Tự động đặt] Đổi ngay sau khi đổi ảnh hoặc xoá ảnh thành công (EVT-12, EVT-17); tính lại chữ viết tắt ngay khi "Họ và tên" được lưu thành công, không chờ tải lại màn. |
 | | 2 | Tên hiển thị | Có | [Điều kiện hiển thị] Trong lúc tải hiển thị khung chờ tại chỗ.<br>[Tự động đặt] Cập nhật theo giá trị vừa lưu ở Khu vực B NO 1; **không** đổi theo giá trị đang nhập dở. |
 | | 3 | Email | Có | [Điều kiện hiển thị] Trong lúc tải hiển thị khung chờ tại chỗ.<br>[Tự động đặt] Chỉ đổi sau khi xác thực mã 6 số thành công (EVT-6), không đổi khi bấm "Lưu thay đổi". |
-| | 4 | ~~Đổi ảnh~~ | Không | **Đã bỏ 2026-10-18 (owner)**: không dựng nút này ở UI thật (Câu hỏi mở Q1). |
+| | 4 | Đổi ảnh | Có | [Điều kiện hiển thị] Luôn hiện khi hồ sơ đã tải xong.<br>[Điều kiện kích hoạt] Bấm được; trong lúc đang gửi ảnh (EVT-18) thì khoá nút.<br>[Tự động đặt] Mở hộp chọn tệp ảnh, không gửi gì cho tới khi người dùng bấm Lưu ảnh (EVT-12, EVT-18). |
+| | 5 | Xoá ảnh | Có | [Điều kiện hiển thị] Chỉ hiện khi đang có ảnh (`avatarVersion` khác rỗng).<br>[Điều kiện kích hoạt] Bấm được; trong lúc đang gửi thì khoá nút.<br>[Tự động đặt] Bấm thì hỏi xác nhận trước khi xoá (EVT-17). |
+| | 6 | Xem trước ảnh đã chọn | Điều kiện | [Điều kiện hiển thị] Chỉ hiện sau khi chọn một tệp hợp lệ; thay chỗ NO 1.<br>[Tự động đặt] Ẩn lại khi Lưu thành công (EVT-18) hoặc Huỷ (EVT-19). |
+| | 7 | Lưu ảnh | Điều kiện | [Điều kiện hiển thị] Chỉ hiện khi đang có ảnh xem trước.<br>[Điều kiện kích hoạt] Bấm được; trong lúc đang gửi thì khoá nút để không gửi hai lần. |
+| | 8 | Huỷ ảnh đã chọn | Điều kiện | [Điều kiện hiển thị] Chỉ hiện khi đang có ảnh xem trước.<br>[Điều kiện kích hoạt] Bấm được; không hỏi xác nhận (ảnh chưa lưu ở đâu). |
 
 ### Khu vực B — Biểu mẫu thông tin cá nhân
 
@@ -563,8 +575,10 @@ i18n, không phải yêu cầu hiển thị song ngữ cùng lúc — cùng kế
 | 16 | ~~`ChangeMyPasswordInput`~~ | ~~`currentPassword`, `newPassword`~~ | - | - | - | - | - | **Đã chuyển sang `USR0503`** (V0.9). |
 | 17 | `MyProgressOverviewDto` | `solvedProblemCount`, `totalSubmissions` | Number | `identity.user_problem_best_score`, `identity.user_submission_stats` | `best_verdict`, `total_submissions` | Luyện tập "Bài đã giải", "Lượt nộp" | Có | [Nguồn] Dùng lại phản hồi của `GetMyProgressOverview` [Nguồn: 02-bd/screens/users/USR0501_my_progress.md:455,457]<br>[Chuyển đổi] Màn này chỉ lấy hai trường, **không** hiển thị mẫu số, chuỗi ngày hay tỉ lệ AC. |
 | 18 | `MyInterviewSummaryDto` | `completedSessionCount` | Number | `ai.interview_sessions` | `stage` | Luyện tập "Phiên phỏng vấn" | Có | [Nguồn] Dùng lại phản hồi của `GetMyInterviewSummary` [Nguồn: 02-bd/screens/users/USR0501_my_progress.md:469]<br>[Chuyển đổi] Không lấy được thì hiển thị `-`. |
+| 19 | `MyProfileDto` | `avatarVersion` | Number | `identity.user_avatars` | `updated_at` | Danh tính "Ảnh đại diện" | Có | [Nguồn] Dấu phiên bản ảnh, đổi mỗi lần đổi hoặc xoá ảnh; **rỗng** khi chưa có ảnh (không có dòng `user_avatars`)<br>[Chuyển đổi] Biểu diễn (mốc thời gian hay số tăng dần) do DD chốt; màn chỉ dùng để phá cache ảnh và để biết có ảnh hay không [Nguồn: 02-bd/database/F1_identity.md mục 1.16]. |
+| 20 | `UploadMyAvatarInput` | tệp ảnh | Blob | `identity.user_avatars` | `object_key`, `content_type`, `size_bytes` | Danh tính "Đổi ảnh" | Không | [Đích] Tham số của `UploadMyAvatar`; ảnh đã thu nhỏ 256 x 256 ở màn. Máy chủ kiểm lại byte đầu tệp, cỡ và điểm ảnh, **không** tin phần mở rộng hay kiểu khai báo [Nguồn: 02-bd/security/F1_identity.md mục 6.1]. |
 
-### 7.2 Truy cập bảng dữ liệu (6)
+### 7.2 Truy cập bảng dữ liệu (7)
 
 | NO | Tên logic | Bảng | Repository | CRUD | Mục đích | Ghi chú |
 | --: | :--- | :--- | :--- | :-: | :--- | :--- |
@@ -574,10 +588,11 @@ i18n, không phải yêu cầu hiển thị song ngữ cùng lúc — cùng kế
 | 4 | Điểm tốt nhất từng bài | `identity.user_problem_best_score` | `UserProblemBestScoreRepository` | R | Đếm số bài đã giải cho khối Luyện tập | `GetMyProgressOverview`: R |
 | 5 | Thống kê nộp bài của người dùng | `identity.user_submission_stats` | `UserSubmissionStatsRepository` | R | Đọc tổng lượt nộp luỹ kế | `GetMyProgressOverview`: R |
 | 6 | Phiên phỏng vấn | `ai.interview_sessions` | `InterviewSessionRepository` | R | Đếm phiên đã kết thúc | `GetMyInterviewSummary`: R |
+| 7 | Ảnh đại diện | `identity.user_avatars` | `UserAvatarRepository` | R, C, U, D | Đọc `updated_at` cho `avatarVersion`; thêm, thay, xoá dòng ảnh của chính người đăng nhập; đọc ảnh của một người bất kỳ để phục vụ `GetUserAvatar` | `GetMyProfile`: R; `UploadMyAvatar`: C, U; `RemoveMyAvatar`: D; `GetUserAvatar`: R. Byte ảnh ở MinIO, không ở bảng này [Nguồn: 02-bd/storage/F1_identity.md] |
 
 `ChangeMyPassword` (kèm việc ghi `identity.refresh_tokens.revoked_at`, Q9) **đã chuyển sang `USR0503`** (V0.9); màn Hồ sơ không còn ghi các bảng này.
 
-Không có thao tác `C` và `D` nào trên màn: màn không tạo và không xoá bản ghi nào. Bảng số 6 thuộc schema
+Thao tác `C` và `D` chỉ có trên `identity.user_avatars` (V1.3: thêm và xoá dòng ảnh); màn không tạo và không xoá bản ghi nào khác. Bảng số 6 thuộc schema
 `ai`, `identity` **không** đọc chéo schema — dữ liệu về qua lời gọi riêng của `ai-review`, cùng nguyên tắc
 đã áp ở `my_progress` [Nguồn: 02-bd/screens/users/USR0501_my_progress.md:487-489].
 
@@ -600,6 +615,9 @@ phải bảng dữ liệu, nên không có dòng riêng ở đây [Nguồn: 02-b
 | 5 | ~~`ChangeMyPassword`~~ | **Đã chuyển sang `USR0503`** (V0.9, 2026-10-20); giữ số để tham chiếu không lệch. Đổi mật khẩu khi đã đăng nhập (F1-19) và ca đặt lần đầu cho tài khoản chỉ OAuth | `identity` |
 | 6 | `GetMyProgressOverview` | Cung cấp số bài đã giải và tổng lượt nộp luỹ kế | `identity` |
 | 7 | `GetMyInterviewSummary` | Cung cấp số phiên phỏng vấn đã kết thúc | `ai-review` |
+| 8 | `UploadMyAvatar` | Nhận ảnh đã thu nhỏ của chính người đăng nhập, kiểm, lưu vào MinIO và đổi dòng ảnh (thêm hoặc thay) | `identity` |
+| 9 | `RemoveMyAvatar` | Xoá ảnh đại diện của chính người đăng nhập | `identity` |
+| 10 | `GetUserAvatar` | Trả byte ảnh của một người theo mã người dùng, cho mọi người dùng đã đăng nhập (owner chốt D2b) | `identity` |
 
 Ghi chú ranh giới:
 
@@ -620,6 +638,7 @@ Ghi chú ranh giới:
 - Endpoint 7 là **đường duy nhất** màn này chạm tới `ai-review`, tách riêng khỏi các endpoint còn lại và
   không nằm trong bất kỳ lời gọi gộp nào — đó là điều kiện kỹ thuật để phân hệ AI hỏng mà màn hồ sơ vẫn
   sửa và lưu được.
+- **Ba endpoint ảnh (V1.3).** `UploadMyAvatar` và `RemoveMyAvatar` mang tiền tố `My`: khoá cứng theo người đăng nhập, không nhận `userId`. `GetUserAvatar` **không** mang tiền tố `My` vì nhận mã người dùng và mọi người dùng đã đăng nhập đều đọc được (`DEC-2026-1117-user-avatar-upload`, D2b); đây là ngoại lệ có chủ đích của quy ước phạm vi khoá cứng, không phải sơ suất. Cả ba chỉ chạm MinIO khi cần ảnh; ba endpoint còn lại của màn không gọi MinIO, nên kho ảnh lỗi không làm hỏng việc tải và lưu hồ sơ (Sheet 9 NO 17).
 
 [Nguồn: 02-bd/database/F1_identity.md:11-24,34-41,68-72,111-114; 02-bd/database/F5_ai-review.md:66-83]
 
@@ -644,11 +663,14 @@ Ghi chú ranh giới:
 | 9 | ~~Nút~~ | ~~Mở popup đổi mật khẩu~~ | - | - | - | - | **Đã chuyển sang `USR0503`** (V0.9, 2026-10-20, `DEC-2026-1020-student-workspace-split-and-password-in-settings` mục 2). Giữ số EVT để EVT-12 tới EVT-16 và Sheet 9 không bị đánh lại. Trang Hồ sơ không còn nút ở khối Bảo mật. |
 | 10 | ~~Nút~~ | ~~Xác nhận đổi mật khẩu~~ | - | - | - | - | **Đã chuyển sang `USR0503`** (V0.9, 2026-10-20, `DEC-2026-1020-student-workspace-split-and-password-in-settings` mục 2). Giữ số EVT để EVT-12 tới EVT-16 và Sheet 9 không bị đánh lại. |
 | 11 | ~~Nút~~ | ~~Huỷ popup mật khẩu~~ | - | - | - | - | **Đã chuyển sang `USR0503`** (V0.9, 2026-10-20, `DEC-2026-1020-student-workspace-split-and-password-in-settings` mục 2). Giữ số EVT để EVT-12 tới EVT-16 và Sheet 9 không bị đánh lại. |
-| 12 | ~~Nút~~ | ~~Đổi ảnh đại diện~~ | - | - | - | - | **ĐÃ BỎ 2026-10-18 (owner)**: nút "Đổi ảnh" không còn trong thiết kế (Câu hỏi mở Q1). Giữ số EVT-12 làm chỗ trống để không đánh lại EVT-13 tới EVT-16 đang được Sheet 9 và các sheet khác tham chiếu. Prototype dựng nút này không gắn hành vi [Nguồn: 09-layoutBase/Trang cá nhân.dc.html:108]. |
+| 12 | Nút | Chọn ảnh đại diện | Bấm "Đổi ảnh" rồi chọn một tệp ảnh trong hộp chọn tệp của trình duyệt. | Không | Không | - | [Các bước]<br>1. Mở hộp chọn tệp (gợi ý PNG, JPEG, WebP).<br>2. Kiểm sơ bộ ở màn theo Sheet 9 NO 16 (định dạng, cỡ); sai thì toast lỗi và dừng, ảnh cũ giữ nguyên.<br>3. Thu nhỏ ảnh về 256 x 256 ngay trong trình duyệt.<br>4. Hiện bản xem trước (Khu vực A NO 6) kèm nút Lưu ảnh và Huỷ; **chưa gửi gì lên máy chủ**.<br>[Khi lỗi] Toast theo Sheet 9 NO 16.<br>[Hiện trạng bản dựng] Đã dựng 2026-11-17, chưa duyệt hình (`05-coding/frontend/src/features/edit-my-avatar/ui/avatar-editor.tsx`, `model/use-edit-avatar.ts`); kiểm bằng Vitest, chưa chụp Playwright trên bản chạy thật. Số EVT-12 được dùng lại cho đúng nghĩa cũ "đổi ảnh" nên không đánh lại các EVT khác. |
 | 13 | Liên kết | Xem tiến độ chi tiết | Bấm "Xem tiến độ chi tiết". | Có | Không | - | [Các bước]<br>1. Chạy kiểm rời màn (EVT-15).<br>2. Điều hướng sang `my_progress`, không truyền tham số.<br>[Khi thành công] Mở `my_progress`. |
 | 14 | Liên kết | Cài đặt tài khoản | Bấm "Cài đặt tài khoản". | Có | Không | - | [Các bước]<br>1. Chạy kiểm rời màn (EVT-15).<br>2. Điều hướng sang `settings`, không truyền tham số.<br>[Khi thành công] Mở `settings` — cũng là đường vào luồng xoá tài khoản F1-16. |
-| 15 | Màn hình | Rời màn khi còn thay đổi chưa lưu | Bấm bất kỳ liên kết rời màn nào: hai liên kết của màn, 6 mục nav và 5 mục menu người dùng của khung, hoặc nút Quay lại của trình duyệt. | Điều kiện | Không | - | [Các bước]<br>1. Kiểm biểu mẫu Khu vực B có thay đổi chưa lưu hay không.<br>2. Không có thì điều hướng thẳng.<br>3. Có thì mở hộp xác nhận "Thay đổi chưa được lưu. Rời khỏi trang?".<br>[Khi xác nhận] Bỏ mọi thay đổi và điều hướng.<br>[Khi huỷ] Ở lại màn, giữ nguyên mọi giá trị đang nhập dở, không tự lưu. Popup xác thực email đang mở **không** kích hoạt kiểm này; nó tự đóng theo EVT-8 (popup đổi mật khẩu không còn ở màn này, V0.9). |
+| 15 | Màn hình | Rời màn khi còn thay đổi chưa lưu | Bấm bất kỳ liên kết rời màn nào: hai liên kết của màn, 6 mục nav và 5 mục menu người dùng của khung, hoặc nút Quay lại của trình duyệt. | Điều kiện | Không | - | [Các bước]<br>1. Kiểm biểu mẫu Khu vực B có thay đổi chưa lưu hay không, **và ảnh đã chọn chưa lưu (Khu vực A NO 6) hay không**.<br>2. Không có thì điều hướng thẳng.<br>3. Có thì mở hộp xác nhận "Thay đổi chưa được lưu. Rời khỏi trang?".<br>[Khi xác nhận] Bỏ mọi thay đổi và điều hướng.<br>[Khi huỷ] Ở lại màn, giữ nguyên mọi giá trị đang nhập dở, không tự lưu. Popup xác thực email đang mở **không** kích hoạt kiểm này; nó tự đóng theo EVT-8 (popup đổi mật khẩu không còn ở màn này, V0.9). |
 | 16 | Nút | Thử lại một khối | Bấm "Thử lại" trong một khối đang ở trạng thái lỗi. | Không | Có | Endpoint của đúng khối đó | [Các bước]<br>1. Chuyển đúng khối đó về trạng thái đang tải.<br>2. Gọi lại đúng endpoint của khối đó, không gọi lại cả màn.<br>[Khi thành công] Khối đó hiển thị dữ liệu, các khối khác không đổi trạng thái.<br>[Khi lỗi] Khối giữ nguyên trạng thái lỗi, nút "Thử lại" vẫn kích hoạt. |
+| 17 | Nút | Xoá ảnh đại diện | Bấm "Xoá ảnh" rồi xác nhận. | Không | Có | `RemoveMyAvatar` | [Các bước]<br>1. Hỏi xác nhận trong hộp thoại.<br>2. Gọi `RemoveMyAvatar`.<br>3. Thành công: `avatarVersion` về rỗng; mọi nơi hiện người này trở lại chữ viết tắt; nút "Xoá ảnh" ẩn.<br>[Khi huỷ] Giữ nguyên ảnh.<br>[Khi lỗi] Toast theo mã lỗi; ảnh giữ nguyên.<br>[Hiện trạng bản dựng] Đã dựng 2026-11-17, chưa duyệt hình (`05-coding/frontend/src/features/edit-my-avatar/ui/avatar-editor.tsx`, `model/use-edit-avatar.ts`); kiểm bằng Vitest, chưa chụp Playwright trên bản chạy thật. |
+| 18 | Nút | Lưu ảnh đại diện | Bấm "Lưu ảnh" khi đang có ảnh xem trước. | Không | Có | `UploadMyAvatar` | [Các bước]<br>1. Gửi ảnh đã thu nhỏ bằng `UploadMyAvatar`.<br>2. Thành công: bỏ xem trước, làm mới `avatarVersion` ở hồ sơ, thanh đầu trang và mọi nơi hiện ảnh người này; toast thành công.<br>[Khi lỗi] Toast theo mã lỗi (Sheet 9 NO 16, 17, 18); giữ nguyên bản xem trước để người dùng thử lại hoặc Huỷ; ảnh cũ chưa bị đổi; kho ảnh lỗi (`503`) không chặn các phần khác của màn.<br>[Hiện trạng bản dựng] Đã dựng 2026-11-17, chưa duyệt hình (`05-coding/frontend/src/features/edit-my-avatar/ui/avatar-editor.tsx`, `model/use-edit-avatar.ts`); kiểm bằng Vitest, chưa chụp Playwright trên bản chạy thật. |
+| 19 | Nút | Huỷ ảnh đã chọn | Bấm "Huỷ" khi đang có ảnh xem trước. | Không | Không | - | [Các bước]<br>1. Bỏ ảnh xem trước.<br>2. Khối danh tính trở về ảnh hiện tại (hoặc chữ viết tắt).<br>[Khi thành công] Không gọi máy chủ, không toast.<br>[Hiện trạng bản dựng] Đã dựng 2026-11-17, chưa duyệt hình (`05-coding/frontend/src/features/edit-my-avatar/ui/avatar-editor.tsx`, `model/use-edit-avatar.ts`); kiểm bằng Vitest, chưa chụp Playwright trên bản chạy thật. |
 
 [Nguồn: 09-layoutBase/Trang cá nhân.dc.html:108,125,170,174,223-230;
 01-rd/screens/users/USR0502_profile.md:66,78,99; 02-bd/screens/users/_shell.md:56-63]
@@ -675,9 +697,12 @@ Ghi chú ranh giới:
 | 10 | ~~Kiểm~~ | ~~Tài khoản chưa từng có mật khẩu~~ | **Đã chuyển sang `USR0503`** (V0.9, 2026-10-20): kiểm này thuộc luồng đổi mật khẩu, không còn ở màn Hồ sơ. Giữ số NO. | - | - | - | - | - |
 | 11 | ~~Kiểm~~ | ~~Đổi mật khẩu và các phiên đăng nhập khác~~ | **Đã chuyển sang `USR0503`** (V0.9, 2026-10-20): kiểm này thuộc luồng đổi mật khẩu, không còn ở màn Hồ sơ. Giữ số NO. | - | - | - | - | - |
 | 12 | Kiểm nghiệp vụ | Suy giảm êm khi phân hệ AI hỏng | [Nội dung kiểm] `GetMyInterviewSummary` lỗi hoặc quá hạn chờ thì **không** được chặn khởi tạo màn, không được chặn việc sửa và lưu hồ sơ.<br>[Nơi thực thi] Màn hình.<br>[Tiêu điểm] Chỉ số "Phiên phỏng vấn". | Cảnh báo | Chưa có mã thông báo | Hiển thị `-` tại chỗ, **không** sinh thông báo lỗi nào — suy giảm êm là điều kiện hiển thị chứ không phải thông báo lỗi. Khác `my_progress` ở chỗ màn đó có nguyên một khối phỏng vấn nên cần một câu thay thế [Nguồn: 02-bd/screens/users/USR0501_my_progress.md:356]; ở đây chỉ có một con số. | EVT-1 | 1 |
-| 13 | Kiểm nghiệp vụ | Thay đổi chưa lưu khi rời màn | [Nội dung kiểm] Còn thay đổi chưa lưu ở biểu mẫu hồ sơ thì phải hỏi xác nhận trước khi điều hướng đi, kể cả khi điều hướng phát sinh từ khung.<br>[Nơi thực thi] Màn hình.<br>[Tiêu điểm] Biểu mẫu "Thông tin cá nhân". | Cảnh báo | Chưa có mã thông báo | Nội dung "Thay đổi chưa được lưu. Rời khỏi trang?" Đây là màn duy nhất của cụm ba màn cá nhân có biểu mẫu sửa được, nên là màn duy nhất cần kiểm này. **Không tự lưu hộ** khi người dùng rời đi. | EVT-13, EVT-14, EVT-15 | 1 |
+| 13 | Kiểm nghiệp vụ | Thay đổi chưa lưu khi rời màn | [Nội dung kiểm] Còn thay đổi chưa lưu ở biểu mẫu hồ sơ **hoặc ảnh đã chọn chưa lưu** thì phải hỏi xác nhận trước khi điều hướng đi, kể cả khi điều hướng phát sinh từ khung.<br>[Nơi thực thi] Màn hình.<br>[Tiêu điểm] Biểu mẫu "Thông tin cá nhân". | Cảnh báo | Chưa có mã thông báo | Nội dung "Thay đổi chưa được lưu. Rời khỏi trang?" Đây là màn duy nhất của cụm ba màn cá nhân có biểu mẫu sửa được, nên là màn duy nhất cần kiểm này. **Không tự lưu hộ** khi người dùng rời đi. | EVT-13, EVT-14, EVT-15 | 1 |
 | 14 | Kiểm nghiệp vụ | Lỗi hệ thống hoặc lỗi gọi máy chủ | [Nội dung kiểm] Gọi máy chủ thất bại thì chỉ khối tương ứng chuyển sang trạng thái lỗi; lời gọi ghi thất bại thì **giữ nguyên** mọi giá trị người dùng đang nhập.<br>[Nơi thực thi] Màn hình. | Lỗi | Mã lỗi trong phản hồi | Phản hồi có mã lỗi đã đăng ký thì hiển thị nội dung tương ứng; chưa đăng ký thì hiển thị "Không kết nối được máy chủ." Lỗi lưu (EVT-4, EVT-5, EVT-6) hiện bằng toast; lỗi tải khối (EVT-1, EVT-16) là nội dung thay chỗ khối kèm nút Thử lại. Không bao giờ xoá trắng biểu mẫu sau một lần lưu hỏng. | EVT-1, EVT-4, EVT-5, EVT-6, EVT-16 | 1 |
 | 15 | Kiểm nhập liệu | Số điện thoại hợp lệ | [Nội dung kiểm] Không bắt buộc; sau khi cắt khoảng trắng hai đầu chỉ gồm chữ số, khoảng trắng và `+ - ( )`, tối đa 20 ký tự; rỗng thì xoá về `NULL`.<br>[Nơi thực thi] Màn hình và máy chủ (`IDT-V13`, `422`).<br>[Tiêu điểm] Viền ô "Số điện thoại" + toast. | Lỗi | `IDT-V13` | Nội dung "Số điện thoại chỉ gồm chữ số, khoảng trắng và + - ( ), tối đa 20 ký tự." [Nguồn: 03-dd/validation/F1_identity.md:64] | EVT-2 | 1 |
+| 16 | Kiểm nhập liệu | Tệp ảnh hợp lệ | [Nội dung kiểm] PNG, JPEG hoặc WebP; tối đa 512 KB; nhận biết theo **nội dung tệp**, không theo đuôi tệp hay kiểu khai báo; SVG bị từ chối; kích thước điểm ảnh khai báo tối đa 1024 x 1024 `[Suy luận]`.<br>[Nơi thực thi] Màn hình kiểm sơ bộ (kiểu, cỡ); máy chủ kiểm đầy đủ (byte đầu tệp, điểm ảnh) theo `02-bd/security/F1_identity.md` mục 6.1.<br>[Tiêu điểm] Toast. | Lỗi | Chưa có mã thông báo | Nội dung gợi ý "Chỉ nhận ảnh PNG, JPEG hoặc WebP, tối đa 512 KB." Mã lỗi cụ thể do DD chốt. | EVT-12, EVT-18 | 1 |
+| 17 | Kiểm nghiệp vụ | Kho ảnh lỗi không chặn màn | [Nội dung kiểm] Tải, đọc hoặc xoá ảnh lỗi do kho lưu (MinIO) thì chỉ riêng thao tác ảnh báo lỗi; tải hồ sơ, lưu hồ sơ và mọi chức năng khác vẫn dùng được; nơi hiển thị rơi về chữ viết tắt.<br>[Nơi thực thi] Máy chủ trả `503` riêng cho thao tác ảnh; màn hình xử lý. | Lỗi | Mã lỗi trong phản hồi | Cùng nguyên tắc suy giảm có kiểm soát như NO 12 | EVT-1, EVT-17, EVT-18 | 1 |
+| 18 | Kiểm nghiệp vụ | Giới hạn tần suất đổi ảnh | [Nội dung kiểm] Tối đa 10 lần đổi hoặc xoá ảnh mỗi giờ cho mỗi người `[Suy luận]`; quá thì từ chối, ảnh giữ nguyên.<br>[Nơi thực thi] Máy chủ (`02-bd/security/F1_identity.md` mục 6.4).<br>[Tiêu điểm] Toast. | Lỗi | Mã lỗi trong phản hồi | Số lần và mã lỗi do DD chốt | EVT-17, EVT-18 | 2 |
 
 Cột `Thứ tự` là thứ tự kiểm trong cùng một sự kiện.
 
@@ -700,13 +725,14 @@ Cột `Thứ tự` là thứ tự kiểm trong cùng một sự kiện.
 | Q9 | **[ĐÃ CHỐT 2026-10-18, owner, theo đề xuất] Đổi mật khẩu thu hồi mọi refresh token khác, giữ phiên hiện tại, UI hiển thị đúng một câu thông báo. Tiêu chí ponytail bậc 6, `DEC-2026-1018-usr-open-questions-phase2-5`.** Câu hỏi gốc: **Đổi mật khẩu xong có thu hồi các phiên đăng nhập khác không?** BD bảo mật mô tả rotation và phát hiện tái sử dụng refresh token nhưng không nói gì về ca đổi mật khẩu chủ động [Nguồn: 02-bd/security/F1_identity.md:11-15]. Đề xuất: **thu hồi mọi refresh token khác, giữ lại phiên đang thao tác**, và hiển thị đúng một câu thông báo — đây là hành vi mặc định người dùng mong đợi khi họ đổi mật khẩu vì nghi bị lộ. Không thu hồi thì việc đổi mật khẩu gần như vô nghĩa với kịch bản đó | Đã chốt 2026-10-18 theo `DEC-2026-1018-usr-open-questions-phase2-5`; câu "vì sao chưa trả lời được" cũ: Chưa nguồn nào chốt; ảnh hưởng tới `refresh_tokens` nên thuộc DD `identity` chứ không thuộc màn | DD `identity` — **Từ V0.9 luồng đổi mật khẩu thuộc `USR0503`.** |
 | Q10 | **[ĐÃ CHỐT 2026-10-18, owner, theo đề xuất] Màn hồ sơ chỉ dựng cho A1; A2/A3 có khung và màn riêng ở lát cắt sau. Tiêu chí ponytail bậc 3, `DEC-2026-1018-usr-open-questions-phase2-5`.** Câu hỏi gốc: **Màn hồ sơ có dùng chung cho A2 và A3 không, và nếu có thì vào từ khung nào?** RD nói A2/A3 dùng chung cấu trúc màn, khác biệt xử lý khi viết BD [Nguồn: 01-rd/screens/users/USR0502_profile.md:5]. Nhưng khung Giảng viên và khung Quản trị có cấu trúc điều hướng khác hẳn khung Người học [Nguồn: 02-bd/screens/users/_shell.md:20-24], và khối "Luyện tập" hoàn toàn vô nghĩa với một giảng viên. Đề xuất: đợt này **chỉ làm cho A1**; A2/A3 dùng một biến thể **ẩn khối Luyện tập và lối ra `settings`**, gắn vào khung của khu tương ứng — nhưng đó là một lát cắt riêng, nên chốt trước khi dựng UI | Đã chốt 2026-10-18 theo `DEC-2026-1018-usr-open-questions-phase2-5`; câu "vì sao chưa trả lời được" cũ: Ba khung khác nhau, chưa có màn hồ sơ nào được liệt kê trong bảng mã của khu `INS` hay `ADM` [Nguồn: 02-bd/_rules/bd-template-9sheet.md:150-164] | Chủ dự án |
 | Q11 | **ĐÃ ĐÓNG 2026-10-29 (chủ dự án chốt theo đề xuất: giữ nguyên, không thêm gợi ý trỏ sang Thiết lập; RD không có yêu cầu nguồn, tiêu chí ponytail bậc 1).** **Người dùng OAuth vào trang Hồ sơ có cần một gợi ý trỏ sang Thiết lập để đặt mật khẩu không?** Từ V0.9 dòng "Đăng nhập bằng" chỉ đọc và không có liên kết hay câu chỉ đường nào [Nguồn: 05-coding/frontend/src/views/users/profile/ui/security-card.tsx:14-27]; tài khoản chỉ OAuth (không thẻ "Email và mật khẩu") có thể không biết mật khẩu đặt ở `/settings`. Liên kết "Cài đặt tài khoản" ở cột phải đã có sẵn nhưng không nêu lý do. Đề xuất (chưa quyết): giữ nguyên, vì RD không có yêu cầu nguồn cho gợi ý này (ponytail bậc 1). Một câu hỏi phụ cho DD `identity`: `passwordChangedAt` còn nằm trong `GetMyProfile` hay Thiết lập có endpoint riêng | Quyết định 2026-10-20 chỉ nói Hồ sơ chỉ đọc, không nêu gợi ý trỏ sang Thiết lập | Chủ dự án |
+| Q12 | ~~**Đổi ảnh gửi ngay khi chọn tệp, hay có bước xem trước rồi bấm Lưu?**~~ **ĐÃ CHỐT 2026-11-17 (owner): có bước xem trước rồi bấm Lưu** (khác đề xuất ban đầu của BD là gửi ngay); do đó thêm Khu vực A NO 6 đến 8, EVT-18, EVT-19 và coi ảnh chưa lưu là thay đổi chưa lưu (EVT-15). Ghi nhận thêm: **Q1 (bỏ ảnh đại diện) đã bị đảo ngược 2026-11-17** theo `DEC-2026-1117-user-avatar-upload`. | - | Owner |
 
 ---
 
 ## Tham chiếu
 
 - `01-rd/screens/users/USR0502_profile.md` — RD của màn.
-- `01-rd/req/F1_identity.md` — F1-09, F1-19, F1-15, F1-16, F1-17, F1-20, F1-22.
+- `01-rd/req/F1_identity.md` — F1-09, F1-35, F1-19, F1-15, F1-16, F1-17, F1-20, F1-22.
 - `01-rd/req/user_stories/a1_student.md` — `US-A1-05`.
 - `02-bd/screens/users/_shell.md` — khung điều hướng khu Người học.
 - `02-bd/screens/users/USR0501_my_progress.md` — gốc cụm ba màn cá nhân; nguồn của hai tên nghiệp vụ dùng
@@ -715,8 +741,9 @@ Cột `Thứ tự` là thứ tự kiểm trong cùng một sự kiện.
 - `02-bd/screens/shared/SHR0101_auth.md` — màn đăng nhập/đăng ký; ca tài khoản chỉ OAuth.
 - `02-bd/screens/admin/ADM0201_user_management.md` — màn quản trị trên cùng bảng `users`, khác phạm vi.
 - `02-bd/database/F1_identity.md` mục 1.1, 1.2, 1.5, 1.12, mục 3 · `02-bd/database/F5_ai-review.md` mục 1.4.
-- `02-bd/security/F1_identity.md` — ràng buộc mật khẩu, token, chống dò email.
+- `02-bd/security/F1_identity.md` — ràng buộc mật khẩu, token, chống dò email; mục 6 (ảnh đại diện: kiểm tệp, phân quyền, chống SSRF).
+- `02-bd/storage/F1_identity.md` — bucket `algoprep-avatars`, khoá đối tượng, vòng đời ảnh (V1.3).
 - `09-layoutBase/Trang cá nhân.dc.html` — bằng chứng bố cục chỉ-đọc.
 - `02-bd/_rules/bd-template-9sheet.md` — quy ước mẫu 9 sheet.
-- Quyết định: `DEC-2026-0824-i18n-vi-en`, `DEC-2026-0831-i18n-scope-expansion`,
+- Quyết định: `DEC-2026-1117-user-avatar-upload` (ảnh đại diện, V1.3), `DEC-2026-0824-i18n-vi-en`,
   `DEC-2026-0825-frontend-base-architecture`, `DEC-2026-0903-sot-citation-scope`, `DEC-2026-1020-student-workspace-split-and-password-in-settings`.

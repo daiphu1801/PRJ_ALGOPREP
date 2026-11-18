@@ -13,13 +13,13 @@
 // detail screens. [SoT: Suy luận]
 "use client";
 
+import { UserAvatar } from "@/entities/user";
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, Pencil, Trash2, UserMinus } from "lucide-react";
 import {
   formatClassSchedule,
-  initialsOfClassStudent,
   useClassRoster,
   useCreateInviteCode,
   useDeleteClass,
@@ -167,12 +167,12 @@ export function ClassDetailView({ classId }: { classId: string }) {
           href={`/instructor/classes/${row.classId}/students/${row.id}`}
           className="flex items-center gap-2.5 font-semibold hover:underline"
         >
-          <span
-            aria-hidden="true"
-            className="glass-surface flex h-[28px] w-[28px] shrink-0 items-center justify-center rounded-full border border-[var(--color-border)] text-[11px] font-semibold"
-          >
-            {initialsOfClassStudent(row.name)}
-          </span>
+          <UserAvatar
+            userId={row.id}
+            name={row.name}
+            avatarVersion={row.avatarVersion}
+            size="sm"
+          />
           {row.name}
         </Link>
       ),

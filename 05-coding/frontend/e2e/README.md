@@ -6,12 +6,12 @@ frontend runs in mock mode, so a plain `pnpm e2e` stays green without the stack.
 
 ## Required services
 
-| Service | Default | Override env |
-| :--- | :--- | :--- |
-| Frontend (`pnpm dev`) in REAL mode, same-origin proxy | `http://localhost:3000` | `E2E_BASE_URL` |
-| Backend (Spring Boot, profile `local`) behind that proxy | `http://localhost:8080` | `API_PROXY_TARGET` (frontend process) |
-| Mailpit HTTP API (OTP mails) | `http://localhost:8025/api/v1` | `E2E_MAILPIT_URL` |
-| Postgres container (SQL helper via `docker exec psql`) | `algoprep-postgres`, user/db `algoprep` | `E2E_PG_CONTAINER`, `E2E_PG_USER`, `E2E_PG_DB` |
+| Service                                                  | Default                                 | Override env                                   |
+| :------------------------------------------------------- | :-------------------------------------- | :--------------------------------------------- |
+| Frontend (`pnpm dev`) in REAL mode, same-origin proxy    | `http://localhost:3000`                 | `E2E_BASE_URL`                                 |
+| Backend (Spring Boot, profile `local`) behind that proxy | `http://localhost:8080`                 | `API_PROXY_TARGET` (frontend process)          |
+| Mailpit HTTP API (OTP mails)                             | `http://localhost:8025/api/v1`          | `E2E_MAILPIT_URL`                              |
+| Postgres container (SQL helper via `docker exec psql`)   | `algoprep-postgres`, user/db `algoprep` | `E2E_PG_CONTAINER`, `E2E_PG_USER`, `E2E_PG_DB` |
 
 Start order (PowerShell, never Git Bash for the frontend): `docker compose up -d` in `05-coding`,
 load `05-coding/.env` into the shell, `.\mvnw.cmd -q install -DskipTests` then

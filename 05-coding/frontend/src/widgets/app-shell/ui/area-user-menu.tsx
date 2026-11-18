@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { ChevronDown, type LucideIcon } from "lucide-react";
 import { cn } from "@/shared/lib";
+import { UserAvatar } from "@/entities/user";
 import { LOGOUT_ITEM_KEY, useSignOut } from "../model/use-sign-out";
 
 /**
@@ -22,10 +23,14 @@ export type AreaMenuItem = {
 
 export function AreaUserMenu({
   name,
+  userId,
+  avatarVersion,
   roleLabel,
   items,
 }: {
   name: string;
+  userId?: string;
+  avatarVersion?: number | null;
   roleLabel: string;
   items: AreaMenuItem[];
 }) {
@@ -58,12 +63,21 @@ export function AreaUserMenu({
         onClick={() => setOpen((v) => !v)}
         className="flex items-center gap-2 rounded-full py-0.5 pr-2 text-left hover:bg-[var(--color-surface-hover)]"
       >
-        <span
-          className="flex h-8 w-8 items-center justify-center rounded-full bg-[image:var(--color-cta-bg)] text-xs font-semibold text-[var(--color-cta-fg)]"
-          aria-hidden="true"
-        >
-          {name.charAt(0).toUpperCase() || "A"}
-        </span>
+        {userId && name ? (
+          <UserAvatar
+            userId={userId}
+            name={name}
+            avatarVersion={avatarVersion}
+            size="sm"
+          />
+        ) : (
+          <span
+            className="flex h-8 w-8 items-center justify-center rounded-full bg-[image:var(--color-cta-bg)] text-xs font-semibold text-[var(--color-cta-fg)]"
+            aria-hidden="true"
+          >
+            {name.charAt(0).toUpperCase() || "A"}
+          </span>
+        )}
         <span className="leading-tight">
           <span className="block text-[12.5px] font-bold text-[var(--color-text)]">
             {name}

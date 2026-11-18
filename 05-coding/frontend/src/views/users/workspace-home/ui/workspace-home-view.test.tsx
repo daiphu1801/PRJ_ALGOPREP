@@ -21,9 +21,6 @@ describe("WorkspaceHomeView", () => {
     render(withTestProviders(<WorkspaceHomeView />));
     expect(
       await screen.findByRole("link", { name: /Word Break/ }),
-    ).toHaveAttribute(
-      "href",
-      "/workspace/139",
-    );
+    ).toHaveAttribute("href", "/workspace/139");
   });
 });

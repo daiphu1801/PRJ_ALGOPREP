@@ -20,17 +20,24 @@ async function signOut(page: Page) {
   await expect(page).toHaveURL(/\/login/);
 }
 
-test("register, read the OTP from Mailpit, verify, login, logout", async ({ page, request }) => {
+test("register, read the OTP from Mailpit, verify, login, logout", async ({
+  page,
+  request,
+}) => {
   const email = uniqueEmail("signup");
   await page.goto(`${APP_URL}/register`);
   await page.getByLabel(vi.auth.displayNameLabel).fill("E2E Signup");
   await page.getByLabel(vi.auth.passwordLabel, { exact: true }).fill(PASSWORD);
   await page.getByLabel(vi.auth.emailLabel).fill(email);
   await page.getByLabel(vi.auth.termsLabel).check();
-  await page.getByRole("button", { name: vi.auth.signupSubmit, exact: true }).click();
+  await page
+    .getByRole("button", { name: vi.auth.signupSubmit, exact: true })
+    .click();
 
   // Verify-email step is shown with the target address.
-  await expect(page.getByText(`Mã xác thực đã được gửi tới ${email}.`)).toBeVisible();
+  await expect(
+    page.getByText(`Mã xác thực đã được gửi tới ${email}.`),
+  ).toBeVisible();
   await page.getByLabel(vi.auth.otpLabel).fill(await readOtp(request, email));
   await page.getByRole("button", { name: vi.auth.verifyEmailSubmit }).click();
   await expect(page.getByText(vi.auth.notice.emailVerified)).toBeVisible();
@@ -42,14 +49,18 @@ test("register, read the OTP from Mailpit, verify, login, logout", async ({ page
   await signOut(page);
 });
 
-test("wrong OTP shows the error and the remaining attempts", async ({ page }) => {
+test("wrong OTP shows the error and the remaining attempts", async ({
+  page,
+}) => {
   const email = uniqueEmail("badotp");
   await page.goto(`${APP_URL}/register`);
   await page.getByLabel(vi.auth.displayNameLabel).fill("E2E Bad Otp");
   await page.getByLabel(vi.auth.passwordLabel, { exact: true }).fill(PASSWORD);
   await page.getByLabel(vi.auth.emailLabel).fill(email);
   await page.getByLabel(vi.auth.termsLabel).check();
-  await page.getByRole("button", { name: vi.auth.signupSubmit, exact: true }).click();
+  await page
+    .getByRole("button", { name: vi.auth.signupSubmit, exact: true })
+    .click();
 
   await page.getByLabel(vi.auth.otpLabel).fill("000000");
   await page.getByRole("button", { name: vi.auth.verifyEmailSubmit }).click();
@@ -65,7 +76,9 @@ test("wrong password shows the credentials message, 5 failures lock the login", 
   await page.goto(`${APP_URL}/login`);
   for (let attempt = 1; attempt <= 5; attempt += 1) {
     await submitLogin(page, user.email, "Sai-mat-khau-1");
-    await expect(page.getByText(vi.auth.errors.credentialsInvalid).first()).toBeVisible();
+    await expect(
+      page.getByText(vi.auth.errors.credentialsInvalid).first(),
+    ).toBeVisible();
   }
   // 6th try is refused even with the right password.
   await submitLogin(page, user.email, user.password);
@@ -82,5 +95,7 @@ test("session survives a page reload", async ({ page, request }) => {
   await page.reload();
   // Refresh cookie restores the session: still on the student area, not bounced to /login.
   await expect(page).toHaveURL(/\/dashboard/);
-  await expect(page.getByRole("button", { name: vi.nav.accountMenu })).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: vi.nav.accountMenu }),
+  ).toBeVisible();
 });

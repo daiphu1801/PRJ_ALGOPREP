@@ -53,7 +53,10 @@ export function navigationMock(router: Record<string, unknown> = {}) {
         () => current,
         () => current,
       );
-      return useMemo(() => new URLSearchParams(href.split("?")[1] ?? ""), [href]);
+      return useMemo(
+        () => new URLSearchParams(href.split("?")[1] ?? ""),
+        [href],
+      );
     },
   };
 }

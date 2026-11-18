@@ -92,7 +92,8 @@ class InstructorSubmissionReadController {
       String studentName,
       UUID classId,
       String className,
-      boolean leftClass) {
+      boolean leftClass,
+      Long avatarVersion) {
     static InstructorResponse of(InstructorDetail result) {
       var d = result.detail();
       var m = result.member();
@@ -116,7 +117,8 @@ class InstructorSubmissionReadController {
           m.studentName(),
           m.classId(),
           m.className(),
-          m.leftAt() != null);
+          m.leftAt() != null,
+          m.avatarVersion());
     }
 
     @Override

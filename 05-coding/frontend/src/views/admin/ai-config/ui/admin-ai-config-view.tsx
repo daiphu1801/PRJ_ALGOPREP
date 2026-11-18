@@ -197,7 +197,8 @@ function AdminAiConfigViewInner({
     } catch (error) {
       toast.error(apiMessage(error));
       // Someone else published first: the local copy is stale, reload it (AIR-201).
-      if (error instanceof ApiError && error.code === "AIR-201") void onReload();
+      if (error instanceof ApiError && error.code === "AIR-201")
+        void onReload();
       return false;
     } finally {
       setPublishOpen(false);

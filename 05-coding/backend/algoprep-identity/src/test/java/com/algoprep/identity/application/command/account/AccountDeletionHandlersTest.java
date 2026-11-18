@@ -12,6 +12,7 @@ import static org.mockito.Mockito.when;
 
 import com.algoprep.common.exception.AlgoPrepException;
 import com.algoprep.common.exception.UnauthenticatedException;
+import com.algoprep.identity.application.ports.in.avatar.DiscardAvatarUseCase;
 import com.algoprep.identity.domain.model.account.MyProfile;
 import com.algoprep.identity.domain.model.audit.AuditEntry;
 import com.algoprep.identity.domain.ports.out.AccountLifecycleRepository;
@@ -29,8 +30,9 @@ class AccountDeletionHandlersTest {
   private final MyProfileRepository profiles = mock(MyProfileRepository.class);
   private final AccountLifecycleRepository accounts = mock(AccountLifecycleRepository.class);
   private final AuditLogPort audit = mock(AuditLogPort.class);
+  private final DiscardAvatarUseCase avatar = mock(DiscardAvatarUseCase.class);
   private final DeleteMyAccountCommandHandler delete =
-      new DeleteMyAccountCommandHandler(profiles, accounts, audit);
+      new DeleteMyAccountCommandHandler(profiles, accounts, audit, avatar);
   private final AnonymizeDeletedAccountsCommandHandler anonymize =
       new AnonymizeDeletedAccountsCommandHandler(accounts);
   private final UUID userId = UUID.randomUUID();
@@ -51,7 +53,8 @@ class AccountDeletionHandlersTest {
             List.of(),
             Instant.parse("2026-10-31T00:00:00Z"),
             "Học viên",
-            false);
+            false,
+            null);
     when(profiles.findById(userId)).thenReturn(Optional.of(me));
   }
 
@@ -72,6 +75,7 @@ class AccountDeletionHandlersTest {
     assertThat(entry.getValue().actionType()).isEqualTo("SELF_ACCOUNT_DELETE_REQUESTED");
     assertThat(entry.getValue().beforeJson()).isNull();
     assertThat(entry.getValue().afterJson()).isNull();
+    verify(avatar).discard(userId);
   }
 
   @Test
@@ -83,6 +87,7 @@ class AccountDeletionHandlersTest {
 
     verify(accounts, never()).deactivateSelf(any());
     verify(audit, never()).record(any());
+    verify(avatar, never()).discard(any());
   }
 
   @Test
@@ -111,6 +116,7 @@ class AccountDeletionHandlersTest {
     assertThatThrownBy(() -> delete.delete(userId, "a@example.test"))
         .isInstanceOf(UnauthenticatedException.class);
     verify(audit, never()).record(any());
+    verify(avatar, never()).discard(any());
   }
 
   @Test

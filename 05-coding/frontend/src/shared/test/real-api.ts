@@ -14,6 +14,7 @@ import { vi } from "vitest";
 
 export const apiMock = {
   get: vi.fn(),
+  getBlob: vi.fn(),
   download: vi.fn(),
   downloadPost: vi.fn(),
   post: vi.fn(),
@@ -33,6 +34,7 @@ export function realApiModule(original: Record<string, unknown>) {
 
 export function resetApiMock() {
   apiMock.get.mockReset();
+  apiMock.getBlob.mockReset();
   apiMock.download.mockReset();
   apiMock.downloadPost.mockReset();
   apiMock.post.mockReset();

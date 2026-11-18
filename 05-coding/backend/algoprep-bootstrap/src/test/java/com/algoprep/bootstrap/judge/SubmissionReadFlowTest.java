@@ -505,6 +505,25 @@ class SubmissionReadFlowTest {
   }
 
   @Test
+  void instructorListAndDetailCarryAvatarVersionOfTheStudent() throws Exception {
+    UUID c = classroom(instructor, time.minusSeconds(20), time.plusSeconds(10));
+    assignment(c, time.minusSeconds(10), time.plusSeconds(20));
+    UUID id = submission(student, problem, "ACCEPTED", time.minusSeconds(5));
+    var before = request("/instructor/submissions", instructor, "INSTRUCTOR", 200).path("items");
+    assertThat(before.get(0).has("avatarVersion")).isTrue();
+    assertThat(before.get(0).path("avatarVersion").isNull()).isTrue();
+    jdbc.update(
+        "INSERT INTO identity.user_avatars(user_id, object_key, content_type, size_bytes,"
+            + " updated_at) VALUES (?, 'users/x/a.png', 'image/png', 10, to_timestamp(1700000))",
+        student);
+    var after = request("/instructor/submissions", instructor, "INSTRUCTOR", 200).path("items");
+    assertThat(after.get(0).path("avatarVersion").asLong()).isEqualTo(1_700_000_000L);
+    var detail = request("/instructor/submissions/" + id, instructor, "INSTRUCTOR", 200);
+    assertThat(detail.path("avatarVersion").asLong()).isEqualTo(1_700_000_000L);
+    jdbc.update("DELETE FROM identity.user_avatars WHERE user_id=?", student);
+  }
+
+  @Test
   void instructorWindowsEnforceJoinLeaveAssignmentAndExclusiveRemoval() throws Exception {
     UUID c = classroom(instructor, time.minusSeconds(20), time.plusSeconds(10));
     assignment(c, time.minusSeconds(10), time.plusSeconds(20));

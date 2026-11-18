@@ -137,15 +137,13 @@ test("student loads a real starter, runs samples, submits and opens its persiste
       exact: true,
     })
     .click();
-  await page
-    .locator('input[type="file"]')
-    .setInputFiles({
-      name: "echo.py",
-      mimeType: "text/plain",
-      buffer: Buffer.from(
-        "class Solution:\n    def echo(self, value: int) -> int:\n        return value\n",
-      ),
-    });
+  await page.locator('input[type="file"]').setInputFiles({
+    name: "echo.py",
+    mimeType: "text/plain",
+    buffer: Buffer.from(
+      "class Solution:\n    def echo(self, value: int) -> int:\n        return value\n",
+    ),
+  });
   const run = page.waitForResponse((response) =>
     response.url().includes(`/judge/problems/${problemId}/run-sample`),
   );

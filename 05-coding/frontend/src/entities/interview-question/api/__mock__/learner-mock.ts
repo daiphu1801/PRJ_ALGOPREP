@@ -19,10 +19,14 @@ import {
   type InterviewQuestion,
   type RecallLevel,
 } from "../../model/types";
-import { fetchInterviewQuestionPage, mockCriterionResults } from "./interview-question-mocks";
+import {
+  fetchInterviewQuestionPage,
+  mockCriterionResults,
+} from "./interview-question-mocks";
 
 const MOCK_LATENCY_MS = 150;
-const wait = () => new Promise((resolve) => setTimeout(resolve, MOCK_LATENCY_MS));
+const wait = () =>
+  new Promise((resolve) => setTimeout(resolve, MOCK_LATENCY_MS));
 
 const PAGE_SIZE = 20;
 const DAY_MS = 86_400_000;
@@ -76,13 +80,17 @@ function matches(question: InterviewQuestion, f: LearnerQuestionFilters) {
   if (f.bookmarkedOnly && !item.bookmarked) return false;
   if (f.status === "new" && item.recall !== null) return false;
   if (f.status === "known" && item.recall !== "known") return false;
-  if (f.status === "reviewing" && item.recall !== "vague" && item.recall !== "forgotten")
+  if (
+    f.status === "reviewing" &&
+    item.recall !== "vague" &&
+    item.recall !== "forgotten"
+  )
     return false;
   const needle = f.q.trim().toLowerCase();
   return (
     !needle ||
-    [question.question, question.content, ...question.coreKeywords].some((text) =>
-      text.toLowerCase().includes(needle),
+    [question.question, question.content, ...question.coreKeywords].some(
+      (text) => text.toLowerCase().includes(needle),
     )
   );
 }
@@ -213,8 +221,11 @@ export async function mockListAttempts(
   await wait();
   const question = bank().find((candidate) => candidate.code === id);
   if (!question) throw new ApiError("INB-010", 404);
-  const all = [...attemptsOf(question)].sort((a, b) => b.attemptNo - a.attemptNo);
-  const older = before === undefined ? all : all.filter((a) => a.attemptNo < before);
+  const all = [...attemptsOf(question)].sort(
+    (a, b) => b.attemptNo - a.attemptNo,
+  );
+  const older =
+    before === undefined ? all : all.filter((a) => a.attemptNo < before);
   return {
     items: older.slice(0, ATTEMPTS_PAGE),
     hasMore: older.length > ATTEMPTS_PAGE,

@@ -53,7 +53,7 @@ Quét toàn bộ `02-bd/screens/**` (Sheet 7.3 "Danh sách endpoint") tìm mọi
 
 ### 0.2.1. Phản hồi hồ sơ (#9 `GetMyProfile`)
 
-Response `200`: `{ userId, displayName, email, schoolOrCompany, currentPosition, targetPosition, defaultLanguage, phone, hasPassword, passwordChangedAt, linkedProviders, joinedAt, roleName, mustChangePassword }`. `schoolOrCompany`, `currentPosition`, `targetPosition`, `phone`, `passwordChangedAt` có thể `null`; `linkedProviders` là mảng mã provider, không trả `provider_user_id`, email provider hay hash mật khẩu. `hasPassword` suy từ `password_hash IS NOT NULL`; `defaultLanguage` chỉ đọc ở Hồ sơ, sửa tại Cài đặt #15. `joinedAt` và `passwordChangedAt` ISO-8601 UTC. Chỉ đọc tài khoản từ JWT. `[SoT: BD USR0502 Sheet 7.1, DEC-2026-1022-db-sync-round2]`
+Response `200`: `{ userId, displayName, email, schoolOrCompany, currentPosition, targetPosition, defaultLanguage, phone, hasPassword, passwordChangedAt, linkedProviders, joinedAt, roleName, mustChangePassword }`. `schoolOrCompany`, `currentPosition`, `targetPosition`, `phone`, `passwordChangedAt` có thể `null`; `linkedProviders` là mảng mã provider, không trả `provider_user_id`, email provider hay hash mật khẩu. `hasPassword` suy từ `password_hash IS NOT NULL`; `defaultLanguage` chỉ đọc ở Hồ sơ, sửa tại Cài đặt #15. `joinedAt` và `passwordChangedAt` ISO-8601 UTC. Chỉ đọc tài khoản từ JWT. `[SoT: BD USR0502 Sheet 7.1, DEC-2026-1022-db-sync-round2]` **Thêm 2026-11-17:** phản hồi có thêm `avatarVersion` (số nguyên hoặc `null`, mục 0.9.5).
 
 ### 0.2.2. Đổi email đã đăng nhập (#11–12)
 
@@ -164,6 +164,13 @@ Mọi endpoint lớp của giảng viên kiểm ô `CLASS_MANAGEMENT:READ` cho �
 | `IDT-509` | 503 | Cổng đọc hội thoại phỏng vấn của F5 không trả lời (lỗi hoặc quá 5 giây) trong tệp xuất #17; thân lỗi không có chi tiết nguồn, hạn mức được trả lại để thử lại ngay (**Triển khai 2026-11-11**, F5-9; số mã `IDT-509` do code chọn, chờ owner xác nhận) | #17 |
 | `IDT-510` | 503 | Bảo vệ thử mật khẩu không khả dụng (Redis thiếu/lỗi/counter hỏng); fail closed, không phát phiên mới hoặc commit đổi mật khẩu | #2, #49, #13 (đổi mật khẩu đang có) |
 | `IDT-V28` | 400 | `provider` ở đường dẫn không phải `github` hoặc `google` (**Triển khai 2026-11-05**, `[SoT: Suy luận]`) | #5, #6 |
+| `IDT-V29` | 422 | Ảnh đại diện không phải PNG, JPEG hoặc WebP theo byte đầu tệp, kể cả SVG và tệp đổi đuôi (**Thêm 2026-11-17**, F1-35) | #74 |
+| `IDT-V30` | 413 | Ảnh đại diện lớn hơn 512 KB (524288 byte), cắt khi đọc luồng (**Thêm 2026-11-17**) | #74 |
+| `IDT-V31` | 422 | Kích thước điểm ảnh của ảnh đại diện vượt 1024 x 1024 hoặc không đọc được từ tiêu đề tệp (**Thêm 2026-11-17**, `[SoT: Suy luận]`, trần 1024 chờ xác nhận ở BD security Q-AV-5) | #74 |
+| `IDT-V32` | 400 | Thiếu part `file`, có nhiều hơn một part, hoặc yêu cầu không phải `multipart/form-data` (**Thêm 2026-11-17**) | #74 |
+| `IDT-451` | 404 | Không có ảnh đại diện cho `userId` được hỏi: chưa có ảnh, không tồn tại, sai dạng, `DEACTIVATED` hoặc đã ẩn danh hoá; luôn cùng một phản hồi (**Thêm 2026-11-17**) | #76 |
+| `IDT-452` | 429 | Quá 10 lần đổi hoặc xoá ảnh đại diện trong một giờ của cùng một người (**Thêm 2026-11-17**, `[SoT: Suy luận]`) | #74, #75 |
+| `IDT-511` | 503 | Kho đối tượng MinIO không dùng được khi tải, xoá hoặc đọc ảnh đại diện; thân lỗi không có chi tiết nguồn; không đổi dòng DB (**Thêm 2026-11-17**) | #74, #75, #76, #77 |
 
 ### 0.5. Ma trận phân quyền và vai trò — `ADM0202_permission_matrix.md`
 
@@ -188,6 +195,7 @@ Khi JWT hợp lệ nhưng vai trò không có ô `Function:Action` mà endpoint 
 | 50 | POST | `/api/v1/identity/admin/users` | Admin tạo tài khoản thủ công (F1-13 mở rộng) | `CreateUserAccount` [SoT: `02-bd/screens/admin/ADM0201_user_management.md` Q1] | Xem mục 0.6.1. Đánh số #50 (nối cuối danh sách) để không đổi số các endpoint đã được trích dẫn |
 | 62 | GET | `/api/v1/identity/admin/users/management-stats` | Số tài khoản chờ xác thực email | `GetUserManagementStats` [SoT: BD ADM0201 Sheet 7.3 NO 2] | `USER_MANAGEMENT:READ`; không suy số từ trang #35 |
 | 63 | GET | `/api/v1/identity/admin/users/role-distribution` | Bốn nhóm phân bố vai trò loại trừ nhau | `GetRoleDistribution` [SoT: BD ADM0201 Sheet 7.3 NO 3] | `USER_MANAGEMENT:READ`; không suy số từ trang #35 |
+| 77 | DELETE | `/api/v1/identity/admin/users/{userId}/avatar` | Gỡ ảnh đại diện của một người khác (F1-35) | `RemoveUserAvatar` | Xem mục 0.9.4; `USER_MANAGEMENT:UPDATE` |
 
 **Xác nhận tự ảnh hưởng của ADMIN (#36–37, chốt với chủ dự án 2026-10-27).** #36 nhận `{ targetRoleId: UUID, acknowledgeSelfImpact?: boolean }`; #37 nhận `{ targetStatus: "ACTIVE"|"DEACTIVATED", reason?: string, notifyByEmail?: boolean, acknowledgeSelfImpact?: boolean }` theo DTO `ADM0201` Sheet 7.1. Khi actor là chính `userId` đích và thao tác #36 hạ từ ADMIN sang role không thuộc `ADMIN`, hoặc #37 khoá chính tài khoản (`targetStatus=DEACTIVATED`), client phải gửi `acknowledgeSelfImpact: true` sau cảnh báo xác nhận. Thiếu/`false` trả `400 IDT-V21`, không đổi user, phiên hay audit và không gửi email. Với đích khác hoặc thao tác không tự ảnh hưởng, cờ không bắt buộc. Bất biến còn ít nhất một ADMIN `ACTIVE` được kiểm trước khi chấp nhận tự ảnh hưởng; nếu vi phạm trả `422 IDT-432` dù có cờ xác nhận. Mỗi endpoint là một lệnh cho một `userId`; màn thao tác nhiều người ghép kết quả từng lệnh. [SoT: BD ADM0201 Q6/Sheet 7.1 NO 13, Sheet 9 NO 6–8; quyết định chủ dự án 2026-10-27].
 
@@ -385,6 +393,58 @@ Mọi endpoint yêu cầu JWT `ADMIN` và quyền đọc dashboard theo BD ADM01
 - **Lệch DD, hoãn có chủ ý:** chưa có cache 60 giây mỗi khối (`DEC-2026-1107-f1-backend-clear-order`, owner hoãn; thêm khi nhiều admin cùng mở Tổng quan). Kiểm chứng: 6 test đơn vị `GetAdminSubmissionBlocksQueryHandlerTest`, 3 test `BridgeDeadlineTest`, flow `AdminSubmissionDashboardFlowTest` 6/6 (PostgreSQL và Redis thật, cầu thật: phân quyền 7 endpoint, hình rỗng, cửa sổ ngày UTC+7, nhóm mức và bài rút, top 4 bài đang xuất bản, một nguồn hỏng chỉ làm hỏng khối của nó); chưa mutation. Frontend `ADM0101` đã nối đủ 10 khối (`views/admin/overview/api/real-submissions.ts`).
 
 F1 gọi `JudgeStatsPort`/`ProblemBankStatsPort` theo lô trong phạm vi từng endpoint, không join schema F4/F2 trực tiếp. Mỗi endpoint cache tối đa 60 giây riêng theo ID khối. Nút Thử lại của một khối invalidate đúng query tương ứng; sự cố F4 khi tải #68 không che #42. Không có query string điều khiển kỳ trên màn này; các cửa sổ cố định như BD. [SoT: F1 BR-17; BD ADM0101 Sheet 8]
+
+### 0.9. Ảnh đại diện (F1-35) — `USR0502_profile.md`, `ADM0201_user_management.md` và mọi màn có người
+
+> Thêm 2026-11-17 theo DEC-2026-1117-user-avatar-upload. Đọc cùng `02-bd/storage/F1_identity.md`, `02-bd/database/F1_identity.md` mục 1.16 và `02-bd/security/F1_identity.md` mục 6. Logic ở `03-dd/logic/F1_identity.md` BR-25 đến BR-28, luật kiểm ở `03-dd/validation/F1_identity.md` mục 15.
+
+| # | Method | Path | Mô tả | Nguồn BD (operation name) | Ghi chú |
+| :-: | :--- | :--- | :--- | :--- | :--- |
+| 74 | PUT | `/api/v1/identity/me/avatar` | Tải lên hoặc thay ảnh đại diện của chính mình | `UploadMyAvatar` [SoT: `02-bd/screens/users/USR0502_profile.md` Sheet 7.3 NO 8] | JWT bất kỳ vai trò; `multipart/form-data`, một part `file`. Không có `userId` trong đường dẫn (tiền tố `My`) |
+| 75 | DELETE | `/api/v1/identity/me/avatar` | Xoá ảnh đại diện của chính mình | `RemoveMyAvatar` [SoT: `02-bd/screens/users/USR0502_profile.md` Sheet 7.3 NO 9] | Idempotent: không có ảnh vẫn `204` |
+| 76 | GET | `/api/v1/identity/users/{userId}/avatar` | Trả byte ảnh của một người, cho mọi người dùng đã đăng nhập | `GetUserAvatar` [SoT: `02-bd/screens/users/USR0502_profile.md` Sheet 7.3 NO 10] | Ngoại lệ có chủ đích của quy ước tiền tố `My`: nhận `userId` (owner chốt D2b). Phản hồi nhị phân, không phải JSON |
+| 77 | DELETE | `/api/v1/identity/admin/users/{userId}/avatar` | Quản trị viên gỡ ảnh đại diện của một người khác | `RemoveUserAvatar` [SoT: `02-bd/screens/admin/ADM0201_user_management.md` Sheet 7.3 NO 9] | `ROLE_ADMIN` cộng ô `USER_MANAGEMENT:UPDATE`, như #36 đến #38. Chỉ gỡ, không có đường tải ảnh thay người khác |
+
+#### 0.9.1. `PUT /me/avatar` (#74)
+
+Request: `multipart/form-data` có **đúng một** part tên `file`, chứa ảnh PNG, JPEG hoặc WebP. Giao diện đã thu nhỏ về 256 x 256 trước khi gửi; máy chủ không xử lý ảnh, chỉ kiểm rồi lưu nguyên byte. Response `200`: `{ avatarVersion }` (số nguyên, mục 0.9.5). Idempotent theo nghĩa kết quả cuối: gửi cùng ảnh hai lần cho hai phiên bản khác nhau nhưng cùng nội dung. Luật kiểm và thứ tự kiểm ở `03-dd/validation/F1_identity.md` mục 15; trình tự lưu (MinIO trước, PostgreSQL sau, xoá ảnh cũ cuối) ở BR-25.
+
+Lỗi: `422 IDT-V29` định dạng không hợp lệ (không phải PNG, JPEG, WebP theo byte đầu tệp, kể cả SVG và tệp đổi đuôi); `413 IDT-V30` quá 512 KB; `422 IDT-V31` kích thước điểm ảnh vượt 1024 x 1024 hoặc không đọc được từ tiêu đề; `400 IDT-V32` thiếu part `file`, nhiều hơn một part hoặc không phải `multipart/form-data`; `429 IDT-452` quá 10 lần đổi hoặc xoá ảnh trong một giờ; `503 IDT-511` kho ảnh không dùng được. Mọi lỗi giữ nguyên ảnh cũ và không đổi dòng nào.
+
+#### 0.9.2. `DELETE /me/avatar` (#75)
+
+`204` không thân. Không có ảnh vẫn `204`. Lỗi: `429 IDT-452`; `503 IDT-511`. BR-26.
+
+#### 0.9.3. `GET /users/{userId}/avatar` (#76)
+
+Response `200` là byte ảnh, không phải JSON: `Content-Type` lấy từ `user_avatars.content_type`, `X-Content-Type-Options: nosniff`, `ETag` là `avatar_id` trong khoá đối tượng (dạng chuỗi có dấu nháy), `Cache-Control: private, max-age=86400`. Hỗ trợ `If-None-Match`: trùng thì `304` không thân. Tham số truy vấn `v` (giá trị `avatarVersion`) **không** ảnh hưởng nội dung, chỉ để trình duyệt và bộ nhớ đệm phía giao diện coi mỗi phiên bản là một URL riêng.
+
+Lỗi: `404 IDT-451` khi người đó không có ảnh, không tồn tại, `userId` sai dạng, tài khoản `DEACTIVATED` hoặc đã ẩn danh hoá, **cùng một thân và cùng thời gian xử lý gần đúng** để không dò được mã người dùng (BD security mục 6.3); `503 IDT-511` kho ảnh lỗi. Chưa đăng nhập: `401` theo khung chung. BR-27.
+
+#### 0.9.4. `DELETE /admin/users/{userId}/avatar` (#77)
+
+`204` không thân. Người đó không có ảnh vẫn `204`, **không** ghi nhật ký. Có ảnh thì ghi đúng một dòng `system_audit_logs` loại `USER_AVATAR_REMOVED` (BD database mục 1.11). Lỗi: `404 IDT-450` không có tài khoản hoặc `userId` sai dạng; `403 IDT-445` thiếu `USER_MANAGEMENT:UPDATE`; `503 IDT-511`. Không áp hạn mức #74, #75. BR-26.
+
+**Triển khai 2026-11-17 (BE F1-35, #74 đến #77):** đủ bốn endpoint, `avatarVersion` ở #9, xoá ảnh khi tự xoá tài khoản. Lệch so với DD, đều `[SoT: Suy luận]`: (1) lỗi vượt giới hạn multipart của container (`max-file-size` 600KB) cũng trả `413 IDT-V30` qua `GlobalExceptionHandler`; (2) #75 và #77 khi MinIO lỗi vẫn trả `204` (BR-26 bước 3 xoá đối tượng sau commit, chỉ ghi WARN) nên AC-101 chỉ đúng với #74, #76; (3) `POST /me/account/delete` trả `200`, không phải `204`; (4) giới hạn tần suất dùng INCR rồi EXPIRE hai lệnh (ghi `ponytail:` trong mã). Kiểm: `UserAvatarFlowTest` (19 test), `AvatarImageInspectorTest`, `JdbcUserAvatarPgTest`.
+
+#### 0.9.5. Trường `avatarVersion` ở các DTO có người
+
+`avatarVersion` là **số nguyên**: mốc `user_avatars.updated_at` tính bằng mili giây từ epoch UTC, và `null` khi người đó chưa có ảnh. Mỗi lần thêm hoặc thay ảnh, giá trị mới luôn **lớn hơn** giá trị cũ (nếu hai lần ghi rơi cùng một mili giây thì cộng thêm 1). Giao diện dùng nó để biết có ảnh hay không và để làm mới ảnh trong bộ nhớ đệm (`?v=<avatarVersion>` ở #76).
+
+| Endpoint | DTO | Ghi chú |
+| :--- | :--- | :--- |
+| #9 `GetMyProfile` | gốc phản hồi | Ảnh của chính mình (hồ sơ, thanh đầu trang, lời chào) |
+| #26 `ListClassRoster` | mỗi phần tử `items[]` | Lớp của giảng viên |
+| #28 `GetClassStudentProfile` | gốc phản hồi | |
+| #35 `ListUsers` | mỗi phần tử `items[]` | Quản lý người dùng của admin |
+| #58 `ListClassAttentionStudents` | mỗi phần tử | |
+| #59 `ListInstructorStudents` | mỗi phần tử `items[]` | |
+| #64 `ListActiveAdmins` | mỗi phần tử | Nhật ký hệ thống |
+| #16 `ExportMyData` `scope=profile` | thêm `hasAvatar: boolean` | Chỉ ghi có hay không, không kèm ảnh (RD F1-35 mục 8) |
+
+**Triển khai 2026-11-17 (lát 6):** đã thêm `avatarVersion` vào #26, #28, #35 (qua `AdminUserItem`), #58, #59, #64 và `hasAvatar` vào #16 `scope=profile` (suy từ `avatarVersion` của hồ sơ). Cách lấy: `LEFT JOIN identity.user_avatars` trong các repository JDBC của `identity`. Danh sách bài nộp của giảng viên ở `judge-orchestration` lấy qua `ClassScopeReadPort` đã có (thêm `avatarVersion` vào `Membership` và cầu `SubmissionClassScopeBridge`), không thêm cổng mới `[SoT: Suy luận]`: cổng này vốn đã đọc dữ liệu học viên của lớp từ `identity`, thêm một cột đỡ phải có cổng thứ hai. Kiểm: `UserControllersTest`, `SubmissionReadFlowTest`.
+
+Danh sách có người ở module khác (bài nộp của học viên ở `judge-orchestration`, ngữ cảnh bài nộp của giảng viên) lấy `avatarVersion` qua cổng đọc mà `identity` đã khai báo cho chính danh sách đó, **không** nối thẳng sang schema `identity` (BD database mục 1.16). Việc thêm trường vào DD của F4 là **việc đồng bộ ở tài liệu khác**, ghi ở mục "Việc còn mở" của `03-dd/logic/F1_identity.md` BR-28 và làm trong lát backend số 6 của plan `06-plan/nexa-plan/261117-0023-f1-avatar-nguoi-dung-v2.md`.
 
 ## 1. Yêu cầu/phản hồi tối thiểu (endpoint chưa gắn màn cụ thể, mục 0.1)
 

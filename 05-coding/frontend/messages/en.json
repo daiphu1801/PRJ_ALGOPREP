@@ -251,7 +251,14 @@
     "AIR-V17": "The model name must not be empty and has at most 100 characters.",
     "AIR-V18": "The price is not valid.",
     "AIR-V19": "The day range must be 7, 14 or 30.",
-    "UNKNOWN_ERROR": "Something went wrong. Please try again"
+    "UNKNOWN_ERROR": "Something went wrong. Please try again",
+    "IDT-V29": "The image must be PNG, JPEG or WebP",
+    "IDT-V30": "The image is too large, 512 KB at most",
+    "IDT-V31": "The image dimensions are not valid",
+    "IDT-V32": "The upload request is not valid. Please choose the image again",
+    "IDT-451": "This user has no profile picture",
+    "IDT-452": "You changed or removed your picture too many times. Please try again in an hour",
+    "IDT-511": "Picture storage is temporarily unavailable. Please try again later"
   },
   "nav": {
     "dashboard": "Overview",
@@ -1079,7 +1086,13 @@
     "resetAction": "Reset",
     "resetDone": "Sent a temporary password to {email}",
     "resetBodyOAuth": "This account signs in only through an external provider, so it has no password to reset. The system sends instructions for returning to the provider to {email}. This action is written to the System log.",
-    "resetDoneOAuth": "Sent provider sign-in instructions to {email}"
+    "resetDoneOAuth": "Sent provider sign-in instructions to {email}",
+    "actionRemoveAvatar": "Remove photo",
+    "actionRemoveAvatarFor": "Remove the profile picture of {name}",
+    "removeAvatarTitle": "Remove the profile picture of {name}?",
+    "removeAvatarBody": "The picture disappears everywhere and initials show instead. The action is written to the system log.",
+    "removeAvatarAction": "Remove photo",
+    "removeAvatarDone": "Removed the profile picture of {name}"
   },
   "adminAiUsage": {
     "title": "AI token usage",
@@ -2430,6 +2443,7 @@
       "custom": "Custom topic"
     },
     "customTopicHint": "Pick at least one topic for a self-practice session.",
+    "viewAllBank": "View all {total} questions",
     "emptySubmissions": "You have no Accepted submission yet. Solve a problem first, then come back.",
     "emptyBank": "The question bank has nothing to pick yet.",
     "configTitle": "Session settings",
@@ -3190,6 +3204,28 @@
       "emailTooLong": "Email is at most 254 characters",
       "emailInvalid": "Invalid email",
       "displayNameTooShort": "Full name needs at least 2 characters"
+    },
+    "avatar": {
+      "change": "Change photo",
+      "remove": "Remove photo",
+      "save": "Save photo",
+      "cancel": "Cancel",
+      "previewAlt": "Profile picture preview, not saved",
+      "previewLabel": "Preview, not saved",
+      "fileTypeError": "Only PNG, JPEG or WebP images are accepted",
+      "fileTooBigError": "The original image is larger than 10 MB, choose a smaller one",
+      "decodeError": "This image cannot be read, choose another one",
+      "fileInputLabel": "Choose a profile picture file",
+      "removeTitle": "Remove your profile picture?",
+      "removeBody": "The picture disappears everywhere and your name initials show instead.",
+      "removeConfirm": "Remove photo",
+      "uploaded": "Profile picture updated",
+      "removed": "Profile picture removed",
+      "leaveTitle": "Unsaved profile picture",
+      "leaveBody": "You picked a new picture but have not saved it. Save it before leaving?",
+      "saveAndLeave": "Save and leave",
+      "leave": "Leave without saving",
+      "stay": "Stay"
     }
   },
   "settings": {

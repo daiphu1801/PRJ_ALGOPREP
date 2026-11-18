@@ -39,7 +39,8 @@ class ClassProgressRulesTest {
     return ClassProgressRules.row(
         CLASS,
         "A",
-        new ClassRosterEntry(m.studentId(), name, "e@x.test", null, NOW.minusSeconds(86_400L * 60)),
+        new ClassRosterEntry(
+            m.studentId(), name, "e@x.test", null, NOW.minusSeconds(86_400L * 60), null),
         m,
         NOW);
   }

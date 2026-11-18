@@ -724,6 +724,87 @@ Các tiêu chí dưới đây mô tả hành vi mới hoặc đổi sau khi đ�
 | **Kết quả mong đợi** | Ma trận vẫn 132 dòng. Giảng viên có đủ bốn hành động ở bốn chức năng (lớp, soạn bài, testcase, ngân hàng câu hỏi), các chức năng còn lại tắt. Danh sách câu hỏi mở được; xoá chủ đề bị từ chối `INB-302` vì chỉ quản trị viên được quản lý danh mục. Học viên không có ô nào bật. Chạy lại migration không đổi thêm gì. |
 | **Nguồn** | [SoT: 02-bd/database/F1_identity.md mục 1.4]; [SoT: 02-bd/security/F6_interview-bank.md]; `IdentityMigrationTest.seedsPermissionMatrix`; `InterviewBankCatalogFlowTest.defaultInstructorListsQuestionsButCatalogueManagementStaysAdminOnly`; `DEC-2026-1111-instructor-interview-bank-default-grant` |
 
+## Ảnh đại diện (F1-35, thêm 2026-11-17, `DEC-2026-1117-user-avatar-upload`)
+
+### AC-93 — Tải ảnh hợp lệ, mọi người dùng đã đăng nhập đọc được (#74, #76, BR-25, BR-27)
+- **Tiền điều kiện**: học viên A đã đăng nhập, chưa có ảnh; một học viên B và một giảng viên cũng đã đăng nhập; có ba tệp hợp lệ nhỏ (PNG, JPEG, WebP).
+- **Hành động**: A gửi `PUT /me/avatar` với từng tệp; sau đó B, giảng viên và A gọi `GET /users/{A}/avatar`; A gọi `GET /me/profile`.
+- **Kết quả mong đợi**: `200 { avatarVersion }` với số nguyên; `GET` trả `200` đúng byte đã gửi, `Content-Type` đúng kiểu và có `ETag`; `GET` kèm `If-None-Match` đúng trả `304`; hồ sơ của A có `avatarVersion` bằng giá trị vừa nhận.
+- **Nguồn**: [SoT: 03-dd/api/F1_identity.md] mục 0.9.1, 0.9.3; [SoT: 03-dd/logic/F1_identity.md] BR-25, BR-27.
+
+### AC-94 — Thay ảnh đổi phiên bản và xoá đối tượng cũ (#74, BR-25)
+- **Tiền điều kiện**: A đang có một ảnh.
+- **Hành động**: A gửi ảnh thứ hai.
+- **Kết quả mong đợi**: `avatarVersion` mới **lớn hơn** cũ; `GET` trả ảnh mới; chỉ còn một đối tượng ở prefix `users/<A>/` trong MinIO sau khi commit; một dòng `user_avatars`.
+- **Nguồn**: [SoT: 03-dd/logic/F1_identity.md] BR-25 bước 5, 6.
+
+### AC-95 — Tệp sai định dạng, kể cả SVG và tệp đổi đuôi, bị từ chối (#74, validation mục 15)
+- **Tiền điều kiện**: A có hoặc chưa có ảnh; có một tệp SVG, một tệp văn bản đặt tên `a.png`, một tệp PNG khai báo `Content-Type: image/svg+xml`.
+- **Hành động**: A gửi từng tệp.
+- **Kết quả mong đợi**: các tệp SVG và văn bản trả `422 IDT-V29`; tệp PNG thật khai sai kiểu vẫn được nhận (định dạng theo byte đầu tệp, không theo `Content-Type`); khi bị từ chối, ảnh cũ và `avatarVersion` giữ nguyên, MinIO không có đối tượng mới.
+- **Nguồn**: [SoT: 03-dd/validation/F1_identity.md] mục 15 dòng 3.
+
+### AC-96 — Ảnh quá lớn về dung lượng hoặc điểm ảnh bị từ chối (#74)
+- **Tiền điều kiện**: một tệp PNG hợp lệ 600 KB; một PNG hợp lệ nhỏ về dung lượng nhưng khai báo 4000 x 4000 điểm ảnh; một PNG đúng 1024 x 1024 dưới 512 KB; một PNG 1025 x 1024.
+- **Hành động**: A gửi lần lượt từng tệp; một lần gửi thiếu part `file`; một lần gửi hai part.
+- **Kết quả mong đợi**: tệp 600 KB trả `413 IDT-V30`; tệp 4000 x 4000 và tệp 1025 x 1024 trả `422 IDT-V31`; tệp 1024 x 1024 được nhận; thiếu hoặc thừa part trả `400 IDT-V32`.
+- **Nguồn**: [SoT: 03-dd/validation/F1_identity.md] mục 15 dòng 1, 2, 4.
+
+### AC-97 — Tự xoá ảnh, idempotent (#75, BR-26)
+- **Tiền điều kiện**: A có ảnh.
+- **Hành động**: A gọi `DELETE /me/avatar` hai lần liên tiếp; sau đó `GET /users/{A}/avatar` và `GET /me/profile`.
+- **Kết quả mong đợi**: cả hai lần `204`; không còn dòng `user_avatars` và không còn đối tượng ở MinIO; `GET` ảnh trả `404 IDT-451`; hồ sơ có `avatarVersion = null`; không có dòng `system_audit_logs` nào.
+- **Nguồn**: [SoT: 03-dd/logic/F1_identity.md] BR-26.
+
+### AC-98 — Không có ảnh, không tồn tại, bị khoá hay đã ẩn danh hoá đều cùng một phản hồi 404 (#76, BR-27)
+- **Tiền điều kiện**: học viên C chưa có ảnh; học viên D có ảnh rồi tự xoá tài khoản; một mã UUID không có tài khoản; chuỗi `abc` không phải UUID.
+- **Hành động**: B gọi `GET /users/{x}/avatar` cho từng trường hợp; một lần gọi không kèm token.
+- **Kết quả mong đợi**: bốn trường hợp trả `404 IDT-451` với **cùng thân phản hồi**; lần không kèm token trả `401`.
+- **Nguồn**: [SoT: 03-dd/api/F1_identity.md] mục 0.9.3; [SoT: 02-bd/security/F1_identity.md] mục 6.3.
+
+### AC-99 — Quản trị viên gỡ ảnh của người khác, có nhật ký (#77, BR-26)
+- **Tiền điều kiện**: quản trị viên có `USER_MANAGEMENT:UPDATE`; học viên A có ảnh; học viên E chưa có ảnh; một học viên thường và một giảng viên.
+- **Hành động**: quản trị viên gọi `DELETE /admin/users/{A}/avatar`, rồi `.../{E}/avatar`, rồi với `userId` không tồn tại; học viên thường và giảng viên gọi cùng endpoint với A.
+- **Kết quả mong đợi**: A: `204`, ảnh biến mất, **đúng một** dòng `system_audit_logs` `USER_AVATAR_REMOVED` có `target_id` là A và `before_json = {"hadAvatar": true}`; E: `204` và **không** có dòng nhật ký; `userId` lạ: `404 IDT-450`; học viên thường và giảng viên: `403 IDT-445`, ảnh của A không đổi.
+- **Nguồn**: [SoT: 03-dd/api/F1_identity.md] mục 0.9.4; [SoT: 02-bd/database/F1_identity.md] mục 1.11.
+
+### AC-100 — Giới hạn 10 lần đổi hoặc xoá ảnh mỗi giờ (#74, #75, validation mục 15)
+- **Tiền điều kiện**: A chưa dùng lần nào trong giờ này.
+- **Hành động**: A gọi #74 hoặc #75 mười một lần liên tiếp.
+- **Kết quả mong đợi**: mười lần đầu thành công; lần thứ mười một trả `429 IDT-452` và không đổi gì; quản trị viên gỡ ảnh của A (#77) không bị tính vào hạn mức của A.
+- **Nguồn**: [SoT: 03-dd/logic/F1_identity.md] BR-25 bước 1, BR-26.
+
+### AC-101 — Kho ảnh lỗi chỉ làm hỏng thao tác ảnh (#74 đến #77, BR-25)
+- **Tiền điều kiện**: MinIO tạm không dùng được; A có ảnh trong DB (hoặc chưa có).
+- **Hành động**: A gọi #74, #75, #76; quản trị viên gọi #77; A đăng nhập lại và gọi `GET /me/profile`.
+- **Kết quả mong đợi** (sửa 2026-11-17, owner chốt): #74 và #76 trả `503 IDT-511`, #74 không đổi dòng DB nào. #75 và #77 vẫn trả `204` vì BR-26 xoá dòng DB trước rồi xoá đối tượng sau commit và chỉ ghi cảnh báo; đối tượng mồ côi được chấp nhận (tránh mất ảnh khi DB lỗi). Đăng nhập và `GET /me/profile` vẫn `200`.
+- **Nguồn**: [SoT: 02-bd/storage/F1_identity.md] mục 5.
+
+### AC-102 — Tự xoá tài khoản xoá ảnh ngay (BR-08, BR-26)
+- **Tiền điều kiện**: A có ảnh.
+- **Ghi chú**: `POST /me/account/delete` trả `200` (owner chốt giữ 2026-11-17).
+- **Hành động**: A xoá tài khoản (`POST /me/account/delete`) rồi, trong thời gian ân hạn, khôi phục (`POST /auth/deactivation/restore`) và đăng nhập lại.
+- **Kết quả mong đợi**: ngay sau khi xoá: không còn dòng `user_avatars`, đối tượng bị xoá, `GET` ảnh của A trả `404 IDT-451`; sau khi khôi phục: hồ sơ có `avatarVersion = null`, ảnh **không** quay lại.
+- **Nguồn**: [SoT: 03-dd/logic/F1_identity.md] BR-08 (sửa 2026-11-17), BR-26.
+
+### AC-103 — Nhập ảnh nhà cung cấp lần liên kết đầu (BR-28)
+- **Tiền điều kiện**: nhà cung cấp OAuth giả lập trả URL ảnh thuộc danh sách cho phép, `https`, ảnh PNG hợp lệ; người dùng mới đăng nhập bằng Google (hoặc GitHub) lần đầu và chưa có ảnh.
+- **Hành động**: hoàn tất luồng OAuth; sau đó người dùng đăng nhập OAuth lần hai; một người dùng khác đã có ảnh tự tải đăng nhập OAuth lần đầu.
+- **Kết quả mong đợi**: sau lần đầu có dòng `user_avatars` và yêu cầu tải ra ngoài mang tham số xin 256 điểm ảnh (`=s256-c` hoặc `s=256`); lần đăng nhập thứ hai không tải lại, không đổi `avatarVersion`; người đã có ảnh tự tải **không** bị ghi đè.
+- **Nguồn**: [SoT: 03-dd/logic/F1_identity.md] BR-28.
+
+### AC-104 — Nhập ảnh OAuth từ nguồn không hợp lệ không làm hỏng đăng nhập (BR-28)
+- **Tiền điều kiện**: lần lượt nhà cung cấp giả lập trả: URL `http`; máy chủ ngoài danh sách; máy chủ trong danh sách nhưng phân giải về địa chỉ nội bộ; chuyển hướng sang máy chủ khác; ảnh lớn hơn 512 KB; nội dung không phải ảnh; kho MinIO lỗi.
+- **Hành động**: người dùng mới đăng nhập OAuth lần đầu trong từng trường hợp.
+- **Kết quả mong đợi**: cả bảy trường hợp đăng nhập vẫn thành công; không có dòng `user_avatars`; không có yêu cầu nào tới địa chỉ nội bộ; có log WARN không chứa toàn bộ URL.
+- **Nguồn**: [SoT: 02-bd/security/F1_identity.md] mục 6.5.
+
+### AC-105 — Các DTO có người mang `avatarVersion` và tệp xuất chỉ ghi có hay không (mục 0.9.5, #16)
+- **Tiền điều kiện**: A có ảnh, F không có ảnh; giảng viên có A và F trong lớp; quản trị viên đăng nhập.
+- **Hành động**: gọi #9 (với A), #26, #28, #59 (giảng viên), #35 (quản trị viên), #64; A gọi `GET /me/export?scope=profile`.
+- **Kết quả mong đợi**: mọi phần tử của A có `avatarVersion` là số nguyên, của F là `null`; tệp xuất của A có `hasAvatar = true` và **không** chứa byte ảnh hay khoá đối tượng.
+- **Nguồn**: [SoT: 03-dd/api/F1_identity.md] mục 0.9.5.
+
 ## 3. Truy vết
 
 Bảng 1: Truy vết tiêu chí nghiệm thu sang endpoint, test case QA và test mã nguồn của module F1. Cột "Test case QA" giữ ID test case do `testcase-generation` sinh (tài liệu QA, chưa chạy); cột "Test mã nguồn" liệt kê test thật đã kiểm bằng grep, theo dạng `Lớp:dòng` (dòng của phương thức test, tên lớp là duy nhất trong cây nên không ghi đường dẫn); "Trạng thái" ghi bằng chữ theo bảng 2. Cập nhật 2026-11-07, chỉ sửa tài liệu: không chạy Maven hay pnpm khi cập nhật bảng này.
@@ -838,6 +919,19 @@ Mutation test của các lát quyền, riêng tư (F1-7, F1-8, F1-9, F1-12) và 
 | AC-90 | Sự kiện SolutionReviewCompleted (F5-5a) | Chưa có TC QA | SolutionReviewCompletedConsumerFlowTest:146; SolutionReviewCompletedConsumerFlowTest:170; ApplySolutionReviewCompletedCommandHandlerTest; SolutionReviewCompletedParserTest | Đạt | Code xong, chưa test cả đợt: `SolutionReviewCompletedConsumerFlowTest` 2 test và `identity` 380 test xanh ở lượt riêng của lát (`20261110-1930-f5-5a-identity-verify.log`, `20261110-2005-f5-5a-bootstrap.log`); chưa qua full regression |
 | AC-91 | Sự kiện MockInterviewFinished (F5-8) | Chưa có TC QA | MockInterviewFinishedConsumerFlowTest; AiOutboxFlowTest; ApplyMockInterviewFinishedCommandHandlerTest; MockInterviewFinishedParserTest | Đạt | Code xong, chưa test cả đợt: identity 384 test xanh (`20261111-0030-f5-8-identity-verify.log`), bootstrap 192 test xanh (`20261111-0040-f5-8-bootstrap.log`). `ref_type = INTERVIEW_SESSION` do code chọn (DD F1 chưa nêu). |
 | AC-92 | Ma trận mặc định của giảng viên có `INTERVIEW_BANK_MANAGEMENT` | Chưa có TC QA | IdentityMigrationTest.seedsPermissionMatrix; InterviewBankCatalogFlowTest.defaultInstructorListsQuestionsButCatalogueManagementStaysAdminOnly | Đạt | Chạy trong cây tạm `20261111-1429-instructor-seed-green.log` (7 lớp xanh); đột biến vô hiệu `UPDATE` làm cả hai kiểm tra đỏ (`20261111-1429-instructor-seed-mutation.log`). |
+| AC-93 | #74, #76 / BR-25, BR-27 | UserAvatarFlowTest | UserAvatarFlowTest.validPngJpegAndWebpAreStoredReadByOthersAndShownInTheProfile; UserAvatarFlowTest.anEtagMatchIs304AndOwnerCanReadOwnAvatar | Đạt | Triển khai 2026-11-17 |
+| AC-94 | #74 / BR-25 | UserAvatarFlowTest | UserAvatarFlowTest.replacingKeepsOneObjectAndRaisesTheVersionStrictly; JdbcUserAvatarPgTest.upsertInsertsThenReplacesWithAStrictlyLargerMillisecondVersion | Đạt | Triển khai 2026-11-17 |
+| AC-95 | #74 / validation mục 15 | UserAvatarFlowTest | UserAvatarFlowTest.notAnImageIsRejectedByItsBytesWhateverTheNameOrContentTypeSays; UserAvatarFlowTest.aRealPngWithAWrongContentTypeIsAccepted; AvatarImageInspectorTest | Đạt | Triển khai 2026-11-17 |
+| AC-96 | #74 / validation mục 15 | UserAvatarFlowTest | UserAvatarFlowTest.sizeAndPixelLimitsAreEnforcedAndOldAvatarSurvivesEveryRefusal; UserAvatarFlowTest.aMissingOrExtraPartIs400IdtV32; UserAvatarFlowTest.aBodyOverTheContainerLimitIs413IdtV30OnARealServer | Đạt | Triển khai 2026-11-17 |
+| AC-97 | #75 / BR-26 | UserAvatarFlowTest | UserAvatarFlowTest.ownDeletionIsIdempotentLeavesNothingAndWritesNoAudit | Đạt | Triển khai 2026-11-17 |
+| AC-98 | #76 / BR-27 | UserAvatarFlowTest | UserAvatarFlowTest.everyReasonForNothingToShowIsTheSame404AndNoTokenIs401; UserAvatarFlowTest.uploadAndDeleteNeedAToken | Đạt | Triển khai 2026-11-17; chống dò thời gian chỉ suy ra từ việc các nhánh 404 không chạm MinIO, chưa đo |
+| AC-99 | #77 / BR-26 | UserAvatarFlowTest | UserAvatarFlowTest.adminRemovalIsAuditedOnceAndTheSecondCallWritesNothing; UserAvatarFlowTest.adminRemovalOfAUserWithoutAvatarIs204WithoutAuditAndUnknownUserIs404; UserAvatarFlowTest.onlyAnAdminWithTheUpdateCellMayRemoveSomeoneElsesAvatar | Đạt | Triển khai 2026-11-17 |
+| AC-100 | #74, #75 / BR-25, BR-26 | UserAvatarFlowTest | UserAvatarFlowTest.theEleventhChangeInAnHourIs429AndAdminRemovalIsNotCounted; RedisAvatarRateLimitAdapterTest | Đạt | Triển khai 2026-11-17 |
+| AC-101 | #74 đến #77 / BR-25 | UserAvatarFlowTest | UserAvatarFlowTest.whenStorageIsDownUploadAndReadAre503WhileLoginAndProfileStayUp; UserAvatarFlowTest.whenStorageIsDownRemovalsStillSucceedByBr26AndLeaveAnOrphanObject | Đạt | Triển khai 2026-11-17: #74, #76 trả 503 IDT-511 đúng AC; #75, #77 KHÔNG trả 503 vì BR-26 bước 3 xoá đối tượng sau commit và chỉ ghi WARN (đối tượng mồ côi) [SoT: Suy luận] chờ owner chọn giữa sửa AC hay sửa BR-26 |
+| AC-102 | BR-08, BR-26 | UserAvatarFlowTest | UserAvatarFlowTest.selfDeletionRemovesTheAvatarAtOnceAndRestoreDoesNotBringItBack; AccountDeletionHandlersTest | Đạt | Triển khai 2026-11-17; xoá tài khoản trả 200, không phải 204 |
+| AC-103 | BR-28 | OAuthLoginFlowTest | OAuthLoginFlowTest.aFirstLinkImportsThePictureAndALaterLoginDoesNotFetchAgain; OAuthLoginFlowTest.anAccountThatAlreadyHasAnAvatarKeepsItOnFirstLink; OAuthLoginFlowTest.aLoginWithoutAPictureNeverCallsTheFetcher; OAuthLoginHandlersTest.aFirstLinkQueuesTheAvatarImportAfterTheSessionAndALaterLoginDoesNot; OAuthAvatarImporterTest; AvatarImportRulesTest | Đạt | Triển khai 2026-11-17; nhà cung cấp và bộ tải ảnh đều giả lập, không có mạng thật; tham số xin 256 điểm ảnh kiểm ở AvatarImportRulesTest và ở URL mà bộ tải nhận (`PICTURE + "&s=256"`) |
+| AC-104 | BR-28 | OAuthLoginFlowTest | HttpAvatarImageFetcherTest (http, máy chủ ngoài danh sách, phân giải về 127.0.0.1 / 10.x / 169.254.x / ::1 / fd00::, chuyển hướng 301 đến 308, vượt 512 KB, lỗi kết nối); OAuthLoginFlowTest.everyImportFailureStillLogsTheUserInAndStoresNothing (rỗng, không phải ảnh, vượt 512 KB, ngoại lệ); OAuthAvatarImporterTest (không phải ảnh, MinIO lỗi) | Đạt | Triển khai 2026-11-17; log WARN chỉ có tên máy chủ (đọc ở nhật ký chạy, chưa có assert tự động); không có kết nối mạng thật trong test |
+| AC-105 | mục 0.9.5, #16 | UserControllersTest; SubmissionReadFlowTest | UserControllersTest (ánh xạ); SubmissionReadFlowTest.instructorListAndDetailCarryAvatarVersionOfTheStudent (bài nộp của giảng viên); InstructorClassMetricsFlowTest.everyStudentListCarriesTheAvatarVersionOrNull (#26, #28, #58, #59); AdminUserManagementFlowTest.theListCarriesTheAvatarVersionOrNull (#35); AuditLogReadFlowTest.activeAdminsCarryTheAvatarVersionOrNull (#64); MyAccountFlowTest.exportProfileSaysWhetherAnAvatarExistsAndNothingElse (#16) | Đạt | Bổ sung 2026-11-17 theo quyết định của owner; `mvn verify` toàn reactor `BUILD SUCCESS` (log `05-coding/backend/logs/20261117-full-verify-avatar-4.log`, bootstrap 1352 test, 0 lỗi) |
 
 Bảng 3: Tổng hợp trạng thái 93 tiêu chí (AC-01 đến AC-91 cùng AC-18b và AC-20b), trước và sau lần đồng bộ 2026-11-11 (cột Sau tính cả AC-81 đến AC-89 thêm 2026-11-07, AC-90 và AC-91 thêm ở F5-5a và F5-8, việc đóng AC-77, việc AC-39, AC-84, AC-85 chuyển Đạt ngày 2026-11-08 và AC-57 chuyển từ Hoãn sang Đạt ngày 2026-11-11 khi F5-9 xong; đếm lại từ bảng truy vết: 93 dòng, 93 Đạt, 0 Hoãn)
 

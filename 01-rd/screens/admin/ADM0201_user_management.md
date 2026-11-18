@@ -128,6 +128,7 @@ duy nhất.
 | REQ-03 | Given-When-Then đầy đủ (—) | Chức năng | `01-rd/req/user_stories/a3_admin.md` (`US-A3-02`) |
 | REQ-04 | Khoá tài khoản phải kèm lý do; tuỳ chọn gửi email thông báo cho người bị khoá; mở khoá thì không cần (F1-32) | Chức năng | `01-rd/req/F1_identity.md` — F1-32 (bổ sung 2026-10-05) |
 | REQ-05 | Mỗi dòng tài khoản có nút thao tác riêng: Đổi vai trò, Đặt lại mật khẩu, Khoá/Mở khoá; đổi vai trò không cho hạ quản trị viên hoạt động cuối cùng, mọi thao tác ghi Nhật ký hệ thống (F1-13, F1-14) | Chức năng | `01-rd/req/F1_identity.md` — F1-13, F1-14; prototype 2026-10-08 |
+| REQ-06 | **Cho** tôi là quản trị viên có quyền `USER_MANAGEMENT:UPDATE`, **Khi** tôi bấm Gỡ ảnh ở dòng của một người đang có ảnh đại diện và xác nhận, **Thì** ảnh bị xoá, người đó trở lại chữ viết tắt ở mọi nơi, và hành động được ghi Nhật ký hệ thống (F1-14, `USER_AVATAR_REMOVED`). Chỉ gỡ, không tải ảnh thay người khác. | Chức năng | F1-35 mục 9; `DEC-2026-1117-user-avatar-upload` |
 
 ---
 
@@ -166,7 +167,7 @@ Hợp đồng API, request/response và mã lỗi thuộc DD. Luồng dữ liệ
 
 | Loại | Tham chiếu |
 | :--- | :--- |
-| Yêu cầu module | `01-rd/req/F1_identity.md` — F1-13, F1-14 |
+| Yêu cầu module | `01-rd/req/F1_identity.md` — F1-13, F1-14, F1-35 |
 | User story | `01-rd/req/user_stories/a3_admin.md` — `US-A3-02` |
 | Khảo sát hệ thống | `01-rd/overview/system_survey.md` mục 7.3 — dòng `admin_user_management` |
 | Màn liên quan | `01-rd/screens/admin/ADM0403_system_log.md` mục 3 — dòng log "trùng mã nguồn" củng cố Câu hỏi mở Q1 |

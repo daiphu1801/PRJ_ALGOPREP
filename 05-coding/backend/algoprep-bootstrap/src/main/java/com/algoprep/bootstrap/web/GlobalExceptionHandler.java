@@ -4,6 +4,7 @@ import com.algoprep.common.exception.AlgoPrepException;
 import com.algoprep.common.exception.ClientErrorDetails;
 import com.algoprep.common.exception.DomainRuleViolationException;
 import com.algoprep.common.exception.InvalidRequestException;
+import com.algoprep.common.exception.PayloadTooLargeException;
 import com.algoprep.common.exception.PermissionDeniedException;
 import com.algoprep.common.exception.RateLimitExceededException;
 import com.algoprep.common.exception.ResourceConflictException;
@@ -17,6 +18,7 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 /**
  * Ánh xạ ngoại lệ nghiệp vụ sang phản hồi HTTP, một chỗ duy nhất cho cả tám module.
@@ -42,6 +44,22 @@ public class GlobalExceptionHandler {
   @ExceptionHandler(RateLimitExceededException.class)
   public ProblemDetail handleRateLimit(RateLimitExceededException ex) {
     return toProblemDetail(ex, HttpStatus.TOO_MANY_REQUESTS);
+  }
+
+  @ExceptionHandler(PayloadTooLargeException.class)
+  public ProblemDetail handlePayloadTooLarge(PayloadTooLargeException ex) {
+    return toProblemDetail(ex, HttpStatus.CONTENT_TOO_LARGE);
+  }
+
+  /**
+   * The container's multipart limit fired before any controller ran. The only multipart endpoint is
+   * the avatar upload (F1 #74), so this is its {@code IDT-V30} (DD api F1 section 0.9.1).
+   */
+  @ExceptionHandler(MaxUploadSizeExceededException.class)
+  public ProblemDetail handleUploadTooLarge(MaxUploadSizeExceededException ex) {
+    return toProblemDetail(
+        new PayloadTooLargeException("IDT-V30", "The uploaded file is larger than 512 KB"),
+        HttpStatus.CONTENT_TOO_LARGE);
   }
 
   @ExceptionHandler(ResourceNotFoundException.class)

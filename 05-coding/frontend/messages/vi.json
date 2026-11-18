@@ -251,7 +251,14 @@
     "AIR-V17": "Tên mô hình không được để trống và tối đa 100 ký tự.",
     "AIR-V18": "Đơn giá không hợp lệ.",
     "AIR-V19": "Khoảng ngày phải là 7, 14 hoặc 30.",
-    "UNKNOWN_ERROR": "Có lỗi xảy ra. Vui lòng thử lại"
+    "UNKNOWN_ERROR": "Có lỗi xảy ra. Vui lòng thử lại",
+    "IDT-V29": "Ảnh phải là PNG, JPEG hoặc WebP",
+    "IDT-V30": "Ảnh quá lớn, tối đa 512 KB",
+    "IDT-V31": "Kích thước ảnh không hợp lệ",
+    "IDT-V32": "Yêu cầu tải ảnh không hợp lệ. Vui lòng chọn lại ảnh",
+    "IDT-451": "Người dùng này chưa có ảnh đại diện",
+    "IDT-452": "Bạn đổi hoặc xoá ảnh quá nhiều lần. Vui lòng thử lại sau một giờ",
+    "IDT-511": "Kho lưu ảnh đang tạm thời không dùng được. Vui lòng thử lại sau"
   },
   "nav": {
     "dashboard": "Tổng quan",
@@ -1079,7 +1086,13 @@
     "resetAction": "Đặt lại",
     "resetDone": "Đã gửi mật khẩu tạm tới {email}",
     "resetBodyOAuth": "Tài khoản này chỉ đăng nhập bằng nhà cung cấp bên ngoài nên không có mật khẩu để đặt lại. Hệ thống gửi hướng dẫn quay lại nhà cung cấp tới {email}. Thao tác này được ghi vào Nhật ký hệ thống.",
-    "resetDoneOAuth": "Đã gửi hướng dẫn đăng nhập qua nhà cung cấp tới {email}"
+    "resetDoneOAuth": "Đã gửi hướng dẫn đăng nhập qua nhà cung cấp tới {email}",
+    "actionRemoveAvatar": "Gỡ ảnh",
+    "actionRemoveAvatarFor": "Gỡ ảnh đại diện của {name}",
+    "removeAvatarTitle": "Gỡ ảnh đại diện của {name}?",
+    "removeAvatarBody": "Ảnh biến mất ở mọi nơi và thay bằng chữ viết tắt. Thao tác được ghi vào nhật ký hệ thống.",
+    "removeAvatarAction": "Gỡ ảnh",
+    "removeAvatarDone": "Đã gỡ ảnh đại diện của {name}"
   },
   "adminAiUsage": {
     "title": "Tiêu thụ token AI",
@@ -2570,6 +2583,7 @@
       "custom": "Tự chọn chủ đề"
     },
     "customTopicHint": "Chọn ít nhất một chủ đề cho phiên phỏng vấn tự luyện.",
+    "viewAllBank": "Xem toàn bộ {total} câu hỏi",
     "emptySubmissions": "Bạn chưa có bài nộp Accepted nào. Hãy giải xong một bài rồi quay lại.",
     "emptyBank": "Kho câu hỏi chưa có câu nào để chọn.",
     "configTitle": "Cấu hình phiên",
@@ -3190,6 +3204,28 @@
       "emailTooLong": "Email tối đa 254 ký tự",
       "emailInvalid": "Email không hợp lệ",
       "displayNameTooShort": "Họ và tên tối thiểu 2 ký tự"
+    },
+    "avatar": {
+      "change": "Đổi ảnh",
+      "remove": "Xoá ảnh",
+      "save": "Lưu ảnh",
+      "cancel": "Huỷ",
+      "previewAlt": "Ảnh đại diện xem trước, chưa lưu",
+      "previewLabel": "Bản xem trước, chưa lưu",
+      "fileTypeError": "Chỉ nhận ảnh PNG, JPEG hoặc WebP",
+      "fileTooBigError": "Ảnh gốc lớn hơn 10 MB, hãy chọn ảnh nhỏ hơn",
+      "decodeError": "Không đọc được ảnh này, hãy chọn ảnh khác",
+      "fileInputLabel": "Chọn tệp ảnh đại diện",
+      "removeTitle": "Xoá ảnh đại diện?",
+      "removeBody": "Ảnh sẽ biến mất ở mọi nơi và thay bằng chữ viết tắt tên của bạn.",
+      "removeConfirm": "Xoá ảnh",
+      "uploaded": "Đã cập nhật ảnh đại diện",
+      "removed": "Đã xoá ảnh đại diện",
+      "leaveTitle": "Ảnh đại diện chưa lưu",
+      "leaveBody": "Bạn đã chọn ảnh mới nhưng chưa lưu. Lưu ảnh trước khi rời trang?",
+      "saveAndLeave": "Lưu và thoát",
+      "leave": "Thoát không lưu",
+      "stay": "Ở lại"
     }
   },
   "settings": {

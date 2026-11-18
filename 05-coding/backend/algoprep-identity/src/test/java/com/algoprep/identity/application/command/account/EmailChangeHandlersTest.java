@@ -68,7 +68,8 @@ class EmailChangeHandlersTest {
             List.of(),
             Instant.parse("2026-10-31T00:00:00Z"),
             "Học viên",
-            false);
+            false,
+            null);
     when(profiles.findById(userId)).thenReturn(Optional.of(me));
   }
 

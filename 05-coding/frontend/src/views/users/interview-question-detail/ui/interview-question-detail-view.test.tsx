@@ -51,7 +51,9 @@ describe("InterviewQuestionDetailView", () => {
   });
 
   it("shows the not-found state for an unknown questionId, instead of crashing", async () => {
-    renderWithQuery(<InterviewQuestionDetailView questionId="IQ-does-not-exist" />);
+    renderWithQuery(
+      <InterviewQuestionDetailView questionId="IQ-does-not-exist" />,
+    );
     await screen.findByText("header.linkBack");
 
     expect(screen.getByText("notFound")).toBeInTheDocument();
@@ -69,7 +71,9 @@ describe("InterviewQuestionDetailView", () => {
     });
     fireEvent.click(screen.getByText("practice.btnSubmit"));
 
-    expect(await screen.findByText("practice.pendingState")).toBeInTheDocument();
+    expect(
+      await screen.findByText("practice.pendingState"),
+    ).toBeInTheDocument();
   });
 
   it("locks Practice mode when the question has no rubric", async () => {

@@ -1,17 +1,10 @@
 // PROTOTYPE — no DD yet. See 06-plan/PROTOTYPE_DEBT.md
 //
-// Khu vực A. No "Đổi ảnh" button — BD Q1 was closed 2026-10-18 (owner): the button is dropped and
-// the avatar stays the initials circle (no avatar column, no storage).
+// Khu vực A: the avatar is the real picture with its change/remove controls (BD USR0502 V1.3,
+// DEC-2026-1117-user-avatar-upload); the initials circle is only the fallback inside it.
 import { Skeleton } from "@/shared/ui";
 import type { UserProfile } from "@/entities/user";
-
-// Same "last two words, uppercase" rule already used for teacher/admin initials
-// [SoT: 02-bd/screens/teacher/INS0201_class_management.md:359; 02-bd/screens/admin/ADM0201_user_management.md:343].
-function initialsOf(displayName: string): string {
-  const parts = displayName.trim().split(/\s+/);
-  const last2 = parts.slice(-2);
-  return last2.map((p) => p[0]?.toUpperCase() ?? "").join("") || "?";
-}
+import { AvatarEditor } from "@/features/edit-my-avatar";
 
 export function IdentityCard({
   profile,
@@ -32,9 +25,11 @@ export function IdentityCard({
 
   return (
     <section className="glass-card flex flex-wrap items-center gap-4 border border-[var(--color-border)] px-6 py-5">
-      <div className="flex h-[68px] w-[68px] shrink-0 items-center justify-center rounded-full border border-[var(--color-border)] bg-[var(--color-surface)] text-xl font-semibold text-[var(--color-text-muted)]">
-        {initialsOf(profile.displayName)}
-      </div>
+      <AvatarEditor
+        userId={profile.userId}
+        name={profile.displayName}
+        avatarVersion={profile.avatarVersion}
+      />
       <div className="min-w-0">
         <p className="text-xl font-bold tracking-tight">
           {profile.displayName}

@@ -9,12 +9,12 @@
 // Not yet approved by the owner: the three added blocks (daily chart, recent submissions, weekly schedule).
 "use client";
 
+import { UserAvatar } from "@/entities/user";
 import { useMemo, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { GraduationCap, Users } from "lucide-react";
 import { useTopAssignedProblems } from "@/entities/class-assignment";
 import {
-  initialsOfClassStudent,
   useClassStudents,
   useClassActivity,
   useInstructorClassSummary,
@@ -371,12 +371,12 @@ export function InstructorOverviewView() {
                 id: row.key,
                 href: `/instructor/submissions/${row.submissionId}?studentId=${row.studentId}&classId=${row.classId}&from=submissions`,
                 leading: (
-                  <span
-                    aria-hidden="true"
-                    className="glass-surface flex h-8 w-8 items-center justify-center rounded-full border border-[var(--color-border)] text-[11px] font-semibold"
-                  >
-                    {initialsOfClassStudent(row.studentName)}
-                  </span>
+                  <UserAvatar
+                    userId={row.studentId}
+                    name={row.studentName}
+                    avatarVersion={row.studentAvatarVersion}
+                    size="sm"
+                  />
                 ),
                 title: row.studentName,
                 subtitle: `${row.problemTitle} · ${new Date(

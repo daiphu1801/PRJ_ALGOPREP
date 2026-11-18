@@ -36,7 +36,11 @@ import { AdminAiConfigView } from "./admin-ai-config-view";
 const m = viMessages.adminAiConfig;
 const errors = viMessages.apiErrors as Record<string, string>;
 const BASE = "/ai/admin/prompt-templates";
-const guards = { citeLines: true, answerInVietnamese: true, noFullSolution: true };
+const guards = {
+  citeLines: true,
+  answerInVietnamese: true,
+  noFullSolution: true,
+};
 
 const row = (feature: string) => ({
   id: `active-${feature}`,
@@ -176,16 +180,19 @@ describe("AdminAiConfigView save draft (#16)", () => {
     ["AIR-V13", 400],
     ["AIR-202", 422],
     ["AIR-301", 403],
-  ])("%s: error toast from apiErrors, popup stays, no draft change", async (code, status) => {
-    apiMock.put.mockRejectedValue(new ApiError(code, status, "RAW"));
-    await open();
-    await saveDraftNow("Chi thi moi");
-    await waitFor(() => expect(lastToast()).toBe(errors[code]));
-    expect(screen.getByLabelText(m.editDialog.label)).toBeInTheDocument();
-    expect(toasts.current.some((t) => t.message === m.editDialog.saved)).toBe(
-      false,
-    );
-  });
+  ])(
+    "%s: error toast from apiErrors, popup stays, no draft change",
+    async (code, status) => {
+      apiMock.put.mockRejectedValue(new ApiError(code, status, "RAW"));
+      await open();
+      await saveDraftNow("Chi thi moi");
+      await waitFor(() => expect(lastToast()).toBe(errors[code]));
+      expect(screen.getByLabelText(m.editDialog.label)).toBeInTheDocument();
+      expect(toasts.current.some((t) => t.message === m.editDialog.saved)).toBe(
+        false,
+      );
+    },
+  );
 
   it("an unknown failure falls back to UNKNOWN_ERROR", async () => {
     apiMock.put.mockRejectedValue(new Error("boom"));
@@ -233,20 +240,25 @@ describe("AdminAiConfigView publish (#17)", () => {
     ["AIR-205", 422],
     ["AIR-301", 403],
     ["AIR-503", 503],
-  ])("%s: error toast from apiErrors, dialog closes, the change stays pending", async (code, status) => {
-    apiMock.post.mockRejectedValue(new ApiError(code, status, "RAW"));
-    await open();
-    makeChange();
-    await publishNow();
-    await waitFor(() => expect(lastToast()).toBe(errors[code]));
-    expect(toasts.current.some((t) => t.message === m.publishDone)).toBe(false);
-    expect(screen.getByText(/1 thay đổi chưa phát hành/)).toBeInTheDocument();
-    await waitFor(() =>
-      expect(
-        screen.queryByRole("button", { name: m.publishDialog.confirm }),
-      ).toBeNull(),
-    );
-  });
+  ])(
+    "%s: error toast from apiErrors, dialog closes, the change stays pending",
+    async (code, status) => {
+      apiMock.post.mockRejectedValue(new ApiError(code, status, "RAW"));
+      await open();
+      makeChange();
+      await publishNow();
+      await waitFor(() => expect(lastToast()).toBe(errors[code]));
+      expect(toasts.current.some((t) => t.message === m.publishDone)).toBe(
+        false,
+      );
+      expect(screen.getByText(/1 thay đổi chưa phát hành/)).toBeInTheDocument();
+      await waitFor(() =>
+        expect(
+          screen.queryByRole("button", { name: m.publishDialog.confirm }),
+        ).toBeNull(),
+      );
+    },
+  );
 
   it("AIR-201: tells the admin and reloads the page, dropping the stale local copy", async () => {
     apiMock.post.mockRejectedValue(new ApiError("AIR-201", 409, "RAW"));

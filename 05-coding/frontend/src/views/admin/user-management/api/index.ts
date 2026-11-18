@@ -1,5 +1,4 @@
 export {
-  initialsOf,
   type AdminUser,
   type AdminUserPage,
   type AdminUserRole,

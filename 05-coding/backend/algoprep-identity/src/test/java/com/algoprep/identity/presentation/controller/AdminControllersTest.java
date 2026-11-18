@@ -36,6 +36,7 @@ import com.algoprep.identity.application.ports.in.audit.GetLogRetentionSettingsU
 import com.algoprep.identity.application.ports.in.audit.ListActiveAdminsUseCase;
 import com.algoprep.identity.application.ports.in.audit.SearchSystemAuditLogsUseCase;
 import com.algoprep.identity.application.ports.in.audit.UpdateLogRetentionSettingsUseCase;
+import com.algoprep.identity.application.ports.in.avatar.RemoveUserAvatarUseCase;
 import com.algoprep.identity.domain.model.admin.AdminUserItem;
 import com.algoprep.identity.domain.model.admin.AdminUserPage;
 import com.algoprep.identity.domain.model.admin.UserGroupShare;
@@ -161,7 +162,12 @@ class AdminControllersTest {
     ChangeUserRoleUseCase role = mock(ChangeUserRoleUseCase.class);
     ChangeUserStatusUseCase status = mock(ChangeUserStatusUseCase.class);
     ResetUserPasswordUseCase reset = mock(ResetUserPasswordUseCase.class);
-    var c = new AdminUserActionController(role, status, reset);
+    RemoveUserAvatarUseCase avatar = mock(RemoveUserAvatarUseCase.class);
+    var c = new AdminUserActionController(role, status, reset, avatar);
+    c.removeAvatar(jwt, target.toString());
+    verify(avatar).remove(actor, target);
+    assertThatThrownBy(() -> c.removeAvatar(jwt, "nope"))
+        .isInstanceOf(ResourceNotFoundException.class);
     UUID roleId = UUID.randomUUID();
     c.role(
         jwt,
@@ -228,7 +234,7 @@ class AdminControllersTest {
     assertThat(c.search(admin(), query)).isSameAs(result);
     assertThatThrownBy(() -> c.search(student(), query))
         .isInstanceOf(PermissionDeniedException.class);
-    var who = new ActiveAdmin(actor, "A", "Admin", 3, Instant.EPOCH);
+    var who = new ActiveAdmin(actor, "A", "Admin", 3, Instant.EPOCH, null);
     when(active.list()).thenReturn(List.of(who));
     assertThat(c.activeAdmins(admin()).items()).containsExactly(who);
     var cat = new CategoryCount("AUTH", 2);

@@ -1,11 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { nextReviewDays } from "./next-review";
 import { splitOutline } from "./split-outline";
-import {
-  fromApiRating,
-  toApiRating,
-  toApiStatus,
-} from "../model/recall-map";
+import { fromApiRating, toApiRating, toApiStatus } from "../model/recall-map";
 
 describe("splitOutline", () => {
   it("splits bullet and numbered lines into items", () => {

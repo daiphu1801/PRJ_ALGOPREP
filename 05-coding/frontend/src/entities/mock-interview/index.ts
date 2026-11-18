@@ -5,6 +5,7 @@ export {
   RUBRIC_WEIGHTS,
   type AcceptedSubmissionOption,
   type BankQuestionOption,
+  type BankQuestionPage,
   type ChatMessage,
   type ChatRole,
   type InterviewEntryType,

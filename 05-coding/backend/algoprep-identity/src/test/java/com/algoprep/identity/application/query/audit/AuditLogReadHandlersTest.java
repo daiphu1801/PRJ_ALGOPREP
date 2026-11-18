@@ -252,7 +252,7 @@ class AuditLogReadHandlersTest {
 
   @Test
   void activeAdminsPassThroughTheRepositoryRows() {
-    ActiveAdmin a = new ActiveAdmin(admin, "Admin", "Quản trị viên", 3, NOW);
+    ActiveAdmin a = new ActiveAdmin(admin, "Admin", "Quản trị viên", 3, NOW, null);
     when(logs.activeAdmins()).thenReturn(List.of(a));
 
     assertThat(new ListActiveAdminsQueryHandler(logs).list()).containsExactly(a);

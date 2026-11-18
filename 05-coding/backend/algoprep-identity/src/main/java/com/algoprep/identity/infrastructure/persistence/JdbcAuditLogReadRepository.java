@@ -116,13 +116,14 @@ class JdbcAuditLogReadRepository implements AuditLogReadRepository {
     return jdbc.getObject()
         .sql(
             "SELECT u.id, u.display_name, r.name AS role_name, count(*) AS cnt,"
-                + " max(a.created_at) AS last_at"
+                + " max(a.created_at) AS last_at, av.updated_at AS avatar_updated_at"
                 + " FROM identity.system_audit_logs a"
                 + " JOIN identity.users u ON u.id = a.actor_user_id"
                 + " JOIN identity.roles r ON r.id = u.role_id"
+                + " LEFT JOIN identity.user_avatars av ON av.user_id = u.id"
                 + " WHERE r.base_category = 'ADMIN'"
                 + " AND a.created_at >= clock_timestamp() - interval '24 hours'"
-                + " GROUP BY u.id, u.display_name, r.name"
+                + " GROUP BY u.id, u.display_name, r.name, av.updated_at"
                 + " ORDER BY cnt DESC, last_at DESC, u.id ASC LIMIT 5")
         .query(
             (rs, n) ->
@@ -131,7 +132,10 @@ class JdbcAuditLogReadRepository implements AuditLogReadRepository {
                     rs.getString("display_name"),
                     rs.getString("role_name"),
                     rs.getLong("cnt"),
-                    rs.getTimestamp("last_at").toInstant()))
+                    rs.getTimestamp("last_at").toInstant(),
+                    rs.getTimestamp("avatar_updated_at") == null
+                        ? null
+                        : rs.getTimestamp("avatar_updated_at").toInstant().toEpochMilli()))
         .list();
   }
 

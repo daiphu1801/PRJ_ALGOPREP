@@ -45,6 +45,8 @@ export type UserProfile = {
   roleName: string;
   /** From the real API only (DD F1 #9): an admin-set temporary password is still in use. The mock leaves it out. */
   mustChangePassword?: boolean;
+  /** Epoch-ms of the stored picture, `null`/absent when the user has none (DD F1 0.9.5). */
+  avatarVersion?: number | null;
 };
 
 export type UpdateProfileInput = {

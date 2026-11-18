@@ -4,3 +4,9 @@ import "@testing-library/jest-dom/vitest";
 // NEXT_PUBLIC_MOCK_DATA=true here so entities/*/api tests exercise the __mock__ path instead of
 // hitting shared/api/client.ts's notImplemented() stub against a backend that doesn't exist yet.
 process.env.NEXT_PUBLIC_MOCK_DATA = "true";
+
+// jsdom has no object URLs; avatar previews and loaded pictures use them.
+if (typeof URL.createObjectURL !== "function") {
+  URL.createObjectURL = () => "blob:test";
+  URL.revokeObjectURL = () => {};
+}

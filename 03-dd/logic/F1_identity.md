@@ -163,6 +163,8 @@ theo DEC.
 
 ## BR-08 — Tự xoá tài khoản và ẩn danh hoá sau ân hạn
 
+> **Sửa 2026-11-17 (`DEC-2026-1117-user-avatar-upload`, owner chốt Q-AV-1):** ở bước thời điểm xoá, **cùng giao dịch** với `UPDATE users ... DEACTIVATED` còn xoá dòng `user_avatars` của user; sau khi commit thì xoá đối tượng ảnh trong MinIO (BR-26). Job ẩn danh hoá **không** còn việc gì với ảnh. Khôi phục tài khoản trong 30 ngày ân hạn (`POST /auth/deactivation/restore`, #61) không lấy lại ảnh.
+
 - **Input**: `POST /me/account/delete` với `{ "emailConfirmation": string }` phải khớp `email` hiện tại
   [SoT: `07-review/...:150`].
 - **Điều kiện**: không khớp → `422 IDT-201`, không đổi trạng thái. Email gõ lại được trim hai đầu rồi so không phân biệt hoa thường (D38 của màn Cài đặt). Nếu người gọi là ADMIN hoạt động duy nhất → `422 IDT-432` (bất biến BR-15, cùng khoá `FOR UPDATE` trên các dòng admin đang hoạt động), kiểm sau khi email khớp và trước bước 1; ADMIN còn admin khác thì được xoá. [Chủ dự án chốt 2026-11-01]
@@ -377,6 +379,61 @@ ghi `identity_recent_activity` theo lịch**. Nhãn `ABSENT` vẫn tồn tại n
 - **Giao dịch**: gọi trong cùng JVM và **cùng giao dịch DB** với thay đổi nghiệp vụ của module gọi (`Propagation.REQUIRED`, không `REQUIRES_NEW`): rollback nghiệp vụ thì dòng nhật ký cũng mất; lỗi ghi nhật ký làm hỏng cả giao dịch (không nuốt lỗi).
 - **Người gọi**: `problem-bank` (quản lý `topics`, `problem_levels` và các hành động ghi trên bài ở màn quản lý theo F2 BR-27), `interview-bank` (quản lý `topics`, `levels`), `judge-orchestration` (ghi `language_configs`, `grading_defaults`, `sandbox_settings`, `generator_sandbox_settings`, `cluster_settings`).
 - **Ràng buộc**: `actorUserId` bắt buộc (không null); module khác không viết trực tiếp vào schema `identity`; `beforeJson`/`afterJson` là snapshot tự do, che khoá nhạy cảm ở tầng đọc (BR-16). Phân loại hiển thị theo BR-19; `actionType` mới của các module gọi phải bổ sung vào bảng ánh xạ BR-19.
+
+## Bổ sung 2026-11-17 — ảnh đại diện (BR-25 đến BR-28, F1-35)
+
+> Theo `DEC-2026-1117-user-avatar-upload`. Hợp đồng endpoint ở `03-dd/api/F1_identity.md` mục 0.9; luật kiểm ở `03-dd/validation/F1_identity.md` mục 15; thiết kế lưu trữ ở `02-bd/storage/F1_identity.md`.
+
+## BR-25 — Tải lên hoặc thay ảnh đại diện (#74)
+
+- **Trigger**: `PUT /me/avatar`.
+- **Điều kiện**: người gọi đã xác thực; mã người dùng lấy từ JWT, không nhận từ client; qua bộ kiểm ở validation mục 15 (một part, kích thước, byte đầu tệp, điểm ảnh); chưa vượt 10 lần đổi hoặc xoá trong giờ (`IDT-452`).
+- **Các bước**:
+  1. Kiểm hạn mức theo khoá Redis `identity:avatar:rate:<userId>` (đếm, TTL 1 giờ kể từ lần đầu trong cửa sổ). Redis lỗi thì **bỏ qua kiểm hạn mức** (fail open) và ghi log WARN `[SoT: Suy luận — đây không phải kiểm bảo mật nhạy cảm như BR-01]`.
+  2. Đọc luồng tối đa 512 KB (+1 byte để phát hiện vượt), kiểm byte đầu tệp và kích thước điểm ảnh; sai thì dừng, chưa chạm MinIO.
+  3. Sinh `avatar_id` mới (UUID); khoá đối tượng `users/<user_id>/<avatar_id>.<ext>`, `ext` ∈ `png`, `jpg`, `webp` theo định dạng phát hiện.
+  4. Ghi đối tượng vào bucket `algoprep-avatars`. Lỗi → `503 IDT-511`, dừng.
+  5. Giao dịch PostgreSQL: `INSERT ... ON CONFLICT (user_id) DO UPDATE` bảng `user_avatars` (`object_key`, `content_type`, `size_bytes`, `updated_at = greatest(now(), cũ + 1 ms)`). Lỗi → xoá đối tượng vừa ghi (cố gắng hết sức), trả `503`.
+  6. Sau khi commit, nếu có khoá cũ thì xoá đối tượng cũ; lỗi xoá chỉ ghi log WARN kèm khoá (đối tượng mồ côi chấp nhận, `02-bd/storage/F1_identity.md` mục 4).
+- **Hậu điều kiện**: một dòng `user_avatars` cho user, `avatarVersion` tăng. **Không** ghi `system_audit_logs` (đó là nhật ký hành động quản trị).
+- **Sự kiện phát ra**: không.
+
+## BR-26 — Xoá ảnh đại diện: tự xoá (#75), admin gỡ (#77), xoá tài khoản (BR-08)
+
+- **Trigger**: `DELETE /me/avatar`; `DELETE /admin/users/{userId}/avatar`; bước xoá tài khoản ở BR-08.
+- **Điều kiện**: #75 theo mã người dùng trong JWT; #77 cần `ROLE_ADMIN` cộng `USER_MANAGEMENT:UPDATE` và `userId` có thật (`404 IDT-450`).
+- **Các bước**:
+  1. Giao dịch PostgreSQL: đọc rồi xoá dòng `user_avatars` của user. Không có dòng thì kết thúc `204`, **không** ghi nhật ký, không gọi MinIO.
+  2. Riêng #77 khi có dòng: ghi một dòng `system_audit_logs` (`action_type = USER_AVATAR_REMOVED`, `target_type = USER`, `target_id` là người bị gỡ, `before_json = {"hadAvatar": true}`) **trong cùng giao dịch**; ghi audit lỗi thì rollback, ảnh giữ nguyên.
+  3. Sau khi commit, xoá đối tượng theo `object_key` đã đọc; lỗi xoá chỉ ghi log WARN.
+- **Hậu điều kiện**: user không còn dòng `user_avatars`, `avatarVersion = null`; mọi nơi hiện chữ viết tắt.
+- **Hạn mức**: #75 dùng chung bộ đếm 10 lần mỗi giờ với #74; #77 không bị đếm.
+- **Xoá tài khoản (BR-08)**: bước 1 trên chạy trong cùng giao dịch với `status = DEACTIVATED`; không ghi audit; MinIO xoá sau commit. Không có hạn mức.
+
+## BR-27 — Đọc ảnh đại diện (#76)
+
+- **Trigger**: `GET /users/{userId}/avatar`.
+- **Điều kiện**: người gọi đã đăng nhập (JWT hợp lệ); không kiểm lớp hay vai trò (owner chốt D2b).
+- **Các bước**:
+  1. `userId` sai dạng UUID → trả `404 IDT-451` (cùng phản hồi với không có ảnh).
+  2. Đọc `user_avatars` JOIN `users`; không có dòng, hoặc `users.status = 'DEACTIVATED'`, hoặc `anonymized_at` khác NULL → `404 IDT-451`.
+  3. `If-None-Match` khớp `ETag` (`avatar_id`) → `304`.
+  4. Đọc đối tượng từ MinIO rồi trả byte kèm các tiêu đề ở API mục 0.9.3. Lỗi MinIO → `503 IDT-511`.
+- **Hậu điều kiện**: chỉ đọc, không ghi gì.
+- **Chống dò**: ba nhánh `404` ở bước 1 và 2 có cùng thân; không chạm MinIO ở các nhánh này nên thời gian gần như nhau.
+
+## BR-28 — Nhập ảnh từ nhà cung cấp OAuth lần liên kết đầu
+
+- **Trigger**: ngay sau khi `identity` **liên kết lần đầu** một `oauth_identities` mới vào một tài khoản (BR-03), kể cả khi tạo tài khoản mới qua OAuth.
+- **Điều kiện**: tài khoản chưa có dòng `user_avatars`; nhà cung cấp trả URL ảnh trong phản hồi userinfo của chính luồng OAuth (Google `picture`, GitHub `avatar_url`).
+- **Các bước** (chạy **sau khi** phiên đăng nhập đã được cấp, không chặn phản hồi đăng nhập; chạy trên luồng nền của `identity`):
+  1. Chuẩn hoá URL xin bản 256 điểm ảnh: Google thêm hoặc thay hậu tố `=s256-c`; GitHub thêm `s=256` vào truy vấn. `[SoT: Suy luận]`.
+  2. Kiểm theo BD security mục 6.5: chỉ `https`; máy chủ khớp chính xác `lh3.googleusercontent.com` hoặc `avatars.githubusercontent.com`; phân giải tên miền và từ chối địa chỉ loopback, link-local, dải riêng, rồi kết nối đúng địa chỉ đã kiểm; không đi theo chuyển hướng sang máy chủ khác; hết hạn kết nối 3 giây, đọc 5 giây; dừng đọc ở 512 KB.
+  3. Cùng bộ kiểm tệp ở validation mục 15 (byte đầu tệp, điểm ảnh) rồi lưu bằng các bước 3 đến 5 của BR-25 (không tính hạn mức).
+  4. Tải hoặc kiểm lỗi ở bất kỳ bước nào: **bỏ qua**, ghi log WARN (chỉ tên máy chủ, **không** ghi toàn bộ URL), người dùng thấy chữ viết tắt. Đăng nhập không bao giờ thất bại vì bước này.
+- **Hậu điều kiện**: có hoặc không có dòng `user_avatars`; không ghi audit.
+- **Triển khai 2026-11-17:** `OAuthLoginFinisher` xếp việc nhập ảnh sau khi phiên đã được cấp, chỉ khi liên kết lần đầu; `OAuthAvatarImporter` chạy sau commit trên luồng ảo riêng, bỏ qua nếu tài khoản đã có ảnh. Cổng tải `AvatarImageFetchPort`, bộ tải `HttpAvatarImageFetcher` tự viết trao đổi HTTP/1.1 qua TLS tới đúng địa chỉ đã kiểm (không dùng `HttpClient` vì nó tự phân giải tên miền lần hai) `[SoT: Suy luận]`. Danh sách máy chủ và các hằng số ở `AvatarImportRules`. Mọi 3xx là thất bại. Lưu bằng `OAuthAvatarSaver`: ghi MinIO trước, dòng `user_avatars` sau, không đè ảnh có sẵn.
+- **Việc đồng bộ ở tài liệu khác (không sửa ở đây)**: `03-dd/api/F4_judge-orchestration.md` cần thêm `avatarVersion` vào danh sách bài nộp của giảng viên và ngữ cảnh bài nộp (lấy qua cổng đọc của `identity`); làm cùng lát backend số 6 của plan v2.
 
 ## Tham chiếu
 

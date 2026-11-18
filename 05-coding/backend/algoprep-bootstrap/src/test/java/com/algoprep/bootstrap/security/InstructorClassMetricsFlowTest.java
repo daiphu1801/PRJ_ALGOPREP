@@ -214,6 +214,37 @@ class InstructorClassMetricsFlowTest {
   }
 
   @Test
+  void everyStudentListCarriesTheAvatarVersionOrNull() throws Exception {
+    jdbc.update(
+        "INSERT INTO identity.user_avatars(user_id,object_key,content_type,size_bytes,updated_at)"
+            + " VALUES (?,'avatars/k','image/png',10,to_timestamp(1700000000.123))",
+        binh);
+    String roster = call(classPath(classA) + "/students", token).getContentAsString();
+    String detail =
+        call(classPath(classA) + "/students/" + binh + "/detail", token).getContentAsString();
+    String page = call(ID + "/instructor/students", token).getContentAsString();
+    String attention =
+        call(ID + "/instructor/classes/attention-students", token).getContentAsString();
+
+    assertThat(
+            JsonPath.<List<Number>>read(roster, "$.items[?(@.displayName=='Binh')].avatarVersion"))
+        .singleElement()
+        .satisfies(v -> assertThat(v.longValue()).isEqualTo(1700000000123L));
+    assertThat(JsonPath.<List<Object>>read(roster, "$.items[?(@.displayName=='An')].avatarVersion"))
+        .containsOnlyNulls();
+    assertThat(JsonPath.<Number>read(detail, "$.avatarVersion").longValue())
+        .isEqualTo(1700000000123L);
+    assertThat(JsonPath.<List<Number>>read(page, "$.items[?(@.displayName=='Binh')].avatarVersion"))
+        .singleElement()
+        .satisfies(v -> assertThat(v.longValue()).isEqualTo(1700000000123L));
+    assertThat(
+            JsonPath.<List<Number>>read(
+                attention, "$.items[?(@.displayName=='Binh')].avatarVersion"))
+        .singleElement()
+        .satisfies(v -> assertThat(v.longValue()).isEqualTo(1700000000123L));
+  }
+
+  @Test
   void scoreTrendIsSixCompletedWeeksWithNullForWeeksWithoutSubmissions() throws Exception {
     String body =
         call(ID + "/instructor/classes/score-trend?classId=" + classD, token).getContentAsString();

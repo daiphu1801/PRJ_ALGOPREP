@@ -51,11 +51,11 @@
 | Tên vật lý (slug) | `class_progress` |
 | Trục tài liệu | Màn hình (`02-bd/screens/`) |
 | Actor | A2 (`INSTRUCTOR`) |
-| Phiên bản | V0.12 |
+| Phiên bản | V0.14 |
 | Người tạo | Nhóm phát triển AlgoPrep |
 | Ngày tạo | 2026/09/21 |
 | Người cập nhật | Nhóm phát triển AlgoPrep |
-| Ngày cập nhật | 2026/11/07 |
+| Ngày cập nhật | 2026/11/18 |
 
 ---
 
@@ -76,6 +76,7 @@
 | V0.11 | Sheet 4 (4.6), 7 | Sửa 2026-11-07 (F1-7, nối FE). Bảng học viên đọc F1 #59 (`useInstructorStudentPage`): tìm tên, lọc lớp, phân trang 20 do máy chủ làm; nhãn trạng thái, hoàn thành, điểm TB, chuỗi ngày, xu hướng 6 tuần, lần nộp gần nhất lấy từ F4 P1 qua F1. Tuần không có bài chấm không có điểm, sparkline chỉ vẽ các tuần có điểm. Khối biểu đồ #57 và "Cần chú ý" #58 đã có backend nhưng màn không dựng (quyết định bỏ 2026-09-27), nên chưa có chỗ nối. Chưa duyệt hình. |
 | V0.12 | Đầu tài liệu, Sheet 3, 4.1, 4.5, 5 (Khu B, C), Câu hỏi mở (Q4) | Owner chốt 2026-11-07: biểu đồ điểm TB (#57, widget `class-score-trend-chart`) và khối "Cần chú ý" (#58, widget `class-attention-list`) **giữ bỏ**, đúng như mã [Nguồn: 05-coding/frontend/src/views/teacher/class-progress/ui/class-progress-view.tsx:12-16]. Khối "Cần chú ý" bỏ vì chỉ nhắc lại cột "Trạng thái" và thêm cuộn; biểu đồ: lý do cũ (màn Tổng quan giảng viên vẽ cùng chuỗi) không còn đúng, nay bỏ theo ponytail bậc 3 và bậc 4. Nội dung cũ của hai khối giữ làm lịch sử, đánh dấu "Đã bỏ"; endpoint #57, #58, #29 còn là hợp đồng ở DD api nhưng không màn nào đọc. Đóng Q4 vì không còn đối tượng. Không đổi bảng học viên. Chưa duyệt hình | 2026/11/07 | AI |
 | V0.13 | Sheet 4, 5 | Sửa 2026-11-07 (owner chốt sau kiểm trình duyệt). Bộ đếm "{shown} / {total}" đổi nhãn từ "học viên" thành "dòng" (mỗi dòng là một học viên trong một lớp; người ở hai lớp có hai dòng). Giữ cách đếm. Báo cáo `06-plan/reports/261107-2100-f1-f2-kiem-trinh-duyet/report.md`. |
+| V0.14 | Sheet 4 (4.6), 5 (Khu vực danh sách NO 5), 6, 7 (7.1 NO 18, 7.2 NO 6, 7.3 NO 7) | Sửa 2026-11-18 (F1-35, `DEC-2026-1117-user-avatar-upload`, chưa duyệt hình). Cột "Học viên" của bảng nay hiện ảnh đại diện thật (hoặc chữ viết tắt khi chưa có ảnh hoặc ảnh lỗi), đọc `avatarVersion` của F1 #59; bỏ ghi chú "ảnh đại diện thật chưa có nguồn". Khối "Cần chú ý" (#58) vẫn không dựng. | 2026/11/18 | Claude |
 
 ---
 
@@ -301,6 +302,7 @@ Bảng 4.6 ghi những gì bản dựng Next.js đang làm cho bảng học viê
 | Hành vi gỡ (mock) | `removeStudent` chỉ đặt `leftAt` cho học viên, **không xoá dòng**; giảm `studentCount` của lớp, và giảm `absentCount` nếu học viên đang ở trạng thái vắng | [Nguồn: 05-coding/frontend/src/entities/class/api/__mock__/class-mocks.ts:351-364], [Nguồn: 05-coding/frontend/src/entities/class/model/types.ts:64] |
 | Danh sách sau khi gỡ | `listClassStudents` và `listClassAttention` chỉ trả học viên đang ở lớp (hàm `activeStudents` loại dòng có `leftAt`) | [Nguồn: 05-coding/frontend/src/entities/class/api/__mock__/class-mocks.ts:272-280,366-367] |
 | Kiểm thử mock | `class-mocks.test.ts` có ca gọi `removeStudent` (kể cả gọi lặp) | [Nguồn: 05-coding/frontend/src/entities/class/api/__mock__/class-mocks.test.ts:19,41-42] |
+| Ảnh đại diện học viên (V0.14) | Cột "Học viên" của bảng hiện `UserAvatar` cỡ nhỏ trước tên theo `avatarVersion` của từng dòng (F1 #59); không có ảnh hoặc ảnh lỗi thì chữ viết tắt. Khối "Cần chú ý" không dựng nên không có ảnh ở đó. Chưa duyệt hình | [Nguồn: 05-coding/frontend/src/views/teacher/class-progress/ui/class-progress-view.tsx:136-141], [Nguồn: 05-coding/frontend/src/entities/class/api/real-class-metrics.ts:81,99] |
 | Phân trang bảng học viên (V0.7) | `PAGE_SIZE = 20` cố định, `Pagination` không có ô chọn cỡ trang. Kiểm bằng e2e `instructor-shell.spec.ts`: 12 dòng, "Trang 1 / 1", không có ô chọn cỡ trang (chưa đọc lại tệp e2e trong đợt này, theo kết quả chạy do người giao việc báo). Chưa duyệt hình | [Nguồn: 05-coding/frontend/src/views/teacher/class-progress/ui/class-progress-view.tsx:49,122-123,267-274] |
 | Liên kết tên học viên | Dẫn tới `/instructor/classes/{classId}/students/{studentId}?from=students` để thanh điều hướng sáng mục "Danh sách học viên" ở màn chi tiết (xem `_shell.md`). Chưa duyệt hình | [Nguồn: 05-coding/frontend/src/views/teacher/class-progress/ui/class-progress-view.tsx:134] |
 
@@ -358,7 +360,7 @@ Bảng 4.6 ghi những gì bản dựng Next.js đang làm cho bảng học viê
 | | 2 | Tab lọc theo lớp | `classProgress.studentList.classTabs` | `identity.classes` | `id`, `name` | Button | List | - | - | I/O | Tất cả | - | Cụm tab: mục "Tất cả" cố định cộng một mục cho mỗi lớp phụ trách<br>[Nguồn giá trị] Mục "Tất cả" là nhãn tĩnh i18n; các mục còn lại lấy `classes.name` qua `ListInstructorClasses`<br>[EVT liên quan] EVT-2 |
 | | 3 | Đếm kết quả | `classProgress.studentList.resultCount` | - | - | Label | String | 24 | - | O | - | `{N} / {tổng} học viên` | Số học viên khớp bộ lọc trên tổng số học viên trong phạm vi tab đang chọn<br>[Công thức] Tử số = tổng số dòng khớp cả tab và ô tìm kiếm (**không** phải số dòng của trang hiện tại); mẫu số = số học viên thuộc phạm vi tab đang chọn, bỏ qua ô tìm kiếm; tab "Tất cả" đếm theo **người khác nhau** (một học viên ở hai lớp chỉ tính một), cùng quy tắc `DEC-2026-1014-instructor-batch1-counting-rules`; tab lớp đếm số học viên của lớp đó (`DEC-2026-1014-instructor-batch2-weekly-rules`, Q9) [Nguồn: 09-layoutBase/Giáo viên - Tiến độ học viên.dc.html:164,320]<br>[EVT liên quan] EVT-2, EVT-3 |
 | | 4 | Bảng học viên | `classProgress.studentList.table` | `identity.class_enrollments` | - | List | List | - | - | O | rỗng | 20 dòng mỗi trang | Học viên thuộc các lớp phụ trách, lọc theo tab và ô tìm kiếm<br>[Nguồn giá trị] Kết quả gọi `ListClassStudents`<br>[EVT liên quan] EVT-1, EVT-2, EVT-3, EVT-4 |
-| | 5 | Học viên | `classProgress.studentList.col.studentName` | `identity.users` | `display_name` | Link | String | 100 | - | O | - | Chữ cái đầu + tên | Tên hiển thị kèm ô chữ cái đầu; bấm vào mở màn `class_student_detail`<br>[Công thức] Ô chữ cái đầu ghép từ hai ký tự đầu của hai từ cuối trong `display_name`, cùng quy tắc `class_management` [Nguồn: 02-bd/screens/teacher/INS0201_class_management.md:358]; ảnh đại diện thật chưa có nguồn `[Suy luận]`<br>[EVT liên quan] EVT-6 |
+| | 5 | Học viên (ảnh đại diện hoặc chữ viết tắt, kèm tên) | `classProgress.studentList.col.studentName` | `identity.users`; `identity.user_avatars` | `display_name`; `updated_at` | Link | String | 100 | - | O | Chữ viết tắt | Ảnh tròn nhỏ hoặc hai ký tự in hoa, rồi tên | Tên hiển thị kèm ảnh đại diện của học viên; chưa có ảnh hoặc ảnh tải lỗi thì hiện chữ viết tắt, không hiện biểu tượng ảnh hỏng (F1-35 mục 2); bấm vào mở màn `class_student_detail`<br>[Công thức] Ô chữ cái đầu ghép từ hai ký tự đầu của hai từ cuối trong `display_name`, cùng quy tắc `class_management` [Nguồn: 02-bd/screens/teacher/INS0201_class_management.md:358]<br>[Nguồn giá trị] Có ảnh khi `ClassProgressStudentRowDto.avatarVersion` (F1 #59) khác rỗng (mục 7.1 NO 18); ảnh tải qua `GetUserAvatar` [Nguồn: 03-dd/api/F1_identity.md mục 0.9.5]<br>[Hiện trạng bản dựng] Đã dựng 2026-11-17, chưa duyệt hình (`05-coding/frontend/src/views/teacher/class-progress/ui/class-progress-view.tsx:136-141`)<br>[EVT liên quan] EVT-6 |
 | | 6 | Lớp | `classProgress.studentList.col.className` | `identity.classes` | `name` | ListColumn | String | 120 | - | O | - | - | Lớp mà dòng này thuộc về<br>[Nguồn giá trị] Cột `name` của lớp gắn với dòng `class_enrollments`<br>[EVT liên quan] - |
 | | 7 | Điểm TB | `classProgress.studentList.col.avgScore` | `judge.submissions` | `status`, `problem_id`, `user_id` | ListColumn | Number | 4 | - | O | - | Một chữ số thập phân, thang 10 | Điểm trung bình của học viên<br>[Công thức] `accepted_count` chia `total_submissions` rồi nhân 10 [Nguồn: DEC-2026-0830-class-progress-dashboard]. Chưa có lượt nộp nào thì hiển thị `-`. F1-28 nói "trong lớp" nhưng read model là toàn cục — xem Câu hỏi mở Q1<br>[EVT liên quan] - |
 | | 8 | Hoàn thành | `classProgress.studentList.col.completion` | - | - | ListColumn | Number | 3 | - | O | - | `{số}%` | Tỉ lệ bài đã giao mà học viên đã Accepted<br>[Công thức] Số bài đã giao cho lớp mà học viên Accepted ít nhất một lần chia tổng số bài đã giao cho lớp [Nguồn: DEC-2026-0830-class-progress-dashboard]. Nguồn: mẫu số là danh sách bài đã giao lấy qua `ListClassAssignments` (`problem-bank`), tử số là `identity.user_problem_best_score.best_verdict = ACCEPTED`; `identity` tự tính, endpoint `GetClassAssignmentCompletion` đã bỏ theo `DEC-2026-0921-class-completion-owned-by-identity`<br>[EVT liên quan] - |
@@ -415,7 +417,7 @@ Bảng 4.6 ghi những gì bản dựng Next.js đang làm cho bảng học viê
 | | 2 | Tab lọc theo lớp | Có | [Điều kiện hiển thị] Chỉ hiển thị khi có từ 1 lớp trở lên; không có lớp nào thì ẩn cả khối bảng và khối "Cần chú ý", thay bằng trạng thái rỗng cấp màn.<br>[Tự động đặt] Mặc định "Tất cả" mỗi lần vào màn; không ghi nhớ giữa hai lần vào. |
 | | 3 | Đếm kết quả | Điều kiện | [Điều kiện hiển thị] Chỉ hiển thị khi bảng đã tải xong; trong lúc tải và khi lỗi thì ẩn, không hiển thị `0 / 0`. |
 | | 4 | Bảng học viên | Có | [Điều kiện hiển thị] Trong lúc tải hiển thị khung chờ 8 dòng. Lớp chưa có học viên nào thì hiển thị "Lớp này chưa có học viên nào — chia sẻ mã mời để học viên tham gia"; có học viên nhưng ô tìm kiếm không khớp thì hiển thị "Không tìm thấy học viên nào khớp từ khoá" — hai trạng thái rỗng khác nhau, không dùng chung một câu. |
-| | 5 | Học viên | Có | [Điều kiện kích hoạt] Luôn kích hoạt sau khi tải xong; liên kết mở màn `class_student_detail`. |
+| | 5 | Học viên | Có | [Điều kiện hiển thị] Ảnh tải lỗi hoặc chưa có thì hiện chữ viết tắt; ảnh của một dòng không chặn dòng khác.<br>[Điều kiện kích hoạt] Luôn kích hoạt sau khi tải xong; liên kết mở màn `class_student_detail`. |
 | | 6 | Lớp | Điều kiện | [Điều kiện hiển thị] Chỉ hiển thị khi tab đang chọn là "Tất cả"; đang lọc theo một lớp cụ thể thì cột này thừa, ẩn đi để trả chỗ cho các cột số. Cùng quy tắc `class_management` [Nguồn: 02-bd/screens/teacher/INS0201_class_management.md:434]. |
 | | 7 | Điểm TB | Có | [Điều kiện hiển thị] Học viên chưa có lượt nộp nào thì hiển thị `-`, không hiển thị `0.0`. |
 | | 8 | Hoàn thành | Điều kiện | [Điều kiện hiển thị] Lớp chưa được giao bài nào thì hiển thị `-`, vì mẫu số bằng 0. Gọi `problem-bank` thất bại thì cột hiển thị `-` và bảng vẫn hiện đủ các cột còn lại. |
@@ -444,7 +446,7 @@ Bảng 4.6 ghi những gì bản dựng Next.js đang làm cho bảng học viê
 | 7 | `ClassAttentionStudentDto` | `status` | Enum | - | - | Khối "Cần chú ý" — "Trạng thái" | Có | [Chuyển đổi] Máy chủ trả một trong năm mã thống nhất cả cụm lớp — `INSUFFICIENT_DATA` / `ABSENT` / `NEEDS_SUPPORT` / `WATCH` / `ON_TRACK` — xét theo đúng thứ tự nghiêm trọng đó, dừng ở điều kiện đầu tiên khớp; giao diện đổi sang "Chưa đủ dữ liệu" / "Vắng bài" / "Cần hỗ trợ" / "Theo dõi" / "Đang tốt". Khối "Cần chú ý" chỉ liệt kê học viên rơi vào bốn mã khác `ON_TRACK` (học viên "Đang tốt" không cần chú ý). Bộ mã, tên và thứ tự chốt theo `DEC-2026-0921-teacher-screens-conflict-resolutions`, đồng bộ với `class_management` [Nguồn: 02-bd/screens/teacher/INS0201_class_management.md:363] — đóng Câu hỏi mở Q4. |
 | 8 | `ClassAttentionStudentDto` | `reasonMetric` | Number | - | - | Khối "Cần chú ý" — "Lý do cần chú ý" | Có | [Chuyển đổi] Máy chủ trả con số thật đã kích hoạt ngưỡng (số ngày vắng, phần trăm hoàn thành, hoặc số tuần giảm liên tiếp); giao diện ghép thành câu theo `status`. Không trả câu tiếng Việt dựng sẵn từ máy chủ, để còn đa ngôn ngữ. |
 | 9 | `ClassProgressStudentRowDto` | `studentId` | UUID | `identity.class_enrollments` | `student_id` | - | Không | [Đích] Tham số điều hướng sang `class_student_detail`. |
-| 10 | `ClassProgressStudentRowDto` | `displayName` | String | `identity.users` | `display_name` | Bảng "Học viên" | Có | [Chuyển đổi] Sinh thêm ô chữ cái đầu ở phía giao diện, không lưu trong DB. |
+| 10 | `ClassProgressStudentRowDto` | `displayName` | String | `identity.users` | `display_name` | Bảng "Học viên" | Có | [Chuyển đổi] Sinh thêm ô chữ cái đầu ở phía giao diện, không lưu trong DB; hiển thị khi chưa có ảnh (xem NO 18). |
 | 11 | `ClassProgressStudentRowDto` | `classId`, `className` | UUID, String | `identity.classes` | `id`, `name` | Bảng "Lớp" | Có | [Chuyển đổi] Cột ẩn khi đang lọc theo một lớp cụ thể. |
 | 12 | `ClassProgressStudentRowDto` | `avgScore` | Number | `judge.submissions` | `status`, `problem_id`, `user_id` | Bảng "Điểm TB" | Có | [Chuyển đổi] Làm tròn một chữ số thập phân, thang 10; chưa có lượt nộp nào thì trả rỗng và giao diện hiển thị `-`. Phạm vi tính chưa khớp F1-28 — xem Câu hỏi mở Q1. |
 | 13 | `ClassProgressStudentRowDto` | `completionPercent` | Number | `identity.user_problem_best_score` | `best_verdict` | Bảng "Hoàn thành" | Có | [Công thức] `identity` tính tại chỗ: mẫu số là danh sách bài đã giao lấy qua `ListClassAssignments`, tử số là số bài trong danh sách đó có `best_verdict = ACCEPTED` của học viên. Không gọi `GetClassAssignmentCompletion` — endpoint đó đã bỏ theo `DEC-2026-0921-class-completion-owned-by-identity`. |
@@ -452,8 +454,9 @@ Bảng 4.6 ghi những gì bản dựng Next.js đang làm cho bảng học viê
 | 15 | `ClassProgressStudentRowDto` | `trendPoints` | List | - | - | Bảng "Xu hướng" | Có | [Nguồn] Cùng nguồn với NO 4, tính theo cá nhân thay vì gộp lớp.<br>[Chuyển đổi] 6 phần tử; dưới 2 phần tử thì giao diện để ô trống. |
 | 16 | `ClassProgressStudentRowDto` | `lastActiveAt` | Date | `identity.identity_recent_activity` | `occurred_at` | Bảng "Hoạt động" | Có | [Chuyển đổi] Giao diện đổi sang khoảng thời gian tương đối. |
 | 17 | `ClassProgressStudentRowDto` | `totalCount`, `pageIndex`, `pageSize` | Number | - | - | "Đếm kết quả", "Phân trang" | Có | [Nguồn] Máy chủ trả kèm mỗi trang. `totalCount` là số dòng khớp **cả** tab và từ khoá; mẫu số của dòng đếm kết quả là số học viên trong phạm vi tab (tab "Tất cả" đếm theo người khác nhau), trả riêng (`DEC-2026-1014-instructor-batch2-weekly-rules`, Q9). |
+| 18 | `ClassProgressStudentRowDto` | `avatarVersion` | Number | `identity.user_avatars` | `updated_at` | Bảng "Học viên" (ảnh đại diện) | Có | [Nguồn] Dấu phiên bản ảnh (số nguyên mili giây), rỗng khi chưa có ảnh; nguồn là F1 #59, hợp đồng duy nhất ở `03-dd/api/F1_identity.md` mục 0.9.5, không chép lại ở đây<br>[Chuyển đổi] Rỗng thì hiện chữ viết tắt, không gọi tải ảnh; có thì tải `GetUserAvatar`. |
 
-### 7.2 Truy cập bảng dữ liệu (5)
+### 7.2 Truy cập bảng dữ liệu (6)
 
 | NO | Tên logic | Bảng | Repository | CRUD | Mục đích | Ghi chú |
 | --: | :--- | :--- | :--- | :-: | :--- | :--- |
@@ -462,6 +465,7 @@ Bảng 4.6 ghi những gì bản dựng Next.js đang làm cho bảng học viê
 | 3 | Người dùng | `identity.users` | `UserRepository` | R | Tên hiển thị học viên và lọc theo từ khoá tìm kiếm | `ListClassStudents`: R<br>`ListClassAttentionStudents`: R |
 | 4 | Lượt nộp bài | `judge.submissions` | qua cổng ra `ClassStudentMetricsPort` | R | Tính Điểm TB trong phạm vi lớp (giới hạn theo tập bài đã giao); số liệu tuần tính lúc truy vấn, cache Redis 15 phút | `GetClassStudentSubmissionMetrics`: R |
 | 5 | Hoạt động gần đây | `identity.identity_recent_activity` | `IdentityRecentActivityRepository` | R | Mốc hoạt động gần nhất cho cột "Hoạt động" | `ListClassStudents`: R |
+| 6 | Ảnh đại diện | `identity.user_avatars` | `UserAvatarRepository` | R | Đọc `updated_at` để trả `avatarVersion` kèm từng dòng học viên; byte ảnh đọc qua `GetUserAvatar` [Nguồn: 02-bd/database/F1_identity.md mục 1.16] | `ListClassStudents`: R |
 
 Màn này **chỉ đọc** — không có dòng nào mang `C`, `U` hay `D`. Đây là khác biệt lớn nhất so với
 `class_management`, nơi có một thao tác xoá thật (xoá lớp) và thao tác gỡ học viên (chỉ đặt `left_at`, ĐÃ ĐỔI 2026-10-14, `DEC-2026-1014-keep-learning-history-on-leave`; ~~hai thao tác xoá thật~~).
@@ -481,6 +485,7 @@ Màn này **chỉ đọc** — không có dòng nào mang `C`, `U` hay `D`. Đâ
 | 4 | `GetClassScoreTrend` | Tải chuỗi điểm trung bình theo 6 tuần đủ, một đường (tổng mọi lớp hoặc lớp đang chọn) | `identity` |
 | 5 | `ListClassAssignments` | Cung cấp danh sách bài đã giao cho lớp; `identity` tự tính tỉ lệ Hoàn thành từ danh sách này kết hợp `user_problem_best_score`. Thay cho `GetClassAssignmentCompletion` (đã bỏ, `DEC-2026-0921-class-completion-owned-by-identity`) | `problem-bank` |
 | 6 | `GetClassStudentSubmissionMetrics` | Cung cấp chuỗi ngày, mốc nộp gần nhất và chuỗi điểm theo tuần ISO (bỏ tuần đang chạy, cache Redis 15 phút) của một tập học viên | `judge-orchestration` |
+| 7 | `GetUserAvatar` | Byte ảnh đại diện của từng học viên có `avatarVersion` khác rỗng trong bảng; lỗi hoặc rỗng thì rơi về chữ viết tắt, không ảnh hưởng dòng khác [Nguồn: 03-dd/api/F1_identity.md mục 0.9.5] | `identity` |
 
 Ghi chú ranh giới:
 

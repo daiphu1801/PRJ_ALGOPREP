@@ -218,7 +218,13 @@ public final class ClassProgressRules {
       }
     }
     return new ClassMetricViews.AttentionStudent(
-        r.classId(), r.student().studentId(), r.student().displayName(), r.status(), code, value);
+        r.classId(),
+        r.student().studentId(),
+        r.student().displayName(),
+        r.status(),
+        code,
+        value,
+        r.student().avatarVersion());
   }
 
   /** Whole days from the last submission to {@code now}. */

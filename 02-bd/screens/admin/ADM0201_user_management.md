@@ -78,6 +78,8 @@
 | V1.7 | Sheet 5, 7.1, 7.3 | Sửa 2026-11-02 (task #12, nối FE với API thật). (1) `GET /admin/users` trả thêm `lastActiveAt` (chủ dự án duyệt) nên cột "Hoạt động" hiện với API thật. (2) Cột "Đã giải" (NO 6), "Lượt nộp" (NO 7) ẩn với API thật đến khi F4 có read model; chế độ mock giữ nguyên. (3) Số trang và bộ lọc do máy chủ xử lý; bộ lọc nằm trong state của view, không nằm trong URL. (4) Khoá hoặc mở khoá nhiều tài khoản là N lệnh đơn, kết quả một phần báo bằng toast. Không có câu hỏi mở mới. |
 | V1.8 | Sheet 5, 7.1 | Sửa 2026-11-07 (F1-4, `DEC-2026-1107-f1-backend-clear-order`). `GET /admin/users` trả `solvedCount` và `totalSubmissions` đọc từ `user_problem_best_score` và `user_submission_stats` của F1 (không qua F4); tài khoản chưa có dòng trả 0. Hai cột "Đã giải" (NO 7) và "Lượt nộp" (NO 8) hiện với API thật. Màn không sắp xếp theo hai cột này. |
 | V1.9 | Sheet 4, 5 | Sửa 2026-11-07 (kiểm trình duyệt thật, phát hiện F2, F3). (1) Khối "Phân bố theo vai trò" hiện "số lượng · phần trăm%" (trước đây hiện số phần trăm trần, 36.1 không đơn vị). (2) Góc phải khung admin hiện tên admin đang đăng nhập (`useMyProfile("admin")`), chữ giữ chỗ chỉ còn lúc đang tải. Báo cáo `06-plan/reports/261107-2100-f1-f2-kiem-trinh-duyet/report.md`. Chưa duyệt hình. |
+| V1.10 | Sheet 4 (4.3), Sheet 5, 6 (Khu vực D NO 3, 19), Sheet 7 (7.1 NO 14; 7.2 NO 6; 7.3 NO 9), Sheet 8 (EVT-21, 22), Sheet 9 (NO 20, 21) | Theo `DEC-2026-1117-user-avatar-upload` (RD F1-35 mục 9, ADM0201 REQ-06): cột "Chữ viết tắt" nay hiện ảnh đại diện nếu người đó có ảnh; thêm nút "Gỡ ảnh" ở dòng, gọi `RemoveUserAvatar`, ghi Nhật ký hệ thống `USER_AVATAR_REMOVED`. Bản dựng chưa có; chưa duyệt hình | 2026/11/17 | Claude |
+| V1.11 | Hiện trạng (Sheet 5 NO 3, 19; Sheet 8 EVT-21, 22) | Dựng FE: cột người dùng hiện `UserAvatar`; nút "Gỡ ảnh" chỉ khi `avatarVersion` khác rỗng, hộp xác nhận, `RemoveUserAvatar`, làm mới danh sách, toast; thiếu quyền hiện toast từ `apiErrors` như các nút cùng dòng. Chỉ kiểm bằng Vitest; chưa duyệt hình | 2026/11/17 | Claude |
 
 ---
 
@@ -308,7 +310,7 @@ dòng. Cần xử lý: 1 dòng sau khi cắt phạm vi.
 
 `[Suy luận]` — tên DTO do BD này đề xuất, `03-dd/api/F1_identity.md` chốt lại.
 
-### 4.3 Bảng dữ liệu liên quan (5)
+### 4.3 Bảng dữ liệu liên quan (6)
 
 | NO | Bảng | Ghi chú |
 | --: | :--- | :--- |
@@ -317,6 +319,7 @@ dòng. Cần xử lý: 1 dòng sau khi cắt phạm vi.
 | 3 | `system_audit_logs` | [Nguồn: 02-bd/database/F1_identity.md:141-155] |
 | 4 | `user_problem_best_score` | [Nguồn: 02-bd/database/F1_identity.md:189] |
 | 5 | `user_submission_stats` | [Nguồn: 02-bd/database/F1_identity.md:191] |
+| 6 | `user_avatars` | Siêu dữ liệu ảnh đại diện, thêm V1.10 [Nguồn: 02-bd/database/F1_identity.md mục 1.16] |
 
 Chỉ số "Yêu cầu đặt lại mật khẩu" (thẻ đã bỏ khỏi màn 2026-10-01, nay thuộc trang tổng quan Admin) **không dùng
 bảng PostgreSQL**: các khoá OTP quên mật khẩu nằm trên Redis theo mẫu `identity:pwreset:<userId>`, TTL 10 phút
@@ -407,7 +410,7 @@ các tham chiếu hiện có không phải đánh số lại.
 | | 1 | Danh sách người dùng | `adminUserManagement.list` | `users` | - | List | List | - | - | O | rỗng | - | Mỗi dòng là một tài khoản. Phân trang phía máy chủ<br>[Nguồn giá trị] Kết quả gọi `ListUsers`<br>[EVT liên quan] EVT-1 |
 | | 2 | Ô chọn dòng | `adminUserManagement.list.col.checkbox` | - | - | Button | Boolean | - | - | I | Không chọn | - | Tích chọn tài khoản trên dòng đó để đưa vào hành động gộp. Trạng thái chỉ tồn tại trên màn, không lưu máy chủ<br>[Nguồn giá trị] Trạng thái chọn của màn hình<br>[EVT liên quan] EVT-5 |
 | | 2a | Chọn tất cả đang hiển thị | `adminUserManagement.list.col.selectAll` | - | - | Button | Boolean | - | - | I | Không chọn | - | Chọn mọi dòng **đang có trên trang**, không phải mọi tài khoản khớp bộ lọc. **Nhãn mang số dòng** ("Chọn 9 tài khoản đang hiển thị") — ghi "chọn tất cả" trên trang phân thật khiến người dùng tưởng đã chọn hết 143 tài khoản rồi bấm "Khóa tài khoản" **[SoT: Suy luận — sửa 2026-10-05, chưa có prototype nào vẽ nhãn này]**<br>[Công thức] Số dòng khớp bộ lọc hiện tại trên trang<br>[EVT liên quan] EVT-5 |
-| | 3 | Chữ viết tắt | `adminUserManagement.list.col.initials` | `users` | `display_name` | ListColumn | String | 2 | - | O | - | 2 ký tự in hoa | Vòng tròn chữ cái đầu thay ảnh đại diện<br>[Công thức] Lấy chữ cái đầu của hai từ cuối trong `display_name` [Nguồn: 09-layoutBase/Admin - Người dùng.dc.html:459]<br>[EVT liên quan] - |
+| | 3 | Ảnh đại diện (hoặc chữ viết tắt) | `adminUserManagement.list.col.avatar` | `user_avatars`; `users` | `updated_at`; `display_name` | ListColumn | String | - | - | O | Chữ viết tắt | Ảnh tròn nhỏ, hoặc 2 ký tự in hoa | Hiện ảnh của người trên dòng; chưa có ảnh hoặc tải lỗi thì hiện chữ viết tắt (F1-35)<br>[Nguồn giá trị] Có ảnh khi `AdminUserListItemDto.avatarVersion` khác rỗng (mục 7.1 NO 14); ảnh tải qua `GetUserAvatar`<br>[Công thức] Chữ viết tắt: như cũ, hai ký tự đầu của hai từ cuối `display_name`<br>[Ghi chú ID] ID cũ `...col.initials` thay bằng ID này từ V1.10<br>[Hiện trạng bản dựng] Đã dựng 2026-11-17, chưa duyệt hình: `UserAvatar` ở `admin-user-management-view.tsx`; `avatarVersion` đọc từ #35 và để tuỳ chọn (rỗng thì chữ viết tắt) |
 | | 4 | Tên người dùng | `adminUserManagement.list.col.displayName` | `users` | `display_name` | ListColumn | String | - | - | O | - | - | Tên hiển thị của tài khoản<br>[Nguồn giá trị] Cột `display_name`<br>[EVT liên quan] - |
 | | 5 | Email | `adminUserManagement.list.col.email` | `users` | `email` | ListColumn | String | - | - | O | - | - | Địa chỉ email đăng nhập<br>[Nguồn giá trị] Cột `email`<br>[EVT liên quan] - |
 | | 6 | Vai trò | `adminUserManagement.list.col.role` | `roles` | `name`, `base_category` | Badge | String | - | - | O | - | Nhãn tiếng Việt | Vai trò của tài khoản, hiển thị dạng thẻ<br>[Nguồn giá trị] `roles.name` qua `users.role_id`; nhóm màu lấy theo `roles.base_category`, không theo `roles.code` — role tuỳ biến vẫn hiển thị đúng nhóm cơ bản [Nguồn: 02-bd/architecture/F1_identity.md:74-80]<br>[EVT liên quan] - |
@@ -423,6 +426,7 @@ các tham chiếu hiện có không phải đánh số lại.
 | | 16 | Nút Đặt lại mật khẩu (dòng) | `adminUserManagement.list.col.actions.btnResetPassword` | - | - | Button | - | - | - | I | - | - | Mở popup xác nhận đặt lại mật khẩu cho đúng tài khoản của dòng (Popup NO 1) [Nguồn: 05-coding/frontend/src/views/admin/user-management/ui/admin-user-management-view.tsx:300-305]<br>[EVT liên quan] EVT-8 |
 | | 17 | Nút Khóa tài khoản (dòng) | `adminUserManagement.list.col.actions.btnLock` | - | - | Button | - | - | - | I | - | - | Chỉ hiện ở dòng **chưa** bị khoá, kiểu nguy hiểm. Mở popup khoá với tập đích là một tài khoản (Popup NO 3) [Nguồn: 05-coding/frontend/src/views/admin/user-management/ui/admin-user-management-view.tsx:313-320]<br>[EVT liên quan] EVT-12 |
 | | 18 | Nút Mở khóa tài khoản (dòng) | `adminUserManagement.list.col.actions.btnUnlock` | - | - | Button | - | - | - | I | - | - | Chỉ hiện ở dòng **đang** bị khoá, thay chỗ nút Khoá. **Sửa 2026-10-22 (đồng bộ DB vòng 3, DEC-2026-1022-self-register-pending-login-blocked):** nút **bị vô hiệu** (hiện nhưng không bấm được) ở dòng tài khoản tự xoá đã ẩn danh hoá (`anonymized = true` ở `ListUsers`, tức `anonymized_at` khác NULL), vì dữ liệu định danh không khôi phục được. Mở popup mở khoá với tập đích là một tài khoản (Popup NO 3f) [Nguồn: 05-coding/frontend/src/views/admin/user-management/ui/admin-user-management-view.tsx:306-312]<br>[EVT liên quan] EVT-19 |
+| | 19 | Nút Gỡ ảnh (dòng) | `adminUserManagement.list.col.actions.btnRemoveAvatar` | - | - | Button | - | - | - | I | - | - | Chỉ hiện ở dòng của người **đang có ảnh**. Mở hộp xác nhận gỡ ảnh đại diện của đúng tài khoản đó<br>[Nguồn giá trị] Nhãn tĩnh i18n; điều kiện hiện lấy từ `avatarVersion` khác rỗng<br>[EVT liên quan] EVT-21, EVT-22<br>[Hiện trạng bản dựng] Đã dựng 2026-11-17, chưa duyệt hình (`05-coding/frontend/src/views/admin/user-management/ui/admin-user-management-view.tsx`, `api/mutations.ts` `removeAvatar`); kiểm bằng Vitest (`admin-user-management-real.test.tsx`), chưa chụp Playwright |
 
 ### Khu vực E — Phân bố theo vai trò
 
@@ -517,7 +521,7 @@ Không còn item nào — xem Sheet 5, Khu vực B.
 | Bảng người dùng | | | | |
 | | 1 | Danh sách người dùng | Có | [Điều kiện hiển thị] Trong lúc tải hiển thị khung chờ đúng số dòng của một trang. Tải xong mà không có dòng nào thì hiển thị thông báo rỗng thay cho bảng — đây là kết quả lọc rỗng, **không phải** lỗi. |
 | | 2 | Ô chọn dòng | Có | [Điều kiện kích hoạt] Không kích hoạt trong lúc một hành động gộp đang chạy.<br>[Tự động xoá] Bỏ toàn bộ lựa chọn khi đổi trang, đổi bộ lọc, hoặc sau khi một hành động gộp kết thúc. |
-| | 3 | Chữ viết tắt | Có | - |
+| | 3 | Ảnh đại diện (hoặc chữ viết tắt) | Có | [Điều kiện hiển thị] Ảnh tải lỗi hoặc chưa có thì hiện chữ viết tắt, không hiện biểu tượng ảnh hỏng. |
 | | 4 | Tên người dùng | Có | - |
 | | 5 | Email | Có | - |
 | | 6 | Vai trò | Có | - |
@@ -533,6 +537,7 @@ Không còn item nào — xem Sheet 5, Khu vực B.
 | | 16 | Nút Đặt lại mật khẩu (dòng) | Điều kiện | [Điều kiện kích hoạt] Kích hoạt khi có quyền `USER_MANAGEMENT:UPDATE`. **Khoảng trống:** prototype không có cờ cho biết tài khoản chỉ đăng nhập OAuth nên nút kích hoạt với mọi dòng (Q8, Sheet 9 NO 10). |
 | | 17 | Nút Khóa tài khoản (dòng) | Điều kiện | [Điều kiện hiển thị] Chỉ ở dòng chưa bị khoá.<br>[Điều kiện kích hoạt] Kích hoạt khi có quyền `USER_MANAGEMENT:UPDATE`. |
 | | 18 | Nút Mở khóa tài khoản (dòng) | Điều kiện | [Điều kiện hiển thị] Chỉ ở dòng đang bị khoá (thay chỗ NO 17).<br>[Điều kiện kích hoạt] Kích hoạt khi có quyền `USER_MANAGEMENT:UPDATE`. |
+| | 19 | Nút Gỡ ảnh (dòng) | Điều kiện | [Điều kiện hiển thị] Chỉ ở dòng có ảnh đại diện.<br>[Điều kiện kích hoạt] Kích hoạt khi có quyền `USER_MANAGEMENT:UPDATE`; không có quyền thì bấm được nhưng bị chặn kèm toast, như các nút khác của cột.<br>[Tự động đặt] Bấm thì hỏi xác nhận (EVT-21), chỉ gọi máy chủ khi xác nhận (EVT-22). |
 
 ### Khu vực E — Phân bố theo vai trò
 
@@ -606,8 +611,9 @@ Không còn item nào — xem Sheet 5, Khu vực B.
 | 11 | `BulkUserActionResultDto` | `succeededIds`, `failedItems` | List, List | - | - | Thông báo hoàn tất của EVT-9, EVT-11, EVT-13 | Có | [Nguồn] Phản hồi của ba endpoint hành động<br>[Chuyển đổi] Một hành động gộp phía màn là **N lệnh đơn** phía tầng ứng dụng, nên kết quả có thể thành công một phần; `failedItems` mang `id` kèm mã lỗi của từng tài khoản hỏng. |
 | 12 | `CreateUserAccountRequestDto` | `displayName`, `email`, `roleId` | String, String, UUID | `users`, `roles` | `display_name`, `email`, `role_id` | Popup Thêm tài khoản NO 5, 6, 7 | Không | [Nguồn] Giá trị người dùng nhập trong popup<br>[Đích] Tham số của `CreateUserAccount`<br>[Chuyển đổi] `email` được cắt khoảng trắng và đổi sang chữ thường trước khi gửi và so trùng; `roleId` là id của role `STUDENT`, `INSTRUCTOR` hoặc role tuỳ biến không thuộc nhóm ADMIN, lấy từ `ListRoles` (**Sửa 2026-11-02:** trước đây ghi `roleCode`; DD api F1 mục 0.6.1 và `DEC-2026-1102-admin-user-management-contracts` chốt `roleId`, máy chủ trả `422 IDT-441` nếu sai). Mật khẩu tạm do máy chủ sinh và gửi qua email, **không** có trường mật khẩu trong DTO và không hiển thị cho quản trị viên. Tài khoản tạo ra có `status = PENDING_VERIFICATION` và `must_change_password = true`. |
 | 13 | `ChangeUserStatusRequestDto` | `targetStatus`, `reason`, `notifyByEmail`, `acknowledgeSelfImpact` | Enum, String, Boolean, Boolean | `system_audit_logs` | `after_json` | Popup khoá NO 3c, 3d | Không | [Nguồn] **Mới 2026-10-05 (F1-32)**<br>[Đích] Tham số của `ChangeUserStatus`; `reason` và `notifyByEmail` ghi vào `system_audit_logs.after_json`<br>[Chuyển đổi] `targetStatus` chỉ nhận `DEACTIVATED` hoặc `ACTIVE`. `reason` bắt buộc khi `notifyByEmail = true` (Sheet 9 NO 16), vẫn được ghi vào nhật ký kể cả khi không gửi email. `notifyByEmail` mặc định `true`; `acknowledgeSelfImpact` phải `true` khi tập đích có chính tài khoản đang thao tác (Sheet 9 NO 6, 7) — trường này đã có từ V0.6, ở đây chỉ nhắc lại vì nó nằm chung DTO |
+| 14 | `AdminUserListItemDto` | `avatarVersion` | Number | `user_avatars` | `updated_at` | Bảng "Ảnh đại diện" | Có | [Nguồn] Phản hồi của `ListUsers`; rỗng khi người đó chưa có ảnh. Biểu diễn do DD chốt, như `USR0502` mục 7.1 NO 19 [Nguồn: 02-bd/screens/users/USR0502_profile.md]. |
 
-### 7.2 Truy cập bảng dữ liệu (5)
+### 7.2 Truy cập bảng dữ liệu (6)
 
 | NO | Tên logic | Bảng | Repository | CRUD | Mục đích | Ghi chú |
 | --: | :--- | :--- | :--- | :-: | :--- | :--- |
@@ -616,8 +622,9 @@ Không còn item nào — xem Sheet 5, Khu vực B.
 | 3 | Nhật ký quản trị | `system_audit_logs` | `SystemAuditLogRepository` | C | Ghi một dòng cho **mỗi** tài khoản chịu tác động của mỗi hành động ghi; dòng khoá kèm **lý do** trong `after_json` (F1-32) | `CreateUserAccount`: C<br>`ChangeUserRole`: C<br>`ChangeUserStatus`: C<br>`ResetUserPassword`: C |
 | 4 | Điểm tốt nhất theo bài | `user_problem_best_score` | `UserProblemBestScoreRepository` | R | Đếm số bài đã giải cho cột "Đã giải" | `ListUsers`: R |
 | 5 | Thống kê lượt nộp | `user_submission_stats` | `UserSubmissionStatsRepository` | R | Đọc tổng lượt nộp cho cột "Lượt nộp" | `ListUsers`: R |
+| 6 | Ảnh đại diện | `user_avatars` | `UserAvatarRepository` | R, D | Đọc `updated_at` cho `avatarVersion` của từng dòng; xoá dòng ảnh khi quản trị viên gỡ ảnh (đối tượng MinIO xoá sau khi commit, `02-bd/storage/F1_identity.md` mục 4) | `ListUsers`: R<br>`RemoveUserAvatar`: R, D |
 
-Thao tác `C` trên `users` là của `CreateUserAccount` (thêm V0.7). Không có thao tác xoá (`D`) trên màn này: khoá tài khoản là đặt `users.status = 'DEACTIVATED'`, không xoá
+Thao tác `C` trên `users` là của `CreateUserAccount` (thêm V0.7). Thao tác xoá (`D`) trên màn này chỉ có với `user_avatars` (V1.10, gỡ ảnh); với `users` không có xoá: khoá tài khoản là đặt `users.status = 'DEACTIVATED'`, không xoá
 dòng [Nguồn: 02-bd/database/F1_identity.md:24, 27]. Chỉ số "Yêu cầu đặt lại mật khẩu" (nay hiển thị ở trang tổng quan Admin) đọc trên Redis, không qua
 repository JPA.
 
@@ -637,6 +644,7 @@ repository JPA.
 | 6 | `ChangeUserStatus` | Khoá hoặc mở khoá một hoặc nhiều tài khoản (thanh gộp hoặc nút trên dòng); nhận thêm **lý do** và cờ **gửi email** (F1-32) | `identity` |
 | 7 | `ResetUserPassword` | Đặt lại mật khẩu hộ cho **một** tài khoản — không còn là hành động gộp (Q7); điểm chạm là nút trên dòng (dựng 2026-10-08), DD chốt hợp đồng | `identity` |
 | 8 | `CreateUserAccount` | Tạo tài khoản `STUDENT` hoặc `INSTRUCTOR`, sinh mật khẩu tạm gửi qua email, bắt đổi ở lần đăng nhập đầu (đặt `users.must_change_password = true`), ghi một dòng `system_audit_logs` | `identity` |
+| 9 | `RemoveUserAvatar` | Gỡ ảnh đại diện của **một** tài khoản bất kỳ (quyền `USER_MANAGEMENT:UPDATE`), ghi Nhật ký hệ thống `USER_AVATAR_REMOVED`; chỉ gỡ, không tải thay | `identity` |
 
 Tham số bổ sung của `ChangeUserStatus` (`[SoT: Suy luận]`, DD chốt tên): `reason` (bắt buộc khi
 `notifyByEmail = true`), `notifyByEmail` (mặc định true) và `acknowledgeSelfImpact` (Sheet 9 NO 6, 7).
@@ -676,6 +684,8 @@ hay gọi nhiều lần là quyết định kỹ thuật của DD, không phải
 | 18 | Nút | Đóng popup Thêm tài khoản | Bấm "Huỷ" hoặc "Xong", hoặc đóng popup. | Không | Không | - | [Các bước]<br>1. Đóng popup, xoá họ tên, email và vai trò đã nhập.<br>[Khi thành công] Danh sách không đổi nếu đóng trước khi tạo. |
 | 19 | Nút | Mở popup mở khoá tài khoản | Bấm "Mở khoá tài khoản" trên thanh hành động gộp, hoặc nút mở khoá ở cột "Thao tác" của một dòng đang bị khoá. | Không | Không | - | [Các bước]<br>1. Tách tập đang chọn thành hai phần theo trạng thái; chỉ phần đã bị khoá mới đi vào popup.<br>2. Mở popup, liệt kê tên và email các tài khoản đó.<br>[Khi thành công] Popup hiển thị; nút không kích hoạt khi tập chọn không có dòng nào đang bị khoá.<br>[Ghi chú] **Mới 2026-10-05**, đóng Q2 |
 | 20 | Popup | Xác nhận mở khoá tài khoản | Bấm "Mở khoá" trong popup. | Không | Có | `ChangeUserStatus` | [Các bước]<br>1. Kiểm quyền `USER_MANAGEMENT:UPDATE`.<br>2. Bỏ qua tài khoản đã ẩn danh hoá (`anonymized_at` khác NULL; máy chủ cũng từ chối, tính là thất bại với lý do "đã ẩn danh hoá", **Sửa 2026-10-22 (đồng bộ DB vòng 3, DEC-2026-1022-self-register-pending-login-blocked)**). Đặt `status = 'ACTIVE'`, đồng thời đặt lại `deactivation_source` và `deactivated_at` về `NULL`, cho **từng** tài khoản đã bị khoá trong tập chọn (kể cả tài khoản tự xoá đang trong ân hạn 30 ngày: mở khoá là huỷ việc xoá, Sửa 2026-10-22 (đồng bộ DB vòng 2, DEC-2026-1022-db-sync-round2)), mỗi tài khoản ghi một dòng `system_audit_logs` riêng.<br>3. Đóng popup, bỏ lựa chọn, tải lại bảng và khối phân bố theo vai trò.<br>[Khi thành công] Các dòng liên quan hiển thị trạng thái "Hoạt động".<br>[Khi lỗi] Thành công một phần thì vẫn đóng popup và hiện **một toast** nêu rõ số thành công, số thất bại kèm lý do; không hoàn tác phần đã thành công.<br>[Thông báo hoàn tất] Toast "Đã mở khoá {số} tài khoản."<br>[Ghi chú] **Không** có ô lý do và **không** gửi email — mở khoá là hành động khôi phục quyền truy cập [Nguồn: 01-rd/req/F1_identity.md — F1-32] |
+| 21 | Nút | Mở xác nhận gỡ ảnh | Bấm nút "Gỡ ảnh" ở cột "Thao tác" của một dòng có ảnh. | Không | Không | - | [Các bước]<br>1. Ghi nhớ tài khoản của dòng.<br>2. Mở hộp xác nhận nêu tên người bị gỡ ảnh.<br>[Khi huỷ] Đóng hộp, không gọi máy chủ (dùng chung EVT-14). |
+| 22 | Popup | Xác nhận gỡ ảnh | Bấm "Gỡ ảnh" trong hộp xác nhận. | Không | Có | `RemoveUserAvatar` | [Các bước]<br>1. Kiểm quyền `USER_MANAGEMENT:UPDATE` (máy chủ kiểm lại).<br>2. Gọi `RemoveUserAvatar`.<br>3. Thành công: dòng đó trở lại chữ viết tắt, nút "Gỡ ảnh" ẩn; toast thành công.<br>[Khi lỗi] Toast theo mã lỗi; ảnh giữ nguyên. Người đã không còn ảnh (ví dụ tự gỡ trước đó) thì máy chủ bỏ qua, màn vẫn làm mới dòng.<br>[Hiện trạng bản dựng] Đã dựng 2026-11-17, chưa duyệt hình (`05-coding/frontend/src/views/admin/user-management/ui/admin-user-management-view.tsx`, `api/mutations.ts` `removeAvatar`); kiểm bằng Vitest (`admin-user-management-real.test.tsx`), chưa chụp Playwright. |
 
 [EVT 8-11 — V1.0, 2026-10-08] Bốn sự kiện đặt lại mật khẩu và đổi vai trò đã bỏ khỏi chế độ gộp ngày 2026-10-05 (Q7) và **quay lại ở dạng một tài khoản**, mở từ nút ở cột "Thao tác" (điểm chạm mà Q7 để lại cho DD). Giữ nguyên số EVT để các tham chiếu ở Sheet 5, 6, 9 không phải đánh số lại. Mọi thao tác ghi đều ghi một dòng Nhật ký hệ thống (F1-14) — prototype chưa ghi thật. `ListRoles` (Sheet 7.3 NO 4) lại được màn này dùng.
 
@@ -710,6 +720,8 @@ hay gọi nhiều lần là quyết định kỹ thuật của DD, không phải
 | 17 | Kiểm nghiệp vụ | Nội dung email không lộ dữ liệu tài khoản khác | [Nội dung kiểm] Email thông báo khoá nêu tài khoản bị khoá, thời điểm, lý do, cách liên hệ quản trị viên; **không** nêu dữ liệu của tài khoản khác trong cùng tập chọn, không nêu chi tiết kỹ thuật. Tài khoản chỉ đăng nhập bằng OAuth nhận cùng nội dung.<br>[Nơi thực thi] Máy chủ khi dựng nội dung email.<br>[Ghi chú] Cùng nguyên tắc F1-17: gửi email hướng dẫn quay lại provider thay vì mã OTP cho tài khoản OAuth [Nguồn: 01-rd/req/F1_identity.md — F1-15, F1-17, F1-32]. | Cảnh báo | Chưa có mã thông báo | — | EVT-12 | 2 |
 | 18 | Kiểm nghiệp vụ | Mở khoá không cần lý do, không gửi email | [Nội dung kiểm] Popup mở khoá không có ô lý do và không gửi email cho người dùng; chỉ ghi một dòng `system_audit_logs` cho mỗi tài khoản.<br>[Nơi thực thi] Màn hình và máy chủ.<br>[Tiêu điểm] Popup mở khoá.<br>**Vì sao:** mở khoá là hành động khôi phục quyền truy cập — người dùng vừa nhận được thông báo bị khoá thì không cần thông báo ngược lại, và bắt quản trị viên nhập lý do "vì tôi đã bỏ nhầm" chỉ tạo thêm việc. | Lỗi | Chưa có mã thông báo | [Nguồn: 01-rd/req/F1_identity.md — F1-32] | EVT-19 | 1 |
 | 19 | Kiểm nghiệp vụ | Báo cáo đúng số tài khoản thực sự bị khoá | [Nội dung kiểm] Tập chọn có dòng đã bị khoá thì popup khoá phải nêu rõ số dòng bị bỏ qua, và thông báo hoàn tất cũng phải đếm **đúng số dòng thực sự bị khoá** — nhỏ hơn số đang chọn.<br>[Nơi thực thi] Màn hình (hiển thị) và máy chủ (tính, giống NO 9).<br>[Tiêu điểm] Dòng cảnh báo trong popup khoá và thông báo hoàn tất.<br>**Vì sao:** nếu thông báo hoàn tất đếm cả dòng bị bỏ qua thì quản trị viên tưởng đã khoá đủ số mình chọn trong khi thực tế không — đây là dạng nhầm lẫn nghiêm trọng với hành động phá huỷ. | Cảnh báo | Chưa có mã thông báo | [Nguồn: Sheet 9 NO 9; 01-rd/req/F1_identity.md — F1-32] | EVT-12, EVT-13 | 3 |
+| 20 | Kiểm quyền | Quyền gỡ ảnh | [Nội dung kiểm] Gỡ ảnh đại diện của người khác đòi `USER_MANAGEMENT:UPDATE`; không có thì từ chối.<br>[Nơi thực thi] Máy chủ (màn chỉ ẩn hoặc chặn kèm toast).<br>[Tiêu điểm] Toast. | Lỗi | Mã lỗi trong phản hồi | Cùng cơ chế quyền với NO 2 | EVT-22 | 1 |
+| 21 | Kiểm nghiệp vụ | Ghi nhật ký khi gỡ ảnh | [Nội dung kiểm] Mỗi lần gỡ ảnh của một người thực sự có ảnh ghi đúng một dòng `system_audit_logs` loại `USER_AVATAR_REMOVED`, `target_id` là người bị gỡ; người không có ảnh thì không ghi dòng nào.<br>[Nơi thực thi] Máy chủ. | Lỗi | Mã lỗi trong phản hồi | Không lưu khoá đối tượng hay nội dung ảnh trong dòng nhật ký (`02-bd/database/F1_identity.md` mục 1.11) | EVT-22 | 2 |
 
 Cột `Thứ tự` là thứ tự kiểm trong cùng một sự kiện.
 

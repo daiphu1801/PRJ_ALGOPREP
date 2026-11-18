@@ -29,10 +29,14 @@ const DECORATIVE_ICONS = [LayoutGrid, Moon, ShieldCheck];
 
 export function AreaToolbar({
   name,
+  userId,
+  avatarVersion,
   roleLabel,
   items,
 }: {
   name: string;
+  userId?: string;
+  avatarVersion?: number | null;
   roleLabel: string;
   items: AreaMenuItem[];
 }) {
@@ -51,7 +55,13 @@ export function AreaToolbar({
       {/* Real identity waits on app/providers/auth-provider.tsx session bootstrap (still TODO) —
           shown as a static two-line placeholder (name + role, dc.html:116-119) so the row's shape
           matches the prototype without inventing a specific fake person's name. */}
-      <AreaUserMenu name={name} roleLabel={roleLabel} items={items} />
+      <AreaUserMenu
+        name={name}
+        userId={userId}
+        avatarVersion={avatarVersion}
+        roleLabel={roleLabel}
+        items={items}
+      />
     </div>
   );
 }

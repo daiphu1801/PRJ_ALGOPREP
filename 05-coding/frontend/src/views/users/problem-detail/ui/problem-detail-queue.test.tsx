@@ -158,7 +158,11 @@ describe("ProblemDetailView queue notice (PD-AC-14)", () => {
     render(withTestProviders(<ProblemDetailView />));
     await submitCode();
 
-    await vi.waitFor(() => expect(apiMock.get).toHaveBeenCalledWith("/judge/submissions/s1/progress"));
+    await vi.waitFor(() =>
+      expect(apiMock.get).toHaveBeenCalledWith(
+        "/judge/submissions/s1/progress",
+      ),
+    );
     expect(screen.queryByText(/Đang chờ chấm/)).not.toBeInTheDocument();
   });
 });

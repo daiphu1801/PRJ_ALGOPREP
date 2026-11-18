@@ -71,7 +71,8 @@ function renderCard() {
 const field = (label: string) => screen.getByLabelText(label);
 const set = (label: string, value: string) =>
   fireEvent.change(field(label), { target: { value } });
-const save = () => fireEvent.click(screen.getByRole("button", { name: p.form.save }));
+const save = () =>
+  fireEvent.click(screen.getByRole("button", { name: p.form.save }));
 const saved = (patch: Partial<UserProfile> = {}) => ({ ...profile, ...patch });
 
 describe("PersonalInfoCard", () => {

@@ -50,7 +50,7 @@ class ClassMetricsHandlersTest {
 
   private static ClassRosterEntry student(String name) {
     return new ClassRosterEntry(
-        UUID.randomUUID(), name, name + "@x.test", null, NOW.minusSeconds(86_400L * 90));
+        UUID.randomUUID(), name, name + "@x.test", null, NOW.minusSeconds(86_400L * 90), null);
   }
 
   private static List<WeekPoint> weeks(Double... ratios) {

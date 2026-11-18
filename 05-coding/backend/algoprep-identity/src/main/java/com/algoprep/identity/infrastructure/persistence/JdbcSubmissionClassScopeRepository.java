@@ -22,10 +22,12 @@ class JdbcSubmissionClassScopeRepository implements SubmissionClassScopeReposito
     return jdbc.getObject()
         .sql(
             """
-        SELECT c.id, c.name, e.student_id, u.display_name, e.joined_at, e.left_at
+        SELECT c.id, c.name, e.student_id, u.display_name, e.joined_at, e.left_at,
+          av.updated_at AS avatar_updated_at
         FROM identity.classes c
         LEFT JOIN identity.class_enrollments e ON e.class_id=c.id
         LEFT JOIN identity.users u ON u.id=e.student_id
+        LEFT JOIN identity.user_avatars av ON av.user_id=u.id
         WHERE c.instructor_id=:instructor ORDER BY c.id, e.student_id
         """)
         .param("instructor", instructorId)
@@ -39,7 +41,10 @@ class JdbcSubmissionClassScopeRepository implements SubmissionClassScopeReposito
                   rs.getObject("student_id", UUID.class),
                   rs.getString("display_name"),
                   joined == null ? null : joined.toInstant(),
-                  left == null ? null : left.toInstant());
+                  left == null ? null : left.toInstant(),
+                  rs.getTimestamp("avatar_updated_at") == null
+                      ? null
+                      : rs.getTimestamp("avatar_updated_at").toInstant().toEpochMilli());
             })
         .list();
   }

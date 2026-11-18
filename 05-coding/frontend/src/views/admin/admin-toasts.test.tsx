@@ -73,9 +73,7 @@ describe("admin toasts", () => {
   it("export dialog: bad range errors, good range succeeds", async () => {
     const read = watch();
     render(
-      withQuery(
-        <ExportLogDialog open onClose={() => {}} retentionDays={90} />,
-      ),
+      withQuery(<ExportLogDialog open onClose={() => {}} retentionDays={90} />),
     );
     const day = (offset: number) =>
       new Date(Date.now() + offset * 86_400_000).toISOString().slice(0, 10);

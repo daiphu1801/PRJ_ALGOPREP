@@ -28,6 +28,7 @@ import {
   type AuthOutcome,
   type LoginInput,
 } from "@/entities/auth";
+import { authLoading, useAuthLoadingStep } from "./loading-store";
 
 /** Number of sequential steps shown by AuthLoadingOverlay (02-bd/screens/shared/SHR0101_auth.md Sheet 5, khu vực D). */
 export const LOADING_STEP_COUNT = 4;
@@ -85,7 +86,7 @@ export function useAuthFlow(
   const [fieldErrors, setFieldErrors] = useState<AuthFieldErrors>({});
   const [feedback, setFeedback] = useState<AuthFeedback | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [loadingStep, setLoadingStep] = useState<number | null>(null);
+  const loadingStep = useAuthLoadingStep();
   const [deactivatedBanner, setDeactivatedBanner] = useState(false);
   const [forgotTargetEmail, setForgotTargetEmail] = useState("");
   const [verifyTargetEmail, setVerifyTargetEmail] = useState("");
@@ -154,7 +155,7 @@ export function useAuthFlow(
   const runLoadingOverlayThenNavigate = useCallback(
     async (role: keyof typeof HOME_PATH_BY_ROLE) => {
       for (let step = 0; step < LOADING_STEP_COUNT; step += 1) {
-        setLoadingStep(step);
+        authLoading.setStep(step);
         // Sequential by design (each step must visibly finish before the next starts), not
         // parallel work — awaiting inside the loop is intentional here.
         await new Promise((resolve) =>
@@ -246,6 +247,9 @@ export function useAuthFlow(
   const runLogin = useCallback(
     async (input: LoginInput) => {
       setIsSubmitting(true);
+      // After a successful sign-in the overlay stays up through the navigation and is dropped by
+      // `AuthLoadingReset`; every other way out clears it here.
+      let navigated = false;
       try {
         const outcome = await loginFn(input);
         if (!outcome.ok) {
@@ -267,11 +271,12 @@ export function useAuthFlow(
           return;
         }
         await runLoadingOverlayThenNavigate(outcome.role);
+        navigated = true;
       } catch (error) {
         failWith(error, "login");
       } finally {
         setIsSubmitting(false);
-        setLoadingStep(null);
+        if (!navigated) authLoading.clear();
       }
     },
     [
@@ -320,16 +325,18 @@ export function useAuthFlow(
   const submitOAuth = useCallback(
     async (provider: "google" | "github") => {
       setIsSubmitting(true);
+      let navigated = false;
       try {
         const outcome = await oauthLogin(provider);
         if (outcome.ok && !outcome.deactivated) {
           await runLoadingOverlayThenNavigate(outcome.role);
+          navigated = true;
         }
       } catch (error) {
         failWith(error, "login");
       } finally {
         setIsSubmitting(false);
-        setLoadingStep(null);
+        if (!navigated) authLoading.clear();
       }
     },
     [runLoadingOverlayThenNavigate, failWith],

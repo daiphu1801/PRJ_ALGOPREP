@@ -11,10 +11,12 @@ import java.util.UUID;
  * @param roleName name of the admin's role
  * @param actionCount actions in the window
  * @param lastActionAt time of the latest action
+ * @param avatarVersion epoch milliseconds of the avatar update, null without avatar
  */
 public record ActiveAdmin(
     UUID actorUserId,
     String displayName,
     String roleName,
     long actionCount,
-    Instant lastActionAt) {}
+    Instant lastActionAt,
+    Long avatarVersion) {}

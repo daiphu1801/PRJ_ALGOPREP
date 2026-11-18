@@ -130,6 +130,7 @@ describe("side blocks (#64, #65)", () => {
       {
         id: "a1",
         name: "Phú Đại",
+        avatarVersion: null,
         meta: "Quản trị · 28 hành động",
         lastActionAt: "2 phút trước",
       },

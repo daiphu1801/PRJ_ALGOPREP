@@ -121,7 +121,10 @@ export function NumberStepper({
         }}
       />
       {after ? (
-        <span aria-hidden="true" style={unitWidth ? { minWidth: unitWidth } : undefined}>
+        <span
+          aria-hidden="true"
+          style={unitWidth ? { minWidth: unitWidth } : undefined}
+        >
           {after}
         </span>
       ) : null}

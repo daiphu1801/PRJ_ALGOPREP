@@ -194,6 +194,24 @@ class AdminUserManagementFlowTest {
   }
 
   @Test
+  void theListCarriesTheAvatarVersionOrNull() throws Exception {
+    String admin = login(account("ADMIN", "ACTIVE", HASH));
+    String bare = account("STUDENT", "ACTIVE", HASH);
+    String pictured = account("STUDENT", "ACTIVE", HASH);
+    jdbc.update(
+        "INSERT INTO identity.user_avatars(user_id,object_key,content_type,size_bytes,updated_at)"
+            + " VALUES (?,'avatars/k','image/png',10,to_timestamp(1700000000.123))",
+        UUID.fromString(userId(pictured)));
+
+    String bareBody = send(get(BASE).param("q", bare), admin, null).getContentAsString();
+    String picturedBody = send(get(BASE).param("q", pictured), admin, null).getContentAsString();
+
+    assertThat(JsonPath.<Object>read(bareBody, "$.items[0].avatarVersion")).isNull();
+    assertThat(JsonPath.<Number>read(picturedBody, "$.items[0].avatarVersion").longValue())
+        .isEqualTo(1700000000123L);
+  }
+
+  @Test
   void theListCarriesSolvedAndSubmissionCountsFromTheReadModelsAndZeroWhenThereIsNoRow()
       throws Exception {
     String admin = login(account("ADMIN", "ACTIVE", HASH));

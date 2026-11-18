@@ -37,7 +37,11 @@ const ATTEMPTS = `${Q}/practice-answers`;
 
 const detail = (over: Record<string, unknown> = {}) => ({
   id: "q1",
-  topic: { code: "BEHAVIORAL", displayName: "Hành vi", usesStarFramework: true },
+  topic: {
+    code: "BEHAVIORAL",
+    displayName: "Hành vi",
+    usesStarFramework: true,
+  },
   level: { code: "EASY", displayName: "Dễ" },
   title: "Kể về một lần xung đột trong nhóm",
   contentMarkdown: "Nội dung câu hỏi",
@@ -122,7 +126,9 @@ describe("InterviewQuestionDetailView with the real API", () => {
       expect(screen.getByText(m.study.starTag)).toBeInTheDocument();
       expect(screen.getByText("Bạn học được gì?")).toBeInTheDocument();
       expect(screen.getByText("Giao tiếp")).toBeInTheDocument();
-      expect(await screen.findByText(m.attempts.emptyState)).toBeInTheDocument();
+      expect(
+        await screen.findByText(m.attempts.emptyState),
+      ).toBeInTheDocument();
     });
 
     it("shows the review date of the saved rating, counted from the server's date", async () => {
@@ -132,12 +138,16 @@ describe("InterviewQuestionDetailView with the real API", () => {
             recall: {
               rating: "VAGUE",
               intervalDays: 3,
-              nextReviewAt: new Date(Date.now() + 2 * 86_400_000 + 3_600_000).toISOString(),
+              nextReviewAt: new Date(
+                Date.now() + 2 * 86_400_000 + 3_600_000,
+              ).toISOString(),
               ratedAt: new Date().toISOString(),
             },
           }),
       });
-      expect(await screen.findByText("Sẽ nhắc ôn lại sau 3 ngày")).toBeInTheDocument();
+      expect(
+        await screen.findByText("Sẽ nhắc ôn lại sau 3 ngày"),
+      ).toBeInTheDocument();
     });
 
     it("says the review is due when the date is past", async () => {
@@ -152,32 +162,45 @@ describe("InterviewQuestionDetailView with the real API", () => {
             },
           }),
       });
-      expect(await screen.findByText(m.study.nextReviewDue)).toBeInTheDocument();
+      expect(
+        await screen.findByText(m.study.nextReviewDue),
+      ).toBeInTheDocument();
     });
 
     it("shows the not-found state when the server answers INB-010", async () => {
       serve({ [Q]: () => new ApiError("INB-010", 404) });
-      render(withTestProviders(<InterviewQuestionDetailView questionId="q1" />));
+      render(
+        withTestProviders(<InterviewQuestionDetailView questionId="q1" />),
+      );
       expect(await screen.findByText(m.notFound)).toBeInTheDocument();
       // No history call for a question that does not exist (it used to hit `/questions/practice-answers`).
       expect(attemptCalls()).toHaveLength(0);
       expect(
-        apiMock.get.mock.calls.some(([path]) => String(path).endsWith("/practice-answers")),
+        apiMock.get.mock.calls.some(([path]) =>
+          String(path).endsWith("/practice-answers"),
+        ),
       ).toBe(false);
-      expect(screen.getByRole("link", { name: m.header.linkBack })).toHaveAttribute(
-        "href",
-        "/interview-bank",
-      );
+      expect(
+        screen.getByRole("link", { name: m.header.linkBack }),
+      ).toHaveAttribute("href", "/interview-bank");
     });
 
     it("shows an error with a retry for any other failure, and recovers", async () => {
       let fail = true;
-      serve({ [Q]: () => (fail ? new ApiError("UNKNOWN_ERROR", 500) : detail()) });
-      render(withTestProviders(<InterviewQuestionDetailView questionId="q1" />));
-      const retry = await screen.findByRole("button", { name: viMessages.common.retry });
+      serve({
+        [Q]: () => (fail ? new ApiError("UNKNOWN_ERROR", 500) : detail()),
+      });
+      render(
+        withTestProviders(<InterviewQuestionDetailView questionId="q1" />),
+      );
+      const retry = await screen.findByRole("button", {
+        name: viMessages.common.retry,
+      });
       fail = false;
       fireEvent.click(retry);
-      expect(await screen.findByText("Kể về một lần xung đột trong nhóm")).toBeInTheDocument();
+      expect(
+        await screen.findByText("Kể về một lần xung đột trong nhóm"),
+      ).toBeInTheDocument();
     });
 
     it("rates with the API rating, then shows the new date and a success toast", async () => {
@@ -189,11 +212,17 @@ describe("InterviewQuestionDetailView with the real API", () => {
         nextReviewAt: new Date(Date.now() + 86_400_000).toISOString(),
         ratedAt: new Date().toISOString(),
       });
-      fireEvent.click(screen.getByRole("button", { name: m.study.recall.forgotten }));
-      await waitFor(() =>
-        expect(apiMock.put).toHaveBeenCalledWith(`${Q}/recall`, { rating: "FORGOTTEN" }),
+      fireEvent.click(
+        screen.getByRole("button", { name: m.study.recall.forgotten }),
       );
-      expect(await screen.findByText("Sẽ nhắc ôn lại sau 1 ngày")).toBeInTheDocument();
+      await waitFor(() =>
+        expect(apiMock.put).toHaveBeenCalledWith(`${Q}/recall`, {
+          rating: "FORGOTTEN",
+        }),
+      );
+      expect(
+        await screen.findByText("Sẽ nhắc ôn lại sau 1 ngày"),
+      ).toBeInTheDocument();
       expect(lastToast(toasts)).toBe(m.toast.rated);
     });
 
@@ -201,16 +230,21 @@ describe("InterviewQuestionDetailView with the real API", () => {
       ["INB-V04", 400],
       ["INB-010", 404],
       ["UNKNOWN_ERROR", 500],
-    ])("shows the translated text of %s when rating fails and keeps the old state", async (code, status) => {
-      await renderLoaded();
-      const toasts = toastsOf();
-      apiMock.put.mockRejectedValue(new ApiError(code, status));
-      fireEvent.click(screen.getByRole("button", { name: m.study.recall.known }));
-      await waitFor(() =>
-        expect(lastToast(toasts)).toBe(errors[code as keyof typeof errors]),
-      );
-      expect(screen.queryByText(/Sẽ nhắc ôn lại/)).not.toBeInTheDocument();
-    });
+    ])(
+      "shows the translated text of %s when rating fails and keeps the old state",
+      async (code, status) => {
+        await renderLoaded();
+        const toasts = toastsOf();
+        apiMock.put.mockRejectedValue(new ApiError(code, status));
+        fireEvent.click(
+          screen.getByRole("button", { name: m.study.recall.known }),
+        );
+        await waitFor(() =>
+          expect(lastToast(toasts)).toBe(errors[code as keyof typeof errors]),
+        );
+        expect(screen.queryByText(/Sẽ nhắc ôn lại/)).not.toBeInTheDocument();
+      },
+    );
 
     it("flips the bookmark at once and sends the wanted state", async () => {
       await renderLoaded();
@@ -220,28 +254,34 @@ describe("InterviewQuestionDetailView with the real API", () => {
       expect(
         await screen.findByRole("button", { name: m.header.bookmarked }),
       ).toHaveAttribute("aria-pressed", "true");
-      expect(apiMock.put).toHaveBeenCalledWith(`${Q}/bookmark`, { bookmarked: true });
+      expect(apiMock.put).toHaveBeenCalledWith(`${Q}/bookmark`, {
+        bookmarked: true,
+      });
       await waitFor(() => expect(lastToast(toasts)).toBe(m.toast.bookmarked));
     });
 
     it.each([
       ["INB-V05", 400],
       ["INB-010", 404],
-    ])("rolls the bookmark back and shows the text of %s", async (code, status) => {
-      await renderLoaded();
-      const toasts = toastsOf();
-      apiMock.put.mockRejectedValue(new ApiError(code, status));
-      fireEvent.click(screen.getByRole("button", { name: m.header.bookmark }));
-      await waitFor(() =>
-        expect(lastToast(toasts)).toBe(errors[code as keyof typeof errors]),
-      );
-      // INB-010 empties the cached question (not found); otherwise the label is back.
-      if (code !== "INB-010")
-        expect(screen.getByRole("button", { name: m.header.bookmark })).toHaveAttribute(
-          "aria-pressed",
-          "false",
+    ])(
+      "rolls the bookmark back and shows the text of %s",
+      async (code, status) => {
+        await renderLoaded();
+        const toasts = toastsOf();
+        apiMock.put.mockRejectedValue(new ApiError(code, status));
+        fireEvent.click(
+          screen.getByRole("button", { name: m.header.bookmark }),
         );
-    });
+        await waitFor(() =>
+          expect(lastToast(toasts)).toBe(errors[code as keyof typeof errors]),
+        );
+        // INB-010 empties the cached question (not found); otherwise the label is back.
+        if (code !== "INB-010")
+          expect(
+            screen.getByRole("button", { name: m.header.bookmark }),
+          ).toHaveAttribute("aria-pressed", "false");
+      },
+    );
   });
 
   describe("practice mode", () => {
@@ -250,7 +290,9 @@ describe("InterviewQuestionDetailView with the real API", () => {
       const toasts = toastsOf();
       fireEvent.click(screen.getByText(m.mode.practice));
       expect(lastToast(toasts)).toBe(m.mode.practiceLockedReason);
-      expect(screen.queryByLabelText(m.practice.answerLabel)).not.toBeInTheDocument();
+      expect(
+        screen.queryByLabelText(m.practice.answerLabel),
+      ).not.toBeInTheDocument();
     });
 
     it("posts the answer as data, shows the feedback, then refreshes the history", async () => {
@@ -261,12 +303,20 @@ describe("InterviewQuestionDetailView with the real API", () => {
       fireEvent.change(box, { target: { value: "  Trả lời của tôi  " } });
       const callsBefore = attemptCalls().length;
       serve({
-        [ATTEMPTS]: () => ({ items: [attempt(1)], hasMore: false, totalAttempts: 1 }),
+        [ATTEMPTS]: () => ({
+          items: [attempt(1)],
+          hasMore: false,
+          totalAttempts: 1,
+        }),
       });
-      fireEvent.click(screen.getByRole("button", { name: m.practice.btnSubmit }));
+      fireEvent.click(
+        screen.getByRole("button", { name: m.practice.btnSubmit }),
+      );
 
       await waitFor(() =>
-        expect(apiMock.post).toHaveBeenCalledWith(ATTEMPTS, { answerText: "Trả lời của tôi" }),
+        expect(apiMock.post).toHaveBeenCalledWith(ATTEMPTS, {
+          answerText: "Trả lời của tôi",
+        }),
       );
       expect(await screen.findByText("Nêu đúng bối cảnh")).toBeInTheDocument();
       expect(screen.getByText("Thiếu kết quả")).toBeInTheDocument();
@@ -276,9 +326,13 @@ describe("InterviewQuestionDetailView with the real API", () => {
       // The composer is read-only on a shown attempt; "retry" empties it again.
       expect(screen.getByLabelText(m.practice.answerLabel)).toBeDisabled();
       // The history was read again and lists the new attempt.
-      await waitFor(() => expect(attemptCalls().length).toBeGreaterThan(callsBefore));
+      await waitFor(() =>
+        expect(attemptCalls().length).toBeGreaterThan(callsBefore),
+      );
       expect(await screen.findByText("Lượt 1")).toBeInTheDocument();
-      fireEvent.click(screen.getByRole("button", { name: m.practice.btnRetry }));
+      fireEvent.click(
+        screen.getByRole("button", { name: m.practice.btnRetry }),
+      );
       expect(screen.getByLabelText(m.practice.answerLabel)).toHaveValue("");
     });
 
@@ -288,15 +342,29 @@ describe("InterviewQuestionDetailView with the real API", () => {
         await renderLoaded();
         const toasts = toastsOf();
         apiMock.post.mockResolvedValue(
-          attempt(1, { feedbackStatus: "FAILED", feedback: null, feedbackErrorCode: code }),
+          attempt(1, {
+            feedbackStatus: "FAILED",
+            feedback: null,
+            feedbackErrorCode: code,
+          }),
         );
-        fireEvent.change(await toPractice(), { target: { value: "Một câu trả lời" } });
-        fireEvent.click(screen.getByRole("button", { name: m.practice.btnSubmit }));
+        fireEvent.change(await toPractice(), {
+          target: { value: "Một câu trả lời" },
+        });
+        fireEvent.click(
+          screen.getByRole("button", { name: m.practice.btnSubmit }),
+        );
 
         // The notice sits in the feedback area; the toast carries the same text.
-        await waitFor(() => expect(lastToast(toasts)).toBe(m.practice.aiUnavailable));
-        expect((await screen.findAllByText(m.practice.aiUnavailable)).length).toBeGreaterThan(0);
-        expect(toasts.current.some((item) => item.tone === "error")).toBe(false);
+        await waitFor(() =>
+          expect(lastToast(toasts)).toBe(m.practice.aiUnavailable),
+        );
+        expect(
+          (await screen.findAllByText(m.practice.aiUnavailable)).length,
+        ).toBeGreaterThan(0);
+        expect(toasts.current.some((item) => item.tone === "error")).toBe(
+          false,
+        );
         expect(errors[code as keyof typeof errors]).toBeTruthy();
       },
     );
@@ -310,25 +378,34 @@ describe("InterviewQuestionDetailView with the real API", () => {
       ["INB-042", 429],
       ["INB-050", 409],
       ["UNKNOWN_ERROR", 500],
-    ])("shows the translated text of %s and keeps the draft editable", async (code, status) => {
-      await renderLoaded();
-      const toasts = toastsOf();
-      apiMock.post.mockRejectedValue(new ApiError(code, status));
-      fireEvent.change(await toPractice(), { target: { value: "Bản nháp của tôi" } });
-      fireEvent.click(screen.getByRole("button", { name: m.practice.btnSubmit }));
+    ])(
+      "shows the translated text of %s and keeps the draft editable",
+      async (code, status) => {
+        await renderLoaded();
+        const toasts = toastsOf();
+        apiMock.post.mockRejectedValue(new ApiError(code, status));
+        fireEvent.change(await toPractice(), {
+          target: { value: "Bản nháp của tôi" },
+        });
+        fireEvent.click(
+          screen.getByRole("button", { name: m.practice.btnSubmit }),
+        );
 
-      await waitFor(() =>
-        expect(lastToast(toasts)).toBe(errors[code as keyof typeof errors]),
-      );
-      const box = screen.getByLabelText(m.practice.answerLabel);
-      expect(box).not.toBeDisabled();
-      expect(box).toHaveValue("Bản nháp của tôi");
-    });
+        await waitFor(() =>
+          expect(lastToast(toasts)).toBe(errors[code as keyof typeof errors]),
+        );
+        const box = screen.getByLabelText(m.practice.answerLabel);
+        expect(box).not.toBeDisabled();
+        expect(box).toHaveValue("Bản nháp của tôi");
+      },
+    );
 
     it("sends nothing for an empty answer", async () => {
       await renderLoaded();
       await toPractice();
-      expect(screen.getByRole("button", { name: m.practice.btnSubmit })).toBeDisabled();
+      expect(
+        screen.getByRole("button", { name: m.practice.btnSubmit }),
+      ).toBeDisabled();
       expect(apiMock.post).not.toHaveBeenCalled();
     });
   });
@@ -340,27 +417,40 @@ describe("InterviewQuestionDetailView with the real API", () => {
       await renderLoaded({
         [ATTEMPTS]: (params) =>
           params?.before === 3
-            ? { items: [attempt(2), attempt(1)], hasMore: false, totalAttempts: 12 }
+            ? {
+                items: [attempt(2), attempt(1)],
+                hasMore: false,
+                totalAttempts: 12,
+              }
             : { items: tenAttempts, hasMore: true, totalAttempts: 12 },
       });
       expect(await screen.findByText("Lượt 12")).toBeInTheDocument();
       expect(attemptCalls()[0]).toEqual([ATTEMPTS, undefined]);
 
-      fireEvent.click(screen.getByRole("button", { name: "Xem thêm (10 / 12)" }));
+      fireEvent.click(
+        screen.getByRole("button", { name: "Xem thêm (10 / 12)" }),
+      );
       expect(await screen.findByText("Lượt 1")).toBeInTheDocument();
       expect(attemptCalls().at(-1)).toEqual([ATTEMPTS, { before: 3 }]);
-      expect(screen.queryByRole("button", { name: /^Xem thêm/ })).not.toBeInTheDocument();
+      expect(
+        screen.queryByRole("button", { name: /^Xem thêm/ }),
+      ).not.toBeInTheDocument();
     });
 
     it("expands an attempt to show the answer text, and labels a failed attempt", async () => {
       await renderLoaded({
         [ATTEMPTS]: () => ({
-          items: [attempt(2, { feedbackStatus: "FAILED", feedback: null }), attempt(1)],
+          items: [
+            attempt(2, { feedbackStatus: "FAILED", feedback: null }),
+            attempt(1),
+          ],
           hasMore: false,
           totalAttempts: 2,
         }),
       });
-      expect(await screen.findByText(m.attempts.status.failed)).toBeInTheDocument();
+      expect(
+        await screen.findByText(m.attempts.status.failed),
+      ).toBeInTheDocument();
       expect(screen.getByText(m.attempts.status.completed)).toBeInTheDocument();
       fireEvent.click(screen.getByRole("button", { name: /Lượt 1/ }));
       expect(screen.getByText("Câu trả lời lượt 1")).toBeInTheDocument();
@@ -376,7 +466,11 @@ describe("InterviewQuestionDetailView with the real API", () => {
                 missingPoints: ["Điểm thiếu của lượt hai"],
                 improvementSuggestions: ["Gợi ý của lượt hai"],
                 criteria: [
-                  { criterionCode: "Tiêu chí hai", achievementPercent: 40, weightPercent: 60 },
+                  {
+                    criterionCode: "Tiêu chí hai",
+                    achievementPercent: 40,
+                    weightPercent: 60,
+                  },
                 ],
               },
             }),
@@ -394,8 +488,12 @@ describe("InterviewQuestionDetailView with the real API", () => {
       expect(screen.getByText("Bối cảnh")).toBeInTheDocument();
       expect(screen.getByText("80% · trọng số 50%")).toBeInTheDocument();
       // No way back to Study from a history row, and the other attempt's feedback stays closed.
-      expect(screen.queryByText("Điểm đạt của lượt hai")).not.toBeInTheDocument();
-      expect(screen.queryByRole("button", { name: m.practice.linkBackToStudy })).not.toBeInTheDocument();
+      expect(
+        screen.queryByText("Điểm đạt của lượt hai"),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByRole("button", { name: m.practice.linkBackToStudy }),
+      ).not.toBeInTheDocument();
       fireEvent.click(screen.getByRole("button", { name: /Lượt 2/ }));
       expect(screen.getByText("Điểm đạt của lượt hai")).toBeInTheDocument();
       expect(screen.getByText("40% · trọng số 60%")).toBeInTheDocument();
@@ -412,13 +510,19 @@ describe("InterviewQuestionDetailView with the real API", () => {
       fireEvent.click(await screen.findByRole("button", { name: /Lượt 1/ }));
       expect(screen.getByText("Câu trả lời lượt 1")).toBeInTheDocument();
       expect(screen.getByText(m.practice.aiUnavailable)).toBeInTheDocument();
-      expect(screen.queryByText(m.practice.criteriaLabel)).not.toBeInTheDocument();
-      expect(screen.queryByText(m.practice.strengthsLabel)).not.toBeInTheDocument();
+      expect(
+        screen.queryByText(m.practice.criteriaLabel),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByText(m.practice.strengthsLabel),
+      ).not.toBeInTheDocument();
     });
 
     it("shows an error with a retry when the history cannot be read, the study content stays", async () => {
       await renderLoaded({ [ATTEMPTS]: () => new ApiError("INB-V08", 400) });
-      expect(await screen.findByRole("button", { name: viMessages.common.retry })).toBeInTheDocument();
+      expect(
+        await screen.findByRole("button", { name: viMessages.common.retry }),
+      ).toBeInTheDocument();
       expect(screen.getByText("Nêu bối cảnh")).toBeInTheDocument();
       expect(errors["INB-V08"]).toBeTruthy();
     });

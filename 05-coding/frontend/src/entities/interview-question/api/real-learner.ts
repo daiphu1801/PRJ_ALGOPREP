@@ -97,7 +97,12 @@ export async function realListQuestions(
 ): Promise<LearnerQuestionPage> {
   const body = await api.get<{
     items: ItemDto[];
-    page: { number: number; size: number; totalItems: number; totalPages: number };
+    page: {
+      number: number;
+      size: number;
+      totalItems: number;
+      totalPages: number;
+    };
     meta: { shown: number; total: number };
   }>(BASE, { ...filterParams(filters), page });
   return {

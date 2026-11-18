@@ -6,6 +6,7 @@ import com.algoprep.identity.application.dto.admin.ChangeUserStatusCommand;
 import com.algoprep.identity.application.ports.in.admin.ChangeUserRoleUseCase;
 import com.algoprep.identity.application.ports.in.admin.ChangeUserStatusUseCase;
 import com.algoprep.identity.application.ports.in.admin.ResetUserPasswordUseCase;
+import com.algoprep.identity.application.ports.in.avatar.RemoveUserAvatarUseCase;
 import com.algoprep.identity.domain.exception.IdentityErrorCodes;
 import com.algoprep.identity.domain.model.admin.AdminUserItem;
 import java.util.UUID;
@@ -13,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,10 +24,10 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Actions on one account, #36 to #38 (DD api F1 section 0.6): {@code ROLE_ADMIN} plus {@code
- * USER_MANAGEMENT:UPDATE}; denial is {@code 403 IDT-445}. A malformed {@code userId} answers 404
- * like an unknown one. Values that decide a rule ({@code targetStatus}, flags) are read as plain
- * objects so a wrong type is a rule violation instead of an unreadable-body 400.
+ * Actions on one account, #36 to #38 and #77 (DD api F1 section 0.6): {@code ROLE_ADMIN} plus
+ * {@code USER_MANAGEMENT:UPDATE}; denial is {@code 403 IDT-445}. A malformed {@code userId} answers
+ * 404 like an unknown one. Values that decide a rule ({@code targetStatus}, flags) are read as
+ * plain objects so a wrong type is a rule violation instead of an unreadable-body 400.
  */
 @RestController
 @RequestMapping("/api/v1/identity/admin/users")
@@ -33,14 +35,17 @@ class AdminUserActionController {
   private final ChangeUserRoleUseCase changeRole;
   private final ChangeUserStatusUseCase changeStatus;
   private final ResetUserPasswordUseCase resetPassword;
+  private final RemoveUserAvatarUseCase removeAvatar;
 
   AdminUserActionController(
       ChangeUserRoleUseCase changeRole,
       ChangeUserStatusUseCase changeStatus,
-      ResetUserPasswordUseCase resetPassword) {
+      ResetUserPasswordUseCase resetPassword,
+      RemoveUserAvatarUseCase removeAvatar) {
     this.changeRole = changeRole;
     this.changeStatus = changeStatus;
     this.resetPassword = resetPassword;
+    this.removeAvatar = removeAvatar;
   }
 
   record ChangeRoleRequest(String targetRoleId, Object acknowledgeSelfImpact) {}
@@ -83,6 +88,14 @@ class AdminUserActionController {
   @PreAuthorize("hasRole('ADMIN') and hasAuthority('USER_MANAGEMENT:UPDATE')")
   void resetPassword(@AuthenticationPrincipal Jwt jwt, @PathVariable String userId) {
     resetPassword.reset(UUID.fromString(jwt.getSubject()), id(userId));
+  }
+
+  /** #77: remove another user's avatar; no avatar is still 204 (DD api F1 section 0.9.4). */
+  @DeleteMapping("/{userId}/avatar")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  @PreAuthorize("hasRole('ADMIN') and hasAuthority('USER_MANAGEMENT:UPDATE')")
+  void removeAvatar(@AuthenticationPrincipal Jwt jwt, @PathVariable String userId) {
+    removeAvatar.remove(UUID.fromString(jwt.getSubject()), id(userId));
   }
 
   private static UUID id(String raw) {

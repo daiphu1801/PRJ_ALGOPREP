@@ -7,7 +7,7 @@
 import { api } from "@/shared/api";
 import type {
   AcceptedSubmissionOption,
-  BankQuestionOption,
+  BankQuestionPage,
 } from "../model/types";
 
 type AcceptedDto = {
@@ -36,12 +36,13 @@ export async function realListAcceptedSubmissionOptions(): Promise<
   }));
 }
 
-export async function realListBankQuestionOptions(): Promise<
-  BankQuestionOption[]
-> {
-  const body = await api.get<{ items: { id: string; title: string }[] }>(
-    "/interview-bank/questions",
-    { page: 1 },
-  );
-  return body.items.map((item) => ({ id: item.id, title: item.title }));
+export async function realListBankQuestionOptions(): Promise<BankQuestionPage> {
+  const body = await api.get<{
+    items: { id: string; title: string }[];
+    meta: { total: number };
+  }>("/interview-bank/questions", { page: 1 });
+  return {
+    items: body.items.map((item) => ({ id: item.id, title: item.title })),
+    total: body.meta.total,
+  };
 }

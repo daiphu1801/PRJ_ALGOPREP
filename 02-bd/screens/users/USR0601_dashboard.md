@@ -55,12 +55,12 @@
 | Tên vật lý (slug) | `dashboard` |
 | Trục tài liệu | Màn hình (`02-bd/screens/`) |
 | Actor | A1 (`STUDENT`) |
-| Phiên bản | V0.14 |
+| Phiên bản | V0.18 |
 | V0.15 | Hiện trạng bản dựng (4.6) | Nối API thật hai khối của `identity`, theo `03-dd/api/F1_identity.md` mục 0.8 (Triển khai 2026-11-05). (1) Dải chỉ số đọc `GET /me/progress/summary` (#47): tỉ lệ AC lấy `acceptanceRatePercent` của máy chủ (loại `SYSTEM_ERROR` khỏi mẫu số) thay vì `acceptedCount / totalSubmissions`; thẻ "Đã giải" bỏ phần `/ tổng bài` và dòng trung bình lần nộp, thẻ "Chuỗi ngày" hiện dấu gạch, vì `totalPublishedProblemCount` (F2) và `currentStreakDays`, `avgAttemptsPerSolved` (F4) chưa có endpoint nối. (2) Lưới 12 tháng đọc `GET /me/activity-calendar` (#55): 364 ngày, màn tự quy mức 0-4 bằng ngưỡng 0, 1-2, 3-4, 5-7, từ 8 (`[SoT: Suy luận]`, `views/users/dashboard/api/real-activity-calendar.ts`) và tự đếm số ngày có bài nộp. Các khối còn lại vẫn mock. Chưa duyệt hình | 2026/11/05 | Claude |
 | Người tạo | Nhóm phát triển AlgoPrep |
 | Ngày tạo | 2026/09/27 |
 | Người cập nhật | Claude |
-| Ngày cập nhật | 2026/10/23 |
+| Ngày cập nhật | 2026/11/18 |
 
 ---
 
@@ -85,6 +85,7 @@
 | V0.15 | Sheet 7 (7.1 khu vực B, C, D; 7.3), hiện trạng | Sửa 2026-11-07 (nối FE, việc 14). Thẻ độ khó đọc F2 #13B `GET /problem-bank/me/levels/progress` (`levelCode` khớp `level.key`; `PRB-057` hiện trạng thái lỗi của thẻ). Biểu đồ "Bài nộp theo ngày" đọc F4 `GET /judge/me/metrics?range=` trường `dailyCounts` (7, 14, hoặc một cột mỗi tuần ISO; nhãn dd/MM). Bảng chủ đề ghép F2 #3 với F4 `/judge/me/metrics?topicIds=` (tối đa 50 mỗi lần): F2 lỗi thì khối báo lỗi, F4 lỗi thì giữ đã giải/tổng và để tỉ lệ AC, lần nộp cuối là "-". Thẻ tổng quan lấy `currentStreakDays` từ F4 `streakDays` và `totalPublishedProblemCount` từ #13B (hai số này lỗi thì "-", số F1 vẫn hiện). Khối phỏng vấn (F5 #13) giữ lỗi chung, không bịa số (chủ dự án chốt 2026-11-07). Chưa duyệt hình | 2026/11/07 | AI |
 | V0.16 | Sheet 7 (khối "Bài toán gợi ý", "Tiếp tục bài đang làm"), hiện trạng | Sửa 2026-11-07 (kiểm trình duyệt thật, phát hiện F4). Khối "Bài toán gợi ý" gọi F2 #12 (`GET /suggested-problems`, hook `useSuggestedProblems`): máy chủ xếp hạng và lọc theo độ khó, chủ đề, tối đa 7 dòng (đúng BR-SC-07); bỏ xếp hạng ở client và nguồn `useProblemListPage`. Nút "Tiếp tục bài đang làm" đọc F4 #8 (`useMyInProgress`). Chế độ mock: lọc cục bộ, bài chưa giải lên trước, không xếp hạng. Hàng khuyết trạng thái giải hiện chấm trung tính không nhãn. Báo cáo `06-plan/reports/261107-2100-f1-f2-kiem-trinh-duyet/report.md`. Chưa duyệt hình. |
 | V0.17 | Hiện trạng 4.6 NO 5 | Nối FE 2026-11-12 (M5, chưa duyệt hình): Khu vực F NO 10-14 đã dựng (`interview-topics-table.tsx`, đọc F6 mục 8); khối phiên phỏng vấn và thẻ Mock Interview đọc F5 mục 13 thật; bảng phụ đặt dưới hai cột chính | 2026-11-12 | Claude |
+| V0.18 | Sheet 4 (4.6 NO 9), 5 (Khu vực A NO 6), 6 (Khu vực A NO 6), 7 (7.1 NO 18, 7.2 NO 15, 7.3 NO 12) | Sửa 2026-11-18 (F1-35, `DEC-2026-1117-user-avatar-upload`, chưa duyệt hình). Thêm item ảnh đại diện ở khối lời chào (bản dựng đã có, BD chưa ghi); chưa có ảnh hoặc ảnh lỗi thì chữ viết tắt. Đồng bộ số phiên bản ở Sheet 1 (đang ghi V0.14 trong khi lịch sử đã tới V0.17). | 2026/11/18 | Claude |
 
 ---
 
@@ -422,6 +423,7 @@ Hai ghi chú ràng buộc kiến trúc, đã kiểm bằng `pnpm lint`:
 | 6 | Múi giờ UTC+7 cho mọi mốc cắt ngày (Q9) | Mock dùng ngày cố định `2026-09-27`; phía hiển thị dùng `formatDateVN` (cố định UTC+7, `dd/MM/yyyy`) cho ngày phiên phỏng vấn, "Lần cuối", ngày tham gia; mốc cắt ngày thuộc backend [Nguồn: 05-coding/frontend/src/shared/lib/format-date.ts:30] | Khớp phần hiển thị |
 | 7 | Chân trang là câu trạng thái tĩnh, không số hàng đợi (Q11) | Thuộc khung chung `widgets/app-shell`, ngoài phạm vi sửa của đợt này; chưa đọc lại | Chưa kiểm |
 | 8 | Dòng phiên phỏng vấn bấm mở lại rubric (EVT-9, Khu vực J NO 2) | Dòng chưa là liên kết: chưa có route xem lại rubric một phiên cũ. **Nợ "EVT-9 lùi"** (owner 2026/10/19, D4) [Nguồn: 05-coding/frontend/src/views/users/dashboard/ui/blocks/recent-interviews-block.tsx] | Chưa dựng, ghi nợ |
+| 9 | Ảnh đại diện ở lời chào (V0.18, F1-35, chưa có trong BD cũ) | Đã dựng 2026-11-17, chưa duyệt hình: `UserAvatar` cỡ lớn bên trái câu chào, chỉ hiện khi hồ sơ đã tải [Nguồn: 05-coding/frontend/src/views/users/dashboard/ui/blocks/greeting-block.tsx:47-55] | Đã dựng, chưa duyệt hình |
 
 ---
 
@@ -439,6 +441,7 @@ Hai ghi chú ràng buộc kiến trúc, đã kiểm bằng `pnpm lint`:
 | | 3 | Câu khi chưa có dữ liệu | `dashboard.greeting.noData` | - | - | Label | String | 120 | - | O | - | Câu tĩnh | Thay chỗ NO 2 khi người dùng chưa có lượt nộp nào<br>[Nguồn giá trị] Nhãn tĩnh i18n, nội dung "Chưa có dữ liệu luyện tập — giải bài đầu tiên để thấy điểm mạnh yếu của bạn."<br>[EVT liên quan] EVT-1 |
 | | 4 | Tiếp tục bài đang làm | `dashboard.greeting.btnResume` | `judge.submissions` | `problem_id`, `submitted_at` | Button | - | - | - | I | - | Nhãn đổi theo trạng thái | Nút hành động chính của màn. Có bản nháp dở thì nhãn "Tiếp tục bài đang làm", đích `/workspace/{problemId}`; không có thì nhãn "Bắt đầu giải bài", đích `/problems` [Nguồn: 05-coding/frontend/src/views/users/dashboard/ui/blocks/greeting-block.tsx:40-42,70]<br>[Nguồn giá trị] Bản nháp dở gần nhất, định nghĩa đã chốt tại `DEC-2026-0922-users-and-admin-conflict-resolutions` và `02-bd/screens/users/_shell.md:129` Q2<br>[EVT liên quan] EVT-3 |
 | | 5 | Cụm tab khoảng thời gian | `dashboard.greeting.rangeTabs` | - | - | Button | Enum | - | - | I/O | 30 ngày | 3 nút | Ba lựa chọn "7 ngày" / "30 ngày" / "Tất cả", áp cho toàn màn<br>[Nguồn giá trị] Nhãn tĩnh i18n; ba giá trị lấy từ `09-layoutBase/Tiến độ của tôi.dc.html:266`, không phải bộ 7/30/90 của prototype dashboard — xem mục 4.4 ghi chú 1<br>[EVT liên quan] EVT-2 |
+| | 6 | Ảnh đại diện (hoặc chữ viết tắt) | `dashboard.greeting.avatar` | `identity.user_avatars`; `identity.users` | `updated_at`; `display_name` | Label | String | - | - | O | Ẩn | Ảnh vuông bo tròn cỡ lớn, hoặc hai ký tự in hoa | Đứng bên trái câu chào; hiện ảnh của người đăng nhập, chưa có ảnh hoặc ảnh tải lỗi thì hiện chữ viết tắt, không hiện biểu tượng ảnh hỏng (F1-35 mục 2). Hồ sơ chưa tải xong thì **không hiện gì** (không bịa tên)<br>[Nguồn giá trị] Có ảnh khi `MyProfileDto.avatarVersion` khác rỗng (mục 7.1 NO 18); ảnh tải qua `GetUserAvatar` [Nguồn: 03-dd/api/F1_identity.md mục 0.9.5]<br>[Công thức] Chữ viết tắt: ghép ký tự đầu của hai từ cuối trong `display_name`, viết hoa<br>[EVT liên quan] -<br>[Hiện trạng bản dựng] Đã dựng 2026-11-17, chưa duyệt hình (`05-coding/frontend/src/views/users/dashboard/ui/blocks/greeting-block.tsx:47-55`) |
 
 ### Khu vực B — Bốn thẻ chỉ số
 
@@ -616,6 +619,7 @@ Hai ghi chú ràng buộc kiến trúc, đã kiểm bằng `pnpm lint`:
 | | 3 | Câu khi chưa có dữ liệu | Điều kiện | [Điều kiện hiển thị] Chỉ hiển thị khi đọc thành công và không có chủ đề nào có dữ liệu; loại trừ lẫn nhau với NO 2. |
 | | 4 | Tiếp tục bài đang làm | Có | [Điều kiện kích hoạt] Luôn kích hoạt. Không có bản nháp thì nút **không** bị vô hiệu hoá mà đổi nhãn và đổi đích sang `problem_list` — nút chính của màn không bao giờ là ngõ cụt.<br>[Tự động đặt] Nhãn và đích xác định lại ở mỗi lần vào màn. |
 | | 5 | Cụm tab khoảng thời gian | Có | [Điều kiện kích hoạt] Luôn kích hoạt, kể cả lúc khối phụ thuộc đang tải: dữ liệu giữ theo từng khoảng nên đổi tab không gây lệch (owner 2026/10/19, D12 bỏ yêu cầu khoá tab).<br>[Tự động đặt] Nút đang chọn được tô sáng ngay khi bấm, không chờ dữ liệu về. |
+| | 6 | Ảnh đại diện (hoặc chữ viết tắt) | Điều kiện | [Điều kiện hiển thị] Chỉ hiện khi hồ sơ đã tải xong (dùng chung truy vấn hồ sơ với khung chung); ảnh lỗi hoặc chưa có thì chữ viết tắt. Lỗi tải ảnh không ảnh hưởng câu chào và các khối khác. |
 
 ### Khu vực B — Bốn thẻ chỉ số
 
@@ -781,8 +785,9 @@ Hai ghi chú ràng buộc kiến trúc, đã kiểm bằng `pnpm lint`:
 | 15 | `LatestDraftDto` | `problemId`, `problemTitle`, `lastTouchedAt` | UUID, String, Date | `judge.submissions` | `problem_id`, `submitted_at` | Khu vực A "Tiếp tục bài đang làm" | Có | [Nguồn] `GetMyLatestDraft` (`judge-orchestration`)<br>[Chuyển đổi] Trả `null` khi không có bản nháp nào; màn đổi nhãn nút và đổi đích sang `problem_list`, **không** vô hiệu hoá nút. |
 | 16 | `ProblemLevelDto` | `code`, `displayName`, `sortOrder` | String, String, Number | `problem.problem_levels` | `code`, `display_name`, `sort_order` | Khu vực I NO 3 | Có | [Nguồn] Phản hồi của `ListProblemLevels`, **dùng lại** DTO của `USR0101` (Sheet 7 NO 16); chỉ đọc, mọi người dùng đã xác thực gọi được (`DEC-2026-1001-admin-configurable-settings` mục (7))<br>[Chuyển đổi] Giao diện tự thêm nút "Tất cả" ở đầu; thứ tự nút theo `sortOrder`. |
 | 17 | `InterviewTopicProgressDto` | `topicId`, `topicName`, `questionsAttempted`, `questionsTotal`, `lastPracticedAt` | UUID, String, Number, Number, Date | `interview_bank.question_topics`, `interview_bank.practice_history`, `interview_bank.interview_questions` | `id`, `display_name`, `questions_attempted`, `last_practiced_at`; `questionsTotal` = `COUNT` câu `ACTIVE` theo `topic_id` tính lúc đọc (không phải cột) | Khu vực F NO 10-14 | Có | [Nguồn] `GetMyInterviewTopicProgress` (`interview-bank`)<br>[Chuyển đổi] Một phần tử cho **mỗi** chủ đề trong `question_topics`, kể cả chủ đề chưa có dòng `practice_history` (`questionsAttempted = 0`, `lastPracticedAt = null`) và chủ đề chưa có câu `ACTIVE` (`questionsTotal = 0`); tỉ lệ chia ở tầng hiển thị, mẫu số bằng 0 thì hiển thị `-`. Luỹ kế, không nhận tham số khoảng thời gian; `user_id` lấy từ token. `[SoT: Suy luận]` — tên DTO do BD đề xuất |
+| 18 | `MyProfileDto` | `avatarVersion` | Number | `identity.user_avatars` | `updated_at` | Lời chào NO 6 | Có | [Nguồn] Dấu phiên bản ảnh (số nguyên mili giây), rỗng khi chưa có ảnh; phản hồi `GetMyProfile`, hợp đồng duy nhất ở `03-dd/api/F1_identity.md` mục 0.9.5, không chép lại ở đây. Màn không gọi thêm endpoint riêng: dùng lại dữ liệu hồ sơ khung chung đã tải [Nguồn: 05-coding/frontend/src/views/users/dashboard/ui/blocks/greeting-block.tsx:7,47-55]<br>[Chuyển đổi] Rỗng thì hiện chữ viết tắt, không gọi tải ảnh; có thì tải `GetUserAvatar`. |
 
-### 7.2 Truy cập bảng dữ liệu (14)
+### 7.2 Truy cập bảng dữ liệu (15)
 
 | NO | Tên logic | Bảng | Repository | CRUD | Mục đích | Ghi chú |
 | --: | :--- | :--- | :--- | :-: | :--- | :--- |
@@ -800,6 +805,7 @@ Hai ghi chú ràng buộc kiến trúc, đã kiểm bằng `pnpm lint`:
 | 12 | Tổng hợp luyện tập theo chủ đề | `interview_bank.practice_history` | Không truy cập trực tiếp — qua cổng ra của `interview-bank` | R | Số câu đã thử và lần luyện cuối của từng chủ đề (F6-10); **tổng câu không đọc từ đây** (cột `questions_total` đã bỏ) | `GetMyInterviewTopicProgress`: R, `LEFT JOIN` từ `question_topics` |
 | 13 | Câu hỏi phỏng vấn (chỉ đếm) | `interview_bank.interview_questions` | Không truy cập trực tiếp — qua cổng ra của `interview-bank` | R | Mẫu số tổng câu của mỗi chủ đề: `COUNT` câu `ACTIVE` theo `topic_id`, tính lúc đọc | `GetMyInterviewTopicProgress`: R, `LEFT JOIN` ở phía `interview-bank` |
 | 14 | Đếm lượt nộp theo ngày | `identity.user_daily_submission_stats` | `UserDailySubmissionStatsRepository` `[Suy luận]` tên do BD đề xuất | R | Lưới 12 tháng: 364 ngày gần nhất (UTC+7) | Endpoint trả: `GetMyActivityCalendar` (Q12 đã đóng vòng 2) |
+| 15 | Ảnh đại diện | `identity.user_avatars` | `UserAvatarRepository` | R | Đọc `updated_at` (qua `GetMyProfile`) và byte ảnh (qua `GetUserAvatar`) cho ảnh ở lời chào; màn không thêm, đổi hay xoá ảnh [Nguồn: 02-bd/database/F1_identity.md mục 1.16] | `GetMyProfile`: R; `GetUserAvatar`: R |
 
 Toàn màn **chỉ đọc**: không có thao tác `C`, `U`, `D` nào. Bốn bảng số 3 tới 6 và ba bảng 11, 12, 13 thuộc schema module khác (và bảng 10 thuộc `problem-bank`, `ListProblemLevels` gọi thẳng module đó),
 `identity` đọc qua cổng ra chứ không truy vấn chéo schema — cùng nguyên tắc đã áp ở `USR0501` và cụm màn
@@ -825,6 +831,7 @@ lớp.
 | 9 | `ListProblemLevels` | Tải danh mục độ khó (đọc từ dữ liệu) cho các tab độ khó của "Bài toán gợi ý"; chỉ đọc, mọi người dùng đã xác thực gọi được, không nhận `user_id`; **dùng lại** endpoint của `USR0101` | `problem-bank` |
 | 10 | `GetMyInterviewTopicProgress` | Tải tỉ lệ hoàn thành ôn câu hỏi theo từng chủ đề (F6-10) cho Khu vực F NO 10-14; chỉ đọc, không nhận `user_id`, không nhận khoảng thời gian | `interview-bank` |
 | 11 | `GetMyActivityCalendar` | Tải số lượt nộp theo từng ngày trong 364 ngày gần nhất (UTC+7) cho lưới Khu vực E; chỉ đọc, không nhận `user_id` (lấy từ token); đọc `user_daily_submission_stats`, **không** gọi cổng `judge`. Sửa 2026-10-22 (đồng bộ DB vòng 2, DEC-2026-1022-db-sync-round2); `[SoT: Suy luận]` tên và path `GET /me/activity-calendar` do DD đề xuất | `identity` |
+| 12 | `GetUserAvatar` | Byte ảnh đại diện của người đăng nhập ở lời chào; dùng lại của `USR0502`, lỗi hoặc rỗng thì rơi về chữ viết tắt [Nguồn: `03-dd/api/F1_identity.md` mục 0.9.5] | `identity` |
 
 Ghi chú ranh giới:
 

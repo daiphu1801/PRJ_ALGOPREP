@@ -536,12 +536,18 @@ export async function mockExportProblems(
   };
 }
 
-export const mockBulkUnpublish = (ids: string[]) => applyBulk(ids, id => statusOf.set(id, "draft"));
-export const mockBulkTopic = (ids: string[], topic: string) => applyBulk(ids, id => {
-  const row = visibleRows().find(item => item.id === id);
-  topicsOf.set(id, [...new Set([...(row?.topics ?? []), topic])]);
-});
+export const mockBulkUnpublish = (ids: string[]) =>
+  applyBulk(ids, (id) => statusOf.set(id, "draft"));
+export const mockBulkTopic = (ids: string[], topic: string) =>
+  applyBulk(ids, (id) => {
+    const row = visibleRows().find((item) => item.id === id);
+    topicsOf.set(id, [...new Set([...(row?.topics ?? []), topic])]);
+  });
 export async function mockExportFilteredProblems(params: AdminListParams) {
-  const result = await loadAdminProblemList({ ...params, page: 1, pageSize: 100000 });
-  return mockExportProblems(result.items.map(item => item.id));
+  const result = await loadAdminProblemList({
+    ...params,
+    page: 1,
+    pageSize: 100000,
+  });
+  return mockExportProblems(result.items.map((item) => item.id));
 }

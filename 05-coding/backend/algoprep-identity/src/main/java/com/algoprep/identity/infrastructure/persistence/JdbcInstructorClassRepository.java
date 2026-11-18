@@ -222,8 +222,10 @@ class JdbcInstructorClassRepository implements InstructorClassRepository {
     return jdbc.getObject()
         .sql(
             """
-            SELECT u.id, u.display_name, u.email, u.phone, e.joined_at
+            SELECT u.id, u.display_name, u.email, u.phone, e.joined_at,
+              av.updated_at AS avatar_updated_at
             FROM identity.class_enrollments e JOIN identity.users u ON u.id = e.student_id
+              LEFT JOIN identity.user_avatars av ON av.user_id = u.id
             WHERE e.class_id = :id AND e.left_at IS NULL
             ORDER BY e.joined_at ASC, u.id ASC
             """)
@@ -235,7 +237,10 @@ class JdbcInstructorClassRepository implements InstructorClassRepository {
                     rs.getString("display_name"),
                     rs.getString("email"),
                     rs.getString("phone"),
-                    instant(rs.getObject("joined_at", OffsetDateTime.class))))
+                    instant(rs.getObject("joined_at", OffsetDateTime.class)),
+                    rs.getTimestamp("avatar_updated_at") == null
+                        ? null
+                        : rs.getTimestamp("avatar_updated_at").toInstant().toEpochMilli()))
         .list();
   }
 

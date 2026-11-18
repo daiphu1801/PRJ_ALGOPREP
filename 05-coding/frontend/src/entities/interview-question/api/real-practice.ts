@@ -56,7 +56,9 @@ export async function realSubmitPracticeAnswer(
   questionId: string,
   answerText: string,
 ): Promise<PracticeAttempt> {
-  return toAttempt(await api.post<AttemptDto>(path(questionId), { answerText }));
+  return toAttempt(
+    await api.post<AttemptDto>(path(questionId), { answerText }),
+  );
 }
 
 /** #7: newest first, 10 per page; `before` is the smallest `attemptNo` already loaded. */

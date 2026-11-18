@@ -12,14 +12,18 @@ const httpClient = axios.create({
   withCredentials: true, // send the HttpOnly Refresh Token cookie
 });
 
-httpClient.interceptors.request.use((config) => {
-  Object.assign(config, { _sessionGeneration: tokenStore.generation() });
-  const token = tokenStore.get();
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-}, undefined, { synchronous: true });
+httpClient.interceptors.request.use(
+  (config) => {
+    Object.assign(config, { _sessionGeneration: tokenStore.generation() });
+    const token = tokenStore.get();
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  undefined,
+  { synchronous: true },
+);
 
 // Prevent infinite token-refresh loops: a refresh the server refuses logs the user out, no retry.
 // `ended` is true only for that refusal (401 or 403); a 5xx or a dropped connection says nothing
@@ -225,8 +229,17 @@ export async function apiDownloadPost(
   return { blob: res.data, filename: match?.[1] ?? null };
 }
 
+/** GET a binary body (avatar image) with the Bearer token and the 401 refresh; `query` becomes the query string. */
+export function apiGetBlob(
+  path: string,
+  query?: Record<string, unknown>,
+): Promise<Blob> {
+  return apiDownload(path, { params: query });
+}
+
 export const api = {
   get: apiGet,
+  getBlob: apiGetBlob,
   download: apiDownload,
   downloadFile: apiDownloadFile,
   downloadPost: apiDownloadPost,

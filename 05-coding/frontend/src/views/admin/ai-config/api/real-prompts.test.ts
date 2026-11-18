@@ -24,7 +24,11 @@ import {
 import { withServerDrafts } from "../model/changes";
 
 const BASE = "/ai/admin/prompt-templates";
-const guards = { citeLines: true, answerInVietnamese: true, noFullSolution: true };
+const guards = {
+  citeLines: true,
+  answerInVietnamese: true,
+  noFullSolution: true,
+};
 
 const active = (feature: string, extra: Record<string, unknown> = {}) => ({
   id: `active-${feature}`,
@@ -235,7 +239,11 @@ describe("realSavePromptDraft (#16)", () => {
       feature: "review",
       systemInstruction: "Chi thi moi",
       modelId: "claude-haiku",
-      guards: { noFullSolution: false, citeLines: true, answerInVietnamese: false },
+      guards: {
+        noFullSolution: false,
+        citeLines: true,
+        answerInVietnamese: false,
+      },
     });
     expect(put).toHaveBeenCalledWith(`${BASE}/SOLUTION_REVIEW/draft`, {
       systemInstruction: "Chi thi moi",
@@ -352,7 +360,9 @@ describe("realPublishPrompts (#17)", () => {
       p.feature === "review" ? { ...p, modelId: "claude-haiku" } : p,
     );
     await realPublishPrompts({ saved, draft });
-    const body = post.mock.calls[0]![1] as { changes: { featureCode: string }[] };
+    const body = post.mock.calls[0]![1] as {
+      changes: { featureCode: string }[];
+    };
     expect(body.changes.map((c) => c.featureCode)).toEqual(["SOLUTION_REVIEW"]);
   });
 

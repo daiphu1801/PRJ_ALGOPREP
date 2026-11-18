@@ -15,7 +15,9 @@ import { apiMock, resetApiMock } from "@/shared/test/real-api";
 import { useRecentSolutionReviews } from "./queries";
 
 const wrapper = ({ children }: { children: ReactNode }) => (
-  <QueryClientProvider client={new QueryClient()}>{children}</QueryClientProvider>
+  <QueryClientProvider client={new QueryClient()}>
+    {children}
+  </QueryClientProvider>
 );
 
 beforeEach(() => {
@@ -38,10 +40,15 @@ describe("useRecentSolutionReviews (real)", () => {
       ],
     });
 
-    const { result } = renderHook(() => useRecentSolutionReviews(), { wrapper });
+    const { result } = renderHook(() => useRecentSolutionReviews(), {
+      wrapper,
+    });
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
-    expect(apiMock.get).toHaveBeenCalledWith("/ai/me/solution-reviews/recent", undefined);
+    expect(apiMock.get).toHaveBeenCalledWith(
+      "/ai/me/solution-reviews/recent",
+      undefined,
+    );
     expect(result.current.data).toEqual([
       {
         submissionId: "s1",
@@ -56,7 +63,9 @@ describe("useRecentSolutionReviews (real)", () => {
   it("surfaces an AI failure as a query error of this block only", async () => {
     apiMock.get.mockRejectedValue(new ApiError("AIR-501", 503));
 
-    const { result } = renderHook(() => useRecentSolutionReviews(), { wrapper });
+    const { result } = renderHook(() => useRecentSolutionReviews(), {
+      wrapper,
+    });
     await waitFor(() => expect(result.current.isError).toBe(true));
   });
 });

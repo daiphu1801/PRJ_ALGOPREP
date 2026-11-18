@@ -3,18 +3,25 @@ package com.algoprep.bootstrap.security;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
+import com.algoprep.identity.application.ports.out.AvatarImageFetchPort;
 import com.algoprep.identity.application.ports.out.OAuthProviderPort;
 import com.algoprep.identity.domain.exception.OAuthCodeRejectedException;
 import com.algoprep.identity.domain.model.auth.OAuthProfile;
 import com.algoprep.identity.domain.model.auth.OAuthProvider;
 import com.jayway.jsonpath.JsonPath;
+import io.minio.MakeBucketArgs;
+import io.minio.MinioClient;
 import java.util.Optional;
 import java.util.UUID;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +38,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.postgresql.PostgreSQLContainer;
@@ -64,8 +72,33 @@ class OAuthLoginFlowTest {
   static final GenericContainer<?> REDIS =
       new GenericContainer<>("redis:7.4-alpine").withExposedPorts(6379);
 
+  @Container
+  static final GenericContainer<?> MINIO =
+      new GenericContainer<>("minio/minio:RELEASE.2025-09-07T16-13-09Z")
+          .withEnv("MINIO_ROOT_USER", "oauth-test-user")
+          .withEnv("MINIO_ROOT_PASSWORD", "oauth-test-password")
+          .withCommand("server", "/data")
+          .withExposedPorts(9000)
+          .waitingFor(Wait.forHttp("/minio/health/ready").forPort(9000));
+
+  private static String minioUrl() {
+    return "http://" + MINIO.getHost() + ":" + MINIO.getMappedPort(9000);
+  }
+
+  @BeforeAll
+  static void createBucket() throws Exception {
+    MinioClient.builder()
+        .endpoint(minioUrl())
+        .credentials("oauth-test-user", "oauth-test-password")
+        .build()
+        .makeBucket(MakeBucketArgs.builder().bucket("algoprep-avatars").build());
+  }
+
   @DynamicPropertySource
   static void infrastructure(DynamicPropertyRegistry properties) {
+    properties.add("algoprep.identity.avatar.storage.endpoint", OAuthLoginFlowTest::minioUrl);
+    properties.add("algoprep.identity.avatar.storage.access-key", () -> "oauth-test-user");
+    properties.add("algoprep.identity.avatar.storage.secret-key", () -> "oauth-test-password");
     properties.add("spring.data.redis.host", REDIS::getHost);
     properties.add("spring.data.redis.port", () -> REDIS.getMappedPort(6379));
   }
@@ -74,11 +107,12 @@ class OAuthLoginFlowTest {
   @Autowired JdbcTemplate jdbc;
   @Autowired StringRedisTemplate redis;
   @MockitoBean OAuthProviderPort provider;
+  @MockitoBean AvatarImageFetchPort fetcher;
   private MockMvc mvc;
 
   @BeforeEach
   void setup() {
-    reset(provider);
+    reset(provider, fetcher);
     mvc = MockMvcBuilders.webAppContextSetup(context).apply(springSecurity()).build();
     when(provider.authorizationUrl(any(), anyString()))
         .thenAnswer(call -> Optional.of("https://idp.test/auth?state=" + call.getArgument(1)));
@@ -241,6 +275,132 @@ class OAuthLoginFlowTest {
     assertThat(JsonPath.<String>read(off.getContentAsString(), "$.errorCode")).isEqualTo("IDT-505");
   }
 
+  // ---- BR-28 avatar import (AC-103, AC-104)
+
+  private static final String PICTURE = "https://avatars.githubusercontent.com/u/1?v=4";
+
+  private static byte[] png() {
+    byte[] d = new byte[40];
+    byte[] magic = {(byte) 0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A};
+    System.arraycopy(magic, 0, d, 0, 8);
+    d[12] = 'I';
+    d[13] = 'H';
+    d[14] = 'D';
+    d[15] = 'R';
+    d[19] = 8;
+    d[23] = 8;
+    return d;
+  }
+
+  private void scriptPicture(String providerUserId, String email, String picture) {
+    when(provider.fetchProfile(any(), anyString()))
+        .thenReturn(
+            new OAuthProfile(
+                OAuthProvider.GITHUB, providerUserId, email, true, "Nguyen An", picture));
+  }
+
+  private Integer avatarRows(String email) {
+    return jdbc.queryForObject(
+        "SELECT count(*) FROM identity.user_avatars a JOIN identity.users u ON u.id = a.user_id"
+            + " WHERE lower(u.email) = lower(?)",
+        Integer.class,
+        email);
+  }
+
+  private long avatarTime(String email) {
+    return jdbc.queryForObject(
+            "SELECT a.updated_at FROM identity.user_avatars a JOIN identity.users u ON u.id ="
+                + " a.user_id WHERE u.email = ?",
+            java.sql.Timestamp.class,
+            email)
+        .getTime();
+  }
+
+  private void awaitAvatar(String email) throws Exception {
+    for (int i = 0; i < 100 && avatarRows(email) == 0; i++) {
+      Thread.sleep(100);
+    }
+  }
+
+  @Test
+  void aFirstLinkImportsThePictureAndALaterLoginDoesNotFetchAgain() throws Exception {
+    String email = email();
+    scriptPicture("gh-" + UUID.randomUUID(), email, PICTURE);
+    when(fetcher.fetch(anyString())).thenReturn(Optional.of(png()));
+
+    assertThat(callback(startState(), "c1").getStatus()).isEqualTo(200);
+    awaitAvatar(email);
+
+    assertThat(avatarRows(email)).isEqualTo(1);
+    verify(fetcher).fetch(PICTURE + "&s=256");
+    long version = avatarTime(email);
+    assertThat(callback(startState(), "c2").getStatus()).isEqualTo(200);
+    Thread.sleep(300);
+    verify(fetcher, times(1)).fetch(anyString());
+    assertThat(avatarTime(email)).isEqualTo(version);
+  }
+
+  @Test
+  void anAccountThatAlreadyHasAnAvatarKeepsItOnFirstLink() throws Exception {
+    String email = email();
+    UUID id = UUID.randomUUID();
+    jdbc.update(
+        "INSERT INTO identity.users(id,email,password_hash,display_name,role_id,status,must_change_password) SELECT ?,?,'h','Existing',id,'ACTIVE',false FROM identity.roles WHERE code='STUDENT'",
+        id,
+        email);
+    jdbc.update(
+        "INSERT INTO identity.user_avatars(user_id,object_key,content_type,size_bytes,updated_at)"
+            + " VALUES (?, 'users/own/own.png', 'image/png', 10, now())",
+        id);
+    scriptPicture("gh-" + UUID.randomUUID(), email, PICTURE);
+    when(fetcher.fetch(anyString())).thenReturn(Optional.of(png()));
+
+    assertThat(callback(startState(), "c").getStatus()).isEqualTo(200);
+    Thread.sleep(500);
+
+    verify(fetcher, never()).fetch(anyString());
+    assertThat(
+            jdbc.queryForObject(
+                "SELECT object_key FROM identity.user_avatars WHERE user_id = ?", String.class, id))
+        .isEqualTo("users/own/own.png");
+  }
+
+  @Test
+  void everyImportFailureStillLogsTheUserInAndStoresNothing() throws Exception {
+    java.util.List<java.util.function.Supplier<Optional<byte[]>>> failures =
+        java.util.List.of(
+            Optional::empty,
+            () -> Optional.of("<html>not an image</html>".getBytes()),
+            () -> Optional.of(new byte[524_289]),
+            () -> {
+              throw new IllegalStateException("boom");
+            });
+    for (var failure : failures) {
+      reset(fetcher);
+      String email = email();
+      scriptPicture("gh-" + UUID.randomUUID(), email, PICTURE);
+      when(fetcher.fetch(anyString())).thenAnswer(call -> failure.get());
+
+      var response = callback(startState(), "c");
+      Thread.sleep(400);
+
+      assertThat(response.getStatus()).isEqualTo(200);
+      assertThat(users(email)).isEqualTo(1);
+      assertThat(avatarRows(email)).isZero();
+    }
+  }
+
+  @Test
+  void aLoginWithoutAPictureNeverCallsTheFetcher() throws Exception {
+    String email = email();
+    scriptPicture("gh-" + UUID.randomUUID(), email, null);
+
+    assertThat(callback(startState(), "c").getStatus()).isEqualTo(200);
+    Thread.sleep(200);
+
+    verify(fetcher, never()).fetch(anyString());
+  }
+
   // ---- helpers
 
   private String startState() throws Exception {
@@ -256,7 +416,8 @@ class OAuthLoginFlowTest {
 
   private void scriptProfile(String providerUserId, String email, boolean verified, String name) {
     when(provider.fetchProfile(any(), anyString()))
-        .thenReturn(new OAuthProfile(OAuthProvider.GITHUB, providerUserId, email, verified, name));
+        .thenReturn(
+            new OAuthProfile(OAuthProvider.GITHUB, providerUserId, email, verified, name, null));
   }
 
   private int users(String email) {

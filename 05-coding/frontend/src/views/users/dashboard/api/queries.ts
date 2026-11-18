@@ -45,15 +45,13 @@ export const useRecentSolutionReviews = () =>
     // instant; the block formats it.
     queryFn: () =>
       withMockData(fakeGetRecentSolutionReviews, async () =>
-        (await getRealRecentReviews()).map(
-          (item): RecentSolutionReview => ({
-            submissionId: item.submissionId,
-            problemTitle: item.problemTitle,
-            reviewedAt: item.createdAt,
-            complexity: { actualTime: item.timeComplexity },
-            verdict: item.verdict,
-          }),
-        ),
+        (await getRealRecentReviews()).map((item): RecentSolutionReview => ({
+          submissionId: item.submissionId,
+          problemTitle: item.problemTitle,
+          reviewedAt: item.createdAt,
+          complexity: { actualTime: item.timeComplexity },
+          verdict: item.verdict,
+        })),
       ),
     ...QUERY_OPTIONS,
   });

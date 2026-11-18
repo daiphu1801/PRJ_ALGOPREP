@@ -121,16 +121,12 @@ test("submission filters hydrate from URL, survive refresh and browser history",
   });
   await expect(search).toHaveValue(title);
   await expect(
-    page
-      .getByRole("table")
-      .getByRole("link", { name: new RegExp(title) }),
+    page.getByRole("table").getByRole("link", { name: new RegExp(title) }),
   ).toHaveCount(5);
   await page.reload();
   await expect(search).toHaveValue(title);
   await expect(
-    page
-      .getByRole("table")
-      .getByRole("link", { name: new RegExp(title) }),
+    page.getByRole("table").getByRole("link", { name: new RegExp(title) }),
   ).toHaveCount(5);
   await page
     .getByRole("button", {
@@ -151,9 +147,7 @@ test("submission filters hydrate from URL, survive refresh and browser history",
     .poll(() => new URL(page.url()).searchParams.get("page"))
     .toBe("2");
   await expect(
-    page
-      .getByRole("table")
-      .getByRole("link", { name: new RegExp(title) }),
+    page.getByRole("table").getByRole("link", { name: new RegExp(title) }),
   ).toHaveCount(5);
   await page.screenshot({
     path: info.outputPath("submission-url-page2.png"),

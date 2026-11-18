@@ -145,10 +145,34 @@ describe("levels (F6 #10, #15 to #18)", () => {
   it("lists in server order with the tone chosen on the client", async () => {
     get.mockResolvedValue({
       items: [
-        { id: "l1", code: "EASY", displayName: "Dễ", sortOrder: 1, questionCount: 2 },
-        { id: "l2", code: "MEDIUM", displayName: "Trung bình", sortOrder: 2, questionCount: null },
-        { id: "l3", code: "HARD", displayName: "Khó", sortOrder: 3, questionCount: 0 },
-        { id: "l4", code: "RAT_KHO", displayName: "Rất khó", sortOrder: 4, questionCount: 0 },
+        {
+          id: "l1",
+          code: "EASY",
+          displayName: "Dễ",
+          sortOrder: 1,
+          questionCount: 2,
+        },
+        {
+          id: "l2",
+          code: "MEDIUM",
+          displayName: "Trung bình",
+          sortOrder: 2,
+          questionCount: null,
+        },
+        {
+          id: "l3",
+          code: "HARD",
+          displayName: "Khó",
+          sortOrder: 3,
+          questionCount: 0,
+        },
+        {
+          id: "l4",
+          code: "RAT_KHO",
+          displayName: "Rất khó",
+          sortOrder: 4,
+          questionCount: 0,
+        },
       ],
     });
     const levels = await realListLevels();
@@ -157,9 +181,27 @@ describe("levels (F6 #10, #15 to #18)", () => {
     });
     expect(levels).toEqual([
       { id: "l1", key: "EASY", label: "Dễ", tone: "success", questionCount: 2 },
-      { id: "l2", key: "MEDIUM", label: "Trung bình", tone: "warn", questionCount: null },
-      { id: "l3", key: "HARD", label: "Khó", tone: "negative", questionCount: 0 },
-      { id: "l4", key: "RAT_KHO", label: "Rất khó", tone: "neutral", questionCount: 0 },
+      {
+        id: "l2",
+        key: "MEDIUM",
+        label: "Trung bình",
+        tone: "warn",
+        questionCount: null,
+      },
+      {
+        id: "l3",
+        key: "HARD",
+        label: "Khó",
+        tone: "negative",
+        questionCount: 0,
+      },
+      {
+        id: "l4",
+        key: "RAT_KHO",
+        label: "Rất khó",
+        tone: "neutral",
+        questionCount: 0,
+      },
     ]);
   });
 

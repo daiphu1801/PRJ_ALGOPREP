@@ -3,6 +3,7 @@ package com.algoprep.identity.application.command.account;
 import com.algoprep.common.exception.DomainRuleViolationException;
 import com.algoprep.common.exception.UnauthenticatedException;
 import com.algoprep.identity.application.ports.in.account.DeleteMyAccountUseCase;
+import com.algoprep.identity.application.ports.in.avatar.DiscardAvatarUseCase;
 import com.algoprep.identity.domain.exception.IdentityErrorCodes;
 import com.algoprep.identity.domain.model.account.MyProfile;
 import com.algoprep.identity.domain.model.audit.AuditEntry;
@@ -30,12 +31,17 @@ class DeleteMyAccountCommandHandler implements DeleteMyAccountUseCase {
   private final MyProfileRepository profiles;
   private final AccountLifecycleRepository accounts;
   private final AuditLogPort audit;
+  private final DiscardAvatarUseCase avatar;
 
   DeleteMyAccountCommandHandler(
-      MyProfileRepository profiles, AccountLifecycleRepository accounts, AuditLogPort audit) {
+      MyProfileRepository profiles,
+      AccountLifecycleRepository accounts,
+      AuditLogPort audit,
+      DiscardAvatarUseCase avatar) {
     this.profiles = profiles;
     this.accounts = accounts;
     this.audit = audit;
+    this.avatar = avatar;
   }
 
   @Override
@@ -54,6 +60,8 @@ class DeleteMyAccountCommandHandler implements DeleteMyAccountUseCase {
     if (!accounts.deactivateSelf(userId)) {
       throw gone();
     }
+    // BR-08: the avatar row goes in this transaction, the object after commit.
+    avatar.discard(userId);
     audit.record(
         new AuditEntry(
             userId, "SELF_ACCOUNT_DELETE_REQUESTED", "USER", userId.toString(), null, null));

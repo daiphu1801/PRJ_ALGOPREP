@@ -357,15 +357,15 @@ test("a new authoring form uses the current backend defaults before its first sa
       "select max_ai_generations_per_problem from problem.problem_bank_settings where id=1",
     ),
   ).toBe(String(defaults.maxAiGenerationsPerProblem));
-  await expect(page.getByLabel(a.limit.timeLimitMs, { exact: true })).toHaveValue(
-    String(defaults.timeLimitMs),
-  );
-  await expect(page.getByLabel(a.limit.memoryLimitMb, { exact: true })).toHaveValue(
-    String(defaults.memoryLimitMb),
-  );
-  await expect(page.getByLabel(a.limit.outputLimitKb, { exact: true })).toHaveValue(
-    String(defaults.maxOutputSizeKb),
-  );
+  await expect(
+    page.getByLabel(a.limit.timeLimitMs, { exact: true }),
+  ).toHaveValue(String(defaults.timeLimitMs));
+  await expect(
+    page.getByLabel(a.limit.memoryLimitMb, { exact: true }),
+  ).toHaveValue(String(defaults.memoryLimitMb));
+  await expect(
+    page.getByLabel(a.limit.outputLimitKb, { exact: true }),
+  ).toHaveValue(String(defaults.maxOutputSizeKb));
   await page.getByRole("button", { name: a.tab.ai, exact: true }).click();
   await expect(
     page.getByText(

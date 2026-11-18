@@ -84,7 +84,10 @@ function WorkspaceHome({ inProgress }: { inProgress: InProgressProblem[] }) {
           >
             <Link href="/problems">{t("linkProblems")}</Link>
           </Button>
-          <Button variant="cta" size="sm" onClick={() => void pickRandom()}
+          <Button
+            variant="cta"
+            size="sm"
+            onClick={() => void pickRandom()}
             disabled={random.isPending}
           >
             <Shuffle className="mr-1.5 h-3.5 w-3.5" />

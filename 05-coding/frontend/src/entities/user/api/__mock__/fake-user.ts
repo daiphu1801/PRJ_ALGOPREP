@@ -186,3 +186,33 @@ export function fakeDeleteMyAccount(
   }
   return delay({ ok: true }, 600);
 }
+
+// Avatar mock (F1 #74 to #77): the picture lives in memory so the real flow can be seen in mock mode.
+let mockAvatarBlob: Blob | null = null;
+
+export async function fakeUploadMyAvatar(
+  blob: Blob,
+): Promise<{ avatarVersion: number }> {
+  mockAvatarBlob = blob;
+  const avatarVersion = Math.max(Date.now(), (profile.avatarVersion ?? 0) + 1);
+  profile = { ...profile, avatarVersion };
+  return delay({ avatarVersion }, 400);
+}
+
+export function fakeRemoveMyAvatar(): Promise<void> {
+  mockAvatarBlob = null;
+  profile = { ...profile, avatarVersion: null };
+  return delay(undefined, 300);
+}
+
+export function fakeRemoveUserAvatar(): Promise<void> {
+  return delay(undefined, 300);
+}
+
+/** Only the signed-in mock user can have a picture; anyone else rejects like the real 404. */
+export function fakeGetUserAvatar(userId: string): Promise<Blob> {
+  if (userId === profile.userId && mockAvatarBlob) {
+    return Promise.resolve(mockAvatarBlob);
+  }
+  return Promise.reject(new Error("no avatar"));
+}

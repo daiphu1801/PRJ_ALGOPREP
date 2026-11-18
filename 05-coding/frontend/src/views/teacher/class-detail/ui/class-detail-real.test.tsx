@@ -128,7 +128,9 @@ describe("ClassDetailView with the real API", () => {
     // The contact columns stay next to the figures (owner 2026-11-07).
     for (const column of ["email", "phone", "joinedAt"] as const) {
       expect(
-        within(table).getByRole("columnheader", { name: m.students.col[column] }),
+        within(table).getByRole("columnheader", {
+          name: m.students.col[column],
+        }),
       ).toBeInTheDocument();
     }
     // No assigned problem: completion is unknown, shown as a dash, never 0%.

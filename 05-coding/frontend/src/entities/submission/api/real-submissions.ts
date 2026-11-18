@@ -20,6 +20,7 @@ type Problem = {
 export type WireDetail = {
   studentId?: string;
   studentName?: string;
+  avatarVersion?: number | null;
   classId?: string;
   className?: string;
   leftClass?: boolean;
@@ -98,6 +99,7 @@ export async function getRealSubmission(
           ? {
               studentId: detail.studentId,
               studentName: detail.studentName ?? "—",
+              studentAvatarVersion: detail.avatarVersion ?? null,
               classId: detail.classId,
               className: detail.className ?? "—",
               leftClass: detail.leftClass ?? false,

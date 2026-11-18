@@ -9,7 +9,9 @@ export type ApiStatus = "ALL" | "UNSEEN" | "REVIEWING" | "KNOWN";
 export const toApiRating = (level: RecallLevel): ApiRating =>
   level.toUpperCase() as ApiRating;
 
-export function fromApiRating(rating: string | null | undefined): RecallLevel | null {
+export function fromApiRating(
+  rating: string | null | undefined,
+): RecallLevel | null {
   switch (rating) {
     case "KNOWN":
       return "known";

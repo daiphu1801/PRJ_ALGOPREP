@@ -13,11 +13,8 @@
 import Link from "next/link";
 import { isMockMode } from "@/shared/api";
 import { useRouter, useSearchParams } from "next/navigation";
-import {
-  initialsOfClassStudent,
-  useClassStudentDetail,
-  useInstructorClasses,
-} from "@/entities/class";
+import { UserAvatar } from "@/entities/user";
+import { useClassStudentDetail, useInstructorClasses } from "@/entities/class";
 import {
   parseSubmissionOrigin,
   type SubmissionOrigin,
@@ -29,6 +26,7 @@ type SubmissionRef = {
   instructorContext?: {
     studentId: string;
     studentName: string;
+    studentAvatarVersion?: number | null;
     classId: string;
     className: string;
     leftClass: boolean;
@@ -60,6 +58,7 @@ function useResolved(ref: Refs) {
     loading: student.isLoading,
     known: student.data != null,
     studentName: student.data?.name ?? null,
+    avatarVersion: student.data?.avatarVersion,
     className: classes.data?.find((c) => c.id === ref.classId)?.name ?? null,
   };
 }
@@ -163,6 +162,7 @@ export function InstructorSubmissionContext({
         submission={submission}
         refs={context && !context.leftClass ? context : undefined}
         studentName={context?.studentName}
+        avatarVersion={context?.studentAvatarVersion}
         className={context?.className}
       />
     );
@@ -181,7 +181,8 @@ function ResolvedContext({
   refs: { studentId: string; classId: string };
   submission: SubmissionRef;
 }) {
-  const { loading, known, studentName, className } = useResolved(refs);
+  const { loading, known, studentName, className, avatarVersion } =
+    useResolved(refs);
   if (loading) return null;
   // A hint that names nobody of that class is not shown as if it were true.
   if (!known) return <ContextCard submission={submission} />;
@@ -190,6 +191,7 @@ function ResolvedContext({
       submission={submission}
       refs={refs}
       studentName={studentName}
+      avatarVersion={avatarVersion}
       className={className}
     />
   );
@@ -199,11 +201,13 @@ function ContextCard({
   submission,
   refs,
   studentName,
+  avatarVersion,
   className,
 }: {
   submission: SubmissionRef;
   refs?: { studentId: string; classId: string };
   studentName?: string | null;
+  avatarVersion?: number | null;
   className?: string | null;
 }) {
   const t = useT("instructorSubmission");
@@ -214,12 +218,11 @@ function ContextCard({
     >
       {refs ? (
         <div className="flex min-w-0 items-center gap-3">
-          <span
-            aria-hidden="true"
-            className="glass-surface flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[var(--color-border)] text-sm font-semibold"
-          >
-            {studentName ? initialsOfClassStudent(studentName) : "?"}
-          </span>
+          <UserAvatar
+            userId={refs.studentId}
+            name={studentName ?? ""}
+            avatarVersion={avatarVersion}
+          />
           <div className="min-w-0">
             <p className="truncate text-[15px] font-semibold">
               <Link

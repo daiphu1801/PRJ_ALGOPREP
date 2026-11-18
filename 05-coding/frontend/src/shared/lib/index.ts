@@ -11,3 +11,7 @@ export { isSafeRedirect } from "./safe-redirect";
 export { saveBlob } from "./save-blob";
 export { useDebounced } from "./use-debounced";
 export { formatBytes } from "./format-bytes";
+export { initialsOf } from "./initials";
+export { downscaleToSquare, type DownscaledImage } from "./downscale-image";
+export { useObjectUrl } from "./use-object-url";
+export { checkImageFile, IMAGE_TYPES } from "./image-file";

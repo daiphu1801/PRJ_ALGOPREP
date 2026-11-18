@@ -27,8 +27,10 @@ class JdbcAdminUserRepository implements AdminUserRepository {
         (SELECT count(*) FROM identity.user_problem_best_score b
           WHERE b.user_id = u.id AND b.best_verdict = 'ACCEPTED') AS solved_count,
         COALESCE((SELECT s.total_submissions FROM identity.user_submission_stats s
-          WHERE s.user_id = u.id), 0) AS total_submissions
+          WHERE s.user_id = u.id), 0) AS total_submissions,
+        av.updated_at AS avatar_updated_at
       FROM identity.users u JOIN identity.roles r ON r.id = u.role_id
+        LEFT JOIN identity.user_avatars av ON av.user_id = u.id
       """;
 
   private static final RowMapper<AdminUserItem> ITEM =
@@ -45,7 +47,10 @@ class JdbcAdminUserRepository implements AdminUserRepository {
               rs.getBoolean("has_password"),
               rs.getBoolean("anonymized"),
               rs.getLong("solved_count"),
-              rs.getLong("total_submissions"));
+              rs.getLong("total_submissions"),
+              rs.getTimestamp("avatar_updated_at") == null
+                  ? null
+                  : rs.getTimestamp("avatar_updated_at").toInstant().toEpochMilli());
 
   private final ObjectProvider<JdbcClient> jdbc;
 

@@ -70,7 +70,8 @@ export function useSubmissionProgress(
         if (disposed || final || value.submissionId !== submissionId) return;
         pending = !value.isFinal && value.status === "PENDING";
         clearTimeout(pendingTimer);
-        if (pending) pendingTimer = setTimeout(() => void snapshot(), PENDING_POLL_MS);
+        if (pending)
+          pendingTimer = setTimeout(() => void snapshot(), PENDING_POLL_MS);
         // The queue hint changes while seq stays put, so an equal seq is still applied for PENDING.
         if (
           value.isFinal ||

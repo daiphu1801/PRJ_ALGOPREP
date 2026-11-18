@@ -28,6 +28,7 @@ Bảng 0.1 là bìa tài liệu.
 | :--- | :--- | :--- | :--- |
 | V0.1 | Tạo mới từ prototype (chưa duyệt hình dựng lại 2026-10-20, BD302 V0.11) và DD module F5 (2026-10-23). Chưa có owner duyệt | 2026-10-24 | Claude |
 | V0.2 | Hai tab nguồn nối thật: Bài Accepted đọc F4 #23, Kho câu hỏi đọc F6 mục 2 trang 1; lỗi hiện `QueryError` kèm Thử lại; rỗng hiện chữ riêng. Test `mock-interview-entry-tabs.test.tsx`, `real-entry-options.test.ts`. Lệch có chủ ý so với DD: hook nằm lại `entities/mock-interview` (entity không import entity khác nên gọi thẳng `api.get`) | 2026-11-12 | Claude |
+| V0.3 | EVT-3: tab Kho câu hỏi thêm liên kết "Xem toàn bộ N câu hỏi" sang `/interview-bank`; `N` = `meta.total` của API-F6 §2, nên `useBankQuestionOptions` trả `{ items, total }` (`BankQuestionPage`) thay vì mảng. Không đổi hợp đồng API, không thêm request. Test `mock-interview-entry-tabs.test.tsx`, `real-entry-options.test.ts`. Chưa có owner duyệt | 2026-11-16 | Claude |
 
 Bảng 0.3 giải nghĩa các tên viết tắt nguồn.
 
@@ -91,7 +92,7 @@ Bảng 2.1 ánh xạ sự kiện BD302 Sheet 8 sang endpoint ở file API và ho
 | EVT-1 (tham số mặc định tự luyện) | API-F1 #14 `GET /api/v1/identity/me/settings` | `useMySettings` (`entities/user/api/queries.ts:27`) | Mock. BD302 không có sự kiện cho bước này, xem D-302-8 |
 | EVT-2 Tab Bài Accepted (**đã nối thật 2026-11-12**, `real-entry-options.ts:27`; hook vẫn là `useAcceptedSubmissionOptions` của `entities/mock-interview`, không tạo `useMyAcceptedSubmissions`; rỗng hiện `emptySubmissions`) | API-F4 #23 `GET /api/v1/judge/me/accepted-submissions` (mục 24A; BD gọi tên `ListMyAcceptedSubmissions`) | `useMyAcceptedSubmissions` (**mới**, `entities/submission`) | Mock (`useAcceptedSubmissionOptions`, `queries.ts:25-30`) |
 | EVT-1 route bài nộp ngoài 10 mục đầu | API-F4 #5 `GetSubmissionDetail`, chỉ khi #23 không chứa `submissionId` của route | `useSubmissionDetail(submissionId)`; chỉ ghim khi thuộc người gọi và `status=ACCEPTED` | Chưa có |
-| EVT-3 Tab Kho câu hỏi (**đã nối thật 2026-11-12**, `real-entry-options.ts:39`, trang 1 không lọc, id là UUID thật cho `questionRef` AIR-V07; rỗng hiện `emptyBank`) | API-F6 §2 `GET /api/v1/interview-bank/questions`, trang 1 không lọc | `useQuestionShortlist` (**mới**, `entities/interview-question`) | Mock (`useBankQuestionOptions`, `queries.ts:32-37`) |
+| EVT-3 Tab Kho câu hỏi (**đã nối thật 2026-11-12**, `real-entry-options.ts:39`, trang 1 không lọc, id là UUID thật cho `questionRef` AIR-V07; rỗng hiện `emptyBank`; kèm liên kết "Xem toàn bộ N câu hỏi" với `N = meta.total`, V0.3) | API-F6 §2 `GET /api/v1/interview-bank/questions`, trang 1 không lọc | `useQuestionShortlist` (**mới**, `entities/interview-question`) | Mock (`useBankQuestionOptions`, `queries.ts:32-37`) |
 | EVT-4 Tab Tự chọn | API-F6 §9 `GET /api/v1/interview-bank/topics` (`ListQuestionTopics`) cho chip chủ đề (BD302 EVT-4 ghi "không gọi API" nhưng BD Sheet 5 V0.9 đã nói chip đọc từ danh mục) | `useInterviewTopics` (`entities/interview-question`) | Store trong bộ nhớ |
 | EVT-5, 6, 7, 8, 9 Chọn nguồn, đổi cấu hình | Không có | state của `useMockInterviewSession` | Không áp dụng |
 | EVT-10 Bắt đầu phiên | API-F5 §8 `POST /api/v1/ai/interview-sessions` (`StartInterviewSession`) | `useStartInterviewSession` (**mới**, mutation) | Mock (`useNextInterviewQuestion` kịch bản, `queries.ts:42-46`) |

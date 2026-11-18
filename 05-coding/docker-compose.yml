@@ -145,7 +145,9 @@ services:
       mc alias set local http://minio:9000 $${MINIO_ROOT_USER} $${MINIO_ROOT_PASSWORD} &&
       mc mb --ignore-existing local/$${MINIO_BUCKET_TESTCASE} &&
       mc anonymous set none local/$${MINIO_BUCKET_TESTCASE} &&
-      echo 'bucket san sang: '$${MINIO_BUCKET_TESTCASE}
+      mc mb --ignore-existing local/$${MINIO_BUCKET_AVATAR} &&
+      mc anonymous set none local/$${MINIO_BUCKET_AVATAR} &&
+      echo 'bucket san sang: '$${MINIO_BUCKET_TESTCASE}' '$${MINIO_BUCKET_AVATAR}
       "
     environment:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER:-algoprep}
@@ -153,6 +155,8 @@ services:
       # `mc anonymous set none` o tren la co chu dich: testcase an KHONG duoc truy cap cong khai
       # (F2-08 — chong ro ri testcase an, 01-rd/req/nfr.md muc D).
       MINIO_BUCKET_TESTCASE: ${MINIO_BUCKET_TESTCASE:-algoprep-testcases}
+      # Avatars (F1-35) are served only through the backend (#76), never by a public bucket policy.
+      MINIO_BUCKET_AVATAR: ${MINIO_BUCKET_AVATAR:-algoprep-avatars}
     restart: "no"
 
   # ---------------------------------------------------------------------------

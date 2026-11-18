@@ -63,11 +63,11 @@
 | Mã chức năng RD | Chưa cấp mã `Fx-nn` (206-Q10, `DEC-2026-1014-instructor-submissions-list-rules` mục 10) |
 | Trục tài liệu | Màn hình (`02-bd/screens/`) |
 | Actor | A2 (`INSTRUCTOR`) |
-| Phiên bản | V0.5 |
+| Phiên bản | V0.6 |
 | Người tạo | Nhóm phát triển AlgoPrep |
 | Ngày tạo | 2026/10/14 |
 | Người cập nhật | Nhóm phát triển AlgoPrep |
-| Ngày cập nhật | 2026/10/18 |
+| Ngày cập nhật | 2026/11/18 |
 
 ---
 
@@ -80,6 +80,7 @@
 | V0.3 | Sheet 4.4 (Hiện trạng bản dựng) | Dựng prototype INS0206 theo DEC-2026-1014-instructor-submissions-list-rules. Thêm cột "Tình trạng" vào bảng Hiện trạng bản dựng. Dòng 1 (kích thước trang 20 cố định), 2 (ghi chú "Đã rời lớp"), 7 (ba thông điệp rỗng, trừ nút Thử lại) và 9 (bộ trạng thái, bộ lọc "Chưa đạt", tỉ lệ `-`, sắp mới nhất trước) đã dựng, **chưa duyệt hình**. Dòng 3, 4, 5, 6, 8, 10 giữ là nợ; dòng 11 ghi rõ tham số `from` và trang kết quả giảng viên thuộc giai đoạn sau; thêm dòng 12 (quy tắc chọn lớp chưa mô hình hoá). Không đổi yêu cầu hay quyết định thiết kế | 2026/10/14 | AI |
 | V0.4 | Sheet 4.4 (Hiện trạng bản dựng NO 11) | Dựng prototype trang kết quả của giảng viên (`from=`, breadcrumb, sidebar). Dòng 11: nút Xem bài nộp nay mang `from=submissions`; trang kết quả giảng viên đã có breadcrumb theo `from` và lùi lịch sử bằng `router.back()` khi mở từ danh sách. Các dòng còn nợ giữ nguyên. Không đổi yêu cầu hay quyết định thiết kế. **Chưa duyệt hình** | 2026/10/14 | AI |
 | V0.5 | Sheet 4.4 (Hiện trạng bản dựng NO 11) | Dựng prototype Phase 4-5 (bài giao theo lớp, phân trang 20, from=). Dòng 11: liên kết tên học viên còn trong lớp nay mang `?from=submissions`, nên trang chi tiết học viên (`INS0204`) sáng mục "Bài nộp" ở sidebar (khớp Sheet 9 NO 6). Không đổi yêu cầu hay quyết định thiết kế. **Chưa duyệt hình** | 2026/10/18 | AI |
+| V0.6 | Sheet 4 (4.2, 4.4 NO 13), 5 (B NO 2), 7 (7.1 NO 19, 7.2 NO 7, 7.3 NO 4) | Sửa 2026-11-18 (F1-35, `DEC-2026-1117-user-avatar-upload`, chưa duyệt hình). Cột "Học viên" của bảng bài nộp nay hiện ảnh đại diện thật (hoặc chữ viết tắt khi chưa có ảnh hoặc ảnh lỗi), đọc `avatarVersion` của `ListInstructorSubmissions` (F4 mục 13.3). | 2026/11/18 | Claude |
 
 ---
 
@@ -233,7 +234,7 @@ Không giới hạn tổng số trang. Từ khoá tìm tối đa 100 ký tự `[
 Tên DTO do BD đề xuất, `03-dd/api/F4_judge-orchestration.md` chốt lại `[SoT: Suy luận]`.
 
 - `SubmissionListQuery` — tham số của lần gọi: `classId` (tuỳ chọn), `result` (`all` / `accepted` / `failed`), `q`, `page`. Kích thước trang là hằng số phía máy chủ, không phải tham số.
-- `SubmissionListItemDto` — một dòng của bảng: `submissionId`, `studentId`, `studentName`, `classId`, `className`, `problemId`, `problemTitle`, `language`, `status`, `passedCount`, `totalCount`, `submittedAt`, `leftClass`.
+- `SubmissionListItemDto` — một dòng của bảng: `submissionId`, `studentId`, `studentName`, `avatarVersion`, `classId`, `className`, `problemId`, `problemTitle`, `language`, `status`, `passedCount`, `totalCount`, `submittedAt`, `leftClass`.
 - `SubmissionListPageDto` — một trang: `items` (danh sách `SubmissionListItemDto`), `totalCount` (số dòng khớp bộ lọc), `page`, `pageSize`.
 - `ClassCardDto` — **dùng lại** của `INS0201`, chỉ lấy `id` và `name` cho bộ lọc Lớp
   [Nguồn: 02-bd/screens/teacher/INS0201_class_management.md — Sheet 7.1 NO 6, 7].
@@ -298,6 +299,7 @@ Bảng này ghi chỗ bản dựng lệch thiết kế ở trên; **không phả
 | 10 | Ô tìm kiếm ghi URL ngay mỗi lần gõ (`router.replace`) và lọc tức thì, không debounce | `submission-management-view.tsx:177-187` | Có máy chủ thì cần giãn lệnh gọi | Còn nợ | DD chốt hằng số debounce `[SoT: Suy luận]` |
 | 11 | Cột Lớp và liên kết tên học viên còn trong lớp đúng thiết kế: liên kết sang `INS0204` `/instructor/classes/{classId}/students/{studentId}?from=submissions` (cập nhật 2026/10/18: thêm `from=submissions`; `instructorActiveHrefOverride` sáng "Bài nộp" cho route này, test `instructor-sidebar.test.ts:21-32`; chưa duyệt hình). Nút Xem bài nộp mang `?studentId=&classId=&from=submissions` (Sheet 3). Trang kết quả giảng viên có breadcrumb `Bài nộp / Lượt nộp`: mở từ danh sách thì bấm mục đầu gọi `router.back()` nên bộ lọc, ô tìm và trang của danh sách được khôi phục; sidebar giữ sáng "Bài nộp". Không còn tham số `from` hay trang kết quả là nợ ở dòng này. Phần còn nợ ở phía trang kết quả (nguồn chủ lượt nộp từ lượt nộp, 404 theo cửa sổ lớp) nằm ở BD `USR0201` mục "Vùng giảng viên (A2)", Hiện trạng NO 1, 4, 6 | `submission-management-view.tsx:104-111,155-165`; `views/teacher/submission-context/ui/instructor-submission-context.tsx:59-82`; `widgets/app-shell/ui/instructor-sidebar.tsx:46-64` | Khớp REQ-08, REQ-17; Sheet 3 thêm `from=submissions` | Phần liên kết tên, tham số `from`, breadcrumb và sidebar: Đã dựng, chưa duyệt hình | Cập nhật 2026/10/14. Chỉ lùi lịch sử khi `from=submissions` có mặt và còn lịch sử; không còn lịch sử thì đi thẳng `/instructor/submissions` (mất bộ lọc). Chưa có ảnh Playwright chụp lại |
 | 12 | Quy tắc chọn lớp "lần giao mới nhất không sau `submitted_at`" (mục 4.1, Phạm vi) **chưa mô hình hoá**: mỗi dòng lấy lớp của chính học viên (`student.classId`), nên không có trường hợp một học viên ở hai lớp cùng giao một bài | `model/rows.ts:49-54` | Gắn lượt nộp với lớp có `assigned_at` mới nhất không sau `submitted_at` (`DEC-2026-1014-instructor-submissions-list-details`) | Còn nợ | Dữ liệu mẫu không có học viên ở hai lớp; quy tắc thuộc truy vấn máy chủ, DD chốt |
+| 13 | Cột "Học viên" hiện ảnh đại diện (`UserAvatar` cỡ nhỏ) trước tên, theo `avatarVersion` của từng dòng; chưa có ảnh hoặc ảnh lỗi thì chữ viết tắt, cả dòng học viên đã rời lớp | `submission-management-view.tsx:107-112`; `features/submission-rows/api/instructor-submissions.ts:30,49`; `features/submission-rows/model/rows.ts:58` | Item B NO 2 (V0.6) | Đã dựng 2026-11-17, chưa duyệt hình | Không có nợ riêng |
 
 [Nguồn: 05-coding/frontend/src/views/teacher/submission-management/ui/submission-management-view.tsx; model/rows.ts; model/rows.test.ts;
 05-coding/frontend/e2e/instructor-submission-readonly.spec.ts:49-89]
@@ -344,7 +346,7 @@ Bảng này ghi chỗ bản dựng lệch thiết kế ở trên; **không phả
 | :--- | --: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :-: | :-: | :--- | :--- | :--- |
 | Bảng bài nộp | | | | | | | | | | | | | |
 | | 1 | Bảng bài nộp | `submissionManagement.table.list` | `judge.submissions` | - | List | List | - | - | O | rỗng | 20 dòng mỗi trang | Mỗi dòng **một lượt nộp**, **mới nhất trước** theo `submitted_at`, cố định, không có điều khiển sắp xếp (REQ-14); phạm vi theo mục 4.1<br>[Nguồn giá trị] Kết quả `ListInstructorSubmissions` (`judge-orchestration`)<br>[EVT liên quan] EVT-1, EVT-2, EVT-3, EVT-4, EVT-5 |
-| | 2 | Học viên | `submissionManagement.table.col.student` | `identity.users` | `display_name` | Link | String | 100 | - | O | - | Chữ cái đầu và tên | Tên học viên kèm chữ cái đầu; là **liên kết sang `INS0204`** (cặp `studentId`, `classId` của dòng). Học viên đã rời lớp (`leftClass = true`): chỉ là chữ, không là liên kết (REQ-17)<br>[Nguồn giá trị] `SubmissionListItemDto.studentName`<br>[EVT liên quan] EVT-6 |
+| | 2 | Học viên (ảnh đại diện hoặc chữ viết tắt, kèm tên) | `submissionManagement.table.col.student` | `identity.users`; `identity.user_avatars` | `display_name`; `updated_at` | Link | String | 100 | - | O | Chữ viết tắt | Ảnh tròn nhỏ hoặc hai ký tự in hoa, rồi tên | Tên học viên kèm ảnh đại diện của học viên (chưa có ảnh hoặc ảnh tải lỗi thì hiện chữ viết tắt, không hiện biểu tượng ảnh hỏng, F1-35 mục 2); là **liên kết sang `INS0204`** (cặp `studentId`, `classId` của dòng). Học viên đã rời lớp (`leftClass = true`): chỉ là chữ, không là liên kết (REQ-17)<br>[Nguồn giá trị] `SubmissionListItemDto.studentName`; ảnh: `SubmissionListItemDto.avatarVersion` khác rỗng (mục 7.1 NO 19), tải qua `GetUserAvatar` [Nguồn: 03-dd/api/F1_identity.md mục 0.9.5]. Dòng của học viên đã rời lớp vẫn hiện ảnh<br>[Công thức] Chữ viết tắt: ghép ký tự đầu của hai từ cuối trong `display_name`, viết hoa<br>[Hiện trạng bản dựng] Đã dựng 2026-11-17, chưa duyệt hình (`05-coding/frontend/src/views/teacher/submission-management/ui/submission-management-view.tsx:107-112`)<br>[EVT liên quan] EVT-6 |
 | | 3 | Ghi chú Đã rời lớp | `submissionManagement.table.col.leftNote` | `identity.class_enrollments` | `left_at` | Label | String | 20 | - | O | - | `Đã rời lớp` | Ghi chú nhỏ ngay cạnh hoặc dưới tên học viên, chỉ khi `leftClass = true`<br>[Công thức] `leftClass = (left_at IS NOT NULL)` của dòng ghi danh khớp lớp của lượt nộp. Nhãn tĩnh i18n, **khoá chưa có trong bản dựng** (xem mục Hiện trạng NO 2)<br>[EVT liên quan] - |
 | | 4 | Lớp | `submissionManagement.table.col.class` | `identity.classes` | `name` | ListColumn | String | 120 | - | O | - | - | Lớp đang giữ bài giao của lượt nộp<br>[Nguồn giá trị] `SubmissionListItemDto.className` [Nguồn: submission-management-view.tsx:106]<br>[EVT liên quan] - |
 | | 5 | Bài tập | `submissionManagement.table.col.problem` | `problem.problems` | `title` | ListColumn | String | 200 | - | O | - | - | Tên bài toán của lượt nộp<br>[Nguồn giá trị] `SubmissionListItemDto.problemTitle`; tên bài do `judge-orchestration` ghép sẵn trong phản hồi, màn không gọi thêm `problem-bank` cho từng dòng (cùng cách `INS0204`)<br>[EVT liên quan] - |
@@ -468,11 +470,12 @@ Bảng này ghi chỗ bản dựng lệch thiết kế ở trên; **không phả
 | 16 | `SubmissionListItemDto` | `leftClass` | Boolean | `identity.class_enrollments` | `left_at` | Học viên (liên kết), Ghi chú Đã rời lớp | Có | [Chuyển đổi] Máy chủ đặt `true` khi dòng ghi danh khớp có `left_at` khác rỗng; giao diện bỏ liên kết và hiện ghi chú |
 | 17 | `SubmissionListPageDto` | `totalCount`, `page`, `pageSize` | Number | - | - | Số dòng khớp, Tóm tắt trang | Có | [Nguồn] Máy chủ trả kèm mỗi trang; `pageSize` luôn 20 |
 | 18 | `ClassCardDto` (dùng lại) | `id`, `name` | UUID, String | `identity.classes` | `id`, `name` | Lọc Lớp | Có | [Nguồn] `ListInstructorClasses` [Nguồn: 02-bd/screens/teacher/INS0201_class_management.md — Sheet 7.1 NO 6, 7] |
+| 19 | `SubmissionListItemDto` | `avatarVersion` | Number | `identity.user_avatars` | `updated_at` | Học viên (ảnh đại diện) | Có | [Nguồn] Dấu phiên bản ảnh (số nguyên mili giây), rỗng khi chưa có ảnh; do `judge-orchestration` ghép từ cổng đọc của `identity`, hợp đồng duy nhất ở `03-dd/api/F4_judge-orchestration.md` mục 13.3 và `03-dd/api/F1_identity.md` mục 0.9.5, không chép lại ở đây<br>[Chuyển đổi] Rỗng thì hiện chữ viết tắt, không gọi tải ảnh; có thì tải `GetUserAvatar` và phá cache theo giá trị này. |
 
 **Ràng buộc bắt buộc cho mọi DTO ở bảng trên:** không DTO nào chứa `source_code`, `compile_error_message`, nội dung testcase, hay dòng nào của
 `submission_testcase_results` [Nguồn: 02-bd/database/F4_judge-orchestration.md:20,24,40-62].
 
-### 7.2 Truy cập bảng dữ liệu (6)
+### 7.2 Truy cập bảng dữ liệu (7)
 
 | NO | Tên logic | Bảng | Repository | CRUD | Mục đích | Ghi chú |
 | --: | :--- | :--- | :--- | :-: | :--- | :--- |
@@ -482,6 +485,7 @@ Bảng này ghi chỗ bản dựng lệch thiết kế ở trên; **không phả
 | 4 | Người dùng | `identity.users` | qua cổng ra của `identity` | R | `display_name` của học viên | `ListInstructorSubmissions`: R (gián tiếp) |
 | 5 | Bài giao cho lớp | `problem.class_assignments` | qua cổng ra của `problem-bank` | R | Tập bài đã giao cho từng lớp, kể cả bài đã gỡ mềm | `ListInstructorSubmissions`: R (gián tiếp) |
 | 6 | Bài toán | `problem.problems` | qua cổng ra của `problem-bank` | R | `title` của bài | `ListInstructorSubmissions`: R (gián tiếp) |
+| 7 | Ảnh đại diện | `identity.user_avatars` | qua cổng ra của `identity` | R | `updated_at` của học viên để trả `avatarVersion` kèm từng dòng; byte ảnh do `GetUserAvatar` đọc riêng [Nguồn: 02-bd/database/F1_identity.md mục 1.16] | `ListInstructorSubmissions`: R (gián tiếp) |
 
 Màn này **không có thao tác ghi nào**: cột CRUD chỉ có `R`. Tên repository và cổng ra do BD đề xuất `[SoT: Suy luận]`, DD chốt lại; `judge-orchestration`
 **không truy vấn chéo schema** [Nguồn: 02-bd/database/F4_judge-orchestration.md:36-38].
@@ -495,6 +499,7 @@ Màn này **không có thao tác ghi nào**: cột CRUD chỉ có `R`. Tên repo
 | 1 | `ListInstructorSubmissions` | Liệt kê lượt nộp của học viên trong các lớp giảng viên phụ trách, chỉ bài đã giao cho lớp, lọc theo lớp, kết quả, từ khoá, phân trang 20 dòng; trả kèm thuộc tính "đã rời lớp" | `judge-orchestration` |
 | 2 | `ListInstructorClasses` | Lấy các lớp giảng viên phụ trách cho bộ lọc Lớp; **dùng lại** của `INS0201` | `identity` |
 | 3 | `ListClassAssignments` | Bài đã giao cho lớp, cung cấp cho `judge-orchestration` qua cổng ra; **dùng lại** tên nghiệp vụ của `INS0202` | `problem-bank` |
+| 4 | `GetUserAvatar` | Byte ảnh đại diện của từng học viên có `avatarVersion` khác rỗng trong bảng; dùng lại của `USR0502`, lỗi hoặc rỗng thì rơi về chữ viết tắt [Nguồn: 03-dd/api/F1_identity.md mục 0.9.5] | `identity` |
 
 Ghi chú ranh giới:
 

@@ -68,6 +68,12 @@ export type BankQuestionOption = {
   title: string;
 };
 
+/** First F6 page plus the bank size, so the screen can link to the whole list (DD USR0302 Q-302-1). */
+export type BankQuestionPage = {
+  items: BankQuestionOption[];
+  total: number;
+};
+
 export type MaxTurns = 8 | 12 | 16;
 
 export const MAX_TURNS_OPTIONS: MaxTurns[] = [8, 12, 16];

@@ -94,6 +94,10 @@ Là **sinh viên**, tôi muốn xem lại quá trình luyện tập của mình 
   được đúng rubric của phiên đó (F1-08).
 - **Cho** thông tin cá nhân của tôi sai hoặc cần cập nhật, **Khi** tôi sửa ở trang hồ sơ, **Thì** thông tin
   mới được lưu (F1-09) `[SoT: Suy luận — README.md không nêu, nhưng đăng ký mà không sửa được gì là thiếu]`.
+- **Cho** tôi muốn có ảnh đại diện riêng, **Khi** tôi chọn một ảnh PNG, JPEG hoặc WebP không quá 512 KB ở trang hồ
+  sơ rồi lưu, **Thì** ảnh mới thay chữ viết tắt ở trang hồ sơ, thanh đầu trang và mọi nơi hiện tên tôi; nếu tôi chọn
+  tệp sai định dạng hoặc quá lớn thì được báo lỗi và ảnh cũ giữ nguyên; nếu tôi xoá ảnh thì mọi nơi trở lại chữ
+  viết tắt (F1-35, `DEC-2026-1117-user-avatar-upload`).
 - **Cho** tôi muốn ngừng sử dụng hệ thống hẳn, **Khi** tôi bấm xoá tài khoản ở khu "danger zone" của trang
   Cài đặt và xác nhận, **Thì** tài khoản chuyển trạng thái `DEACTIVATED` ngay, tôi không đăng nhập lại được
   nữa; sau một khoảng ân hạn, thông tin định danh của tôi (email, tên hiển thị) bị ẩn danh hoá, còn bài nộp,

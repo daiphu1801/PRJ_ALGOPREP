@@ -159,6 +159,7 @@ export async function realListRoster(
     items: {
       studentId: string;
       displayName: string;
+      avatarVersion?: number | null;
       email: string | null;
       phone: string | null;
       joinedAt: string;
@@ -172,6 +173,7 @@ export async function realListRoster(
     id: student.studentId,
     classId,
     name: student.displayName,
+    avatarVersion: student.avatarVersion ?? null,
     email: student.email ?? undefined,
     phone: student.phone ?? undefined,
     joinedAt: student.joinedAt,

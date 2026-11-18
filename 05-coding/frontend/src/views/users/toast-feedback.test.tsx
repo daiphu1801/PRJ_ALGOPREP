@@ -146,7 +146,9 @@ describe("student views raise toasts for operation results", () => {
     fireEvent.click(screen.getByText("startCta"));
     const stop = screen.getByText("stopEarlyCta");
     // Complete the mock typing interval without depending on real CPU scheduling.
-    await act(async () => { await vi.advanceTimersByTimeAsync(5000); });
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(5000);
+    });
     vi.useRealTimers();
     expect(stop.closest("button")).toBeEnabled();
     fireEvent.click(stop);

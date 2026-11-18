@@ -44,11 +44,11 @@
 | Tên vật lý (slug) | `admin_system_log` |
 | Trục tài liệu | Màn hình (`02-bd/screens/`) |
 | Actor | A3 (`ADMIN`) |
-| Phiên bản | V0.15 |
+| Phiên bản | V0.16 |
 | Người tạo | Nhóm phát triển AlgoPrep |
 | Ngày tạo | 2026/09/15 |
 | Người cập nhật | Nhóm phát triển AlgoPrep |
-| Ngày cập nhật | 2026/10/22 |
+| Ngày cập nhật | 2026/11/18 |
 
 ---
 
@@ -71,6 +71,7 @@
 | V0.13 | Sheet 4 (ghi chú), 5, 7, Câu hỏi mở | Sửa 2026-10-22 đồng bộ DB, `DEC-2026-1022-identity-schema-sync` (ID-08). `identity.users` **không có** cột `username` và `full_name`: cột "Người thực hiện" và ô tìm kiếm đổi sang `users.email`, khối quản trị viên hoạt động đổi sang `users.display_name`; DTO `actorUsername` đổi `actorEmail`, `ActiveAdminDto.fullName` đổi `displayName` (tên là `[SoT: Suy luận]`, DD chốt). Sửa câu sai ở Sheet 4.3: tham số lưu log đã có bảng `system_settings` và mỗi lần sửa **có** ghi một dòng `system_audit_logs` (phân loại "Cấu hình"). Sửa số dòng trích `02-bd/database/F1_identity.md` sang bản 2026-10-22 | 2026/10/22 | Nhóm phát triển AlgoPrep |
 | V0.14 | Sheet 7 (mục 7.3) | Chủ dự án chốt 2026-11-01 (`DEC-2026-1101-audit-stream-sse`): endpoint 4 `StreamSystemAuditLog` dùng **SSE**, không dùng WebSocket/STOMP như câu cũ; sửa câu ở Sheet 7 mục 7.3, gạch phần cũ. Ghi thêm hiện trạng bản dựng: công tắc "Theo dõi trực tiếp" mới chỉ là `useState` cục bộ, chưa có nguồn dữ liệu, màn còn chạy trên mock (nối API thật là task #12). Không đổi hành vi màn | 2026/11/01 | Claude |
 | V0.15 | Sheet 7 (mục 7.3), Hiện trạng bản dựng | Sửa 2026-11-02 (task #12, nối FE với API thật). (1) Màn gọi F1 #39, #40, #64, #65, #51, #52 và mở luồng #66 bằng `fetch`; lọc theo từ khoá, phân loại, ngày và con trỏ làm ở máy chủ. (2) Không có tổng số dòng, nhãn chân danh sách chỉ ghi số dòng đã tải. (3) Câu nội dung dựng từ `actionType` bằng i18n; mã hiển thị là 7 ký tự đầu UUID. (4) Backend #66 trả thêm `no-transform` vì lớp rewrite của Next.js nén gzip làm kẹt sự kiện. Không có câu hỏi mở mới; Q1 đến Q8 vẫn đã đóng. |
+| V0.16 | Sheet 5 (Khu vực E NO 2), 6 (Khu vực E NO 2), 7 (7.1 NO 16, 7.2 NO 3, 7.3 NO 8) | Sửa 2026-11-18 (F1-35, `DEC-2026-1117-user-avatar-upload`, chưa duyệt hình). Cột "Chữ viết tắt" của khối "Quản trị viên hoạt động" nay là ảnh đại diện thật, chưa có ảnh hoặc ảnh lỗi thì hiện chữ viết tắt; đọc `avatarVersion` của F1 #64. Ghi chú cũ "Ký hiệu thay ảnh đại diện" bỏ. | 2026/11/18 | Claude |
 
 ---
 
@@ -349,7 +350,7 @@ giá trị mật khẩu ở bất kỳ dạng nào. Với hành động đổi c
 | :--- | --: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :-: | :-: | :--- | :--- | :--- |
 | Quản trị viên hoạt động | | | | | | | | | | | | | |
 | | 1 | Danh sách người thực hiện | `adminSystemLog.activeAdmin.list` | `identity.system_audit_logs` | `actor_user_id` | List | List | - | - | O | rỗng | - | Người thực hiện có hành động gần nhất, sắp xếp theo thời điểm hành động giảm dần. **Không** chịu ảnh hưởng của bộ lọc danh sách<br>[Nguồn giá trị] Kết quả gọi `ListActiveAdmins`<br>[EVT liên quan] EVT-1 |
-| | 2 | Chữ viết tắt | `adminSystemLog.activeAdmin.col.initials` | `identity.users` | `display_name` | ListColumn | String | 4 | - | O | - | Chữ cái đầu | Ký hiệu thay ảnh đại diện<br>[Công thức] Lấy chữ cái đầu của hai từ cuối trong `users.display_name`<br>[EVT liên quan] - |
+| | 2 | Ảnh đại diện (hoặc chữ viết tắt) | `adminSystemLog.activeAdmin.col.initials` | `identity.user_avatars`; `identity.users` | `updated_at`; `display_name` | ListColumn | String | 4 | - | O | Chữ viết tắt | Ảnh tròn nhỏ, hoặc hai ký tự in hoa | Ảnh đại diện của quản trị viên; chưa có ảnh hoặc ảnh tải lỗi thì hiện chữ viết tắt, không hiện biểu tượng ảnh hỏng (F1-35 mục 2). ID giữ nguyên `...col.initials` để không lệch tham chiếu<br>[Nguồn giá trị] Có ảnh khi `ActiveAdminDto.avatarVersion` (F1 #64) khác rỗng (mục 7.1 NO 16); ảnh tải qua `GetUserAvatar` [Nguồn: 03-dd/api/F1_identity.md mục 0.9.5]<br>[Công thức] Chữ viết tắt: lấy chữ cái đầu của hai từ cuối trong `users.display_name`<br>[Hiện trạng bản dựng] Đã dựng 2026-11-17, chưa duyệt hình (`05-coding/frontend/src/views/admin/system-log/ui/admin-system-log-view.tsx:352-357`)<br>[EVT liên quan] - |
 | | 3 | Họ tên | `adminSystemLog.activeAdmin.col.name` | `identity.users` | `display_name` | ListColumn | String | 100 | - | O | - | - | Tên hiển thị của người thực hiện<br>[Nguồn giá trị] Cột `users.display_name` [Nguồn: 02-bd/database/F1_identity.md:16]<br>[EVT liên quan] - |
 | | 4 | Vai trò và số hành động | `adminSystemLog.activeAdmin.col.meta` | `identity.users` | `role_id` | ListColumn | String | - | - | O | - | `{vai trò} · {số} hành động` | Vai trò kèm số hành động trong cửa sổ đếm<br>[Công thức] Nhãn vai trò tra từ `users.role_id`, ghép với số dòng log của người đó trong cửa sổ 24 giờ (đã chốt 2026-10-08, Q3)<br>[EVT liên quan] - |
 | | 5 | Thời điểm gần nhất | `adminSystemLog.activeAdmin.col.lastActionAt` | `identity.system_audit_logs` | `created_at` | ListColumn | String | 20 | - | O | - | `{số} phút trước` / `{số} giờ trước` | Khoảng cách từ hành động gần nhất tới hiện tại<br>[Công thức] Thời điểm hiện tại trừ `MAX(created_at)` của người đó, hiển thị dạng tương đối<br>[EVT liên quan] - |
@@ -463,7 +464,7 @@ Không còn item nào — xem Sheet 5, Khu vực B.
 | :--- | --: | :--- | :-: | :--- |
 | Quản trị viên hoạt động | | | | |
 | | 1 | Danh sách người thực hiện | Có | [Điều kiện hiển thị] Trong lúc tải hiển thị khung chờ đúng 5 dòng. Không có ai hoạt động trong cửa sổ đếm thì hiển thị "Chưa có hành động nào trong 24 giờ qua". |
-| | 2 | Chữ viết tắt | Có | - |
+| | 2 | Ảnh đại diện (hoặc chữ viết tắt) | Có | [Điều kiện hiển thị] Ảnh tải lỗi hoặc chưa có thì hiện chữ viết tắt; ảnh của một dòng không chặn dòng khác. |
 | | 3 | Họ tên | Có | - |
 | | 4 | Vai trò và số hành động | Có | - |
 | | 5 | Thời điểm gần nhất | Có | [Tự động đặt] Nhãn tương đối tính lại theo đồng hồ phía client, không gọi lại máy chủ. |
@@ -537,15 +538,17 @@ Không còn item nào — xem Sheet 5, Khu vực B.
 | 13 | `AuditLogExportRequestDto` | `columns`, `dateFrom`, `dateTo`, `query`, `categoryCode` | List, Date, Date, String, String | `identity.system_audit_logs` | `created_at` | Popup xuất NO 2, 3, 4, 9 | Không | [Nguồn] Giá trị người dùng chọn trong hộp thoại "Tải nhật ký"<br>[Đích] Tham số của `ExportSystemAuditLogs`<br>[Chuyển đổi] `columns` là tập con không rỗng của 6 mã cột (`time`, `actor`, `service`, `category`, `content`, `id`); hai ngày tuỳ chọn, rỗng nghĩa là không giới hạn. `query` và `categoryCode` của màn chính được gửi kèm (Q8 đã chốt 2026-10-08), cùng cấu trúc với DTO NO 12. |
 | 14 | `AuditLogRetentionSettingsDto` | `retentionDays` | Number | **Chưa có bảng** | `retention_days` (đề xuất) | Popup Lưu trữ NO 2; Chân trang NO 1 | Có | [Nguồn] Phản hồi của `GetAuditLogRetentionSettings`; giá trị người dùng nhập<br>[Đích] Tham số của `UpdateAuditLogRetentionSettings`; job dọn log đọc cùng giá trị<br>[Chuyển đổi] Số nguyên tối thiểu 1. Cũng là cận trên cho khoảng tìm kiếm ở Sheet 9 NO 5. |
 | 15 | `AuditLogRetentionSettingsDto` | `expiryPolicy` | Enum | **Chưa có bảng** | `expiry_policy` (đề xuất) | Popup Lưu trữ NO 3 | Có | [Nguồn] Phản hồi của `GetAuditLogRetentionSettings`; giá trị người dùng chọn<br>[Đích] Tham số của `UpdateAuditLogRetentionSettings`<br>[Chuyển đổi] `DELETE` đổi sang "Xoá hẳn", `ARCHIVE` đổi sang "Nén và lưu trữ". |
+| 16 | `ActiveAdminDto` | `avatarVersion` | Number | `identity.user_avatars` | `updated_at` | Quản trị viên hoạt động NO 2 | Có | [Nguồn] Dấu phiên bản ảnh (số nguyên mili giây), rỗng khi chưa có ảnh; phản hồi của `ListActiveAdmins` (F1 #64), hợp đồng duy nhất ở `03-dd/api/F1_identity.md` mục 0.9.5, không chép lại ở đây<br>[Chuyển đổi] Rỗng thì hiện chữ viết tắt, không gọi tải ảnh; có thì tải `GetUserAvatar`. |
 
-### 7.2 Truy cập bảng dữ liệu (2)
+### 7.2 Truy cập bảng dữ liệu (3)
 
 | NO | Tên logic | Bảng | Repository | CRUD | Mục đích | Ghi chú |
 | --: | :--- | :--- | :--- | :-: | :--- | :--- |
 | 1 | Nhật ký hành động quản trị | `identity.system_audit_logs` | `SystemAuditLogRepository` | R | Đọc danh sách có lọc và phân trang, đếm theo người thực hiện, đếm theo phân loại 7 ngày | `SearchSystemAuditLogs`: R<br>`ListActiveAdmins`: R<br>`GetAuditCategoryBreakdown`: R<br>`ExportSystemAuditLogs`: R |
 | 2 | Tài khoản người thực hiện | `identity.users` | `UserRepository` | R | Tra `display_name`, `email` và vai trò của `actor_user_id` | `SearchSystemAuditLogs`: R<br>`ListActiveAdmins`: R |
+| 3 | Ảnh đại diện | `identity.user_avatars` | `UserAvatarRepository` | R | Đọc `updated_at` để trả `avatarVersion` kèm từng người thực hiện; byte ảnh do `GetUserAvatar` đọc riêng [Nguồn: 02-bd/database/F1_identity.md mục 1.16] | `ListActiveAdmins`: R |
 
-Màn này **chỉ đọc** với hai bảng trên: không có thao tác `C`, `U`, `D` trên `system_audit_logs` hay `users`.
+Màn này **chỉ đọc** với ba bảng trên: không có thao tác `C`, `U`, `D` trên `system_audit_logs` hay `users`.
 Ngoại lệ thêm V0.6: hai tham số cấu hình lưu log (`retention_days`, `expiry_policy`) ghi qua
 `UpdateAuditLogRetentionSettings` vào một bảng cấu hình hệ thống của `identity` mà BD chưa có, xem Q7. Việc **ghi** một dòng
 `system_audit_logs` là tác dụng phụ nội bộ của các API quản trị khác khi chúng thực thi (đổi ma trận
@@ -568,6 +571,7 @@ không phải từng module tự gọi một API ghi log rời rạc — như v�
 | 5 | `ExportSystemAuditLogs` | Xuất CSV theo cột và khoảng thời gian đã chọn (không trần số dòng, xuất theo luồng); mỗi lần gọi ghi một dòng log hành động | `identity` |
 | 6 | `GetAuditLogRetentionSettings` | Tải thời hạn lưu và chính sách log quá hạn (có thể gộp vào endpoint tải màn) | `identity` |
 | 7 | `UpdateAuditLogRetentionSettings` | Cập nhật thời hạn lưu (số nguyên tối thiểu 1) và chính sách log quá hạn | `identity` |
+| 8 | `GetUserAvatar` | Byte ảnh đại diện của từng người trong danh sách "Quản trị viên hoạt động" có `avatarVersion` khác rỗng; dùng lại của `USR0502`, lỗi hoặc rỗng thì rơi về chữ viết tắt [Nguồn: 03-dd/api/F1_identity.md mục 0.9.5] | `identity` |
 
 `[Suy luận]` — endpoint 6 và 7 do BD này đề xuất (V0.6); tên và quyền thật do `03-dd/api/F1_identity.md` chốt.
 
@@ -578,6 +582,8 @@ luồng hội thoại AI [Nguồn: CLAUDE.md — mục Locked stack, dòng "Queu
 **Chốt 2026-11-01 (V0.14, `DEC-2026-1101-audit-stream-sse`):** endpoint số 4 `StreamSystemAuditLog` dùng **SSE** (máy chủ đẩy một chiều; xác thực bằng header `Authorization: Bearer` nên client gọi bằng `fetch`; client tự gửi `Last-Event-ID` khi nối lại; heartbeat 30 giây). WebSocket/STOMP vẫn dành riêng cho trạng thái từng testcase; SSE vốn dành cho luồng hội thoại AI, nay mở rộng cho luồng nhật ký một chiều này. Hợp đồng chi tiết: `03-dd/api/F1_identity.md` #66.
 
 **Hiện trạng bản dựng (2026-11-02):** công tắc "Theo dõi trực tiếp" ở `05-coding/frontend/src/views/admin/system-log/ui/admin-system-log-view.tsx` mở luồng #66 qua `fetch` khi chạy API thật (`views/admin/system-log/api/live.ts`, `shared/api/sse-stream.ts`); ở chế độ mock công tắc chỉ đổi nhãn, không có luồng.
+
+**Hiện trạng bản dựng (2026-11-18):** mỗi dòng của khối "Quản trị viên hoạt động" hiện `UserAvatar` cỡ nhỏ theo `avatarVersion` của #64 (`05-coding/frontend/src/views/admin/system-log/ui/admin-system-log-view.tsx:352-357`; ánh xạ DTO ở `views/admin/system-log/api/real-audit-log.ts:96,105`); chưa duyệt hình.
 
 [Nguồn: 02-bd/database/F1_identity.md:141-155]
 

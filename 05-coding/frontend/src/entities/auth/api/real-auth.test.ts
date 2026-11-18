@@ -178,7 +178,12 @@ describe("real auth API", () => {
   it("does not clear a new session when an earlier logout finishes late", async () => {
     tokenStore.set("account-A");
     let finish!: (value: unknown) => void;
-    post.mockImplementationOnce(() => new Promise((resolve) => { finish = resolve; }));
+    post.mockImplementationOnce(
+      () =>
+        new Promise((resolve) => {
+          finish = resolve;
+        }),
+    );
     const logout = realLogout();
     tokenStore.set("account-B");
     finish({});

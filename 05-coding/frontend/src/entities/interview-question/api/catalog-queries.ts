@@ -88,7 +88,10 @@ export type ManagedActions = {
 
 export type TopicActions = ManagedActions & {
   /** The "uses STAR" switch of a topic row; resolves `"reported"` when the server refused (toast shown). */
-  setStar: (key: string, usesStarFramework: boolean) => Promise<"reported" | null>;
+  setStar: (
+    key: string,
+    usesStarFramework: boolean,
+  ) => Promise<"reported" | null>;
 };
 
 const sameName = (left: string, right: string) =>
@@ -110,7 +113,9 @@ type Verbs = {
 function useRun(queryKey: readonly string[]) {
   const queryClient = useQueryClient();
   const apiMessage = useApiErrorMessage();
-  return async function run(call: () => Promise<void>): Promise<"reported" | null> {
+  return async function run(
+    call: () => Promise<void>,
+  ): Promise<"reported" | null> {
     try {
       await call();
     } catch (error) {
@@ -120,7 +125,9 @@ function useRun(queryKey: readonly string[]) {
     await Promise.all([
       queryClient.invalidateQueries({ queryKey }),
       queryClient.invalidateQueries({ queryKey: ["interview-question-page"] }),
-      queryClient.invalidateQueries({ queryKey: ["interview-question", "learner"] }),
+      queryClient.invalidateQueries({
+        queryKey: ["interview-question", "learner"],
+      }),
     ]);
     return null;
   };

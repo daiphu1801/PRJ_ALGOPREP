@@ -30,6 +30,10 @@ export function QueueNotice({
         ? "waiting"
         : "waitingWithEstimate";
   return (
-    <NoticeTile tone="info" title={t(key, { ahead: queue.ahead, seconds: seconds ?? 0 })} className={className} />
+    <NoticeTile
+      tone="info"
+      title={t(key, { ahead: queue.ahead, seconds: seconds ?? 0 })}
+      className={className}
+    />
   );
 }

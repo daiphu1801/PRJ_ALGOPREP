@@ -2,7 +2,13 @@
 // resend button with a 60 s cooldown, 10 minute code countdown, and every error code the two
 // endpoints can return. Only HTTP is faked; real-email-change.ts runs for real. Fake timers drive
 // the countdowns, so nothing here depends on the wall clock.
-import { act, fireEvent, render, renderHook, screen } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  renderHook,
+  screen,
+} from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import viMessages from "../../../../messages/vi.json";
 import { ApiError } from "@/shared/api";
@@ -80,14 +86,18 @@ describe("EmailOtpDialog", () => {
 
   it("starts with the resend button locked for 60 s and the code valid for 10 minutes", () => {
     renderDialog();
-    expect(screen.getByRole("button", { name: resendLabel(60) })).toBeDisabled();
+    expect(
+      screen.getByRole("button", { name: resendLabel(60) }),
+    ).toBeDisabled();
     expect(screen.getByRole("timer")).toHaveTextContent("10:00");
   });
 
   it("counts both timers down and unlocks resend after the cooldown", async () => {
     renderDialog();
     await advance(15_000);
-    expect(screen.getByRole("button", { name: resendLabel(45) })).toBeDisabled();
+    expect(
+      screen.getByRole("button", { name: resendLabel(45) }),
+    ).toBeDisabled();
     expect(screen.getByRole("timer")).toHaveTextContent("09:45");
 
     await advance(45_000);
@@ -112,7 +122,9 @@ describe("EmailOtpDialog", () => {
       newEmail: "new@example.com",
     });
     expect(read().at(-1)).toEqual(["success", m.resent]);
-    expect(screen.getByRole("button", { name: resendLabel(60) })).toBeDisabled();
+    expect(
+      screen.getByRole("button", { name: resendLabel(60) }),
+    ).toBeDisabled();
     expect(screen.getByRole("timer")).toHaveTextContent("10:00");
     expect(screen.getByLabelText(m.codeLabel)).toHaveValue("");
   });

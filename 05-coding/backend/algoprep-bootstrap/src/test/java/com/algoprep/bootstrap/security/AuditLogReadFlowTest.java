@@ -462,6 +462,30 @@ class AuditLogReadFlowTest {
   }
 
   @Test
+  void activeAdminsCarryTheAvatarVersionOrNull() throws Exception {
+    UUID pictured = user("ADMIN", "pic@admin.test", "Pictured");
+    UUID plain = user("ADMIN", "plain@admin.test", "Plain");
+    jdbc.update(
+        "INSERT INTO identity.user_avatars(user_id,object_key,content_type,size_bytes,updated_at)"
+            + " VALUES (?,'avatars/k','image/png',10,to_timestamp(1700000000.123))",
+        pictured);
+    audit(pictured, "ROLE_DELETED", null, Instant.now().minusSeconds(60));
+    audit(plain, "ROLE_DELETED", null, Instant.now().minusSeconds(61));
+
+    HttpResponse<String> response = get(BASE_PATH + "/active-admins", adminToken);
+
+    assertThat(
+            JsonPath.<List<Number>>read(
+                response.body(), "$.items[?(@.displayName=='Pictured')].avatarVersion"))
+        .singleElement()
+        .satisfies(v -> assertThat(v.longValue()).isEqualTo(1700000000123L));
+    assertThat(
+            JsonPath.<List<Object>>read(
+                response.body(), "$.items[?(@.displayName=='Plain')].avatarVersion"))
+        .containsOnlyNulls();
+  }
+
+  @Test
   void activeAdminsOfAQuietDayIsAnEmptyList() throws Exception {
     audit(admin, "ROLE_DELETED", null, Instant.now().minus(Duration.ofHours(25)));
 

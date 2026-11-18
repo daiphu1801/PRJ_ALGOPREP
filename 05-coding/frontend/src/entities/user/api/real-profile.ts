@@ -32,5 +32,6 @@ function toProfile(p: UserProfile): UserProfile {
     joinedAt: p.joinedAt,
     roleName: p.roleName,
     mustChangePassword: p.mustChangePassword,
+    avatarVersion: p.avatarVersion ?? null,
   };
 }

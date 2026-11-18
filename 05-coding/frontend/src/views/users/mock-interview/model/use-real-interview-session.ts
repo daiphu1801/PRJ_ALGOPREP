@@ -331,7 +331,8 @@ export function useRealInterviewSession(): InterviewSession {
       const { session, opening } = await realStartSession({
         config: entry.config,
         questionText:
-          bank.data?.find((q) => q.id === entry.questionId)?.title ?? null,
+          bank.data?.items.find((q) => q.id === entry.questionId)?.title ??
+          null,
         topicNames: entry.customTopics.map(name),
       });
       sessionId.current = session.sessionId;

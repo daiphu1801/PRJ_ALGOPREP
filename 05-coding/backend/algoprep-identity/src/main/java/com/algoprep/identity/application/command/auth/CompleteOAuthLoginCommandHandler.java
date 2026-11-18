@@ -1,7 +1,6 @@
 package com.algoprep.identity.application.command.auth;
 
 import com.algoprep.common.exception.InvalidRequestException;
-import com.algoprep.identity.application.dto.UserSummary;
 import com.algoprep.identity.application.dto.auth.LoginResult;
 import com.algoprep.identity.application.ports.in.auth.CompleteOAuthLoginUseCase;
 import com.algoprep.identity.domain.exception.IdentityErrorCodes;
@@ -11,6 +10,7 @@ import com.algoprep.identity.domain.model.auth.OAuthProfile;
 import com.algoprep.identity.domain.model.auth.OAuthProvider;
 import com.algoprep.identity.domain.ports.out.OAuthAccountRepository;
 import com.algoprep.identity.domain.ports.out.UserAccountRepository;
+import java.util.Optional;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,20 +27,17 @@ class CompleteOAuthLoginCommandHandler implements CompleteOAuthLoginUseCase {
   private final OAuthExchangeService exchange;
   private final OAuthAccountRepository accounts;
   private final UserAccountRepository users;
-  private final LoginAccountService admission;
-  private final SessionIssuer sessions;
+  private final OAuthLoginFinisher finisher;
 
   CompleteOAuthLoginCommandHandler(
       OAuthExchangeService exchange,
       OAuthAccountRepository accounts,
       UserAccountRepository users,
-      LoginAccountService admission,
-      SessionIssuer sessions) {
+      OAuthLoginFinisher finisher) {
     this.exchange = exchange;
     this.accounts = accounts;
     this.users = users;
-    this.admission = admission;
-    this.sessions = sessions;
+    this.finisher = finisher;
   }
 
   @Override
@@ -53,23 +50,11 @@ class CompleteOAuthLoginCommandHandler implements CompleteOAuthLoginUseCase {
                     new InvalidRequestException(
                         IdentityErrorCodes.OAUTH_PROVIDER_UNKNOWN, "Unknown OAuth provider"));
     OAuthProfile profile = exchange.verify(selected, code, state);
-    UUID userId =
-        accounts
-            .findLinkedUser(selected, profile.providerUserId())
-            .orElseGet(() -> linkOrCreate(selected, profile));
+    Optional<UUID> linked = accounts.findLinkedUser(selected, profile.providerUserId());
+    UUID userId = linked.orElseGet(() -> linkOrCreate(selected, profile));
     UserAccount user =
         users.findById(userId).orElseThrow(() -> new IllegalStateException("Linked user missing"));
-    admission.admitByStatus(user);
-    SessionIssuer.Session session = sessions.openNewFamily(user);
-    admission.touchLastActive(user.id());
-    UserSummary summary =
-        new UserSummary(
-            user.id(), user.displayName(), user.baseCategory(), user.mustChangePassword());
-    return new LoginResult(
-        session.accessToken().value(),
-        session.expiresInSeconds(),
-        summary,
-        session.rawRefreshToken());
+    return finisher.finish(user, profile, linked.isEmpty());
   }
 
   private UUID linkOrCreate(OAuthProvider provider, OAuthProfile profile) {

@@ -205,6 +205,31 @@ describe("API contract", () => {
     expect(await api.download("/x")).toBeInstanceOf(Blob);
   });
 
+  it("getBlob sends the bearer token and the query string and returns the blob", async () => {
+    vi.resetModules();
+    const seen: InternalAxiosRequestConfig[] = [];
+    const client = axios.create();
+    client.defaults.adapter = async (config: InternalAxiosRequestConfig) => {
+      seen.push(config);
+      return {
+        data: new Blob(["img"]),
+        status: 200,
+        statusText: "OK",
+        headers: {},
+        config,
+      };
+    };
+    vi.spyOn(axios, "create").mockReturnValue(client);
+    const { api } = await import("./client");
+    const { tokenStore: store } = await import("./token-store");
+    store.set("tok");
+    const blob = await api.getBlob("/identity/users/u1/avatar", { v: 3 });
+    expect(blob.size).toBe(3);
+    expect(seen[0]?.params).toEqual({ v: 3 });
+    expect(String(seen[0]?.headers.Authorization)).toBe("Bearer tok");
+    expect(seen[0]?.responseType).toBe("blob");
+  });
+
   it("downloadPost sends the body and returns the file with the name from Content-Disposition", async () => {
     vi.resetModules();
     const client = axios.create();

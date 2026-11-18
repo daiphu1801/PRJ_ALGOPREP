@@ -1,10 +1,5 @@
 // PROTOTYPE — no DD yet. See 06-plan/PROTOTYPE_DEBT.md
-import {
-  fireEvent,
-  render,
-  screen,
-  within,
-} from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { withTestProviders } from "@/shared/test/render-with-providers";
 import { SubmissionManagementView } from "./submission-management-view";

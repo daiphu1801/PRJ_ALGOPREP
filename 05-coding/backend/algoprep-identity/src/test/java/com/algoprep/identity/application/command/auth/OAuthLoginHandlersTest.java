@@ -12,6 +12,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import com.algoprep.common.exception.AlgoPrepException;
+import com.algoprep.identity.application.ports.in.avatar.ImportOAuthAvatarUseCase;
 import com.algoprep.identity.application.ports.out.OAuthProviderPort;
 import com.algoprep.identity.application.ports.out.OAuthStatePort;
 import com.algoprep.identity.domain.exception.OAuthCodeRejectedException;
@@ -33,16 +34,21 @@ class OAuthLoginHandlersTest {
   private final UserAccountRepository users = mock(UserAccountRepository.class);
   private final LoginAccountService admission = mock(LoginAccountService.class);
   private final SessionIssuer sessions = mock(SessionIssuer.class);
+  private final ImportOAuthAvatarUseCase avatars = mock(ImportOAuthAvatarUseCase.class);
   private final CompleteOAuthLoginCommandHandler complete =
       new CompleteOAuthLoginCommandHandler(
-          new OAuthExchangeService(providers, states), accounts, users, admission, sessions);
+          new OAuthExchangeService(providers, states),
+          accounts,
+          users,
+          new OAuthLoginFinisher(admission, sessions, avatars));
   private final StartOAuthLoginCommandHandler start =
       new StartOAuthLoginCommandHandler(providers, states);
 
   private final UUID id = UUID.randomUUID();
 
   private static OAuthProfile profile(boolean verified) {
-    return new OAuthProfile(OAuthProvider.GITHUB, "gh-1", "an@example.test", verified, "Nguyen An");
+    return new OAuthProfile(
+        OAuthProvider.GITHUB, "gh-1", "an@example.test", verified, "Nguyen An", null);
   }
 
   private static UserAccount user(UUID id, UserStatus status, boolean mustChange) {
@@ -157,6 +163,50 @@ class OAuthLoginHandlersTest {
   }
 
   @Test
+  void aFirstLinkQueuesTheAvatarImportAfterTheSessionAndALaterLoginDoesNot() {
+    String picture = "https://avatars.githubusercontent.com/u/1?v=4";
+    when(states.consume("s")).thenReturn(true);
+    when(providers.fetchProfile(any(), anyString()))
+        .thenReturn(
+            new OAuthProfile(
+                OAuthProvider.GITHUB, "gh-1", "an@example.test", true, "Nguyen An", picture));
+    when(accounts.findLinkedUser(any(), anyString())).thenReturn(Optional.empty());
+    when(accounts.lockUserByEmail(anyString())).thenReturn(Optional.empty());
+    when(accounts.createStudent("an@example.test", "Nguyen An")).thenReturn(Optional.of(id));
+    when(accounts.link(eq(id), any(), anyString(), anyString())).thenReturn(true);
+    when(users.findById(id)).thenReturn(Optional.of(user(id, UserStatus.ACTIVE, false)));
+    session(id);
+
+    complete.complete("github", "c", "s");
+
+    var order = org.mockito.Mockito.inOrder(sessions, avatars);
+    order.verify(sessions).openNewFamily(any());
+    order.verify(avatars).scheduleAfterCommit(id, OAuthProvider.GITHUB, picture);
+
+    org.mockito.Mockito.clearInvocations(avatars);
+    when(accounts.findLinkedUser(OAuthProvider.GITHUB, "gh-1")).thenReturn(Optional.of(id));
+    complete.complete("github", "c", "s");
+    verifyNoInteractions(avatars);
+  }
+
+  @Test
+  void noAvatarImportIsQueuedWhenAdmissionRefusesTheAccount() {
+    verified();
+    when(accounts.findLinkedUser(any(), anyString())).thenReturn(Optional.empty());
+    when(accounts.lockUserByEmail("an@example.test")).thenReturn(Optional.of(id));
+    when(accounts.link(id, OAuthProvider.GITHUB, "gh-1", "an@example.test")).thenReturn(true);
+    when(users.findById(id)).thenReturn(Optional.of(user(id, UserStatus.DEACTIVATED, false)));
+    org.mockito.Mockito.doThrow(new IllegalStateException("refused"))
+        .when(admission)
+        .admitByStatus(any());
+
+    assertThatThrownBy(() -> complete.complete("github", "c", "s"))
+        .isInstanceOf(IllegalStateException.class);
+
+    verifyNoInteractions(avatars);
+  }
+
+  @Test
   void aVerifiedEmailOfAnExistingAccountIsLinkedNotDuplicated() {
     verified();
     when(accounts.findLinkedUser(any(), anyString())).thenReturn(Optional.empty());
@@ -242,7 +292,8 @@ class OAuthLoginHandlersTest {
   void aShortProviderNameFallsBackToTheEmailLocalPart() {
     when(states.consume("s")).thenReturn(true);
     when(providers.fetchProfile(any(), anyString()))
-        .thenReturn(new OAuthProfile(OAuthProvider.GOOGLE, "g-1", "binh@example.test", true, "B"));
+        .thenReturn(
+            new OAuthProfile(OAuthProvider.GOOGLE, "g-1", "binh@example.test", true, "B", null));
     when(accounts.findLinkedUser(any(), anyString())).thenReturn(Optional.empty());
     when(accounts.lockUserByEmail(anyString())).thenReturn(Optional.empty());
     when(accounts.createStudent("binh@example.test", "binh")).thenReturn(Optional.of(id));

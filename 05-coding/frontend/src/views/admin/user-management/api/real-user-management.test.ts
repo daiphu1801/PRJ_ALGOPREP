@@ -142,6 +142,7 @@ describe("realFetchAdminUserPage (#35, #62, #63, #9)", () => {
       {
         id: "u1",
         name: "An",
+        avatarVersion: null,
         email: "an@x.test",
         role: "student",
         status: "active",
@@ -153,6 +154,7 @@ describe("realFetchAdminUserPage (#35, #62, #63, #9)", () => {
       {
         id: "u2",
         name: "Binh",
+        avatarVersion: null,
         email: "binh@x.test",
         role: "admin",
         status: "pending",
@@ -164,6 +166,7 @@ describe("realFetchAdminUserPage (#35, #62, #63, #9)", () => {
       {
         id: "u3",
         name: "Chi",
+        avatarVersion: null,
         email: "chi@x.test",
         role: "instructor",
         status: "locked",

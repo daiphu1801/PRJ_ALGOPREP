@@ -645,6 +645,48 @@ class MyAccountFlowTest {
   }
 
   @Test
+  void exportProfileSaysWhetherAnAvatarExistsAndNothingElse() throws Exception {
+    String bare = activeStudent();
+    String pictured = activeStudent();
+    jdbc.update(
+        "INSERT INTO identity.user_avatars(user_id,object_key,content_type,size_bytes,updated_at)"
+            + " VALUES ((SELECT id FROM identity.users WHERE email = ?),'avatars/k','image/png',10,"
+            + "to_timestamp(1700000000.123))",
+        pictured);
+
+    String without = exportProfile(bare);
+    String with = exportProfile(pictured);
+
+    assertThat(JsonPath.<Boolean>read(without, "$.hasAvatar")).isFalse();
+    assertThat(JsonPath.<Boolean>read(with, "$.hasAvatar")).isTrue();
+    assertThat(with).doesNotContain("avatars/k");
+  }
+
+  private String activeStudent() {
+    String email = UUID.randomUUID() + "@example.test";
+    jdbc.update(
+        "INSERT INTO identity.users (id,email,password_hash,display_name,role_id,status,"
+            + "must_change_password) SELECT ?,?,?,'QAUser123',id,'ACTIVE',false"
+            + " FROM identity.roles WHERE code='STUDENT'",
+        UUID.randomUUID(),
+        email,
+        HASH);
+    return email;
+  }
+
+  private String exportProfile(String email) throws Exception {
+    String token = JsonPath.read(login(email, PASSWORD).getContentAsString(), "$.accessToken");
+    MockHttpServletResponse response =
+        mvc.perform(
+                get("/api/v1/identity/me/export?scope=profile")
+                    .header("Authorization", "Bearer " + token))
+            .andReturn()
+            .getResponse();
+    assertThat(response.getStatus()).isEqualTo(200);
+    return response.getContentAsString();
+  }
+
+  @Test
   void selfDeletionWithoutBearerTokenIs401() throws Exception {
     assertThat(
             mvc.perform(

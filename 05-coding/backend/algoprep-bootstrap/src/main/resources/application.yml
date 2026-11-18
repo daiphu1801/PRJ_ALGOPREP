@@ -8,6 +8,13 @@ spring:
   application:
     name: algoprep
 
+  servlet:
+    multipart:
+      # Avatar upload (#74) is capped at 512 KB; the margin covers the part headers. A bigger body is
+      # rejected by the container and mapped to 413 IDT-V30.
+      max-file-size: 600KB
+      max-request-size: 700KB
+
   threads:
     virtual:
       # DEC-2026-0901-backend-base-architecture diem 5.
@@ -147,3 +154,10 @@ algoprep:
       bucket: ${MINIO_BUCKET_TESTCASE:algoprep-testcases}
       access-key: ${ALGOPREP_MINIO_ACCESS_KEY:}
       secret-key: ${ALGOPREP_MINIO_SECRET_KEY:}
+  identity:
+    avatar:
+      storage:
+        endpoint: ${ALGOPREP_MINIO_ENDPOINT:http://localhost:9000}
+        bucket: ${MINIO_BUCKET_AVATAR:algoprep-avatars}
+        access-key: ${ALGOPREP_MINIO_ACCESS_KEY:}
+        secret-key: ${ALGOPREP_MINIO_SECRET_KEY:}

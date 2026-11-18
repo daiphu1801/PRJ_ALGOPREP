@@ -1,6 +1,5 @@
 export {
   AUDIT_CATEGORIES,
-  initialsOf,
   type ActiveAdmin,
   type AuditCategory,
   type AuditEvent,

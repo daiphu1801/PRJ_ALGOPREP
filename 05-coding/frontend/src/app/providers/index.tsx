@@ -5,6 +5,7 @@ import { QueryProvider } from "./query-provider";
 import { ThemeProvider } from "./theme-provider";
 import { AuthProvider } from "./auth-provider";
 import { AppToaster } from "./app-toaster";
+import { AuthLoadingReset } from "@/features/auth-by-credentials";
 
 export function Providers({ children }: { children: ReactNode }) {
   return (
@@ -14,6 +15,7 @@ export function Providers({ children }: { children: ReactNode }) {
           {children}
           <AppToaster />
         </QueryProvider>
+        <AuthLoadingReset />
       </AuthProvider>
     </ThemeProvider>
   );

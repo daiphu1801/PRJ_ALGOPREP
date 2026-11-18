@@ -58,6 +58,7 @@ export const classStudentSchema = z.object({
   trend: z.array(z.number()),
   lastActiveLabel: z.string(),
   status: studentStatusSchema,
+  avatarVersion: z.number().nullable().optional(),
   // Contact details the instructor uses to reach the student (owner, 2026-10-13). Optional until
   // the identity DD fixes which profile fields an A2 may read.
   email: z.string().optional(),
@@ -79,7 +80,14 @@ export type InstructorStudentPage = {
 // adds the per-problem best result of the student in this class.
 export type ClassStudentDetail = Pick<
   ClassStudent,
-  "id" | "name" | "classId" | "className" | "status" | "email" | "phone"
+  | "id"
+  | "name"
+  | "classId"
+  | "className"
+  | "status"
+  | "email"
+  | "phone"
+  | "avatarVersion"
 > & {
   assignmentProgress?: {
     problemId: string;
@@ -95,6 +103,8 @@ export type ClassRosterRow = {
   id: string;
   classId: string;
   name: string;
+  /** Picture version (F1 #26); absent or null means the learner has no picture. */
+  avatarVersion?: number | null;
   email?: string;
   phone?: string;
   joinedAt?: string;
@@ -152,14 +162,6 @@ export const classScoreTrendSchema = z.object({
   ),
 });
 export type ClassScoreTrend = z.infer<typeof classScoreTrendSchema>;
-
-// Two-letter avatar initial, same rule for every screen in the cluster
-// (class_management Sheet 5 Khu vực D NO 4: "hai ký tự đầu của hai từ cuối trong display_name").
-export function initialsOfClassStudent(name: string): string {
-  const parts = name.trim().split(/\s+/);
-  const lastTwo = parts.slice(-2);
-  return lastTwo.map((part) => part.charAt(0).toUpperCase()).join("");
-}
 
 // Learner side (screen "Lớp của tôi") - one class the signed-in learner belongs to. Instructor name
 // and assigned problems ride along so the screen needs a single call.
