@@ -1590,6 +1590,7 @@
       },
       "error": {
         "empty": "Level name cannot be empty",
+    "importProblems": "Add many",
         "duplicate": "A level with this name already exists"
       }
     },
@@ -1624,7 +1625,7 @@
       "changeDifficulty": "Change difficulty",
       "assignTopic": "Assign topic",
       "duplicate": "Duplicate",
-      "exportCsv": "Export CSV",
+      "exportCsv": "Export Excel",
       "delete": "Delete",
       "unpublish": "Withdraw"
     },
@@ -1646,7 +1647,7 @@
     "toast": {
       "deleted": "Problem {title} deleted",
       "publishMax": "At most {max} problems can be published at once. Deselect a few.",
-      "exported": "Exported {count} problems to a CSV file",
+      "exported": "Exported {count} problems to an Excel file",
       "bulkPartial": "{done} problems done, {failed} could not be processed. {reason}",
       "duplicatePickOne": "Select exactly one problem to duplicate",
       "searchResult": "Found {count} problems",
@@ -1660,7 +1661,7 @@
         "assignTopic": "Assigned topic to {count} problems"
       }
     },
-    "exportFiltered": "Export filtered CSV",
+    "exportFiltered": "Export filtered to Excel",
     "bulkFailureTitle": "Problems that could not be processed",
     "bulkTopicTitle": "Assign topic to {count} problems",
     "bulkTopicLabel": "Topic to add",
@@ -1744,6 +1745,184 @@
       "fileError": {
         "empty": "The file has no data rows.",
         "missingColumns": "Missing required columns: {detail}.",
+  "problemImport": {
+    "title": "Add many problems",
+    "back": "Back to problem management",
+    "subtitleEmpty": "Bring in an Excel file, review it, fix it, then create the whole set",
+    "count": {
+      "rows": "{count} problems",
+      "blocked": "{count} to fix",
+      "published": "{count} published"
+    },
+    "step": {
+      "prepare": "Bring in and fix",
+      "create": "Create drafts, run solutions",
+      "publish": "Publish"
+    },
+    "zone": {
+      "title": "Drop an Excel file here",
+      "body": "Or choose an .xlsx file, or copy cells in Excel or Google Sheets and press Ctrl V. One row is one problem, at most {max} problems. Only problems that read standard input and print to standard output.",
+      "more": "Drop another file, or paste cells with Ctrl V"
+    },
+    "chooseFile": "Choose Excel file",
+    "downloadTemplate": "Download template",
+    "templateSaved": "Template saved to your downloads folder.",
+    "addRow": "Add row",
+    "run": "Create drafts and run solutions ({count})",
+    "publishCount": "Publish {count} passing",
+    "stop": "Stop",
+    "stopping": "Stopping after this problem...",
+    "received": "{count} problems received.",
+    "published": "{count} problems published.",
+    "assigned": "{count} problems assigned to {className}.",
+    "assignFailed": "{count} problems could not be assigned to {className}. They are still published.",
+    "assignAgain": "Assign again",
+    "retry": "Retry",
+    "remove": "Remove",
+    "removeRow": "Remove problem {number} from the table",
+    "removedKeepsDraft": "Removed from the table. The draft already created stays in the problem list.",
+    "untitled": "No title yet",
+    "choose": "Choose",
+    "levelOf": "Difficulty of problem {number}",
+    "openList": "Open the problem list",
+    "createAgain": "Checked, create again",
+    "openEditor": "Open problem",
+    "cancel": "Cancel",
+    "column": {
+      "number": "#",
+      "title": "Title",
+      "level": "Difficulty",
+      "cases": "Testcases",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "status": {
+      "ready": "Complete",
+      "changed": "Needs another run",
+      "incomplete": "Can be a draft",
+      "blocked": "Fix needed",
+      "gaps": "Missing {items}.",
+      "saving": "Saving...",
+      "running": "Running the solution...",
+      "waiting": "Waiting for a slot ({seconds} s)",
+      "draft": "Saved as draft",
+      "pass": "Passed {total}/{total}",
+      "fail": "Failed testcase {position}",
+      "failDetail": "Reason: {reason}. Fix the solution or the testcase and run again.",
+      "compileError": "Compile error",
+      "compileErrorDetail": "Fix the solution and run again.",
+      "error": "Not created",
+      "errorStored": "Not finished",
+      "unknown": "Outcome unknown",
+      "unknownDetail": "The connection was lost while creating. Check the list before creating again, to avoid a duplicate.",
+      "publishing": "Publishing...",
+      "published": "Published",
+      "publishError": "Not published"
+    },
+    "gap": {
+      "stdin": "input format",
+      "stdout": "output format",
+      "solution": "solution",
+      "cases": "{count} testcases"
+    },
+    "issue": {
+      "titleMissing": "Title is missing.",
+      "titleTooLong": "Title is longer than 255 characters.",
+      "titleRepeated": "Title is used twice in the table.",
+      "levelMissing": "Choose a difficulty.",
+      "levelUnknown": "No difficulty \"{value}\".",
+      "topicUnknown": "No topic \"{value}\".",
+      "statementMissing": "Statement is missing.",
+      "statementTooLong": "Statement is longer than 100,000 characters.",
+      "constraintsTooLong": "Constraints are longer than 20,000 characters.",
+      "languageUnknown": "Language \"{value}\" is not supported.",
+      "solutionTooLong": "Solution is larger than 64 KB.",
+      "caseHalf": "Testcase {value} lacks its input or output.",
+      "caseTooLarge": "Testcase {value} is larger than 1 MB."
+    },
+    "failure": {
+      "WRONG_ANSWER": "wrong answer",
+      "TIME_LIMIT_EXCEEDED": "time limit exceeded",
+      "MEMORY_LIMIT_EXCEEDED": "memory limit exceeded",
+      "RUNTIME_ERROR": "runtime error",
+      "OUTPUT_LIMIT_EXCEEDED": "output limit exceeded",
+      "COMPILE_ERROR": "compile error"
+    },
+    "notice": {
+      "noHeader": "No header row found, so cells are read in the order of the template.",
+      "unknownColumns": "Unknown columns skipped: {names}.",
+      "leftOver": "At most {max} problems per run: {taken} taken, the last {left} left out. Bring them in the next run.",
+      "dates": "Excel turned {count} cells into dates ({cells}), so they are blank. Format them as Text and import again, or type them here.",
+      "formulas": "Cells with formula errors are blank: {cells}.",
+      "sheets": "The file has several sheets; only the first one, \"{name}\", was read."
+    },
+    "error": {
+      "noHeader": "The first row has no column names like the template (Title, Difficulty, Input 1...). Download the template to compare.",
+      "noRows": "There are no problems to take.",
+      "template": "Could not download the template. Try again.",
+      "languages": "Could not read the judge languages, so problems cannot be created yet.",
+      "file": {
+        "extension": "Only .xlsx files are accepted.",
+        "tooLarge": "The file is larger than 10 MB.",
+        "protectedOrOld": "The file has a password or is an old .xls. Save it as .xlsx without a password.",
+        "notXlsx": "Not a valid Excel .xlsx file.",
+        "unsupported": "The file uses an unsupported compression.",
+        "inflatedTooLarge": "The file content is too large.",
+        "corrupt": "The file is damaged or cannot be read.",
+        "empty": "The first sheet has no data."
+      }
+    },
+    "field": {
+      "title": "Title",
+      "topics": "Topics (separated by commas)",
+      "statement": "Statement (Markdown, LaTeX)",
+      "stdin": "Input format",
+      "stdout": "Output format",
+      "constraints": "Constraints",
+      "language": "Language",
+      "solution": "Reference solution (reads stdin, writes stdout)",
+      "caseInput": "Input {number}",
+      "caseOutput": "Output {number}",
+      "caseNote": "Explanation {number}"
+    },
+    "editor": {
+      "title": "Problem {number}",
+      "close": "Close",
+      "parts": "Content part",
+      "statement": "Statement",
+      "cases": "Testcases ({count}/{needed})",
+      "solution": "Solution",
+      "case": "Testcase {number}",
+      "public": "Public",
+      "hidden": "Hidden",
+      "addCase": "Add testcase",
+      "removeCase": "Remove testcase {number}"
+    },
+    "publish": {
+      "title": "Publish {count} passing problems",
+      "body": "Learners will see these problems in the problem bank. The others stay drafts.",
+      "classLabel": "Assign to a class as well (optional)",
+      "noClass": "Do not assign",
+      "classesFailed": "Could not read the class list. You can still publish now and assign later.",
+      "confirm": "Publish {count} problems"
+    },
+    "columnsHelp": {
+      "title": "Which columns are read?",
+      "body": "The first row holds column names, in any order, ignoring case and accents: Title, Difficulty, Topics, Statement, Input format, Output format, Constraints, Solution, Language, Input 1, Output 1, Explanation 1, Input 2, Output 2, Explanation 2, up to Input 20, Output 20. The first two Input and Output pairs are public examples, the others are hidden testcases. Upload large testcases on the authoring screen."
+    },
+    "leave": {
+      "title": "Leave this screen?",
+      "body": "Problems not created yet will be lost. Drafts already created stay in the problem list.",
+      "bodyBusy": "The run in progress stops after the current problem. Problems not created yet will be lost.",
+      "confirm": "Leave",
+      "stay": "Stay"
+    },
+    "rowLabel": "Problem {number} ({title})",
+    "blockedOnIntake": "{count} problems need fixing. Click a title to see why.",
+    "runDone": "Run finished: {pass} passed, {bad} not passed, {draft} saved as drafts.",
+    "titlesExist": "The bank already has problems titled: {titles}. Check before importing them twice.",
+    "openEditorOf": "Open {title} in a new tab"
+  },
         "tooManyRows": "The file has more than {detail} data rows; split it and import again."
       },
       "reason": {

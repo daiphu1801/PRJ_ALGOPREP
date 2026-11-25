@@ -52,11 +52,12 @@ function push(tone: ToastTone, message: string, action?: ToastAction): number {
   const text = message.trim();
   if (!text) return -1;
 
-  // The same message again moves the existing card to the end under a new id: no duplicate stack,
-  // and the new id restarts its dismiss timer.
+  // The same message while its card is still up keeps that card as it is: no second card, no slide-in
+  // again and no fresh timer. A message raised on every keystroke would otherwise never go away.
   const repeated = items.find(
     (item) => item.tone === tone && item.message === text,
   );
+  if (repeated) return repeated.id;
   const id = ++nextId;
   const item: ToastItem = {
     id,
@@ -65,11 +66,7 @@ function push(tone: ToastTone, message: string, action?: ToastAction): number {
     durationMs: DURATION_MS[tone],
     ...(action ? { action } : {}),
   };
-  commit(
-    [...items.filter((existing) => existing !== repeated), item].slice(
-      -MAX_VISIBLE_TOASTS,
-    ),
-  );
+  commit([...items, item].slice(-MAX_VISIBLE_TOASTS));
   return id;
 }
 

@@ -1,6 +1,6 @@
 package com.algoprep.problembank.application.dto.bulk;
 
-/** A finished export: the download name and the UTF-8 bytes, BOM included. */
+/** A finished export: the download name and the bytes of the .xlsx workbook. */
 public record ExportedCsv(String filename, byte[] content) {
   @Override
   public boolean equals(Object other) {

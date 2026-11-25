@@ -339,11 +339,11 @@ class ProblemAuthoringControllersTest {
   }
 
   @Test
-  void exportReturnsCsvAttachmentWithTheServerFilename() {
+  void exportReturnsAnXlsxAttachmentWithTheServerFilename() {
     var export = mock(ExportProblemsCsvUseCase.class);
     var controller =
         new ProblemAuthoringBulkController(mock(BulkProblemActionsUseCase.class), export);
-    when(export.export(any())).thenReturn(new ExportedCsv("problems.csv", "a,b".getBytes()));
+    when(export.export(any())).thenReturn(new ExportedCsv("problems.xlsx", "a,b".getBytes()));
 
     var response =
         controller.export(
@@ -352,10 +352,11 @@ class ProblemAuthoringControllersTest {
                 null, new ProblemAuthoringBulkController.FilterRequest("q", "L", "DRAFT")));
 
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-    assertThat(response.getHeaders().getContentType().getSubtype()).isEqualTo("csv");
+    assertThat(response.getHeaders().getContentType().toString())
+        .isEqualTo("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
     assertThat(response.getHeaders().getFirst(HttpHeaders.CONTENT_DISPOSITION))
         .contains("attachment")
-        .contains("problems.csv");
+        .contains("problems.xlsx");
     assertThat(response.getBody()).isEqualTo("a,b".getBytes());
     var query = ArgumentCaptor.forClass(ExportProblemsQuery.class);
     verify(export).export(query.capture());

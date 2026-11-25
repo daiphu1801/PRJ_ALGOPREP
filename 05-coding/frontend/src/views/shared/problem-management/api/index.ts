@@ -20,6 +20,7 @@ export {
   useBulkPublish,
   useBulkUnpublish,
   useBulkTopic,
+  useExistingTitles,
   useExportFilteredProblems,
   useExportProblems,
   useTopicDistribution,

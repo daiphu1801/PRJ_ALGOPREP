@@ -126,7 +126,7 @@ class ProblemAuthoringBulkFlowTest {
   // ---- export
 
   @Test
-  void exportOfSelectedIdsHasAHeaderEightColumnsAndDefusesFormulas() throws Exception {
+  void exportOfSelectedIdsIsAWorkbookWithEightColumnsAndKeepsFormulasAsText() throws Exception {
     var a = problem(teacherId, "Two Sum", "PUBLISHED");
     var b = problem(teacherId, "=SUM(1,1)", "UNPUBLISHED");
     var foreign = problem(rivalId, "Rival", "PUBLISHED");
@@ -138,18 +138,31 @@ class ProblemAuthoringBulkFlowTest {
             "{\"problemIds\":[\"" + a + "\",\"" + b + "\",\"" + foreign + "\"]}");
 
     assertThat(response.getStatus()).isEqualTo(200);
-    assertThat(response.getContentType()).startsWith("text/csv");
+    assertThat(response.getContentType())
+        .startsWith("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
     assertThat(response.getHeader("Content-Disposition"))
         .contains("attachment")
-        .containsPattern("problems-\\d{8}\\.csv");
-    String body = new String(response.getContentAsByteArray(), StandardCharsets.UTF_8);
-    assertThat(body)
-        .startsWith("﻿Mã,Tiêu đề,Chủ đề,Độ khó,Trạng thái,Lượt nộp,Tỉ lệ AC,Số testcase");
-    var lines = body.split("\r\n");
-    assertThat(lines)
-        .hasSize(3); // header + the two own problems; the other author's id is silently absent
-    assertThat(body).contains("'=SUM(1,1)").doesNotContain("Rival");
-    assertThat(lines[0].split(",", -1)).hasSize(8);
+        .containsPattern("problems-\\d{8}\\.xlsx");
+    String sheet = sheetXml(response.getContentAsByteArray());
+    assertThat(sheet).contains("Mã", "Số testcase", "Two Sum");
+    // header + the two own problems; the other author's id is silently absent
+    assertThat(sheet.split("<row ", -1)).hasSize(4);
+    // Text cells: the title stays "=SUM(1,1)" as a string, never a formula, so no leading quote is
+    // needed.
+    assertThat(sheet).contains(">=SUM(1,1)</t>").doesNotContain("'=SUM(1,1)").doesNotContain("<f>");
+    assertThat(sheet).doesNotContain("Rival");
+  }
+
+  /** The text of xl/worksheets/sheet1.xml inside an .xlsx. */
+  private static String sheetXml(byte[] workbook) throws Exception {
+    try (var zip = new java.util.zip.ZipInputStream(new java.io.ByteArrayInputStream(workbook))) {
+      for (var entry = zip.getNextEntry(); entry != null; entry = zip.getNextEntry()) {
+        if (entry.getName().equals("xl/worksheets/sheet1.xml")) {
+          return new String(zip.readAllBytes(), StandardCharsets.UTF_8);
+        }
+      }
+    }
+    throw new AssertionError("no sheet1.xml in the export");
   }
 
   @Test
@@ -159,7 +172,7 @@ class ProblemAuthoringBulkFlowTest {
 
     var filtered = call("/export", teacher, "{\"filter\":{\"q\":\"Alpha Unique\"}}");
     assertThat(filtered.getStatus()).isEqualTo(200);
-    assertThat(filtered.getContentAsString(StandardCharsets.UTF_8))
+    assertThat(sheetXml(filtered.getContentAsByteArray()))
         .contains("Alpha Unique")
         .doesNotContain("Beta");
 

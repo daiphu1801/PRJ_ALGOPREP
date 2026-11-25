@@ -61,3 +61,27 @@ pnpm exec playwright test problem-authoring-real --workers=1 --reporter=list
 ```
 
 The problems it creates (`E2E-BULK-*`, `E2E-RUN-*`, `E2E-STDIO-*`) stay in the database, like the accounts.
+
+## INS0202 copy spec (`class-assignments-copy-real.spec.ts`)
+
+Copies the problems of a class to another class through the screen (F2-12). The published problems are row copies
+made by SQL from any published problem, so use a demo database; after each test they are unpublished and flagged
+deleted. Accounts and classes stay. No sandbox is needed.
+
+```powershell
+$env:E2E_PG_DB = "algoprep_demo"
+pnpm exec playwright test class-assignments-copy-real --workers=1 --reporter=list
+```
+
+## SHR0204 bulk import spec (`problem-import-real.spec.ts`)
+
+Brings the shipped template (`public/templates/mau-nhap-bai-toan.xlsx`) into "Thêm nhiều bài" (F2-19): drafts are
+created, the reference solution runs in go-judge, one wrong solution is fixed and run again, the passing problems are
+published one call each and given to a class, and a learner gets Accepted. A second test cuts the first create call
+and checks it is not repeated until the author confirms. Needs go-judge. Problems it creates are flagged deleted
+afterwards; accounts and the class stay, so use a demo database.
+
+```powershell
+$env:E2E_PG_DB = "algoprep_demo"
+pnpm exec playwright test problem-import-real --workers=1 --reporter=list
+```

@@ -72,17 +72,50 @@ describe("Toaster", () => {
     expect(screen.queryByText("Slow")).not.toBeInTheDocument();
   });
 
-  it("holds a toast open while hovered", () => {
+  it("lets clicks through its body, so it never sits over a button", () => {
+    render(<Toaster labels={labels} />);
+    act(() => {
+      toast.success("Through");
+    });
+    expect(screen.getByRole("status")).toHaveClass("pointer-events-none");
+    expect(screen.getByRole("button", { name: "Close" })).toHaveClass(
+      "pointer-events-auto",
+    );
+  });
+
+  it("a repeated message does not restart the card's timer", () => {
+    render(<Toaster labels={labels} />);
+    act(() => {
+      toast.warning("Typing");
+    });
+    for (let step = 0; step < 6; step++) {
+      act(() => {
+        vi.advanceTimersByTime(1000);
+      });
+      act(() => {
+        toast.warning("Typing");
+      });
+    }
+    act(() => {
+      vi.advanceTimersByTime(1100);
+    });
+    act(() => {
+      vi.advanceTimersByTime(300);
+    });
+    expect(screen.queryByText("Typing")).not.toBeInTheDocument();
+  });
+
+  it("holds a toast open while its X is pointed at", () => {
     render(<Toaster labels={labels} />);
     act(() => {
       toast.success("Held");
     });
-    fireEvent.mouseEnter(screen.getByRole("status"));
+    fireEvent.mouseEnter(screen.getByRole("button", { name: "Close" }));
     act(() => {
       vi.advanceTimersByTime(10000);
     });
     expect(screen.getByText("Held")).toBeInTheDocument();
-    fireEvent.mouseLeave(screen.getByRole("status"));
+    fireEvent.mouseLeave(screen.getByRole("button", { name: "Close" }));
     // Two steps: React only schedules the slide-out timer once the first state update has flushed.
     act(() => {
       vi.advanceTimersByTime(4100);

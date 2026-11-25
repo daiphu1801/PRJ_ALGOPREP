@@ -177,7 +177,22 @@
     toàn bộ kết quả đang lọc — **không xuất nội dung đề bài, đặc tả, hay testcase**. **Nhập CSV bài toán
     (nút "Nhập CSV" ở thanh tiêu đề `problem_management`) đã cắt khỏi phạm vi** — một CSV phẳng không chở
     nổi đặc tả F2-03 (chữ ký hàm) hay nội dung Markdown/LaTeX của đề bài; xoá nút này khi dựng
-    UI thật.
+    UI thật. **Amendment 2026-11-25** (`DEC-2026-1125-bulk-problem-import`): nhập CSV vẫn cắt; nhập nhiều bài
+    mới từ Excel hoặc ô dán là mã riêng F2-19. **Amendment 2026-11-25** (`DEC-2026-1125-export-problems-xlsx`,
+    chủ dự án duyệt): tệp xuất là **Excel (.xlsx) có định dạng**, thay cho CSV; vẫn đúng tám cột, cùng phạm vi và bộ lọc,
+    vẫn chỉ dữ liệu bảng. Ô chữ lưu dạng chữ nên tiêu đề không thể chạy như công thức.
+  - **F2-19 — Nhập nhiều bài toán một lần.** Chủ dự án duyệt 2026-11-25 (`DEC-2026-1125-bulk-problem-import`).
+    Actor A2/A3 có quyền `PROBLEM_AUTHORING:CREATE` và `TESTCASE_MANAGEMENT:CREATE` đưa vào một tệp `.xlsx`
+    hoặc dán các ô từ Excel, Google Sheets; mỗi dòng là một bài, tối đa **20 bài** mỗi lượt. Người soạn xem và
+    sửa trong bảng trước khi tạo.
+    - Chỉ nhận bài **Standard I/O** (không có chữ ký hàm). Bài bọc hàm vẫn khai ở `problem_authoring`.
+    - Hai testcase đầu là Sample, đồng thời là hai ví dụ mẫu; các testcase còn lại là Hidden.
+    - Bài tạo ra ở trạng thái `Chưa xuất bản`. Bài đủ điều kiện được chạy Đáp án mẫu (F2-18); bài còn thiếu
+      được giữ ở bản nháp. Bài đã tạo mà chưa đạt thì sửa tiếp trong bảng và chạy lại.
+    - Xuất bản **giữ nguyên điều kiện F2-15**. A2 có thể giao luôn các bài vừa xuất bản cho lớp mình phụ trách
+      (F2-12).
+    - Một bài lỗi không chặn các bài khác. Tiêu đề trùng bài đã có chỉ bị cảnh báo.
+    - Ngoài phạm vi: AI tách đề thô, chatbot soạn đề, nhập ZIP hoặc CSV, xuất lại ra cùng mẫu.
 
 ## Baseline triển khai đã chốt 2026-10-29
 

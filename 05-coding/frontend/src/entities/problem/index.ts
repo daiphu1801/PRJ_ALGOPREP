@@ -187,3 +187,27 @@ export {
   useTestcaseGenerationSettings,
   useUpdateTestcaseGenerationSettings,
 } from "./api/generation-queries";
+
+export {
+  IMPORT_MAX_CASES,
+  IMPORT_MAX_ROWS,
+  IMPORT_MIN_CASES,
+  IMPORT_SAMPLES,
+  blankImportRow,
+  checkImportRow,
+  foldText,
+  gridToRows,
+  repeatedTitles,
+  resolveLanguage,
+  resolveLevel,
+  toImportDraft,
+  type ImportCase,
+  type ImportCatalogue,
+  type ImportCheck,
+  type ImportRow,
+} from "./model/import-row";
+export {
+  loadImportDefaults,
+  runImportReference,
+  saveImportRow,
+} from "./api/import-row";

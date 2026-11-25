@@ -1590,6 +1590,7 @@
       },
       "error": {
         "empty": "Tên độ khó không được để trống",
+    "importProblems": "Thêm nhiều bài",
         "duplicate": "Đã có độ khó trùng tên"
       }
     },
@@ -1624,7 +1625,7 @@
       "changeDifficulty": "Đổi độ khó",
       "assignTopic": "Gán chủ đề",
       "duplicate": "Nhân bản",
-      "exportCsv": "Xuất CSV",
+      "exportCsv": "Xuất Excel",
       "delete": "Xoá",
       "unpublish": "Rút bài"
     },
@@ -1646,7 +1647,7 @@
     "toast": {
       "deleted": "Đã xoá bài {title}",
       "publishMax": "Mỗi lần chỉ xuất bản được tối đa {max} bài. Hãy bỏ bớt bài đã chọn.",
-      "exported": "Đã xuất {count} bài ra tệp CSV",
+      "exported": "Đã xuất {count} bài ra tệp Excel",
       "bulkPartial": "Xử lý được {done} bài, {failed} bài chưa được. {reason}",
       "duplicatePickOne": "Chọn đúng một bài để nhân bản",
       "searchResult": "Tìm thấy {count} bài tập",
@@ -1660,7 +1661,7 @@
         "assignTopic": "Đã gán chủ đề cho {count} bài"
       }
     },
-    "exportFiltered": "Xuất CSV theo bộ lọc",
+    "exportFiltered": "Xuất Excel theo bộ lọc",
     "bulkFailureTitle": "Các bài chưa xử lý được",
     "bulkTopicTitle": "Gán chủ đề cho {count} bài",
     "bulkTopicLabel": "Chủ đề thêm vào",
@@ -1744,6 +1745,184 @@
       "fileError": {
         "empty": "Tệp không có dòng dữ liệu nào.",
         "missingColumns": "Thiếu cột bắt buộc: {detail}.",
+  "problemImport": {
+    "title": "Thêm nhiều bài",
+    "back": "Về Quản lý bài tập",
+    "subtitleEmpty": "Đưa tệp Excel vào, xem lại, sửa rồi tạo cả loạt",
+    "count": {
+      "rows": "{count} bài",
+      "blocked": "{count} bài cần sửa",
+      "published": "{count} bài đã xuất bản"
+    },
+    "step": {
+      "prepare": "Đưa vào và sửa",
+      "create": "Tạo nháp, chạy đáp án",
+      "publish": "Xuất bản"
+    },
+    "zone": {
+      "title": "Kéo thả tệp Excel vào đây",
+      "body": "Hoặc chọn tệp .xlsx, hoặc chép các ô trong Excel, Google Sheets rồi bấm Ctrl V. Mỗi dòng là một bài, tối đa {max} bài. Chỉ nhận bài đọc từ bàn phím và in ra màn hình.",
+      "more": "Kéo thêm tệp vào, hoặc dán ô bằng Ctrl V"
+    },
+    "chooseFile": "Chọn tệp Excel",
+    "downloadTemplate": "Tải tệp mẫu",
+    "templateSaved": "Đã tải tệp mẫu, xem trong thư mục Tải xuống.",
+    "addRow": "Thêm dòng",
+    "run": "Tạo nháp và chạy đáp án ({count})",
+    "publishCount": "Xuất bản {count} bài đạt",
+    "stop": "Dừng",
+    "stopping": "Đang dừng sau bài này...",
+    "received": "Đã nhận {count} bài.",
+    "published": "Đã xuất bản {count} bài.",
+    "assigned": "Đã giao {count} bài cho lớp {className}.",
+    "assignFailed": "Chưa giao được {count} bài cho lớp {className}. Các bài vẫn đã xuất bản.",
+    "assignAgain": "Giao lại",
+    "retry": "Thử lại",
+    "remove": "Xoá",
+    "removeRow": "Xoá bài {number} khỏi bảng",
+    "removedKeepsDraft": "Đã bỏ khỏi bảng. Bản nháp đã tạo vẫn còn trong danh sách bài tập.",
+    "untitled": "Chưa có tiêu đề",
+    "choose": "Chọn",
+    "levelOf": "Độ khó bài {number}",
+    "openList": "Mở danh sách bài tập",
+    "createAgain": "Đã kiểm, tạo lại",
+    "openEditor": "Mở bài",
+    "cancel": "Huỷ",
+    "column": {
+      "number": "#",
+      "title": "Tiêu đề",
+      "level": "Độ khó",
+      "cases": "Testcase",
+      "status": "Trạng thái",
+      "actions": "Thao tác"
+    },
+    "status": {
+      "ready": "Đủ",
+      "changed": "Cần chạy lại đáp án",
+      "incomplete": "Lưu nháp được",
+      "blocked": "Cần sửa",
+      "gaps": "Còn thiếu {items}.",
+      "saving": "Đang lưu...",
+      "running": "Đang chạy đáp án...",
+      "waiting": "Đang chờ lượt ({seconds} giây)",
+      "draft": "Đã lưu nháp",
+      "pass": "Đạt {total}/{total}",
+      "fail": "Sai testcase {position}",
+      "failDetail": "Lỗi: {reason}. Sửa lời giải hoặc testcase rồi chạy lại.",
+      "compileError": "Lỗi biên dịch",
+      "compileErrorDetail": "Sửa lời giải rồi chạy lại.",
+      "error": "Chưa tạo được",
+      "errorStored": "Chưa xong",
+      "unknown": "Không rõ kết quả",
+      "unknownDetail": "Mất kết nối lúc tạo bài. Hãy kiểm trong danh sách trước khi tạo lại, để không bị trùng.",
+      "publishing": "Đang xuất bản...",
+      "published": "Đã xuất bản",
+      "publishError": "Chưa xuất bản được"
+    },
+    "gap": {
+      "stdin": "định dạng vào",
+      "stdout": "định dạng ra",
+      "solution": "lời giải",
+      "cases": "{count} testcase"
+    },
+    "issue": {
+      "titleMissing": "Thiếu tiêu đề.",
+      "titleTooLong": "Tiêu đề dài quá 255 ký tự.",
+      "titleRepeated": "Trùng tiêu đề trong bảng.",
+      "levelMissing": "Chưa chọn độ khó.",
+      "levelUnknown": "Không có độ khó \"{value}\".",
+      "topicUnknown": "Không có chủ đề \"{value}\".",
+      "statementMissing": "Thiếu đề bài.",
+      "statementTooLong": "Đề bài dài quá 100.000 ký tự.",
+      "constraintsTooLong": "Ràng buộc dài quá 20.000 ký tự.",
+      "languageUnknown": "Không hỗ trợ ngôn ngữ \"{value}\".",
+      "solutionTooLong": "Lời giải lớn hơn 64 KB.",
+      "caseHalf": "Testcase {value} thiếu input hoặc output.",
+      "caseTooLarge": "Testcase {value} lớn hơn 1 MB."
+    },
+    "failure": {
+      "WRONG_ANSWER": "sai kết quả",
+      "TIME_LIMIT_EXCEEDED": "quá thời gian",
+      "MEMORY_LIMIT_EXCEEDED": "quá bộ nhớ",
+      "RUNTIME_ERROR": "lỗi khi chạy",
+      "OUTPUT_LIMIT_EXCEEDED": "in quá nhiều",
+      "COMPILE_ERROR": "lỗi biên dịch"
+    },
+    "notice": {
+      "noHeader": "Không thấy dòng tên cột nên đọc theo thứ tự cột của tệp mẫu.",
+      "unknownColumns": "Bỏ qua cột không nhận ra: {names}.",
+      "leftOver": "Mỗi lượt tối đa {max} bài: đã nhận {taken}, chưa nhận {left} bài cuối. Hãy đưa phần còn lại vào lượt sau.",
+      "dates": "Excel đã đổi {count} ô thành ngày tháng ({cells}) nên để trống. Hãy định dạng Text rồi nhập lại, hoặc gõ ngay tại đây.",
+      "formulas": "Ô lỗi công thức được để trống: {cells}.",
+      "sheets": "Tệp có nhiều trang, chỉ đọc trang đầu \"{name}\"."
+    },
+    "error": {
+      "noHeader": "Dòng đầu của tệp không có tên cột như mẫu (Tiêu đề, Độ khó, Input 1...). Hãy tải tệp mẫu để đối chiếu.",
+      "noRows": "Không có bài nào để nhận.",
+      "template": "Chưa tải được tệp mẫu. Hãy thử lại.",
+      "languages": "Chưa đọc được danh sách ngôn ngữ chấm nên chưa tạo bài được.",
+      "file": {
+        "extension": "Chỉ nhận tệp .xlsx.",
+        "tooLarge": "Tệp lớn hơn 10 MB.",
+        "protectedOrOld": "Tệp có mật khẩu hoặc là định dạng .xls cũ. Hãy lưu lại thành .xlsx không mật khẩu.",
+        "notXlsx": "Không phải tệp Excel .xlsx hợp lệ.",
+        "unsupported": "Tệp dùng kiểu nén không hỗ trợ.",
+        "inflatedTooLarge": "Nội dung tệp quá lớn.",
+        "corrupt": "Tệp bị hỏng hoặc không đọc được.",
+        "empty": "Trang đầu của tệp không có dữ liệu."
+      }
+    },
+    "field": {
+      "title": "Tiêu đề",
+      "topics": "Chủ đề (cách nhau bằng dấu phẩy)",
+      "statement": "Đề bài (Markdown, LaTeX)",
+      "stdin": "Định dạng vào",
+      "stdout": "Định dạng ra",
+      "constraints": "Ràng buộc",
+      "language": "Ngôn ngữ",
+      "solution": "Lời giải mẫu (đọc stdin, ghi stdout)",
+      "caseInput": "Input {number}",
+      "caseOutput": "Output {number}",
+      "caseNote": "Giải thích {number}"
+    },
+    "editor": {
+      "title": "Bài {number}",
+      "close": "Đóng",
+      "parts": "Phần nội dung",
+      "statement": "Đề bài",
+      "cases": "Testcase ({count}/{needed})",
+      "solution": "Lời giải",
+      "case": "Testcase {number}",
+      "public": "Công khai",
+      "hidden": "Ẩn",
+      "addCase": "Thêm testcase",
+      "removeCase": "Xoá testcase {number}"
+    },
+    "publish": {
+      "title": "Xuất bản {count} bài đạt",
+      "body": "Học viên sẽ thấy các bài này trong Ngân hàng bài toán. Các bài còn lại vẫn là bản nháp.",
+      "classLabel": "Giao luôn cho lớp (không bắt buộc)",
+      "noClass": "Không giao",
+      "classesFailed": "Chưa đọc được danh sách lớp. Bạn vẫn xuất bản được và giao sau.",
+      "confirm": "Xuất bản {count} bài"
+    },
+    "columnsHelp": {
+      "title": "Bảng nhận những cột nào?",
+      "body": "Dòng đầu là tên cột, không cần đúng thứ tự, không phân biệt hoa thường và dấu: Tiêu đề, Độ khó, Chủ đề, Đề bài, Định dạng vào, Định dạng ra, Ràng buộc, Lời giải, Ngôn ngữ, Input 1, Output 1, Giải thích 1, Input 2, Output 2, Giải thích 2, rồi tới Input 20, Output 20. Hai cặp Input và Output đầu là ví dụ công khai, các cặp sau là testcase ẩn. Testcase lớn hãy tải lên ở màn soạn bài."
+    },
+    "leave": {
+      "title": "Rời màn này?",
+      "body": "Các bài chưa tạo trong bảng sẽ mất. Bản nháp đã tạo vẫn còn trong danh sách bài tập.",
+      "bodyBusy": "Lượt tạo đang chạy sẽ dừng sau bài hiện tại. Các bài chưa tạo trong bảng sẽ mất.",
+      "confirm": "Rời đi",
+      "stay": "Ở lại"
+    },
+    "rowLabel": "Bài {number} ({title})",
+    "blockedOnIntake": "{count} bài cần sửa. Bấm vào tên bài để xem lý do.",
+    "runDone": "Xong lượt chạy: {pass} bài đạt, {bad} bài chưa đạt, {draft} bài lưu nháp.",
+    "titlesExist": "Ngân hàng đã có bài cùng tiêu đề: {titles}. Kiểm lại để không nhập trùng.",
+    "openEditorOf": "Mở bài {title} ở tab mới"
+  },
         "tooManyRows": "Tệp có quá {detail} dòng dữ liệu, hãy tách nhỏ rồi nhập lại."
       },
       "reason": {

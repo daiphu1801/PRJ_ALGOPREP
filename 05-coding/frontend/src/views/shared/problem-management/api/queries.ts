@@ -1,9 +1,10 @@
 // Data boundary of SHR0201 (03-dd/api/F2_problem-bank.md #24 to #32). Mock and real share one contract:
 // the server (or its mock) filters, sorts and pages, the screen only sends `AdminListParams`. The view
 // passes no author: the server scopes A2 to their own problems from the token (BD SHR0201 Q1).
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQueries, useQuery } from "@tanstack/react-query";
+import { useMemo } from "react";
 import { currentUserScope } from "@/shared/api/user-scope";
-import { useProblemLevels } from "@/entities/problem";
+import { foldText, useProblemLevels } from "@/entities/problem";
 import { useMockMutation, useMockQuery, withMockData } from "@/shared/api";
 import {
   loadAdminProblemList,
@@ -61,6 +62,55 @@ export function useAdminProblemList(params: AdminListParams) {
     retry: false,
   });
 }
+
+/** The server cuts a longer `q` (DD 25). */
+const TITLE_QUERY_MAX = 100;
+
+/**
+ * Which of these titles the bank already has (F2-19 warning), folded. Not under `ADMIN_PROBLEMS_KEY`: every
+ * publish of a run invalidates that prefix and would ask for all titles again. A failed look-up only means
+ * no warning.
+ */
+export function useExistingTitles(
+  titles: readonly string[],
+): ReadonlySet<string> {
+  const found = useQueries({
+    queries: [...new Set(titles)].map((title) => {
+      const params: AdminListParams = {
+        q: title.slice(0, TITLE_QUERY_MAX),
+        level: "all",
+        status: "all",
+        sort: "title",
+        dir: "asc",
+        page: 1,
+        pageSize: 50,
+      };
+      return {
+        queryKey: ["problem-title", currentUserScope(), title],
+        queryFn: async () => {
+          const list = await withMockData(
+            () => loadAdminProblemList(params),
+            () => realListAdminProblems(params, undefined),
+          );
+          return list.items.some(
+            (item) => foldText(item.title) === foldText(title),
+          )
+            ? foldText(title)
+            : null;
+        },
+        staleTime: 60_000,
+        retry: false,
+      };
+    }),
+    // A string, so the answer only changes identity when its content does (callers put it in effect deps).
+    combine: joinFound,
+  });
+  return useMemo(() => new Set(found ? found.split(SEP) : []), [found]);
+}
+
+const SEP = String.fromCharCode(31);
+const joinFound = (results: { data?: string | null }[]) =>
+  results.flatMap(({ data }) => (data ? [data] : [])).join(SEP);
 
 /** `GetTopicDistribution`: its own query, so a failure here leaves the table alone. */
 export const useTopicDistribution = () =>

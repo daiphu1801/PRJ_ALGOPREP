@@ -19,17 +19,20 @@ describe("toast store", () => {
     ]);
   });
 
-  it("moves a repeated message to the end under a new id instead of stacking it", () => {
+  it("keeps the card of a repeated message as it is: same place, same id", () => {
     const { result } = renderHook(() => useToasts());
+    let first = 0;
+    let again = 0;
     act(() => {
-      toast.error("Same");
+      first = toast.error("Same");
       toast.info("Other");
-      toast.error("Same");
+      again = toast.error("Same");
     });
     expect(result.current.map((item) => item.message)).toEqual([
-      "Other",
       "Same",
+      "Other",
     ]);
+    expect(again).toBe(first);
   });
 
   it("keeps only the newest toasts when over the cap", () => {

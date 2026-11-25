@@ -253,12 +253,12 @@ describe("bulk actions (#27, #28, #30, #32)", () => {
 
   it("export posts the selected ids and hands back the file and its name", async () => {
     const blob = new Blob(["x"]);
-    downloadPost.mockResolvedValue({ blob, filename: "problems-20261106.csv" });
+    downloadPost.mockResolvedValue({ blob, filename: "problems-20261106.xlsx" });
     const file = await realExportProblems(["p1", "p2"]);
     expect(downloadPost).toHaveBeenCalledWith(`${BASE}/export`, {
       problemIds: ["p1", "p2"],
     });
-    expect(file.filename).toBe("problems-20261106.csv");
+    expect(file.filename).toBe("problems-20261106.xlsx");
     expect(file.blob).toBe(blob);
   });
 });

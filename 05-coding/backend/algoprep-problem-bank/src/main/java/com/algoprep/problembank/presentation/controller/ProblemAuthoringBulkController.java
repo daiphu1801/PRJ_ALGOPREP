@@ -51,7 +51,9 @@ class ProblemAuthoringBulkController {
                 body.filter().q(), body.filter().level(), body.filter().status());
     var csv = export.export(new ExportProblemsQuery(scope(caller), body.problemIds(), f));
     return ResponseEntity.ok()
-        .contentType(new MediaType("text", "csv", java.nio.charset.StandardCharsets.UTF_8))
+        .contentType(
+            MediaType.parseMediaType(
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
         .header(
             HttpHeaders.CONTENT_DISPOSITION,
             ContentDisposition.attachment().filename(csv.filename()).build().toString())

@@ -265,13 +265,13 @@ describe("ProblemManagementView with the real API", () => {
     const blob = new Blob(["a"]);
     apiMock.downloadPost.mockResolvedValue({
       blob,
-      filename: "problems-20261106.csv",
+      filename: "problems-20261106.xlsx",
     });
     await renderLoaded();
     fireEvent.click(rowBoxes()[1]!);
     fireEvent.click(screen.getByRole("button", { name: m.bulk.exportCsv }));
     await waitFor(() => expect(saveBlob).toHaveBeenCalledTimes(1));
-    expect(saveBlob).toHaveBeenCalledWith(blob, "problems-20261106.csv");
+    expect(saveBlob).toHaveBeenCalledWith(blob, "problems-20261106.xlsx");
     expect(apiMock.downloadPost).toHaveBeenCalledWith(`${BASE}/export`, {
       problemIds: ["2"],
     });

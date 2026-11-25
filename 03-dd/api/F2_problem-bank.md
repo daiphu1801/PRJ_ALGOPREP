@@ -1491,6 +1491,8 @@ Bốn truy vấn đếm trên bài `deleted = false` trong phạm vi actor:
 
 ## 28. POST /authoring/problems/export (`ExportProblemsCsv`)
 
+> **Đổi 2026-11-25 (`DEC-2026-1125-export-problems-xlsx`, chủ dự án duyệt).** Phản hồi là tệp **Excel `.xlsx`**, không còn CSV: `200`, `Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`, `Content-Disposition: attachment; filename="problems-YYYYMMDD.xlsx"`. Giữ nguyên request (mục 28.2), phạm vi, lỗi (mục 28.4) và tám cột. Một trang tính tên `Bài tập`: dòng tên cột nền xanh chữ trắng, kẻ ô, độ rộng cột, cố định dòng đầu, bộ lọc, in vừa một trang ngang. `Trạng thái` ghi `Đã xuất bản` (chữ xanh) hoặc `Nháp` (chữ vàng cam); `Lượt nộp`, `Số testcase` là số; `Tỉ lệ AC` là số hiển thị `43,50%`, **ô trống khi chưa có thống kê**. Chữ lưu dạng chuỗi nội tuyến nên ô như `=SUM(1,1)` **không chạy như công thức** và không còn dấu `'` ở đầu (mục 28.3 bên dưới nói về CSV cũ). Ký tự XML 1.0 cấm bị bỏ. Phần mô tả CSV (BOM, `CRLF`, dấu `'`, cột cách nhau bằng dấu phẩy) ở các mục dưới là của bản đầu, giữ để đối chiếu lịch sử.
+
 ### 28.1 Hợp đồng
 | Mục | Giá trị |
 | :--- | :--- |

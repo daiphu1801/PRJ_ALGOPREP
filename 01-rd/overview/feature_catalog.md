@@ -5,12 +5,12 @@
 > đặc tả đầy đủ ở `01-rd/req/<module>.md` — mọi chi tiết điều kiện, ngưỡng, actor, quyết định liên quan vẫn
 > lấy từ file gốc, file này chỉ tóm lược.
 >
-> Tổng: **113 mã sống** trên 6 Bounded Context (F1 32, F2 18, F3 13, F4 11, F5 27, F6 12). 8 mã đã cấp nhưng
+> Tổng: **114 mã sống** trên 6 Bounded Context (F1 32, F2 19, F3 13, F4 11, F5 27, F6 12). 8 mã đã cấp nhưng
 > loại khỏi phạm vi (`F4-04`, `F4-09a` tới `F4-09e` là 5 mã, `F6-11`, `F5-27`) không tính vào tổng; riêng `F5-27` giữ một dòng gạch ngang trong bảng F5 để lịch sử còn đọc được; các mã còn lại không liệt kê ở đây — xem `01-rd/overview/system_survey.md`
 > mục 5.7 nếu cần tra cứu mã đã khai tử.
 >
 > Số liệu rà lại 2026-10-14 (`DEC-2026-1014-batch7-remaining-open-questions`, mục 8), đếm trực tiếp các dòng bảng:
-> ~~111 mã sống (112 trước 2026-10-13); 9 mã loại khỏi phạm vi~~ tại thời điểm rà 2026-10-14 là **112 sống, 8 loại**; từ 2026-10-26 thêm F1-32 thành **113 sống**. Bảng F1 trước thiếu
+> ~~111 mã sống (112 trước 2026-10-13); 9 mã loại khỏi phạm vi~~ tại thời điểm rà 2026-10-14 là **112 sống, 8 loại**; từ 2026-10-26 thêm F1-32 thành **113 sống**; từ 2026-11-25 thêm F2-19 thành **114 sống**. Bảng F1 trước thiếu
 > dòng `F1-31` (định nghĩa ở `01-rd/req/F1_identity.md:239`), nay đã thêm; bảng F2 đã có `F2-18`
 > (`01-rd/req/F2_problem-bank.md:126`). Con số 111 nêu trong quyết định là tổng của hai bảng đang lệch nhau (catalog thiếu F1-31,
 > survey thiếu F2-18), không phải số đếm đúng.
@@ -75,7 +75,7 @@ Nguồn: `01-rd/req/F1_identity.md`. 32 mã đã chốt (F1-01 tới F1-32). B�
 
 ## F2 — Ngân hàng bài toán và testcase (`problem-bank`)
 
-Nguồn: `01-rd/req/F2_problem-bank.md`. 18 mã (F2-01 tới F2-18).
+Nguồn: `01-rd/req/F2_problem-bank.md`. 19 mã (F2-01 tới F2-19).
 
 | Mã | Chức năng | Giải thích ngắn gọn | File liên quan |
 | :--- | :--- | :--- | :--- |
@@ -97,6 +97,7 @@ Nguồn: `01-rd/req/F2_problem-bank.md`. 18 mã (F2-01 tới F2-18).
 | F2-16 | Nhân bản bài toán | Sao chép toàn bộ nội dung thành bài mới ở trạng thái `Chưa xuất bản` | shared/SHR0201_problem_management.md — sơ đồ: usecase/shared/usecase_shared_quan_ly_danh_sach_bai_toan |
 | F2-17 | Xuất CSV danh sách bài toán | Chỉ dữ liệu bảng, không xuất nội dung đề/testcase | shared/SHR0201_problem_management.md — sơ đồ: usecase/shared/usecase_shared_quan_ly_danh_sach_bai_toan |
 | F2-18 | Khai và chạy kiểm Đáp án mẫu | Gác hai cửa: mở tính năng F2-14 và cho phép xuất bản F2-15; không bao giờ đưa vào prompt AI | shared/SHR0202_problem_authoring.md — (chưa có tham chiếu ở screens/sơ đồ) |
+| F2-19 | Nhập nhiều bài toán một lần | Từ tệp Excel hoặc ô dán, tối đa 20 bài Standard I/O; điều kiện xuất bản F2-15 giữ nguyên | shared/SHR0201_problem_management.md; màn `SHR0204` (tài liệu màn ghi nợ) |
 
 ## F3 — Bộ sinh mã bọc hàm (`harness`)
 

@@ -263,7 +263,7 @@ export function ProblemManagementView({
     }
     exportCsv.mutate(ids, {
       onSuccess: ({ blob, filename }) => {
-        saveBlob(blob, filename ?? "problems.csv");
+        saveBlob(blob, filename ?? "problems.xlsx");
         toast.success(t("toast.exported", { count: ids.length }));
       },
       onError: (error) => toast.error(apiMessage(error)),
@@ -496,7 +496,7 @@ export function ProblemManagementView({
               onClick={() =>
                 exportFiltered.mutate(params, {
                   onSuccess: ({ blob, filename }) =>
-                    saveBlob(blob, filename ?? "problems.csv"),
+                    saveBlob(blob, filename ?? "problems.xlsx"),
                   onError: (error) => toast.error(apiMessage(error)),
                 })
               }
@@ -525,6 +525,14 @@ export function ProblemManagementView({
                 {t("manageTopics")}
               </Button>
             ) : null}
+            <Button
+              asChild
+              variant="ghost"
+              size="sm"
+              className="border border-[var(--color-border)]"
+            >
+              <Link href={`${basePath}/import`}>{t("importProblems")}</Link>
+            </Button>
             <Button asChild variant="cta" size="sm">
               <Link href={`${basePath}/new`}>{t("newProblem")}</Link>
             </Button>

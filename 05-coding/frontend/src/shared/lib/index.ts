@@ -3,6 +3,14 @@ export { sanitizeHtml } from "./sanitize-html";
 export { usePersistedPageSize } from "./use-persisted-page-size";
 export { useUnsavedChangesGuard } from "./use-unsaved-changes-guard";
 export { csvCell, parseCsv, type CsvRecord } from "./parse-csv";
+export { parseTsv } from "./parse-tsv";
+export {
+  readXlsx,
+  XLSX_MAX_BYTES,
+  XlsxError,
+  type XlsxErrorCode,
+  type XlsxSheet,
+} from "./read-xlsx";
 export { textTone } from "./text-tone";
 export { formatDateVN, formatRelativeVN, type DateLocale } from "./format-date";
 export { PASSWORD_MAX_BYTES, fitsBcrypt } from "./password-rules";

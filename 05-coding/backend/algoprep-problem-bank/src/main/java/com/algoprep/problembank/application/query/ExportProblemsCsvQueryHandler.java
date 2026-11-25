@@ -6,7 +6,6 @@ import com.algoprep.problembank.application.dto.bulk.ExportedCsv;
 import com.algoprep.problembank.application.ports.in.bulk.ExportProblemsCsvUseCase;
 import com.algoprep.problembank.domain.exception.ProblemContentInvalidException;
 import com.algoprep.problembank.domain.ports.out.ProblemAuthoringListRepository;
-import java.nio.charset.StandardCharsets;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.LinkedHashSet;
@@ -16,8 +15,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * The same scoped query as the list, without paging. Ids outside the caller's scope are dropped
- * without a word (an instructor cannot probe other authors), and nothing is written to the audit.
+ * The same scoped query as the list, without paging, written as an Excel workbook (the "Csv" in the
+ * type names is from the first version, which wrote CSV). Ids outside the caller's scope are
+ * dropped without a word (an instructor cannot probe other authors), and nothing is written to the
+ * audit.
  */
 @Service
 class ExportProblemsCsvQueryHandler implements ExportProblemsCsvUseCase {
@@ -45,8 +46,8 @@ class ExportProblemsCsvQueryHandler implements ExportProblemsCsvUseCase {
         hasIds
             ? repository.export(scope, ids(query.problemIds()), null, null, null)
             : filtered(scope, query.filter());
-    String name = "problems-" + DAY.format(clock.now().atOffset(LOCAL)) + ".csv";
-    return new ExportedCsv(name, ProblemCsv.render(items).getBytes(StandardCharsets.UTF_8));
+    String name = "problems-" + DAY.format(clock.now().atOffset(LOCAL)) + ".xlsx";
+    return new ExportedCsv(name, ProblemXlsx.render(items));
   }
 
   private List<com.algoprep.problembank.domain.model.problem.AuthoringListPage.Item> filtered(
