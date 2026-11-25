@@ -123,7 +123,8 @@ test("reference run reports each case with verdict words only and never saves th
 
   await page.goto(`${APP_URL}/instructor/problems/${problemId}/edit`);
   await page.getByRole("button", { name: m.tab.content }).click();
-  const run = page.getByRole("button", { name: m.runSolution });
+  const solution = page.getByRole("region", { name: m.tab.solution });
+  const run = solution.getByRole("button", { name: m.runSolution });
   await expect(run).toBeVisible();
 
   const good = page.waitForResponse((r) =>
@@ -131,7 +132,7 @@ test("reference run reports each case with verdict words only and never saves th
   );
   await run.click();
   const goodBody = await (await good).text();
-  await expect(page.getByText(/Đúng 3\/3 testcase đã duyệt/)).toBeVisible({
+  await expect(solution.getByText(/Đúng 3\/3 testcase đã duyệt/)).toBeVisible({
     timeout: 60_000,
   });
   const keys = new Set(
@@ -145,13 +146,13 @@ test("reference run reports each case with verdict words only and never saves th
     );
   }
 
-  await page.getByLabel(/Đáp án mẫu bằng/).fill("print(0)\n");
+  await solution.getByLabel(/Đáp án mẫu bằng/).fill("print(0)\n");
   const bad = page.waitForResponse((r) =>
     r.url().includes("/reference-solution/run"),
   );
   await run.click();
   const badBody = await (await bad).text();
-  await expect(page.getByText(/Thất bại ở testcase #\d+/)).toBeVisible({
+  await expect(solution.getByText(/Thất bại ở testcase #\d+/)).toBeVisible({
     timeout: 60_000,
   });
   for (const secret of secrets) {
@@ -187,8 +188,9 @@ test("a standard-I/O-only problem reads as spec-declared and publishes from the 
   await expect(specItem.getByText(m.checkDone)).toBeVisible();
 
   await page.getByRole("button", { name: m.tab.content }).click();
-  await page.getByRole("button", { name: m.runSolution }).click();
-  await expect(page.getByText(/Đúng 8\/8 testcase đã duyệt/)).toBeVisible({
+  const solution = page.getByRole("region", { name: m.tab.solution });
+  await solution.getByRole("button", { name: m.runSolution }).click();
+  await expect(solution.getByText(/Đúng 8\/8 testcase đã duyệt/)).toBeVisible({
     timeout: 60_000,
   });
   // The button looks locked while the client checklist is incomplete but a click always reaches the server.

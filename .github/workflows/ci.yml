@@ -62,6 +62,10 @@ jobs:
               - '.github/workflows/ci.yml'
             backend:
               - '05-coding/backend/**'
+              - '05-coding/database/init/**'
+              - '05-coding/judge-engine/**'
+              - '05-coding/docker-compose.worker-sandbox.yml'
+              - '.github/ci/start-backend-test-services.sh'
               - '.github/workflows/ci.yml'
             infrastructure:
               - '.github/**'
@@ -174,16 +178,8 @@ jobs:
           cache: maven
 
       - name: Prepare integration test services
-        working-directory: 05-coding
-        env:
-          MINIO_TEST_IMAGE: ghcr.io/projekt-manager-org/minio@sha256:a1a8bd4ac40ad7881a245bab97323e18f971e4d4cba2c2007ec1bedd21cbaba2
-          ALGOPREP_WORKER_ENGINE_IMAGE: algoprep-ci-judge:test
-        run: |
-          docker pull "$MINIO_TEST_IMAGE"
-          # Testcontainers declarations use the original upstream tag.
-          docker tag "$MINIO_TEST_IMAGE" minio/minio:RELEASE.2025-09-07T16-13-09Z
-          docker build -t "$ALGOPREP_WORKER_ENGINE_IMAGE" judge-engine
-          docker compose -f docker-compose.worker-sandbox.yml up --wait --wait-timeout 120
+        working-directory: .
+        run: bash .github/ci/start-backend-test-services.sh
 
       - name: mvnw verify
         # -B khong mau, khong interactive. Khong dung -q: output cua cong chat luong CHINH LA thu
@@ -230,6 +226,7 @@ jobs:
       - name: Validate workflows and CI Gate
         run: |
           go run github.com/rhysd/actionlint/cmd/actionlint@v1.7.7
+          shellcheck .github/ci/*.sh
           bash .github/ci/test-ci-gate.sh
       - name: Validate Compose
         working-directory: 05-coding

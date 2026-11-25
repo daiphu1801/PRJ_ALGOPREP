@@ -24,10 +24,14 @@ jobs:
           distribution: temurin
           java-version: '21'
           cache: maven
+      - name: Prepare integration test services
+        working-directory: .
+        run: bash .github/ci/start-backend-test-services.sh
       - name: Build and analyze backend
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ vars.SONAR_HOST_URL }}
+          JUDGE_GO_JUDGE_BASE_URL: http://127.0.0.1:5055
         run: >-
           ./mvnw -B install
           org.sonarsource.scanner.maven:sonar-maven-plugin:5.2.0.4988:sonar
