@@ -32,7 +32,7 @@ jobs:
           ./mvnw -B install
           org.sonarsource.scanner.maven:sonar-maven-plugin:5.2.0.4988:sonar
           -Dsonar.projectKey=algoprep-backend
-          -Dsonar.host.url=${SONAR_HOST_URL}
+          "-Dsonar.host.url=${SONAR_HOST_URL}"
           -Dsonar.qualitygate.wait=true
 
   frontend:

@@ -42,6 +42,10 @@ class JdbcAccountLifecyclePgTest extends PostgresTestBase {
 
   // ---- helpers -------------------------------------------------------------------------------
 
+  private Instant databaseNow() {
+    return jdbc.sql("SELECT clock_timestamp()").query(OffsetDateTime.class).single().toInstant();
+  }
+
   private void setPassword(UUID id, String hash) {
     jdbc.sql("UPDATE identity.users SET password_hash = :h WHERE id = :id")
         .param("h", hash)
@@ -187,13 +191,15 @@ class JdbcAccountLifecyclePgTest extends PostgresTestBase {
     Instant at = Instant.now().minus(3, ChronoUnit.DAYS).truncatedTo(ChronoUnit.MICROS);
     UUID id = deactivated("r@x.io", "SELF", at, false);
 
+    Instant before = databaseNow();
     RestorableAccount found = tx.execute(s -> restoration.lockById(id).orElseThrow());
+    Instant after = databaseNow();
 
     assertThat(found.status()).isEqualTo(UserStatus.DEACTIVATED);
     assertThat(found.deactivationSource()).isEqualTo("SELF");
     assertThat(found.deactivatedAt()).isEqualTo(at);
     assertThat(found.anonymizedAt()).isNull();
-    assertThat(found.databaseTime()).isBetween(Instant.now().minusSeconds(60), Instant.now());
+    assertThat(found.databaseTime()).isBetween(before, after);
     assertThat(found.canRestore()).isTrue();
     assertThat(inTx(() -> restoration.lockById(UUID.randomUUID()))).isEmpty();
   }
@@ -327,12 +333,14 @@ class JdbcAccountLifecyclePgTest extends PostgresTestBase {
     UUID id = user("Reset@x.io", "STUDENT");
     setPassword(id, "old");
 
+    Instant before = databaseNow();
     PasswordResetAccount found = tx.execute(s -> reset.lockByEmail("RESET@x.IO").orElseThrow());
+    Instant after = databaseNow();
 
     assertThat(found.user().id()).isEqualTo(id);
     assertThat(found.email()).isEqualTo("Reset@x.io");
     assertThat(found.passwordChangedAt()).isNull();
-    assertThat(found.databaseTime()).isBetween(Instant.now().minusSeconds(60), Instant.now());
+    assertThat(found.databaseTime()).isBetween(before, after);
     assertThat(found.canResetPassword()).isTrue();
     assertThat(inTx(() -> reset.lockByEmail("nobody@x.io"))).isEmpty();
     String[] states = lockStates(id, () -> reset.lockByEmail("reset@x.io"));

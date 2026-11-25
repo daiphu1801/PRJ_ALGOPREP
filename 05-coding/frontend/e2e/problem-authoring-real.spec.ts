@@ -88,12 +88,15 @@ test("bulk upload: five pairs reach the server, only the oversized side stays in
   await expect(
     page.getByRole("button", { name: /^Testcase \(5\)/ }),
   ).toBeVisible();
-  // Four pairs are read back into the inline columns, the 9000 character input stays in MinIO.
+  // The first two pairs default to SAMPLE. The 9000 character input stays in MinIO.
   expect(
     sql(
-      `select count(*)||'|'||count(*) filter (where input_storage='MINIO')||'|'||count(*) filter (where approved and visibility='HIDDEN') from problem.testcases where problem_id='${problemId}'`,
+      `select count(*)||'|'||count(*) filter (where input_storage='MINIO')||
+        '|'||count(*) filter (where approved and visibility='SAMPLE')||
+        '|'||count(*) filter (where approved and visibility='HIDDEN')
+        from problem.testcases where problem_id='${problemId}'`,
     ),
-  ).toBe("5|1|5");
+  ).toBe("5|1|2|3");
 });
 
 test("reference run reports each case with verdict words only and never saves the typed code", async ({
@@ -119,8 +122,9 @@ test("reference run reports each case with verdict words only and never saves th
          .join(",")};`);
 
   await page.goto(`${APP_URL}/instructor/problems/${problemId}/edit`);
-  await testcasesTab(page).click();
+  await page.getByRole("button", { name: m.tab.content }).click();
   const run = page.getByRole("button", { name: m.runSolution });
+  await expect(run).toBeVisible();
 
   const good = page.waitForResponse((r) =>
     r.url().includes("/reference-solution/run"),
@@ -141,9 +145,7 @@ test("reference run reports each case with verdict words only and never saves th
     );
   }
 
-  await page.getByRole("button", { name: m.tab.content }).click();
   await page.getByLabel(/Đáp án mẫu bằng/).fill("print(0)\n");
-  await testcasesTab(page).click();
   const bad = page.waitForResponse((r) =>
     r.url().includes("/reference-solution/run"),
   );
@@ -184,7 +186,7 @@ test("a standard-I/O-only problem reads as spec-declared and publishes from the 
   const specItem = page.locator("li", { hasText: m.check.specDeclared });
   await expect(specItem.getByText(m.checkDone)).toBeVisible();
 
-  await testcasesTab(page).click();
+  await page.getByRole("button", { name: m.tab.content }).click();
   await page.getByRole("button", { name: m.runSolution }).click();
   await expect(page.getByText(/Đúng 8\/8 testcase đã duyệt/)).toBeVisible({
     timeout: 60_000,

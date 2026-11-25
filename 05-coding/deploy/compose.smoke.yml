@@ -1,4 +1,10 @@
 services:
+  caddy:
+    networks:
+      default:
+        aliases:
+          - zap.algoprep.test
+
   backend:
     environment:
       SPRING_PROFILES_ACTIVE: worker,outbox,maintenance

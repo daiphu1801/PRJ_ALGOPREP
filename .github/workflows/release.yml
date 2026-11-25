@@ -79,7 +79,7 @@ jobs:
         run: |
           docker compose --env-file 05-coding/deploy/.env.smoke -f 05-coding/deploy/compose.yml -f 05-coding/deploy/compose.smoke.yml up --wait --wait-timeout 240
           caddy=$(docker compose --env-file 05-coding/deploy/.env.smoke -f 05-coding/deploy/compose.yml -f 05-coding/deploy/compose.smoke.yml ps -q caddy)
-          for attempt in {1..20}; do
+          for _ in {1..20}; do
             if docker cp "$caddy:/data/caddy/pki/authorities/local/root.crt" "$RUNNER_TEMP/algoprep-root.crt" &&
                 curl --fail --silent --retry 2 --cacert "$RUNNER_TEMP/algoprep-root.crt" "$E2E_BASE_URL/healthz" | jq -e '.status == "UP"'; then
               ready=true
@@ -104,12 +104,11 @@ jobs:
         run: |
           mkdir -p release-reports
           chmod a+w release-reports
-          caddy=$(docker compose --env-file 05-coding/deploy/.env.smoke -f 05-coding/deploy/compose.yml -f 05-coding/deploy/compose.smoke.yml ps -q caddy)
-          docker run --rm --network "container:$caddy" \
+          docker run --rm --network "${COMPOSE_PROJECT_NAME}_default" \
             -v "$PWD/release-reports:/zap/wrk:rw" \
             -v "$PWD/05-coding/deploy/zap-baseline.tsv:/zap/wrk/rules.tsv:ro" \
             ghcr.io/zaproxy/zaproxy@sha256:9624669db72f54d86c4b46a7064518bd9bf79d8c61a4c31befa9923489f328af \
-            zap-baseline.py -t https://localhost \
+            zap-baseline.py -t https://zap.algoprep.test \
             -c rules.tsv -I -T 5 -r zap.html -J zap.json
       - name: Publish the verified images
         env:
