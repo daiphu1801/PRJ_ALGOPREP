@@ -1,0 +1,8 @@
+# Keeps the SHA-pinned actions in .github/workflows up to date; PRs target develop like any other change.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    target-branch: develop
+    schedule:
+      interval: monthly

@@ -18,7 +18,8 @@ while (( $# )); do
     exit 1
   fi
   expected=skipped
-  if [[ "$event" == workflow_dispatch || "$changed" == true ]]; then
+  # Push to main and manual runs must execute every job; pull requests only the changed ones.
+  if [[ "$event" != pull_request || "$changed" == true ]]; then
     expected=success
   fi
   if [[ "$result" != "$expected" ]]; then

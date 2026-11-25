@@ -5,9 +5,9 @@
 #   - 05-coding/frontend/  ->  pnpm check      (typecheck + lint + vitest)
 #   - 05-coding/backend/   ->  ./mvnw verify   (Spotless, Checkstyle, SpotBugs, JaCoCo, ArchUnit)
 #
-# Hai job doc lap va CHAY THEO PATH FILTER: sua tai lieu thi khong job nao chay, sua frontend thi
-# khong build backend. Ly do khong phai tiet kiem phut CI ma la tin hieu: mot job do phai co nghia
-# la "thu vua sua bi hong", khong phai "co gi do o dau do".
+# Pull requests run only the jobs whose paths changed, so a red job means "what you just touched is
+# broken". Push to main and manual runs execute EVERY job: release.yml needs the frontend and backend
+# artifacts of a full run for the exact main SHA. CI Gate (.github/ci/ci-gate.sh) enforces both rules.
 
 name: CI
 
@@ -84,7 +84,7 @@ jobs:
   frontend:
     name: Frontend (pnpm check)
     needs: changes
-    if: github.event_name == 'workflow_dispatch' || needs.changes.outputs.frontend == 'true'
+    if: github.event_name != 'pull_request' || needs.changes.outputs.frontend == 'true'
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     defaults:
@@ -150,16 +150,14 @@ jobs:
   # ---------------------------------------------------------------------------
   # Backend — ./mvnw verify
   #
-  # KHONG can service container: profile `test` loai tru autoconfigure cua
-  # PostgreSQL/Redis/RabbitMQ (05-coding/backend/algoprep-bootstrap/src/test/resources/
-  # application-test.yml), co chu dich de cong cho ra cung mot ket qua o may lap trinh vien va o CI.
-  # Khi module dau tien co Entity JPA that, test tich hop se dung Testcontainers — Docker co san
-  # tren ubuntu-latest nen job nay khong phai doi cau hinh luc do.
+  # Integration tests start PostgreSQL/Redis/RabbitMQ/MinIO through Testcontainers. The go-judge
+  # sandbox (with the toolchain image) is started beforehand by start-backend-test-services.sh,
+  # because the starter-code tests call a real sandbox on port 5055.
   # ---------------------------------------------------------------------------
   backend:
     name: Backend (mvnw verify)
     needs: changes
-    if: github.event_name == 'workflow_dispatch' || needs.changes.outputs.backend == 'true'
+    if: github.event_name != 'pull_request' || needs.changes.outputs.backend == 'true'
     runs-on: ubuntu-24.04
     timeout-minutes: 50
     defaults:
@@ -218,7 +216,7 @@ jobs:
 
   infrastructure:
     needs: [changes, frontend, backend]
-    if: always() && needs.changes.result == 'success' && (github.event_name == 'workflow_dispatch' || needs.changes.outputs.infrastructure == 'true')
+    if: always() && needs.changes.result == 'success' && (github.event_name != 'pull_request' || needs.changes.outputs.infrastructure == 'true')
     runs-on: ubuntu-24.04
     timeout-minutes: 25
     steps:
@@ -238,25 +236,25 @@ jobs:
           docker compose --env-file deploy/.env.smoke -f deploy/compose.yml -f deploy/compose.smoke.yml config --quiet
           docker compose --env-file deploy/.env.smoke -f deploy/compose.yml config --quiet
       - name: Download the standalone frontend
-        if: (github.event_name == 'workflow_dispatch' || needs.changes.outputs.frontend == 'true') && needs.frontend.result == 'success'
+        if: (github.event_name != 'pull_request' || needs.changes.outputs.frontend == 'true') && needs.frontend.result == 'success'
         uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6
         with:
           name: frontend-standalone
           path: ${{ runner.temp }}/algoprep-artifacts
       - name: Build frontend image
-        if: (github.event_name == 'workflow_dispatch' || needs.changes.outputs.frontend == 'true') && needs.frontend.result == 'success'
+        if: (github.event_name != 'pull_request' || needs.changes.outputs.frontend == 'true') && needs.frontend.result == 'success'
         run: docker build -f 05-coding/frontend/Dockerfile "$RUNNER_TEMP/algoprep-artifacts"
       - name: Download backend JAR
-        if: (github.event_name == 'workflow_dispatch' || needs.changes.outputs.backend == 'true') && needs.backend.result == 'success'
+        if: (github.event_name != 'pull_request' || needs.changes.outputs.backend == 'true') && needs.backend.result == 'success'
         uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6
         with:
           name: backend-jar
           path: ${{ runner.temp }}/algoprep-backend
       - name: Build backend image
-        if: (github.event_name == 'workflow_dispatch' || needs.changes.outputs.backend == 'true') && needs.backend.result == 'success'
+        if: (github.event_name != 'pull_request' || needs.changes.outputs.backend == 'true') && needs.backend.result == 'success'
         run: docker build -f 05-coding/backend/Dockerfile "$RUNNER_TEMP/algoprep-backend"
       - name: Build judge toolchain
-        if: github.event_name == 'workflow_dispatch' || needs.changes.outputs.judge == 'true'
+        if: github.event_name != 'pull_request' || needs.changes.outputs.judge == 'true'
         run: docker build 05-coding/judge-engine
 
   gate:
