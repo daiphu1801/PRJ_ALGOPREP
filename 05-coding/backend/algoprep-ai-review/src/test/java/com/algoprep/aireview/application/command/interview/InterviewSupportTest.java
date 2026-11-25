@@ -11,6 +11,7 @@ import com.algoprep.aireview.application.dto.usage.RecordAiTokenUsageCommand;
 import com.algoprep.aireview.application.ports.in.usage.RecordAiTokenUsageUseCase;
 import com.algoprep.aireview.domain.exception.AiInvalidResponseException;
 import com.algoprep.aireview.domain.exception.AiProviderUnavailableException;
+import com.algoprep.aireview.domain.model.CallOptions;
 import com.algoprep.aireview.domain.model.FeatureCode;
 import com.algoprep.aireview.domain.model.interview.ChatMessage;
 import com.algoprep.aireview.domain.model.prompt.PromptSnapshot;
@@ -98,7 +99,14 @@ class InterviewSupportTest {
     when(ids.newId()).thenReturn(UUID.randomUUID());
     var call = new InterviewLlmCall(mock(AiPromptSnapshotRepository.class), llm, usage, ids);
     var template =
-        new PromptSnapshot(UUID.randomUUID(), FeatureCode.MOCK_INTERVIEW, "s", null, "m", "v1");
+        new PromptSnapshot(
+            UUID.randomUUID(),
+            FeatureCode.MOCK_INTERVIEW,
+            "s",
+            null,
+            "m",
+            "v1",
+            CallOptions.maxTokensFor(FeatureCode.MOCK_INTERVIEW));
     ComposedPrompt prompt =
         new PromptComposer()
             .compose(template, null, null, List.of(new DataBlock(BlockName.TOPICS, "t")));
@@ -162,7 +170,14 @@ class InterviewSupportTest {
     tweak.accept(call);
     when(llm.streamTurn(any(), any(), any(), any(), any())).thenReturn(Flux.empty());
     var template =
-        new PromptSnapshot(UUID.randomUUID(), FeatureCode.MOCK_INTERVIEW, "s", null, "m", "v1");
+        new PromptSnapshot(
+            UUID.randomUUID(),
+            FeatureCode.MOCK_INTERVIEW,
+            "s",
+            null,
+            "m",
+            "v1",
+            CallOptions.maxTokensFor(FeatureCode.MOCK_INTERVIEW));
     ComposedPrompt prompt =
         new PromptComposer()
             .compose(template, null, null, List.of(new DataBlock(BlockName.TOPICS, "t")));

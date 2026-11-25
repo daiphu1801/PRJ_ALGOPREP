@@ -3,6 +3,7 @@ package com.algoprep.aireview.domain.model.prompt;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.algoprep.aireview.domain.model.CallOptions;
 import com.algoprep.aireview.domain.model.FeatureCode;
 import com.algoprep.aireview.domain.model.ResponseGuards;
 import java.lang.reflect.Modifier;
@@ -13,7 +14,13 @@ import org.junit.jupiter.api.Test;
 class PromptSnapshotTest {
   private static PromptSnapshot of(String instruction, ResponseGuards guards) {
     return new PromptSnapshot(
-        UUID.randomUUID(), FeatureCode.MOCK_INTERVIEW, instruction, guards, "default", "v1");
+        UUID.randomUUID(),
+        FeatureCode.MOCK_INTERVIEW,
+        instruction,
+        guards,
+        "default",
+        "v1",
+        CallOptions.maxTokensFor(FeatureCode.MOCK_INTERVIEW));
   }
 
   @Test
@@ -41,9 +48,24 @@ class PromptSnapshotTest {
   @Test
   void equalSnapshotsCompareEqual() {
     UUID id = UUID.randomUUID();
-    PromptSnapshot a = new PromptSnapshot(id, FeatureCode.SOLUTION_REVIEW, "x", null, "d", "v1");
+    PromptSnapshot a =
+        new PromptSnapshot(
+            id,
+            FeatureCode.SOLUTION_REVIEW,
+            "x",
+            null,
+            "d",
+            "v1",
+            CallOptions.maxTokensFor(FeatureCode.SOLUTION_REVIEW));
     PromptSnapshot b =
-        new PromptSnapshot(id, FeatureCode.SOLUTION_REVIEW, "x", ResponseGuards.NONE, "d", "v1");
+        new PromptSnapshot(
+            id,
+            FeatureCode.SOLUTION_REVIEW,
+            "x",
+            ResponseGuards.NONE,
+            "d",
+            "v1",
+            CallOptions.maxTokensFor(FeatureCode.SOLUTION_REVIEW));
     assertThat(a).isEqualTo(b);
   }
 }

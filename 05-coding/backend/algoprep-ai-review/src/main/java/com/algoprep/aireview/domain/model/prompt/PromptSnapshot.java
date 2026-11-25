@@ -1,6 +1,5 @@
 package com.algoprep.aireview.domain.model.prompt;
 
-import com.algoprep.aireview.domain.model.CallOptions;
 import com.algoprep.aireview.domain.model.FeatureCode;
 import com.algoprep.aireview.domain.model.ResponseGuards;
 import java.util.Objects;
@@ -19,23 +18,6 @@ public record PromptSnapshot(
     String modelId,
     String responseSchemaVersion,
     int maxTokens) {
-  public PromptSnapshot(
-      UUID id,
-      FeatureCode featureCode,
-      String systemInstruction,
-      ResponseGuards guards,
-      String modelId,
-      String responseSchemaVersion) {
-    this(
-        id,
-        featureCode,
-        systemInstruction,
-        guards,
-        modelId,
-        responseSchemaVersion,
-        CallOptions.maxTokensFor(featureCode));
-  }
-
   public PromptSnapshot {
     Objects.requireNonNull(id, "id");
     Objects.requireNonNull(featureCode, "featureCode");

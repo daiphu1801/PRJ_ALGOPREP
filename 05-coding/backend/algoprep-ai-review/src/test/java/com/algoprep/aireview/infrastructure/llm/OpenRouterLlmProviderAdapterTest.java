@@ -61,7 +61,8 @@ class OpenRouterLlmProviderAdapterTest {
                     "You are a reviewer.",
                     null,
                     "m/one:free",
-                    "v1"),
+                    "v1",
+                    CallOptions.maxTokensFor(FeatureCode.SOLUTION_REVIEW)),
                 null,
                 null,
                 List.of(new DataBlock(BlockName.USER_CODE, HOSTILE_CODE)));

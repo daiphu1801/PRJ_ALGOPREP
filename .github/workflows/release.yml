@@ -67,9 +67,7 @@ jobs:
       - name: Build candidate images
         working-directory: 05-coding
         run: |
-          mkdir "$RUNNER_TEMP/algoprep-frontend"
-          tar -xzf "$RUNNER_TEMP/algoprep-artifacts/frontend-standalone.tgz" -C "$RUNNER_TEMP/algoprep-frontend"
-          docker build -f frontend/Dockerfile -t algoprep-release-frontend:smoke "$RUNNER_TEMP/algoprep-frontend"
+          docker build -f frontend/Dockerfile -t algoprep-release-frontend:smoke "$RUNNER_TEMP/algoprep-artifacts"
           docker build -f backend/Dockerfile -t algoprep-release-backend:smoke "$RUNNER_TEMP/algoprep-backend"
           docker build -t algoprep-release-judge:smoke judge-engine
       - name: Prepare Playwright

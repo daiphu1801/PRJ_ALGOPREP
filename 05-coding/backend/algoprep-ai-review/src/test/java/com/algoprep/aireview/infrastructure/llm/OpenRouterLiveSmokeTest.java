@@ -74,7 +74,13 @@ class OpenRouterLiveSmokeTest {
     return new PromptComposer()
         .compose(
             new PromptSnapshot(
-                UUID.randomUUID(), FeatureCode.SOLUTION_REVIEW, instruction, null, model, "smoke"),
+                UUID.randomUUID(),
+                FeatureCode.SOLUTION_REVIEW,
+                instruction,
+                null,
+                model,
+                "smoke",
+                CallOptions.maxTokensFor(FeatureCode.SOLUTION_REVIEW)),
             null,
             null,
             List.of(new DataBlock(BlockName.USER_CODE, "print(1)")));

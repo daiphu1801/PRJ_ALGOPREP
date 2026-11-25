@@ -114,7 +114,8 @@ class PracticeFeedbackCommandHandler
                 input.systemInstruction() + "\n\n" + rubricBlock(input.rubric()),
                 ResponseGuards.NONE,
                 input.modelId(),
-                SCHEMA_VERSION),
+                SCHEMA_VERSION,
+                CallOptions.maxTokensFor(FeatureCode.PRACTICE_FEEDBACK)),
             null,
             null,
             List.of(

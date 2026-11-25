@@ -229,10 +229,7 @@ jobs:
           path: ${{ runner.temp }}/algoprep-artifacts
       - name: Build frontend image
         if: (github.event_name == 'workflow_dispatch' || needs.changes.outputs.frontend == 'true') && needs.frontend.result == 'success'
-        run: |
-          mkdir "$RUNNER_TEMP/algoprep-frontend"
-          tar -xzf "$RUNNER_TEMP/algoprep-artifacts/frontend-standalone.tgz" -C "$RUNNER_TEMP/algoprep-frontend"
-          docker build -f 05-coding/frontend/Dockerfile "$RUNNER_TEMP/algoprep-frontend"
+        run: docker build -f 05-coding/frontend/Dockerfile "$RUNNER_TEMP/algoprep-artifacts"
       - name: Download backend JAR
         if: (github.event_name == 'workflow_dispatch' || needs.changes.outputs.backend == 'true') && needs.backend.result == 'success'
         uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6

@@ -3,6 +3,7 @@ package com.algoprep.aireview.domain.prompt;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.algoprep.aireview.domain.model.CallOptions;
 import com.algoprep.aireview.domain.model.FeatureCode;
 import com.algoprep.aireview.domain.model.ResponseGuards;
 import com.algoprep.aireview.domain.model.interview.InterviewStage;
@@ -21,7 +22,13 @@ class PromptComposerTest {
 
   private static PromptSnapshot snapshot(ResponseGuards guards) {
     return new PromptSnapshot(
-        UUID.randomUUID(), FeatureCode.SOLUTION_REVIEW, TEMPLATE, guards, "default", "v1");
+        UUID.randomUUID(),
+        FeatureCode.SOLUTION_REVIEW,
+        TEMPLATE,
+        guards,
+        "default",
+        "v1",
+        CallOptions.maxTokensFor(FeatureCode.SOLUTION_REVIEW));
   }
 
   private static DataBlock code(String content) {

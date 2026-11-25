@@ -25,6 +25,7 @@ import com.algoprep.aireview.domain.exception.interview.AiNothingToScoreExceptio
 import com.algoprep.aireview.domain.exception.interview.AiSessionBusyException;
 import com.algoprep.aireview.domain.exception.interview.AiSessionNotFoundException;
 import com.algoprep.aireview.domain.exception.interview.AiSessionNotRunningException;
+import com.algoprep.aireview.domain.model.CallOptions;
 import com.algoprep.aireview.domain.model.FeatureCode;
 import com.algoprep.aireview.domain.model.LlmUsage;
 import com.algoprep.aireview.domain.model.StructuredResult;
@@ -81,7 +82,13 @@ class InterviewScoringHandlersTest {
   private final InterviewSweepRetryPort retries = mock(InterviewSweepRetryPort.class);
   private final PromptSnapshot template =
       new PromptSnapshot(
-          UUID.randomUUID(), FeatureCode.MOCK_INTERVIEW, "system", null, "default", "v1");
+          UUID.randomUUID(),
+          FeatureCode.MOCK_INTERVIEW,
+          "system",
+          null,
+          "default",
+          "v1",
+          CallOptions.maxTokensFor(FeatureCode.MOCK_INTERVIEW));
 
   private CompleteInterviewSessionCommandHandler complete;
   private SweepIdleInterviewSessionsCommandHandler sweep;

@@ -31,6 +31,7 @@ import com.algoprep.aireview.domain.exception.interview.AiSessionNotFoundExcepti
 import com.algoprep.aireview.domain.exception.interview.AiSessionNotRunningException;
 import com.algoprep.aireview.domain.exception.interview.AiTurnCountMismatchException;
 import com.algoprep.aireview.domain.exception.interview.AiTurnLimitReachedException;
+import com.algoprep.aireview.domain.model.CallOptions;
 import com.algoprep.aireview.domain.model.CallerCategory;
 import com.algoprep.aireview.domain.model.FeatureCode;
 import com.algoprep.aireview.domain.model.LlmUsage;
@@ -124,7 +125,13 @@ class SendInterviewTurnCommandHandlerTest {
   private final CheckAiBudgetUseCase budget = mock(CheckAiBudgetUseCase.class);
   private final PromptSnapshot template =
       new PromptSnapshot(
-          UUID.randomUUID(), FeatureCode.MOCK_INTERVIEW, "system", null, "default", "v1");
+          UUID.randomUUID(),
+          FeatureCode.MOCK_INTERVIEW,
+          "system",
+          null,
+          "default",
+          "v1",
+          CallOptions.maxTokensFor(FeatureCode.MOCK_INTERVIEW));
   private final Recorder sink = new Recorder();
   private SendInterviewTurnCommandHandler handler;
 

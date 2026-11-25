@@ -25,6 +25,7 @@ import com.algoprep.aireview.domain.exception.AiProviderUnavailableException;
 import com.algoprep.aireview.domain.exception.AiRateLimitedException;
 import com.algoprep.aireview.domain.exception.budget.AiBudgetExceededException;
 import com.algoprep.aireview.domain.exception.review.AiReviewInProgressException;
+import com.algoprep.aireview.domain.model.CallOptions;
 import com.algoprep.aireview.domain.model.CallerCategory;
 import com.algoprep.aireview.domain.model.FeatureCode;
 import com.algoprep.aireview.domain.model.LlmUsage;
@@ -124,7 +125,8 @@ class GetOrCreateSolutionReviewCommandHandlerTest {
                     "Review the code.",
                     ResponseGuards.NONE,
                     "default",
-                    "v1")));
+                    "v1",
+                    CallOptions.maxTokensFor(FeatureCode.SOLUTION_REVIEW))));
     when(reviews.findCache(any(), any(), any(), any())).thenReturn(Optional.empty());
     when(config.readConfig())
         .thenReturn(new BudgetConfig(0, LocalDate.of(2026, 11, 1), null, 10, 3, 20));

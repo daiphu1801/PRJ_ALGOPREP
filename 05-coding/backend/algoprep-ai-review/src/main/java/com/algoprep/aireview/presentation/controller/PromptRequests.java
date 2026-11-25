@@ -58,7 +58,9 @@ final class PromptRequests {
   }
 
   static Integer maxTokens(JsonNode node) {
-    if (node == null) return null;
+    if (node == null) {
+      return null;
+    }
     if (!node.isIntegralNumber() || !node.canConvertToInt()) {
       throw new AiInvalidRequestException("AIR-V40", "maxTokens must be an integer");
     }

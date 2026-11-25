@@ -47,7 +47,8 @@ class GenerateTestcaseScriptCommandHandlerTest {
           "You write generators.",
           ResponseGuards.NONE,
           "model-x",
-          "1");
+          "1",
+          CallOptions.maxTokensFor(FeatureCode.GENERATE_TESTCASE));
   private final UUID callId = UUID.randomUUID();
   private final UUID userId = UUID.randomUUID();
   private final UUID problemId = UUID.randomUUID();

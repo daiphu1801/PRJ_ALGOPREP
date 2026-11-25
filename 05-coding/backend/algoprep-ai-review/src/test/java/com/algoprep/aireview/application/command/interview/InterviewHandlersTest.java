@@ -33,6 +33,7 @@ import com.algoprep.aireview.domain.exception.interview.AiSessionBusyException;
 import com.algoprep.aireview.domain.exception.interview.AiSessionNotFoundException;
 import com.algoprep.aireview.domain.exception.interview.AiSessionNotRunningException;
 import com.algoprep.aireview.domain.exception.interview.AiTurnLimitReachedException;
+import com.algoprep.aireview.domain.model.CallOptions;
 import com.algoprep.aireview.domain.model.CallerCategory;
 import com.algoprep.aireview.domain.model.FeatureCode;
 import com.algoprep.aireview.domain.model.LlmUsage;
@@ -89,7 +90,13 @@ class InterviewHandlersTest {
   private final ClockPort clock = mock(ClockPort.class);
   private final PromptSnapshot template =
       new PromptSnapshot(
-          UUID.randomUUID(), FeatureCode.MOCK_INTERVIEW, "system", null, "default", "v1");
+          UUID.randomUUID(),
+          FeatureCode.MOCK_INTERVIEW,
+          "system",
+          null,
+          "default",
+          "v1",
+          CallOptions.maxTokensFor(FeatureCode.MOCK_INTERVIEW));
   private final CostReservation granted =
       new CostReservation(GateOutcome.GRANTED, user, FeatureCode.MOCK_INTERVIEW, "r", 1L, true, 0);
 
