@@ -1,0 +1,29 @@
+{$APP_HOST} {
+	{$CADDY_TLS:}
+
+	header {
+		X-Content-Type-Options nosniff
+		X-Frame-Options DENY
+		Referrer-Policy strict-origin-when-cross-origin
+		Strict-Transport-Security "max-age=31536000"
+	}
+
+	@api path /api /api/* /ws
+	handle @api {
+		reverse_proxy backend:8080
+	}
+
+	handle /healthz {
+		rewrite * /actuator/health
+		reverse_proxy backend:8080
+	}
+
+	# Keep both the signed path and request Host intact.
+	handle /algoprep-testcases/* {
+		reverse_proxy minio:9000
+	}
+
+	handle {
+		reverse_proxy frontend:3000
+	}
+}

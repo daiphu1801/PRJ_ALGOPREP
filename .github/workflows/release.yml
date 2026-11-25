@@ -1,0 +1,153 @@
+name: Release images
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-images
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: Verify and publish Linux images
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    defaults:
+      run:
+        shell: bash
+    permissions:
+      contents: read
+      actions: read
+      packages: write
+    env:
+      COMPOSE_PROJECT_NAME: algoprep-release-smoke
+      E2E_BASE_URL: https://localhost:3443
+      E2E_MAILPIT_URL: http://localhost:18025/api/v1
+      E2E_F3F4_GRADING: 'true'
+    steps:
+      - name: Require full green CI for this exact commit
+        id: ci
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          run=$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/ci.yml/runs?branch=main&head_sha=$GITHUB_SHA&event=workflow_dispatch&per_page=1" --jq '.workflow_runs[0] | select(.status == "completed" and .conclusion == "success") | .id')
+          test -n "$run" || { echo "Run the full CI workflow on main for $GITHUB_SHA first"; exit 1; }
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs/$run/jobs" | jq -e '
+            [.jobs[] | select(.conclusion == "success") | .name] as $passed |
+            ["CI Gate", "Frontend (pnpm check)", "Backend (mvnw verify)", "infrastructure"] - $passed == []'
+          echo "run-id=$run" >> "$GITHUB_OUTPUT"
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - name: Download the frontend from the verified CI run
+        uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6
+        with:
+          name: frontend-standalone
+          github-token: ${{ github.token }}
+          run-id: ${{ steps.ci.outputs.run-id }}
+          path: ${{ runner.temp }}/algoprep-artifacts
+      - name: Download the JAR from the verified CI run
+        uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6
+        with:
+          name: backend-jar
+          github-token: ${{ github.token }}
+          run-id: ${{ steps.ci.outputs.run-id }}
+          path: ${{ runner.temp }}/algoprep-backend
+      - uses: pnpm/action-setup@fc06bc1257f339d1d5d8b3a19a8cae5388b55320 # v5
+        with:
+          package_json_file: 05-coding/package.json
+          run_install: false
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: '22'
+          cache: pnpm
+          cache-dependency-path: 05-coding/pnpm-lock.yaml
+      - name: Build candidate images
+        working-directory: 05-coding
+        run: |
+          mkdir "$RUNNER_TEMP/algoprep-frontend"
+          tar -xzf "$RUNNER_TEMP/algoprep-artifacts/frontend-standalone.tgz" -C "$RUNNER_TEMP/algoprep-frontend"
+          docker build -f frontend/Dockerfile -t algoprep-release-frontend:smoke "$RUNNER_TEMP/algoprep-frontend"
+          docker build -f backend/Dockerfile -t algoprep-release-backend:smoke "$RUNNER_TEMP/algoprep-backend"
+          docker build -t algoprep-release-judge:smoke judge-engine
+      - name: Prepare Playwright
+        working-directory: 05-coding
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm --filter frontend exec playwright install --with-deps chromium
+      - name: Start the HTTPS release stack
+        run: |
+          docker compose --env-file 05-coding/deploy/.env.smoke -f 05-coding/deploy/compose.yml -f 05-coding/deploy/compose.smoke.yml up --wait --wait-timeout 240
+          caddy=$(docker compose --env-file 05-coding/deploy/.env.smoke -f 05-coding/deploy/compose.yml -f 05-coding/deploy/compose.smoke.yml ps -q caddy)
+          for attempt in {1..20}; do
+            if docker cp "$caddy:/data/caddy/pki/authorities/local/root.crt" "$RUNNER_TEMP/algoprep-root.crt" &&
+                curl --fail --silent --retry 2 --cacert "$RUNNER_TEMP/algoprep-root.crt" "$E2E_BASE_URL/healthz" | jq -e '.status == "UP"'; then
+              ready=true
+              break
+            fi
+            sleep 2
+          done
+          test "${ready:-false}" = true
+          echo "NODE_EXTRA_CA_CERTS=$RUNNER_TEMP/algoprep-root.crt" >> "$GITHUB_ENV"
+          postgres=$(docker compose --env-file 05-coding/deploy/.env.smoke -f 05-coding/deploy/compose.yml -f 05-coding/deploy/compose.smoke.yml ps -q postgres)
+          test -n "$postgres"
+          echo "E2E_PG_CONTAINER=$postgres" >> "$GITHUB_ENV"
+      - name: Verify real browser and grading flows
+        working-directory: 05-coding
+        run: |
+          export BASE_URL="$E2E_BASE_URL/api/v1" MAILPIT_URL="$E2E_MAILPIT_URL" ALGOPREP_DB_NAME=algoprep
+          E2E_RELEASE_PROBLEM_ID=$(node k6/seed-fixture.mjs)
+          export E2E_RELEASE_PROBLEM_ID
+          pnpm --filter frontend exec playwright test --config=playwright.release.config.ts
+          jq -e '.stats.skipped == 0 and .stats.unexpected == 0 and .stats.expected == 9' frontend/test-results/release.json
+      - name: Verify ZAP Baseline through Caddy
+        run: |
+          mkdir -p release-reports
+          chmod a+w release-reports
+          caddy=$(docker compose --env-file 05-coding/deploy/.env.smoke -f 05-coding/deploy/compose.yml -f 05-coding/deploy/compose.smoke.yml ps -q caddy)
+          docker run --rm --network "container:$caddy" \
+            -v "$PWD/release-reports:/zap/wrk:rw" \
+            -v "$PWD/05-coding/deploy/zap-baseline.tsv:/zap/wrk/rules.tsv:ro" \
+            ghcr.io/zaproxy/zaproxy@sha256:9624669db72f54d86c4b46a7064518bd9bf79d8c61a4c31befa9923489f328af \
+            zap-baseline.py -t https://localhost \
+            -c rules.tsv -I -T 5 -r zap.html -J zap.json
+      - name: Publish the verified images
+        env:
+          GHCR_TOKEN: ${{ github.token }}
+        run: |
+          printf '%s' "$GHCR_TOKEN" | docker login ghcr.io --username "$GITHUB_ACTOR" --password-stdin
+          owner=${GITHUB_REPOSITORY_OWNER,,}
+          manifest="$RUNNER_TEMP/algoprep-images.env"
+          : > "$manifest"
+          for service in frontend backend judge; do
+            repository="ghcr.io/$owner/algoprep-$service"
+            tag="$repository:$GITHUB_SHA"
+            docker tag "algoprep-release-$service:smoke" "$tag"
+            docker push "$tag" | tee "$RUNNER_TEMP/$service-push.log"
+            digest=$(sed -nE 's/^.*digest: (sha256:[a-f0-9]{64}).*$/\1/p' "$RUNNER_TEMP/$service-push.log" | tail -1)
+            [[ "$digest" =~ ^sha256:[a-f0-9]{64}$ ]]
+            printf '%s_IMAGE=%s@%s\n' "${service^^}" "$repository" "$digest" >> "$manifest"
+          done
+          mv "$manifest" release-reports/images.env
+          jq -n --arg commit "$GITHUB_SHA" --arg run "$GITHUB_RUN_ID" '{commit:$commit, run:$run}' > release-reports/release.json
+      - name: Capture stack diagnostics
+        if: failure()
+        run: |
+          mkdir -p release-reports
+          docker compose --env-file 05-coding/deploy/.env.smoke -f 05-coding/deploy/compose.yml -f 05-coding/deploy/compose.smoke.yml logs --no-color > release-reports/compose.log
+      - name: Save verification reports and image manifest
+        if: always()
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
+        with:
+          name: release-evidence
+          path: |
+            release-reports/
+            05-coding/frontend/test-results/
+          if-no-files-found: ignore
+          retention-days: 7
+      - name: Clean up the isolated stack
+        if: always()
+        run: |
+          docker compose --env-file 05-coding/deploy/.env.smoke -f 05-coding/deploy/compose.yml -f 05-coding/deploy/compose.smoke.yml down --volumes --remove-orphans

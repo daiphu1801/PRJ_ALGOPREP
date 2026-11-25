@@ -118,10 +118,10 @@ class JdbcPromptAndReviewRepositoriesTest {
     Map<Integer, Object> insert = jdbc.lastParams();
     assertThat(insert.get(3)).isEqualTo("v2.4");
     assertThat(insert.get(4)).isEqualTo("DRAFT");
-    assertThat(insert.get(8).toString())
+    assertThat(insert).containsEntry(8, null).containsEntry(10, USER);
+    assertThat(insert.get(9).toString())
         .contains("\"citeLines\":true")
         .contains("\"answerInVietnamese\":true");
-    assertThat(insert).containsEntry(9, USER);
   }
 
   @Test
@@ -134,7 +134,7 @@ class JdbcPromptAndReviewRepositoriesTest {
     repo.createActive(FeatureCode.GENERATE_TESTCASE, new PromptContent("sys", "m", null), USER);
 
     assertThat(jdbc.lastParams()).containsEntry(3, "v1.0").containsEntry(4, "ACTIVE");
-    assertThat(jdbc.lastParams()).containsEntry(8, null);
+    assertThat(jdbc.lastParams()).containsEntry(8, null).containsEntry(9, null);
   }
 
   @Test
@@ -147,11 +147,13 @@ class JdbcPromptAndReviewRepositoriesTest {
     PromptTemplate draft = repo.updateDraft(ID, content());
     assertThat(draft.status()).isEqualTo(PromptStatus.DRAFT);
     assertThat(jdbc.lastParams()).containsEntry(1, "sys").containsEntry(2, "model-b");
-    assertThat(jdbc.lastParams()).containsEntry(4, ID);
+    assertThat(jdbc.lastParams()).containsEntry(3, null).containsEntry(5, ID);
+    assertThat(jdbc.lastParams().get(4).toString()).contains("\"citeLines\":true");
 
     PromptTemplate promoted = repo.promote(ID, content());
     assertThat(promoted.status()).isEqualTo(PromptStatus.ACTIVE);
     assertThat(jdbc.lastSql()).contains("status = 'ACTIVE'").contains("published_at = now()");
+    assertThat(jdbc.lastParams()).containsEntry(5, ID);
 
     repo.archive(ID);
     assertThat(jdbc.lastSql()).contains("status = 'ARCHIVED'");
