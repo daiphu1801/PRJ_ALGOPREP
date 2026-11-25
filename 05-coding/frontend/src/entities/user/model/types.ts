@@ -53,7 +53,7 @@ export type UpdateProfileInput = {
   displayName: string;
   schoolOrCompany: string;
   currentPosition: string;
-  targetPosition: string;
+  targetPosition?: string;
   /** Digits, spaces and `+ - ( )`, at most 20 characters; an empty string clears it (IDT-V13). */
   phone: string;
 };

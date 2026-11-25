@@ -141,7 +141,7 @@ describe("real admin overview API, judge-backed blocks", () => {
     ]);
   });
 
-  it("turns #70 into weekday labels and dot intensities scaled to the busiest day", async () => {
+  it("turns #70 into weekday labels and daily counts", async () => {
     get.mockResolvedValue({
       columns: [
         { day: "2026-11-02", count: 0 }, // Monday
@@ -168,21 +168,19 @@ describe("real admin overview API, judge-backed blocks", () => {
       "T7",
       "CN",
     ]);
-    expect(result.columns.map((c) => c.intensity)).toEqual([
-      0, 5, 10, 0, 0, 0, 1,
-    ]);
+    expect(result.columns.map((c) => c.count)).toEqual([0, 5, 10, 0, 0, 0, 1]);
     expect(result.weekTotal).toBe(16);
     expect(result.dailyAverage).toBe(2);
   });
 
-  it("gives an all-zero week zero intensity instead of dividing by zero", async () => {
+  it("keeps an all-zero week as zero counts", async () => {
     get.mockResolvedValue({
       columns: [{ day: "2026-11-02", count: 0 }],
       weekTotal: 0,
       dailyAverage: 0,
     });
 
-    expect((await realSubmissionsByDay()).columns[0]!.intensity).toBe(0);
+    expect((await realSubmissionsByDay()).columns[0]!.count).toBe(0);
   });
 
   it("labels the months of #71 as T<month> and keeps the total", async () => {

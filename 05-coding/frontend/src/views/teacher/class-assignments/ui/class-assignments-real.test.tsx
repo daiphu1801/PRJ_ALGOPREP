@@ -211,64 +211,13 @@ describe("ClassAssignmentsView with the real API", () => {
     await waitFor(() => expect(listCalls()).toBeGreaterThan(before));
   });
 
-  async function openAssign() {
+  it("sends the instructor to the assign-problems screen with the chosen class", async () => {
+    routes();
+    params = new URLSearchParams("classId=c1");
     render(withTestProviders(<ClassAssignmentsView />));
     await screen.findByText("Bài 1");
-    fireEvent.click(
-      screen.getByRole("button", { name: m.header.btnAssignFromBank }),
-    );
-    const dialog = await screen.findByRole("dialog");
-    fireEvent.click(await within(dialog).findByLabelText(/Bài mới/));
-    fireEvent.click(within(dialog).getByRole("button", { name: "Giao 1 bài" }));
-  }
-
-  it("assigns the ticked problem; a mixed result is reported per outcome", async () => {
-    apiMock.post.mockResolvedValue({
-      succeededIds: [],
-      skippedIds: ["x"],
-      failedItems: [{ id: "n1", code: "PRB-037", message: "m" }],
-    });
-    const toasts = watch();
-    await openAssign();
-    await waitFor(() =>
-      expect(apiMock.post).toHaveBeenCalledWith(`${B}/classes/c1/assignments`, {
-        problemIds: ["n1"],
-      }),
-    );
-    await waitFor(() => expect(toasts().length).toBe(2));
-    expect(toasts()).toEqual([
-      ["info", m.toast.assignSkipped.replace("{count}", "1")],
-      [
-        "warning",
-        `${m.toast.assignRefused.replace("{count}", "1")} ${apiErrors["PRB-037"]}`,
-      ],
-    ]);
-  });
-
-  it("a refused class (PRB-005) reads as its own text", async () => {
-    apiMock.post.mockRejectedValue(new ApiError("PRB-005", 403));
-    const toasts = watch();
-    await openAssign();
-    await waitFor(() =>
-      expect(toasts().at(-1)).toEqual(["error", apiErrors["PRB-005"]]),
-    );
-  });
-
-  it("a clean assign says how many went in", async () => {
-    apiMock.post.mockResolvedValue({
-      succeededIds: ["n1"],
-      skippedIds: [],
-      failedItems: [],
-    });
-    const toasts = watch();
-    await openAssign();
-    await waitFor(() =>
-      expect(toasts().at(-1)).toEqual([
-        "success",
-        m.toast.assigned
-          .replace("{count}", "1")
-          .replace("{className}", "Java K21"),
-      ]),
-    );
+    expect(
+      screen.getByRole("link", { name: m.header.btnAssignFromBank }),
+    ).toHaveAttribute("href", "/instructor/assignments/new?classId=c1");
   });
 });

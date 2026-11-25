@@ -12,6 +12,7 @@ type StatCardWithSparklineProps = {
   /** Null with direction "none" when the period before was zero: no percent to show. */
   deltaPercent: number | null;
   deltaDirection: "up" | "down" | "none";
+  noComparisonLabel?: string;
   sparklineSeries: number[];
   /** CSS custom-property name (e.g. "--color-admin-cyan"), read via var(). Defaults to the generic accent. */
   accentColorVar?: string;
@@ -22,6 +23,7 @@ export function StatCardWithSparkline({
   value,
   deltaPercent,
   deltaDirection,
+  noComparisonLabel = "—",
   sparklineSeries,
   accentColorVar = "--color-primary",
 }: StatCardWithSparklineProps) {
@@ -40,9 +42,9 @@ export function StatCardWithSparkline({
   // (cyan for submissions, teal for active users), not a universal green-up/red-down convention —
   // kept 1:1 rather than substituting the more common pattern.
   const deltaLabel =
-    deltaPercent === null || deltaDirection === "none"
-      ? "—"
-      : `${deltaDirection === "up" ? "+" : "-"}${Math.abs(
+    deltaPercent === null
+      ? noComparisonLabel
+      : `${deltaDirection === "up" ? "+" : deltaDirection === "down" ? "-" : ""}${Math.abs(
           deltaPercent,
         ).toLocaleString("vi-VN", {
           minimumFractionDigits: 1,
@@ -51,7 +53,7 @@ export function StatCardWithSparkline({
 
   return (
     <div className="glass-card flex items-center justify-between gap-3 p-3">
-      <div>
+      <div className="min-w-0">
         <p className="text-xs text-[var(--color-text-muted)]">{label}</p>
         <p className="mt-1 text-2xl font-semibold text-[var(--color-text)]">
           {value}
@@ -65,7 +67,7 @@ export function StatCardWithSparkline({
       </div>
       <svg
         viewBox="0 0 100 24"
-        className="h-7 w-16 shrink-0"
+        className="h-auto w-[clamp(2.5rem,22%,8rem)] shrink-0"
         aria-hidden="true"
       >
         <polyline

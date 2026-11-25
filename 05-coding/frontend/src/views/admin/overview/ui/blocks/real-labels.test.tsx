@@ -17,7 +17,6 @@ vi.mock("@/shared/api/mock-mode", () => ({
 }));
 
 import { apiMock, resetApiMock } from "@/shared/test/real-api";
-import { SubmissionsByLanguageBlock } from "./submissions-by-language-block";
 import { VerdictDistributionBlock } from "./verdict-distribution-block";
 
 function renderBlock(
@@ -81,17 +80,6 @@ describe("ADM0101 labels in real mode", () => {
           { exact: false },
         )
       ).length,
-    ).toBeGreaterThan(0);
-  });
-
-  it("names the language from its code", async () => {
-    renderBlock(
-      <SubmissionsByLanguageBlock />,
-      "en",
-      enMessages as typeof viMessages,
-    );
-    expect(
-      (await screen.findAllByText("C++", { exact: false })).length,
     ).toBeGreaterThan(0);
   });
 });

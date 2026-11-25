@@ -15,6 +15,7 @@ import { apiMock, resetApiMock } from "@/shared/test/real-api";
 import { withTestProviders } from "@/shared/test/render-with-providers";
 import type { ProblemSpec } from "@/entities/problem";
 import { SpecEditor } from "./spec-editor";
+import type { ProblemKind } from "./problem-kind-card";
 import messages from "../../../../../messages/vi.json";
 import { toast, useToasts } from "@/shared/lib/toast-store";
 
@@ -39,7 +40,15 @@ const base: ProblemSpec = {
 
 function Harness({ initial = base }: { initial?: ProblemSpec }) {
   const [spec, setSpec] = useState(initial);
-  return <SpecEditor spec={spec} onChange={setSpec} />;
+  const [kind, setKind] = useState<ProblemKind>("function");
+  return (
+    <SpecEditor
+      spec={spec}
+      onChange={setSpec}
+      kind={kind}
+      onKindChange={setKind}
+    />
+  );
 }
 
 const SERVER = {

@@ -38,7 +38,7 @@ export function StatCardsRow() {
       <DashboardBlockState
         title={t("stats.regionLabel", { metric: t("stats.solved") })}
         hideTitle
-        minHeightClassName="min-h-[104px]"
+        minHeightClassName="min-h-[76px]"
         isLoading={overviewQuery.isLoading}
         isError={overviewQuery.isError}
         isEmpty={false}
@@ -69,7 +69,7 @@ export function StatCardsRow() {
       <DashboardBlockState
         title={t("stats.regionLabel", { metric: t("stats.acRate") })}
         hideTitle
-        minHeightClassName="min-h-[104px]"
+        minHeightClassName="min-h-[76px]"
         isLoading={overviewQuery.isLoading}
         isError={overviewQuery.isError}
         isEmpty={acRate === null}
@@ -94,7 +94,7 @@ export function StatCardsRow() {
       <DashboardBlockState
         title={t("stats.regionLabel", { metric: t("stats.streak") })}
         hideTitle
-        minHeightClassName="min-h-[104px]"
+        minHeightClassName="min-h-[76px]"
         isLoading={overviewQuery.isLoading}
         isError={overviewQuery.isError}
         isEmpty={false}
@@ -121,7 +121,7 @@ export function StatCardsRow() {
       <DashboardBlockState
         title={t("stats.regionLabel", { metric: t("stats.interview") })}
         hideTitle
-        minHeightClassName="min-h-[104px]"
+        minHeightClassName="min-h-[76px]"
         isLoading={interviewQuery.isLoading}
         isError={interviewQuery.isError}
         isEmpty={interview ? interview.completedSessionCount === 0 : false}

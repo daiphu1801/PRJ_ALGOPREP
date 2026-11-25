@@ -22,10 +22,11 @@ type InterviewSummaryDto = {
 /** F5 #13 is a PostgreSQL read; the server owns range filtering, completed-only counts and weighted scores. */
 export async function realGetInterviewSummary(
   range: ProgressRange = "all",
+  limit = 3,
 ): Promise<InterviewSummary> {
   const dto = await api.get<InterviewSummaryDto>(
     "/ai/me/interview-sessions/summary",
-    { range, limit: 3 },
+    { range, limit },
   );
   return {
     completedSessionCount: dto.completedSessionCount,

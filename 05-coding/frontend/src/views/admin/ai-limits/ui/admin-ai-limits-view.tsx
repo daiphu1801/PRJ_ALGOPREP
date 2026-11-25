@@ -9,8 +9,9 @@
 "use client";
 
 import Link from "next/link";
+import { ChartNoAxesColumn } from "lucide-react";
 import { useT } from "@/shared/i18n";
-import { PageHeader } from "@/shared/ui";
+import { Button, PageHeader } from "@/shared/ui";
 import { BudgetCard } from "./budget-card";
 import { CostCard } from "./cost-card";
 import { RateLimitsCard } from "./rate-limits-card";
@@ -20,25 +21,35 @@ export function AdminAiLimitsView() {
   const t = useT("adminAiLimits");
 
   return (
-    <div>
+    <div className="@container w-full min-w-0">
       <PageHeader
         title={t("title")}
         description={t("subtitle")}
+        className="[&_h1]:whitespace-normal [&_p]:whitespace-normal"
         actions={
-          <Link
-            href="/admin/ai-usage"
-            className="text-[13px] font-semibold text-[var(--color-primary)] hover:underline"
+          <Button
+            asChild
+            variant="ghost"
+            size="sm"
+            className="min-h-9 gap-2 border border-[var(--color-border)]"
           >
-            {t("linkUsage")}
-          </Link>
+            <Link href="/admin/ai-usage">
+              <ChartNoAxesColumn size={15} aria-hidden="true" />
+              {t("linkUsage")}
+            </Link>
+          </Button>
         }
       />
 
-      <div className="flex flex-col gap-4">
-        <BudgetCard />
-        <RateLimitsCard />
-        <CostCard />
-        <TestcaseGenerationLimitCard />
+      <div className="grid min-w-0 gap-4 @min-[820px]:grid-cols-2">
+        <div className="flex min-w-0 flex-col gap-4">
+          <BudgetCard />
+          <CostCard />
+        </div>
+        <div className="flex min-w-0 flex-col gap-4">
+          <RateLimitsCard />
+          <TestcaseGenerationLimitCard />
+        </div>
       </div>
     </div>
   );

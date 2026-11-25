@@ -31,6 +31,12 @@ const bodyRows = () =>
     .slice(1);
 
 describe("AdminQueueMonitorView", () => {
+  it("keeps the illustrative worker list in mock mode and has no grading block", async () => {
+    render(withQuery(<AdminQueueMonitorView />));
+    await screen.findByRole("list", { name: "workersTitle" });
+    expect(screen.queryByText("grading.title")).toBeNull();
+  });
+
   it("opens on the waiting tab, one page at a time", async () => {
     render(withQuery(<AdminQueueMonitorView />));
     await screen.findByRole("table", { name: "jobsTitle" });
@@ -43,7 +49,7 @@ describe("AdminQueueMonitorView", () => {
   it("the failed tab shows only failed jobs", async () => {
     render(withQuery(<AdminQueueMonitorView />));
     await screen.findByRole("table", { name: "jobsTitle" });
-    fireEvent.click(screen.getByRole("button", { name: "tabFailed" }));
+    fireEvent.click(await screen.findByRole("button", { name: "tabFailed" }));
     await waitFor(() => expect(bodyRows()).toHaveLength(1));
     expect(bodyRows()[0]).toHaveTextContent("jobStatus.sandboxError");
   });
@@ -51,7 +57,10 @@ describe("AdminQueueMonitorView", () => {
   it("asks before pausing, and only pauses once confirmed", async () => {
     render(withQuery(<AdminQueueMonitorView />));
     await screen.findByRole("table", { name: "jobsTitle" });
-    const pause = screen.getByRole("switch", { name: "control.paused.label" });
+    fireEvent.click(screen.getByText("controlsTitle"));
+    const pause = await screen.findByRole("switch", {
+      name: "control.paused.label",
+    });
 
     fireEvent.click(pause);
     expect(pause).toHaveAttribute("aria-checked", "false");
@@ -71,7 +80,8 @@ describe("AdminQueueMonitorView", () => {
   it("asks before turning autoscale off, not before turning it on", async () => {
     render(withQuery(<AdminQueueMonitorView />));
     await screen.findByRole("table", { name: "jobsTitle" });
-    const autoscale = screen.getByRole("switch", {
+    fireEvent.click(screen.getByText("controlsTitle"));
+    const autoscale = await screen.findByRole("switch", {
       name: "control.autoscale.label",
     });
     fireEvent.click(autoscale);
@@ -91,7 +101,7 @@ describe("AdminQueueMonitorView", () => {
     render(withQuery(<AdminQueueMonitorView />));
     await screen.findByRole("table", { name: "jobsTitle" });
     expect(
-      await screen.findByRole("link", { name: "infraLink" }),
+      await screen.findByRole("link", { name: "infraErrorLink" }),
     ).toHaveAttribute("href", "/admin/infra-events?level=error");
     expect(screen.queryByRole("list", { name: "infraTitle" })).toBeNull();
   });

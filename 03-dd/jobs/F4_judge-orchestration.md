@@ -170,8 +170,34 @@ WHERE id IN (
 - **Lịch và đầu vào.** Mỗi 15 giây đọc một snapshot `judge.cluster_settings` (`queue_paused`, `autoscale_enabled`, `autoscale_job_threshold`) và đếm `judge.submissions.status = PENDING`. Dùng `pendingCount` từ DB; không đọc metric worker cá nhân từ Prometheus. Bắt đầu với một consumer, hằng `judge.autoscale.max-workers = 8`.
 - **Quy tắc tăng/giảm.** Nếu đang mở queue, autoscale bật và `pendingCount > autoscaleJobThreshold` trong **hai lượt liên tiếp**, tăng `targetConsumers` đúng 1 mỗi chu kỳ, tối đa 8. Nếu `pendingCount = 0` trong **bốn lượt liên tiếp** (60 giây) và không còn lượt đang xử lý ở consumer sẽ dừng, giảm 1 mỗi chu kỳ tới 1. Khoảng giữa hai mốc giữ nguyên; `pendingCount` mới giảm không cưỡng bức hủy job đang chạy. Khi tắt autoscale, đưa mục tiêu về 1 bằng cơ chế drain, không hủy job đang chấm. Khi admin đổi ngưỡng, áp ở lần poll kế. Reset bộ đếm hai/bốn lượt sau mỗi lần đổi mục tiêu.
 - **Pause/resume.** `queue_paused=true` gọi stop container theo BR-JD-08, chờ các message đã giao hoàn tất rồi mới dừng; không giảm mục tiêu vì pause. Resume khởi động container với mục tiêu hiện tại, JOB-JD-01 chạm `updated_at` của `PENDING` theo hợp đồng cũ. Nếu broker/DB không đọc được, giữ mục tiêu gần nhất, không tăng; listener và job xử lý lỗi kết nối theo quy tắc sẵn có.
-- **Quan sát và lỗi.** Log thay đổi `{oldTarget,newTarget,pendingCount,threshold,reason}` không chứa mã người học; metric tổng `judge_grading_consumers_target` và `judge_grading_consumers_active` do **chính F4** xuất, không là số từng worker go-judge. Không ghi DB cho mỗi lần scale. Nếu container từ chối đổi concurrency thì giữ số thực đang chạy, log `ERROR`, thử lại chu kỳ sau; không báo thành công giả ở snapshot. Công tắc API chỉ xác nhận lưu cấu hình, không chờ việc scale kết thúc.
+- **Quan sát và lỗi.** Log thay đổi `{oldTarget,newTarget,pendingCount,threshold,reason}` không chứa mã người học; metric tổng `judge_grading_consumers_target` và `judge_grading_consumers_active` do **chính F4** xuất, không là số từng worker go-judge. Từ 2026-11-22 (`DEC-2026-1122-f4-queue-consumers-and-throughput-on-adm0401`) **có ghi một dòng trạng thái** sau mỗi lần `scale()`, xem "Ghi trạng thái luồng chấm" ngay dưới; trước đó mục này ghi "không ghi DB cho mỗi lần scale", nay chỉ còn đúng cho bảng `submissions` và `cluster_settings`. Nếu container từ chối đổi concurrency thì giữ số thực đang chạy, log `ERROR`, thử lại chu kỳ sau; không báo thành công giả ở snapshot. Công tắc API chỉ xác nhận lưu cấu hình, không chờ việc scale kết thúc.
 - **Test viewpoints.** Ngưỡng 20: 21 `PENDING` qua hai lượt tăng 1→2; đủ thêm chu kỳ tăng không vượt 8; hàng đợi rỗng bốn lượt giảm từng bước; tắt autoscale trở về 1 sau khi job đang chấm xong; pause không nhận message mới, resume tiếp tục; hai tiến trình worker cùng cấu hình chỉ một giữ khoá leader; mất khoá dừng nhận job.
+
+### Ghi trạng thái luồng chấm (thêm 2026-11-22, đã dựng)
+
+Bước này thuộc JOB-JD-05 và chỉ chạy ở **worker được bầu** (giữ khoá leader); API và tiến trình khác không ghi. Mục đích: để màn `ADM0401` (qua `GET /admin/queue/snapshot`, `03-dd/api/F4_judge-orchestration.md` mục 16) thấy số luồng chấm khi worker chạy ở tiến trình khác với API. Đích ghi là bảng một dòng `judge.worker_status` (`02-bd/database/F4_judge-orchestration.md` mục 1.11, migration `V4.003__create_worker_status.sql`). Bảng 5.1 liệt kê các bước.
+
+| Bước | Hành động | Ghi chú |
+| :-: | :--- | :--- |
+| 1 | Chạy `scale()` như quy tắc tăng/giảm ở trên, ra mục tiêu mới và số consumer đang chạy | Không đổi thứ tự hay kết quả của `scale()` |
+| 2 | Upsert một câu duy nhất: `INSERT ... ON CONFLICT (id) DO UPDATE` với `id = 1`, đặt `consumers_target`, `consumers_active`, `reported_at = now()` (giờ DB) | Chạy **sau mỗi lần `scale()`**, kể cả khi không đổi mục tiêu, để `reported_at` luôn tươi |
+| 3 | Chỉ khi mục tiêu **đổi** ở bước 1: câu upsert đặt thêm `last_scale_at = now()`, `last_scale_from` (mục tiêu cũ), `last_scale_to` (mục tiêu mới), `last_scale_reason`, `last_scale_pending` (`pendingCount` lúc đổi) | Lần không đổi giữ nguyên nhóm `last_scale_*` |
+| 4 | Lỗi ghi (DB không với tới, lỗi SQL): bắt lại, ghi log mức `WARN` với thông điệp cố định, không kèm chi tiết lỗi, **đi tiếp** | Không ném lỗi ra ngoài `scale()`; không dừng, không thử lại ngay, không làm readiness lỗi vì lỗi ghi này; chu kỳ sau ghi lại từ giá trị hiện tại |
+
+Bảng 5.1: Các bước ghi trạng thái luồng chấm sau mỗi lần `scale()`.
+
+Lý do (`reason`): `BACKLOG` khi tăng do `pendingCount` vượt ngưỡng hai lượt liên tiếp; `IDLE` khi giảm do hàng đợi rỗng bốn lượt liên tiếp; `DISABLED` khi đưa mục tiêu về 1 vì tắt tự động mở rộng. Tạm dừng và tiếp tục hàng đợi **không** đổi mục tiêu nên không tạo lần đổi mới. Thời điểm báo dùng giờ DB (không dùng giờ tiến trình worker) để API so với `now()` của DB mà không lệch đồng hồ; API coi dòng cũ hơn 60 giây là cũ (hằng số trong mã). Hai luồng gauge `judge_grading_consumers_target`, `judge_grading_consumers_active` vẫn xuất cho Grafana như cũ, độc lập với bảng này. Lỗi ghi trạng thái không làm đổi kết quả `scale()` nên không ảnh hưởng luồng chấm.
+
+**Điểm kiểm thử của bước ghi.**
+
+| ID | Loại | Nội dung |
+| :--- | :--- | :--- |
+| T-WS-01 | Normal | Lần `scale()` đầu tiên khi bảng trống: có đúng một dòng `id = 1`; `reported_at` gần `now()`; nhóm `last_scale_*` NULL nếu chưa đổi mục tiêu |
+| T-WS-02 | Normal | Mục tiêu đổi 1 lên 2 vì hai lượt vượt ngưỡng: nhóm `last_scale_*` có `from = 1`, `to = 2`, `reason = BACKLOG`, `pending` bằng `pendingCount` lúc đổi |
+| T-WS-03 | Normal | Lần `scale()` kế không đổi mục tiêu: `reported_at` mới hơn, nhóm `last_scale_*` giữ nguyên giá trị lần trước |
+| T-WS-04 | Normal | Hàng đợi rỗng bốn lượt giảm mục tiêu: `reason = IDLE`; tắt tự động mở rộng đưa về 1: `reason = DISABLED` |
+| T-WS-05 | Abnormal | Câu upsert ném lỗi: `scale()` vẫn hoàn tất với cùng mục tiêu, có log `WARN`, readiness không đổi; chu kỳ sau ghi lại được |
+| T-WS-06 | Security | Tiến trình không giữ khoá leader không ghi dòng nào |
 
 ## Câu hỏi mở
 

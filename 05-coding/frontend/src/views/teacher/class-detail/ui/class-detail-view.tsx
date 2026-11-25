@@ -19,7 +19,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, Pencil, Trash2, UserMinus } from "lucide-react";
 import {
-  formatClassSchedule,
   useClassRoster,
   useCreateInviteCode,
   useDeleteClass,
@@ -43,8 +42,10 @@ import {
   DataTable,
   EmptyState,
   IconAction,
+  PageContainer,
   PageHeader,
   QueryError,
+  SeeAllLink,
   Skeleton,
   type DataTableColumn,
 } from "@/shared/ui";
@@ -101,7 +102,6 @@ export function ClassDetailView({ classId }: { classId: string }) {
   }
 
   const dayLabel = (day: number) => tm(`schedule.dayShort.${day}`);
-  const summary = formatClassSchedule(klass.schedule, dayLabel);
   // The judge figures come with the roster when the server could read them (F1 #26).
   const hasMetrics = (studentsQuery.data ?? []).some((row) => row.metrics);
   const metricColumns: DataTableColumn<ClassRosterRow>[] = [
@@ -197,7 +197,7 @@ export function ClassDetailView({ classId }: { classId: string }) {
   ];
 
   return (
-    <div>
+    <PageContainer variant="content" className="@container">
       <PageHeader
         leading={back}
         title={klass.name}
@@ -226,13 +226,15 @@ export function ClassDetailView({ classId }: { classId: string }) {
         }
       />
 
-      <div className="mb-4 grid grid-cols-1 items-start gap-3.5 lg:grid-cols-2">
-        <Card title={t("schedule.title")} description={summary || undefined}>
-          <ScheduleDetails
-            schedule={klass.schedule}
-            t={t}
-            dayLabel={dayLabel}
-          />
+      <div className="mb-4 grid grid-cols-1 items-start gap-3.5 @min-[880px]:grid-cols-2">
+        <Card title={t("schedule.title")}>
+          <div className="@container">
+            <ScheduleDetails
+              schedule={klass.schedule}
+              t={t}
+              dayLabel={dayLabel}
+            />
+          </div>
         </Card>
 
         <Card
@@ -280,14 +282,16 @@ export function ClassDetailView({ classId }: { classId: string }) {
       </div>
 
       <Card
+        className="grow"
         title={t("students.title")}
         description={t("students.subtitle", { count: klass.studentCount })}
         action={
-          <Button variant="ghost" size="sm" asChild>
-            <Link href={`/instructor/students?classId=${klass.id}`}>
-              {t("students.openFull")}
-            </Link>
-          </Button>
+          <SeeAllLink
+            href={`/instructor/students?classId=${klass.id}`}
+            className="mt-0"
+          >
+            {t("students.openFull")}
+          </SeeAllLink>
         }
       >
         <DataTable
@@ -303,7 +307,7 @@ export function ClassDetailView({ classId }: { classId: string }) {
                 : "ready"
           }
           emptyMessage={t("students.empty")}
-          minWidth={720}
+          minWidth={0}
         />
       </Card>
 
@@ -373,11 +377,11 @@ export function ClassDetailView({ classId }: { classId: string }) {
       >
         {tm("popup.removeStudentBody")}
       </ConfirmDialog>
-    </div>
+    </PageContainer>
   );
 }
 
-/** The schedule read part by part (the card subtitle already has the one-line form). */
+/** The schedule read part by part: short facts in two columns, the note across the full width. */
 function ScheduleDetails({
   schedule,
   t,
@@ -421,14 +425,16 @@ function ScheduleDetails({
       </p>
     );
   return (
-    <dl className="flex flex-col text-sm">
+    <dl className="grid grid-cols-1 gap-x-6 gap-y-3 text-sm @min-[420px]:grid-cols-2">
       {rows.map(([label, value]) => (
         <div
           key={label}
-          className="flex items-start justify-between gap-4 border-b border-[var(--color-border)] py-2 last:border-0"
+          className={label === t("schedule.note") ? "col-span-full" : undefined}
         >
-          <dt className="text-[var(--color-text-muted)]">{label}</dt>
-          <dd className="text-right font-medium">{value}</dd>
+          <dt className="text-[12px] text-[var(--color-text-muted)]">
+            {label}
+          </dt>
+          <dd className="font-medium">{value}</dd>
         </div>
       ))}
     </dl>

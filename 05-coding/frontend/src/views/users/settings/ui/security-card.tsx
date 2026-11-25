@@ -5,7 +5,7 @@
 "use client";
 
 import { useState } from "react";
-import { KeyRound } from "lucide-react";
+import { KeyRound, ShieldCheck } from "lucide-react";
 import { useT } from "@/shared/i18n";
 import { formatDateVN } from "@/shared/lib";
 import { Button, Card, SettingRow } from "@/shared/ui";
@@ -30,15 +30,26 @@ export function SecurityCard({ profile }: { profile: UserProfile }) {
       });
 
   return (
-    <Card title={t("security.title")}>
-      <SettingRow label={t("security.passwordLabel")} description={description}>
+    <Card
+      title={
+        <span className="flex items-center gap-2">
+          <ShieldCheck size={18} aria-hidden="true" />
+          {t("security.title")}
+        </span>
+      }
+    >
+      <SettingRow
+        label={t("security.passwordLabel")}
+        description={description}
+        className="flex-wrap [&>div:first-child]:basis-28"
+      >
         <Button
-          size="sm"
+          type="button"
           variant="ghost"
-          className="border border-[var(--color-border)]"
+          className="h-11 gap-2 border border-[var(--color-border)] px-3"
           onClick={() => setOpen(true)}
         >
-          <KeyRound className="mr-1.5 h-4 w-4" aria-hidden="true" />
+          <KeyRound size={16} aria-hidden="true" />
           {hasPassword ? t("security.changeBtn") : t("security.setBtn")}
         </Button>
       </SettingRow>

@@ -28,7 +28,7 @@ import {
   useCreateClass,
   useDeleteClass,
   useInstructorClassSummary,
-  formatClassSchedule,
+  formatClassScheduleBrief,
   useUpdateClass,
   type ClassSummary,
 } from "@/entities/class";
@@ -42,6 +42,7 @@ import {
   DataTable,
   FilterBar,
   IconAction,
+  PageContainer,
   PageHeader,
   ProgressBar,
   type DataTableColumn,
@@ -117,9 +118,9 @@ export function ClassManagementView() {
           >
             {klass.name}
           </Link>
-          {formatClassSchedule(klass.schedule, dayLabel) ? (
+          {formatClassScheduleBrief(klass.schedule, dayLabel) ? (
             <span className="block text-[12px] text-[var(--color-text-muted)]">
-              {formatClassSchedule(klass.schedule, dayLabel)}
+              {formatClassScheduleBrief(klass.schedule, dayLabel)}
             </span>
           ) : null}
         </span>
@@ -165,7 +166,7 @@ export function ClassManagementView() {
   ];
 
   return (
-    <div>
+    <PageContainer variant="content" className="@container">
       <PageHeader
         title={t("header.title")}
         description={t("header.summary", {
@@ -187,7 +188,7 @@ export function ClassManagementView() {
           chấm tay, điểm TB — is already the stat strip of instructor_overview, and repeating it on
           each screen pushed the actual worklist below the fold. These screens now open straight on
           their list + filter bar. Deliberate divergence from the mockup's own per-screen strip. */}
-      <Card>
+      <Card className="grow">
         <FilterBar
           search={{
             label: t("classList.search"),
@@ -213,7 +214,7 @@ export function ClassManagementView() {
                 : "ready"
           }
           emptyMessage={t("classList.empty")}
-          minWidth={860}
+          minWidth={0}
         />
       </Card>
 
@@ -269,6 +270,6 @@ export function ClassManagementView() {
       >
         {t("popup.deleteClassBody")}
       </ConfirmDialog>
-    </div>
+    </PageContainer>
   );
 }

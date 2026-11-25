@@ -375,7 +375,8 @@ Nguồn: `02-bd/architecture/F4_judge-orchestration.md:155-185`, `DEC-2026-0912-
   1. Đọc `cluster_settings` (một dòng, `id = 1`).
   2. Đếm `submissions` theo `status = 'PENDING'` (chỉ mục `(status, updated_at)`).
   3. **Độ trễ chờ trung bình** = `avg(started_grading_at - submitted_at)` của job đã bắt đầu chấm trong **một giờ gần nhất**; không có job thì `null` (không hiển thị 0,0s).
-  4. Không dựng danh sách worker: go-judge chỉ xuất metric tổng hợp, không có mã/trạng thái/tải từng worker. Owner 2026-10-25 chốt bỏ khối chi tiết; snapshot lấy các số liệu có nguồn từ `judge.submissions` và `cluster_settings`.
+  4. Không dựng danh sách worker: go-judge chỉ xuất metric tổng hợp, không có mã/trạng thái/tải từng worker. Owner 2026-10-25 chốt bỏ khối chi tiết; snapshot lấy các số liệu có nguồn từ `judge.submissions`, `cluster_settings` và (từ 2026-11-22) `worker_status`.
+  4a. **Luồng chấm** (thêm 2026-11-22, `DEC-2026-1122-f4-queue-consumers-and-throughput-on-adm0401`): `finishedLastMinute` = số bài vào trạng thái cuối trong 60 giây gần nhất (`SubmissionReadRepository.finishedLastMinute()`); `estimatedClearSeconds` = `SubmissionReadProjection.estimate(pendingCount, finishedLastMinute)` (BR-JD-17: `ceil(pending / (finished / 60))`, `null` dưới 3 mẫu hoặc không có job chờ, trần 3600); `consumers` dựng từ dòng `worker_status` (`id = 1`): nếu không có dòng, hoặc `now() - reported_at > 60 giây` (so giờ DB, hằng số trong mã), thì `consumers = null`; ngược lại `{target, active, reportedAt, lastScaling}` với `lastScaling = null` khi nhóm `last_scale_*` NULL. Lỗi đọc `worker_status` cho `consumers = null` và log cảnh báo, không làm hỏng snapshot. Bên ghi là JOB-JD-05 (`03-dd/jobs/F4_judge-orchestration.md`).
   5. `status` (dải trạng thái), theo thứ tự ưu tiên: `PAUSED` nếu `queue_paused`; `BACKLOGGED` nếu số `PENDING` vượt `autoscale_job_threshold`; còn lại `NORMAL`.
 - **Danh sách job** (`ListQueueJobs`): `status IN ('PENDING','COMPILING','JUDGING')` cộng `SYSTEM_ERROR` có `finished_at >= now() - error_retention_hours` (chỉ ảnh hưởng danh sách, **không xoá** `submissions`). Thứ tự: khoá `COALESCE(started_grading_at, submitted_at)` tăng dần (chờ lâu nhất trước), job `SYSTEM_ERROR` xếp cuối. Kích thước trang `cluster_settings.jobs_per_page`. `waitingMillis = now() - submitted_at` nếu chưa có `started_grading_at`, ngược lại `now() - started_grading_at`; `null` với job lỗi. Bộ đếm ba tab: `waiting` (`PENDING`), `failed` (`SYSTEM_ERROR` trong cửa sổ giữ), `all` (job chưa cuối cộng `failed`).
 - **Nguồn sự kiện hạ tầng** (dùng chung cho `GetInfraSummary` và `ListInfraEvents`, để hai nơi không lệch):
@@ -384,7 +385,7 @@ Nguồn: `02-bd/architecture/F4_judge-orchestration.md:155-185`, `DEC-2026-0912-
   3. Cửa sổ lưu **90 ngày** (`ADM0404` Q3, Q5); thẻ tóm tắt đếm 24 giờ gần nhất.
   4. `message` dựng ở tầng ứng dụng từ khuôn câu và các trường có sẵn (`publish_attempts`, `event_type`, `failure_reason`, `id`), không có cột `message`; khuôn chỉ chứa định danh hệ thống, không chứa dữ liệu người dùng. Mức `INFO` hiện chưa có nguồn.
 - **Lô kênh quản trị**: `{ snapshot, jobCounts, infraSummary }` mỗi 5 giây; **một** lần tính cho mọi người xem (không tính theo người).
-- **Suy giảm êm**: snapshot không phụ thuộc Prometheus; lỗi giám sát ngoài không chạm luồng nộp và chấm.
+- **Suy giảm êm**: snapshot không phụ thuộc Prometheus; lỗi giám sát ngoài không chạm luồng nộp và chấm. Worker không báo thì chỉ `consumers = null`; các số khác của snapshot vẫn đủ.
 - **Chỉ đọc** ngoại trừ các lệnh đã nêu ở BR-JD-08 và BR-JD-09.
 
 ## BR-JD-16 — Cổng đọc cho module khác

@@ -14,6 +14,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { ProblemSpec } from "@/entities/problem";
 import { toast, useToasts } from "@/shared/lib/toast-store";
 import { SpecEditor } from "./spec-editor";
+import type { ProblemKind } from "./problem-kind-card";
 
 vi.mock("@/shared/i18n", () => ({
   useApiErrorMessage: () => () => "apiError",
@@ -37,12 +38,18 @@ const initial: ProblemSpec = {
   epsilon: "",
 };
 
-function Harness() {
+function Harness({ startKind = "function" }: { startKind?: ProblemKind }) {
   const [spec, setSpec] = useState(initial);
+  const [kind, setKind] = useState<ProblemKind>(startKind);
   const [client] = useState(() => new QueryClient());
   return (
     <QueryClientProvider client={client}>
-      <SpecEditor spec={spec} onChange={setSpec} />
+      <SpecEditor
+        spec={spec}
+        onChange={setSpec}
+        kind={kind}
+        onKindChange={setKind}
+      />
       <output data-testid="spec">{JSON.stringify(spec)}</output>
     </QueryClientProvider>
   );
@@ -255,5 +262,24 @@ describe("SpecEditor", () => {
       message: "spec.errorUnorderedSet",
     });
     expect(current().signature.returnType.kind).toBe("INT");
+  });
+
+  it("a stdin program shows no signature at all, only the formats and the matching", () => {
+    render(<Harness startKind="stdio" />);
+
+    expect(screen.queryByLabelText("spec.functionName")).toBeNull();
+    expect(screen.queryByLabelText("spec.returnType")).toBeNull();
+    expect(screen.getByLabelText("spec.stdinFormat")).toBeInTheDocument();
+    expect(screen.getByLabelText("spec.matchingStrategy")).toBeInTheDocument();
+  });
+
+  it("picking Function brings the signature back, picking stdin hides it again", () => {
+    render(<Harness startKind="stdio" />);
+
+    fireEvent.click(screen.getByRole("button", { name: "kind.function" }));
+    expect(screen.getByLabelText("spec.functionName")).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "kind.stdio" }));
+    expect(screen.queryByLabelText("spec.functionName")).toBeNull();
   });
 });

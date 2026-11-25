@@ -33,7 +33,11 @@ public final class ClassAssignmentModels {
       String title,
       String levelCode,
       String levelDisplayName,
-      List<String> topicNames) {}
+      List<String> topicNames,
+      boolean assigned) {}
+
+  /** Optional filters of the assignable list; null = no filter. */
+  public record AssignableFilter(String q, String levelCode, String topic) {}
 
   public record AssignablePage(List<Assignable> items, long totalItems, int page) {}
 

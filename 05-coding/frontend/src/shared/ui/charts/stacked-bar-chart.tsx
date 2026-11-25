@@ -28,19 +28,27 @@ export function StackedBarChart({
   bars,
   height = 240,
   className,
+  responsiveAxis = false,
 }: {
   series: StackedSeries[];
   bars: StackedBar[];
   height?: number;
   className?: string;
+  responsiveAxis?: boolean;
 }) {
   const totals = bars.map((bar) =>
     series.reduce((sum, item) => sum + (bar.values[item.key] ?? 0), 0),
   );
   const max = Math.max(...totals, 1);
+  const lastIndex = bars.length - 1;
+  const narrowStep = Math.max(1, Math.ceil(lastIndex / 5));
+  const mediumStep = Math.max(1, Math.ceil(lastIndex / 10));
+  const columnGap = responsiveAxis
+    ? "gap-[clamp(2px,0.8cqw,7px)]"
+    : "gap-[7px]";
 
   return (
-    <div className={className}>
+    <div className={cn(responsiveAxis && "@container min-w-0", className)}>
       <div className="mb-3 flex flex-wrap gap-3.5 text-xs text-[var(--color-text-muted)]">
         {series.map((item) => (
           <span key={item.key} className="inline-flex items-center gap-1.5">
@@ -55,7 +63,10 @@ export function StackedBarChart({
       </div>
 
       <div
-        className="flex items-end gap-[7px] border-b border-[var(--color-border)] pt-2.5"
+        className={cn(
+          "flex items-end border-b border-[var(--color-border)] pt-2.5",
+          columnGap,
+        )}
         style={{ height }}
       >
         {bars.map((bar) => (
@@ -85,13 +96,34 @@ export function StackedBarChart({
         ))}
       </div>
 
-      <div className="mt-2 flex gap-[7px]">
-        {bars.map((bar) => (
+      <div className={cn("mt-2 flex", columnGap)}>
+        {bars.map((bar, index) => (
           <div
             key={bar.label}
-            className="min-w-0 flex-1 text-center font-mono text-[10.5px] text-[var(--color-text-subtle)]"
+            className={cn(
+              "min-w-0 flex-1 text-center font-mono text-[10.5px] text-[var(--color-text-subtle)]",
+              responsiveAxis && "flex justify-center",
+            )}
           >
-            {bar.label}
+            {responsiveAxis ? (
+              <span
+                className={cn(
+                  "shrink-0 whitespace-nowrap",
+                  index !== lastIndex &&
+                    (index % narrowStep !== 0 ||
+                      (index !== 0 && lastIndex - index < narrowStep)) &&
+                    "@max-[470px]:hidden",
+                  index !== lastIndex &&
+                    (index % mediumStep !== 0 ||
+                      (index !== 0 && lastIndex - index < mediumStep)) &&
+                    "@min-[470px]:@max-[900px]:hidden",
+                )}
+              >
+                {bar.label}
+              </span>
+            ) : (
+              bar.label
+            )}
           </div>
         ))}
       </div>

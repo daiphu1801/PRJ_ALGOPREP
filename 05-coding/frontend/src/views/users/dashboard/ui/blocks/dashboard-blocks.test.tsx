@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { ReactNode } from "react";
 import {
-  fireEvent,
   render,
   screen,
   waitFor,
@@ -28,37 +27,28 @@ function renderBlock(block: ReactNode) {
 }
 
 describe("SuggestedProblemsBlock", () => {
-  // REQ-06: picking a difficulty filters the table and the count beside the title follows it.
-  it("filters the table and updates the count", async () => {
+  // DEC-2026-1123-student-dashboard-trim: no filters on the dashboard, at most 5 rows, never a solved problem,
+  // and a way to the full problem list.
+  it("lists at most five unsolved problems and links to the problem list", async () => {
     renderBlock(<SuggestedProblemsBlock />);
 
     const table = await screen.findByRole("table", { name: "Bài toán gợi ý" });
-    // The table is drawn (empty) before the catalogue query lands: wait for real rows.
     await waitFor(() =>
-      expect(within(table).getAllByRole("row").length).toBeGreaterThan(2),
+      expect(within(table).getAllByRole("row").length).toBeGreaterThan(1),
     );
-    const rowsBefore = within(table).getAllByRole("row").length;
-
-    fireEvent.click(screen.getByRole("button", { name: "Khó" }));
-
-    // The previous rows stay while the filtered ones load, so wait for the shorter table.
-    await waitFor(() =>
-      expect(
-        within(
-          screen.getByRole("table", { name: "Bài toán gợi ý" }),
-        ).getAllByRole("row").length,
-      ).toBeLessThan(rowsBefore),
+    const rows = within(table).getAllByRole("row").slice(1);
+    expect(rows.length).toBeLessThanOrEqual(5);
+    expect(within(table).queryByRole("img", { name: /Đã giải/ })).toBeNull();
+    expect(screen.queryByRole("button", { name: "Khó" })).toBeNull();
+    expect(screen.getByRole("link", { name: /Tất cả/ })).toHaveAttribute(
+      "href",
+      "/problems",
     );
-    const rowsAfter = within(
-      screen.getByRole("table", { name: "Bài toán gợi ý" }),
-    ).getAllByRole("row").length;
-    expect(screen.getByText(`${rowsAfter - 1} bài`)).toBeInTheDocument();
   });
 });
 
 describe("GreetingBlock", () => {
-  // REQ-04: the callout names the weakest topic, and it must be the same one the radar derives —
-  // both go through deriveSkillRadar, which is what this pins.
+  // REQ-04: the callout names the weakest topic over every topic (scoreTopics, then pickWeakestTopic).
   it("names the weakest topic once the topic data lands", async () => {
     renderBlock(<GreetingBlock />);
 

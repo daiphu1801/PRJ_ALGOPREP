@@ -171,11 +171,11 @@ test("the list pages by cursor, 50 rows at a time", async ({
   await narrowTo(page, admin);
 
   await expect(events(page)).toHaveCount(50);
-  await page.getByRole("button", { name: "Tải thêm 50 dòng" }).click();
-  await expect(events(page)).toHaveCount(55);
-  await expect(
-    page.getByRole("button", { name: "Tải thêm 50 dòng" }),
-  ).toBeDisabled();
+  await page.getByRole("button", { name: m.pageNext }).click();
+  await expect(events(page)).toHaveCount(5);
+  await expect(page.getByRole("button", { name: m.pageNext })).toBeDisabled();
+  await page.getByRole("button", { name: m.pagePrevious }).click();
+  await expect(events(page)).toHaveCount(50);
 });
 
 test("a row written while the page is open shows up at the top without a reload", async ({

@@ -28,6 +28,8 @@ type FilterMenuProps<T extends string> = {
   compact?: boolean;
   /** Which way the panel opens; "top" for a control at the bottom of a card, such as the pagination bar. */
   placement?: "bottom" | "top";
+  /** Which edge of the trigger the panel lines up with; "end" for a control at the right edge of a card. */
+  align?: "start" | "end";
   className?: string;
 };
 
@@ -38,6 +40,7 @@ export function FilterMenu<T extends string>({
   onValueChange,
   compact = false,
   placement = "bottom",
+  align = "start",
   className,
 }: FilterMenuProps<T>) {
   const [open, setOpen] = useState(false);
@@ -137,7 +140,8 @@ export function FilterMenu<T extends string>({
           aria-label={label}
           onKeyDown={onListKeyDown}
           className={cn(
-            "glass-card glass-card--popover scrollbar-glass absolute left-0 z-40 max-h-72 w-max min-w-full max-w-[min(20rem,calc(100vw-2rem))] overflow-y-auto overscroll-contain border border-[var(--color-border)] p-1.5",
+            "glass-card glass-card--popover scrollbar-glass absolute z-40 max-h-72 w-max min-w-full max-w-[min(20rem,calc(100vw-2rem))] overflow-y-auto overscroll-contain border border-[var(--color-border)] p-1.5",
+            align === "end" ? "right-0" : "left-0",
             placement === "top" ? "bottom-full mb-2" : "top-full mt-2",
           )}
         >

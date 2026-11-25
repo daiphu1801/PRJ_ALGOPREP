@@ -26,7 +26,10 @@ vi.mock("@/shared/api/mock-mode", () => ({
   isMockMode: () => false,
   withMockData: <T,>(_mock: () => unknown, real: () => Promise<T>) => real(),
 }));
-vi.mock("next/navigation", () => ({ useRouter: () => ({ push: vi.fn() }) }));
+const { replace } = vi.hoisted(() => ({ replace: vi.fn() }));
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({ push: vi.fn(), replace }),
+}));
 
 import { apiMock, resetApiMock } from "@/shared/test/real-api";
 import { ProblemAuthoringView } from "./problem-authoring-view";
@@ -103,6 +106,23 @@ function detail(over: Record<string, unknown> = {}) {
   };
 }
 
+const PREVIEW = {
+  wrapperSupported: true,
+  unsupportedReasons: [],
+  declarations: { JAVA: "j", CPP: "c", PYTHON: "p" },
+};
+const isPreview = (path: unknown) =>
+  String(path).includes("function-signature/preview");
+/** Routes POSTs: the signature preview gets a valid answer, everything else goes to `other`. */
+function postRoutes(other: (path: string, body?: unknown) => unknown) {
+  apiMock.post.mockImplementation(async (path: string, body?: unknown) =>
+    isPreview(path) ? PREVIEW : other(path, body),
+  );
+}
+/** The POSTs a test cares about: the preview is not one of them. */
+const postCalls = () =>
+  apiMock.post.mock.calls.filter(([path]) => !isPreview(path));
+
 function routes(dto: unknown = detail()) {
   apiMock.get.mockImplementation(async (path: string) => {
     if (path === "/problem-bank/authoring/defaults")
@@ -158,6 +178,9 @@ async function open() {
   await screen.findByLabelText(m.titleLabel);
 }
 
+const goExamples = () =>
+  fireEvent.click(screen.getByRole("button", { name: /Ví dụ mẫu \(\d+\)/ }));
+
 const goTestcases = () =>
   fireEvent.click(screen.getByRole("button", { name: /Testcase \(\d+\)/ }));
 
@@ -204,6 +227,46 @@ describe("ProblemAuthoringView with the real API", () => {
     );
     expect(apiMock.put).toHaveBeenCalledTimes(1);
     await waitFor(() => expect(save).toBeDisabled());
+  });
+
+  it("the first save of a new problem continues at its own edit address", async () => {
+    const created = detail({ id: "new-problem-id" });
+    apiMock.post.mockResolvedValue(created);
+    apiMock.put.mockResolvedValue(created);
+    replace.mockClear();
+    render(
+      withTestProviders(<ProblemAuthoringView basePath="/admin/problems" />),
+    );
+    await screen.findByLabelText(m.titleLabel);
+    fireEvent.change(screen.getByLabelText(m.titleLabel), {
+      target: { value: "Brand new" },
+    });
+    fireEvent.change(
+      screen.getByLabelText(m.bodyLabel, { selector: "textarea" }),
+      {
+        target: { value: "Statement" },
+      },
+    );
+    fireEvent.click(screen.getByRole("button", { name: m.save }));
+
+    await waitFor(() =>
+      expect(replace).toHaveBeenCalledWith(
+        "/admin/problems/new-problem-id/edit",
+      ),
+    );
+  });
+
+  it("saving an existing problem never changes the address", async () => {
+    apiMock.put.mockResolvedValue(detail({ title: "Other", updatedAt: T1 }));
+    replace.mockClear();
+    await open();
+    fireEvent.change(screen.getByLabelText(m.titleLabel), {
+      target: { value: "Other" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: m.save }));
+
+    await waitFor(() => expect(apiMock.put).toHaveBeenCalled());
+    expect(replace).not.toHaveBeenCalled();
   });
 
   it("a stale lock (PRB-020) shows its text, keeps the edit and keeps Save enabled", async () => {
@@ -435,7 +498,6 @@ describe("ProblemAuthoringView with the real API", () => {
     });
     const toasts = watch();
     await open();
-    goTestcases();
     fireEvent.click(screen.getByRole("button", { name: m.runSolution }));
     await waitFor(() =>
       expect(apiMock.post).toHaveBeenCalledWith(
@@ -455,16 +517,105 @@ describe("ProblemAuthoringView with the real API", () => {
     );
   });
 
-  it("a compile error and a rate limit (PRB-055) each read as their own message", async () => {
-    apiMock.post.mockResolvedValueOnce({
-      compileError: "boom",
-      summary: { passed: 0, total: 8, allPass: false },
-      results: [],
+  it("a testcase that does not match the declared signature (PRB-060) is explained and stays on screen", async () => {
+    postRoutes(() => {
+      throw new ApiError("PRB-060", 422);
     });
-    apiMock.post.mockRejectedValueOnce(new ApiError("PRB-055", 429));
+    await open();
+    fireEvent.click(screen.getByRole("button", { name: m.runSolution }));
+
+    const note = await screen.findAllByText(apiErrors["PRB-060"]!);
+    // Once in the solution card and once under the checklist: both outlive the toast.
+    expect(note.length).toBeGreaterThanOrEqual(2);
+    expect(
+      screen.getAllByText(m.runNote.negative).length,
+    ).toBeGreaterThanOrEqual(2);
+    // The checklist must not keep claiming the solution passes after a run that could not run.
+    expect(
+      screen.getByRole("button", { name: m.check.solutionPasses }),
+    ).toBeInTheDocument();
+  });
+
+  it("copies the public testcases into the examples once, and says so when there is nothing new", async () => {
+    postRoutes(() => undefined);
     const toasts = watch();
     await open();
-    goTestcases();
+    goExamples();
+    expect(
+      screen.getByRole("button", {
+        name: m.tab.examples.replace("{count}", "2"),
+      }),
+    ).toBeInTheDocument();
+
+    fireEvent.click(
+      screen.getByRole("button", { name: m.examplesFromTestcases }),
+    );
+    // The fixture has 2 public testcases that the 2 existing examples do not repeat.
+    expect(
+      screen.getByRole("button", {
+        name: m.tab.examples.replace("{count}", "4"),
+      }),
+    ).toBeInTheDocument();
+    expect(toasts().at(-1)).toEqual([
+      "success",
+      m.toast.examplesFromTestcases.replace("{count}", "2"),
+    ]);
+
+    fireEvent.click(
+      screen.getByRole("button", { name: m.examplesFromTestcases }),
+    );
+    expect(toasts().at(-1)).toEqual(["info", m.toast.examplesNothingNew]);
+    expect(
+      screen.getByRole("button", {
+        name: m.tab.examples.replace("{count}", "4"),
+      }),
+    ).toBeInTheDocument();
+  });
+
+  it("a problem with no approved public testcase has nothing to copy", async () => {
+    routes(
+      detail({
+        testcases: Array.from({ length: 8 }, (_, i) =>
+          tc(i + 1, { visibility: "HIDDEN" }),
+        ),
+        testcaseSummary: { total: 8, approved: 8, sample: 0, hidden: 8 },
+      }),
+    );
+    postRoutes(() => undefined);
+    const toasts = watch();
+    await open();
+    goExamples();
+    fireEvent.click(
+      screen.getByRole("button", { name: m.examplesFromTestcases }),
+    );
+    expect(toasts().at(-1)).toEqual(["warning", m.toast.examplesNoPublic]);
+  });
+
+  it("shows one tab at a time; the reference solution sits with the statement", async () => {
+    await open();
+    const testcases = m.tab.testcases.replace("{count}", "8");
+
+    expect(screen.getByRole("region", { name: m.tab.solution })).toBeVisible();
+    expect(screen.queryByRole("region", { name: testcases })).toBeNull();
+
+    fireEvent.click(screen.getByRole("button", { name: testcases }));
+    expect(screen.getByRole("region", { name: testcases })).toBeVisible();
+    expect(screen.queryByRole("region", { name: m.tab.solution })).toBeNull();
+  });
+
+  it("a compile error and a rate limit (PRB-055) each read as their own message", async () => {
+    let runs = 0;
+    postRoutes(() => {
+      if (++runs === 1)
+        return {
+          compileError: "boom",
+          summary: { passed: 0, total: 8, allPass: false },
+          results: [],
+        };
+      throw new ApiError("PRB-055", 429);
+    });
+    const toasts = watch();
+    await open();
     fireEvent.click(screen.getByRole("button", { name: m.runSolution }));
     await waitFor(() =>
       expect(toasts().at(-1)).toEqual(["error", m.runCompileError]),
@@ -540,7 +691,7 @@ describe("bulk upload (EVT-15, #45 and #46)", () => {
   });
 
   it("shows the matched pairs with sizes, uploads through the presigned URLs, confirms and adds the rows", async () => {
-    apiMock.post.mockImplementation(async (path: string) =>
+    postRoutes((path: string) =>
       path.endsWith("bulk-upload-url")
         ? {
             uploadId: "u1",
@@ -552,10 +703,16 @@ describe("bulk upload (EVT-15, #45 and #46)", () => {
               },
             ],
           }
-        : {
-            added: [tc(9, { input: "abc", expectedOutput: "de" })],
-            problemUpdatedAt: T1,
-          },
+        : path.endsWith("reference-solution/run")
+          ? {
+              compileError: null,
+              summary: { passed: 9, total: 9, allPass: true },
+              results: [],
+            }
+          : {
+              added: [tc(9, { input: "abc", expectedOutput: "de" })],
+              problemUpdatedAt: T1,
+            },
     );
     const fetchMock = vi.fn().mockResolvedValue({ ok: true });
     vi.stubGlobal("fetch", fetchMock);
@@ -573,13 +730,12 @@ describe("bulk upload (EVT-15, #45 and #46)", () => {
     );
 
     await waitFor(() =>
-      expect(toasts().at(-1)).toEqual([
+      expect(toasts()).toContainEqual([
         "success",
         m.bulk.done.replace("{count}", "1"),
       ]),
     );
-    expect(apiMock.post).toHaveBeenNthCalledWith(
-      1,
+    expect(postCalls()[0]).toEqual([
       `${A}/${P}/testcases/bulk-upload-url`,
       {
         items: [
@@ -587,21 +743,87 @@ describe("bulk upload (EVT-15, #45 and #46)", () => {
             clientKey: "p1",
             inputSizeBytes: 3,
             expectedOutputSizeBytes: 2,
+            // The fixture already has 2 public testcases, so nothing defaults to public.
             visibility: "HIDDEN",
           },
         ],
       },
-    );
+    ]);
     expect(fetchMock).toHaveBeenCalledTimes(2);
-    expect(apiMock.post).toHaveBeenNthCalledWith(
-      2,
+    expect(postCalls()[1]).toEqual([
       `${A}/${P}/testcases/bulk-upload/confirm`,
       { uploadId: "u1" },
-    );
+    ]);
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     expect(
       screen.getByRole("button", { name: "Testcase (9)" }),
     ).toBeInTheDocument();
+    vi.unstubAllGlobals();
+  });
+
+  it("sends the first two pairs as public and the rest hidden, and a row the author changed keeps its choice", async () => {
+    postRoutes((path: string) =>
+      path.endsWith("bulk-upload-url")
+        ? {
+            uploadId: "u2",
+            items: ["p1", "p2", "p3"].map((clientKey) => ({
+              clientKey,
+              input: { putUrl: `https://s/in-${clientKey}` },
+              expectedOutput: { putUrl: `https://s/out-${clientKey}` },
+            })),
+          }
+        : path.endsWith("reference-solution/run")
+          ? {
+              compileError: null,
+              summary: { passed: 1, total: 1, allPass: true },
+              results: [],
+            }
+          : { added: [], problemUpdatedAt: T1 },
+    );
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: true }));
+    // A problem with no testcases yet: the publish minimum of 2 public ones is still to be filled.
+    routes(
+      detail({
+        testcases: [],
+        testcaseSummary: { total: 0, approved: 0, sample: 0, hidden: 0 },
+      }),
+    );
+    await open();
+    const dialog = await pick(
+      ["01", "02", "03"].flatMap((base) => [
+        file(`${base}.in`, "1"),
+        file(`${base}.out`, "2"),
+      ]),
+    );
+
+    const choice = (base: string) =>
+      within(dialog).getByLabelText(
+        m.bulk.visibilityOf.replace("{file}", base),
+      ) as HTMLSelectElement;
+    expect([
+      choice("01").value,
+      choice("02").value,
+      choice("03").value,
+    ]).toEqual(["public", "public", "hidden"]);
+    fireEvent.change(choice("02"), { target: { value: "hidden" } });
+    fireEvent.click(
+      within(dialog).getByRole("button", {
+        name: m.bulk.upload.replace("{count}", "3"),
+      }),
+    );
+
+    await waitFor(() =>
+      expect(apiMock.post).toHaveBeenCalledWith(
+        `${A}/${P}/testcases/bulk-upload-url`,
+        {
+          items: [
+            expect.objectContaining({ clientKey: "p1", visibility: "SAMPLE" }),
+            expect.objectContaining({ clientKey: "p2", visibility: "HIDDEN" }),
+            expect.objectContaining({ clientKey: "p3", visibility: "HIDDEN" }),
+          ],
+        },
+      ),
+    );
     vi.unstubAllGlobals();
   });
 
@@ -631,7 +853,7 @@ describe("bulk upload (EVT-15, #45 and #46)", () => {
         name: m.bulk.upload.replace("{count}", "1"),
       }),
     ).toBeDisabled();
-    expect(apiMock.post).not.toHaveBeenCalled();
+    expect(postCalls()).toHaveLength(0);
   });
 
   it("reports more than 100 pairs", async () => {
@@ -651,7 +873,7 @@ describe("bulk upload (EVT-15, #45 and #46)", () => {
   });
 
   it("PRB-045 toasts one line per faulty file, named from the picked files, and keeps the dialog open", async () => {
-    apiMock.post.mockImplementation(async (path: string) => {
+    postRoutes((path: string) => {
       if (path.endsWith("bulk-upload-url"))
         return {
           uploadId: "u1",
@@ -701,7 +923,9 @@ describe("bulk upload (EVT-15, #45 and #46)", () => {
   it.each(["PRB-044", "PRB-046", "PRB-047", "PRB-052"])(
     "%s reads its own text",
     async (code) => {
-      apiMock.post.mockRejectedValue(new ApiError(code, 422));
+      postRoutes(() => {
+        throw new ApiError(code, 422);
+      });
       const toasts = watch();
       await open();
       const dialog = await pick([file("1.in", "a"), file("1.out", "b")]);

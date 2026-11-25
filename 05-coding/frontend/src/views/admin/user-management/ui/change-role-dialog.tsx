@@ -2,12 +2,12 @@
 //
 // "Đổi vai trò" for ONE account (F1-13, ADM0201 Q7: moved out of the bulk bar because forcing a whole
 // selection onto one target role has no undo). The rules live in `checkRoleChange`; this dialog only
-// shows the self-demotion warning and disables submit while nothing has changed. No endpoint yet.
+// shows the self-demotion warning and disables submit while nothing has changed.
 "use client";
 
 import { useState } from "react";
 import { useT } from "@/shared/i18n";
-import { Button, Modal, SelectField } from "@/shared/ui";
+import { Button, FilterMenu, Modal } from "@/shared/ui";
 import type { AdminUser, AdminUserRole } from "../model/types";
 
 type Props = {
@@ -67,22 +67,25 @@ export function ChangeRoleDialog({ user, isSelf, onClose, onConfirm }: Props) {
       }
     >
       <div className="flex flex-col gap-3">
-        <SelectField
-          label={t("roleDialog.label")}
-          value={role}
-          onChange={(event) =>
-            user &&
-            setPicked({
-              email: user.email,
-              role: event.target.value as AdminUserRole,
-            })
-          }
-          options={[
-            { value: "student", label: t("role.student") },
-            { value: "instructor", label: t("role.instructor") },
-            { value: "admin", label: t("role.admin") },
-          ]}
-        />
+        <div className="flex min-w-0 flex-col gap-1.5">
+          <span className="text-[13px] font-medium">
+            {t("roleDialog.label")}
+          </span>
+          <FilterMenu<AdminUserRole>
+            label={t("roleDialog.label")}
+            compact
+            className="w-full [&>button]:h-10 [&>button]:w-full [&>button]:justify-between [&>button]:bg-[var(--color-surface)] [&>button]:px-3 [&>button]:text-sm [&>button]:text-[var(--color-text)] [&>[role=listbox]]:w-full [&>[role=listbox]]:max-w-full"
+            value={role}
+            onValueChange={(nextRole) => {
+              if (user) setPicked({ email: user.email, role: nextRole });
+            }}
+            options={[
+              { value: "student", label: t("role.student") },
+              { value: "instructor", label: t("role.instructor") },
+              { value: "admin", label: t("role.admin") },
+            ]}
+          />
+        </div>
         <p className="text-[12.5px] text-[var(--color-text-muted)]">
           {t("roleDialog.note")}
         </p>

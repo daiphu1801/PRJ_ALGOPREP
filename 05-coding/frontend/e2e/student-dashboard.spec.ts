@@ -29,7 +29,9 @@ test("renders both halves of the merged screen", async ({ page }) => {
 
   // The my_progress half, merged in by DEC-2026-0927-student-area-merge-and-shared-shell: the
   // short progress bars were replaced by the full topic table, which says strictly more.
-  await expect(page.getByRole("table", { name: "Theo chủ đề" })).toBeVisible();
+  await expect(
+    page.getByRole("table", { name: "Theo chủ đề", exact: true }),
+  ).toBeVisible();
   await expect(
     page.getByRole("heading", { name: "Nên ưu tiên" }),
   ).toBeVisible();

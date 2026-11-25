@@ -42,11 +42,11 @@ function InstructorAuthViewContent() {
   const { loadingStep } = flow;
 
   return (
-    <div className="instructor-shell relative flex min-h-screen w-full items-center justify-center overflow-hidden bg-[var(--color-background)] p-4 text-[var(--color-text)]">
+    <div className="instructor-shell relative flex min-h-[calc(100*var(--vh1))] w-full items-center justify-center overflow-hidden bg-[var(--color-background)] p-4 text-[var(--color-text)]">
       <LiquidGlassBackdrop />
       <ThemeLangSwitcher variant="floating" />
 
-      <section className="glass-card relative z-10 grid w-full max-w-3xl grid-cols-1 overflow-hidden lg:grid-cols-[1.06fr_1fr]">
+      <section className="glass-card relative z-10 grid w-full max-w-md grid-cols-1 lg:max-w-3xl overflow-hidden lg:grid-cols-[1.06fr_1fr]">
         <div className="p-8">
           <div className="flex items-center gap-2.5">
             <BrandMark size={36} />

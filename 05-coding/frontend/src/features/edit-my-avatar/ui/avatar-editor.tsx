@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Camera, Check, Trash2, X } from "lucide-react";
 import { useT } from "@/shared/i18n";
 import { useUnsavedChangesGuard } from "@/shared/lib/use-unsaved-changes-guard";
 import {
@@ -21,10 +22,12 @@ import { ACCEPTED_AVATAR_TYPES, useEditAvatar } from "../model/use-edit-avatar";
 export function AvatarEditor({
   userId,
   name,
+  email,
   avatarVersion,
 }: {
   userId: string;
   name: string;
+  email?: string;
   avatarVersion?: number | null;
 }) {
   const t = useT("profile");
@@ -34,50 +37,83 @@ export function AvatarEditor({
   const guard = useUnsavedChangesGuard(pending !== null);
 
   return (
-    <div className="flex flex-wrap items-center gap-4">
-      {pending ? (
-        <div className="flex flex-col items-center gap-1">
-          <Avatar src={previewUrl} name={t("avatar.previewAlt")} size="lg" />
-          <span className="text-xs text-[var(--color-text-subtle)]">
-            {t("avatar.previewLabel")}
-          </span>
+    <div className="flex w-full flex-wrap items-center justify-between gap-x-6 gap-y-4">
+      <div className="flex min-w-0 flex-[1_1_15rem] items-center gap-4">
+        {pending ? (
+          <Avatar
+            src={previewUrl}
+            name={t("avatar.previewAlt")}
+            size="lg"
+            className="ring-2 ring-[var(--color-primary)] ring-offset-2 ring-offset-[var(--color-background)]"
+          />
+        ) : (
+          <UserAvatar
+            userId={userId}
+            name={name}
+            avatarVersion={avatarVersion}
+            size="lg"
+          />
+        )}
+        <div className="min-w-0 wrap-anywhere">
+          <p className="text-xl font-bold tracking-tight">{name}</p>
+          {email ? (
+            <p className="text-sm text-[var(--color-text-subtle)]">{email}</p>
+          ) : null}
+          <div role="status">
+            {pending ? (
+              <span className="mt-1 inline-block text-xs font-medium text-[var(--color-text-subtle)]">
+                {t("avatar.previewLabel")}
+              </span>
+            ) : null}
+          </div>
         </div>
-      ) : (
-        <UserAvatar
-          userId={userId}
-          name={name}
-          avatarVersion={avatarVersion}
-          size="lg"
-        />
-      )}
+      </div>
       <div className="flex flex-wrap items-center gap-2">
         {pending ? (
           <>
-            <Button size="sm" onClick={() => void save()} disabled={busy}>
+            <Button
+              type="button"
+              variant="cta"
+              className="h-11 gap-2 px-3"
+              onClick={() => void save()}
+              disabled={busy}
+            >
+              <Check size={16} aria-hidden="true" />
               {t("avatar.save")}
             </Button>
-            <Button size="sm" variant="ghost" onClick={cancel} disabled={busy}>
+            <Button
+              type="button"
+              variant="ghost"
+              className="h-11 gap-2 px-3"
+              onClick={cancel}
+              disabled={busy}
+            >
+              <X size={16} aria-hidden="true" />
               {t("avatar.cancel")}
             </Button>
           </>
         ) : null}
         <FilePickerButton
-          size="sm"
+          type="button"
           variant="ghost"
+          className="h-11 gap-2 border border-[var(--color-border)] px-3"
           accept={ACCEPTED_AVATAR_TYPES.join(",")}
           disabled={busy}
           inputTestId="avatar-file-input"
           onFiles={(files) => files[0] && void choose(files[0])}
         >
+          <Camera size={16} aria-hidden="true" />
           {t("avatar.change")}
         </FilePickerButton>
-        {avatarVersion != null || pending ? (
+        {avatarVersion != null && !pending ? (
           <Button
-            size="sm"
+            type="button"
             variant="ghost"
+            className="h-11 gap-2 px-3 text-[var(--color-danger)]"
             disabled={busy}
             onClick={() => setConfirmRemove(true)}
           >
+            <Trash2 size={16} aria-hidden="true" />
             {t("avatar.remove")}
           </Button>
         ) : null}

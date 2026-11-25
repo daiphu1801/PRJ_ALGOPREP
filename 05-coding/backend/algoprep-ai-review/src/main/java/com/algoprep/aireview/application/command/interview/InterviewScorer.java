@@ -120,7 +120,7 @@ class InterviewScorer {
           prompt.data(),
           new ResponseSchema(
               RubricSchema.NAME, snapshot.responseSchemaVersion(), RubricSchema.JSON),
-          new CallOptions(snapshot.modelId(), CallOptions.DEFAULT_MAX_TOKENS, total, total));
+          new CallOptions(snapshot.modelId(), snapshot.maxTokens(), total, total));
     } catch (AiProviderUnavailableException | AiInvalidResponseException failure) {
       throw failure;
     } catch (RuntimeException failure) {

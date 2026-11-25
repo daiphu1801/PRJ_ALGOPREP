@@ -193,12 +193,15 @@ describe("AdminSystemLogView with the real API", () => {
   it("loads the next page with the cursor and keeps the rows when that fails, then retries it", async () => {
     serve({
       pages: {
-        first: { items: [item(1)], nextCursor: "c2" },
-        c2: { items: [item(2)], nextCursor: null },
+        first: {
+          items: Array.from({ length: 50 }, (_, index) => item(index + 1)),
+          nextCursor: "c2",
+        },
+        c2: { items: [item(51)], nextCursor: null },
       },
     });
     await open();
-    expect(screen.getAllByText(/^Tạo vai trò/)).toHaveLength(1);
+    expect(screen.getAllByText(/^Tạo vai trò/)).toHaveLength(50);
 
     // The next page fails once.
     const original = apiMock.get.getMockImplementation()!;
@@ -208,15 +211,14 @@ describe("AdminSystemLogView with the real API", () => {
           ? Promise.reject(new ApiError("UNKNOWN_ERROR", 500))
           : original(path, params),
     );
-    fireEvent.click(screen.getByRole("button", { name: `Tải thêm 50 dòng` }));
+    fireEvent.click(screen.getByRole("button", { name: m.pageNext }));
     expect(await screen.findByText(m.loadMoreFailed)).toBeInTheDocument();
-    expect(screen.getAllByText(/^Tạo vai trò/)).toHaveLength(1);
+    expect(screen.getAllByText(/^Tạo vai trò/)).toHaveLength(50);
 
     apiMock.get.mockImplementation(original);
     fireEvent.click(screen.getByRole("button", { name: m.retry }));
-    await waitFor(() =>
-      expect(screen.getAllByText(/^Tạo vai trò/)).toHaveLength(2),
-    );
+    expect(await screen.findByText("Tạo vai trò Vai 51")).toBeInTheDocument();
+    expect(screen.getAllByText(/^Tạo vai trò/)).toHaveLength(1);
     expect(listCalls().at(-1)?.[1]).toEqual({ cursor: "c2" });
   });
 

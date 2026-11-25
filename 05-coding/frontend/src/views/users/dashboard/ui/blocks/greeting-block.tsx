@@ -43,7 +43,7 @@ export function GreetingBlock() {
     : "/problems";
 
   return (
-    <div className="mb-5 flex flex-wrap items-end justify-between gap-6">
+    <div className="flex flex-wrap items-end justify-between gap-6">
       <div className="flex min-w-0 items-center gap-3.5">
         {profile ? (
           <UserAvatar

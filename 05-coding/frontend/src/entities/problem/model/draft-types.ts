@@ -110,6 +110,7 @@ export type ProblemDraft = {
 /** What the editor, the read-only page and the preview all load: the problem plus its last save time. */
 export type ProblemDraftRecord = {
   draft: ProblemDraft;
+  code?: string;
   /** ISO time of the last save, or null when the problem was never saved. */
   savedAt: string | null;
   /**

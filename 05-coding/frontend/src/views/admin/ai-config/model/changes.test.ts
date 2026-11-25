@@ -61,6 +61,7 @@ describe("admin_ai_config unpublished changes", () => {
         feature: "interview",
         instruction: true,
         model: { from: "claude-sonnet", to: "claude-haiku" },
+        tokens: null,
         guards: 0,
       },
     ]);

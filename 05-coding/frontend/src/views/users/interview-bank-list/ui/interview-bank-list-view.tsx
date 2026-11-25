@@ -239,7 +239,7 @@ export function InterviewBankListView() {
     const card = drillQueue[drillIndex];
     if (!card) return null;
     return (
-      <div className="mx-auto max-w-[780px] p-6">
+      <div className="w-full">
         <div className="mb-3 flex items-center justify-between gap-3">
           <span className="font-mono text-[11.5px] font-semibold text-[var(--color-text-subtle)]">
             {t("drill.counter", {
@@ -414,7 +414,7 @@ export function InterviewBankListView() {
             {firstPage ? t("shownCount", { shown, total }) : " "}
           </p>
           <div
-            className="max-h-[68dvh] overflow-y-auto"
+            className="max-h-[calc(68*var(--dvh1))] overflow-y-auto"
             aria-busy={list.isFetching || undefined}
           >
             {list.isPending ? (

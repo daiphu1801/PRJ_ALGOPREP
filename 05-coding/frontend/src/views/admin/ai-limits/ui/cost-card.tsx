@@ -22,9 +22,14 @@ export function CostCard() {
   const [pricesOpen, setPricesOpen] = useState(false);
 
   return (
-    <Card title={t("cost.title")} description={t("cost.subtitle")}>
+    <Card
+      title={t("cost.title")}
+      description={t("cost.subtitle")}
+      className="@container min-w-0"
+    >
       <div className="flex flex-col gap-2.5">
         <SettingRow
+          className="@max-[360px]:flex-col @max-[360px]:items-start"
           label={t("cost.warnLabel")}
           description={t("cost.warnMeta")}
         >
@@ -54,6 +59,7 @@ export function CostCard() {
           )}
         </SettingRow>
         <SettingRow
+          className="@max-[360px]:flex-col @max-[360px]:items-start"
           label={t("cost.pricesLabel")}
           description={t("cost.pricesMeta")}
         >

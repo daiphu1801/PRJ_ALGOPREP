@@ -14,6 +14,7 @@ import com.algoprep.problembank.application.ports.in.assignment.ReadClassAssignm
 import com.algoprep.problembank.application.ports.out.ClassProblemMetricsPort;
 import com.algoprep.problembank.application.ports.out.InstructorClassPort;
 import com.algoprep.problembank.domain.model.assignment.ClassAssignmentModels.ActiveRow;
+import com.algoprep.problembank.domain.model.assignment.ClassAssignmentModels.AssignableFilter;
 import com.algoprep.problembank.domain.model.assignment.ClassAssignmentModels.ClassRef;
 import com.algoprep.problembank.domain.model.assignment.ClassAssignmentModels.Metric;
 import com.algoprep.problembank.domain.model.assignment.ClassAssignmentSnapshot;
@@ -138,7 +139,13 @@ class ClassAssignmentQueryHandler implements ReadClassAssignmentsUseCase {
       throw notYours();
     }
     int requested = Math.max(integer(params.get("page")), 1);
-    var found = assignments.assignable(classId, text(params.get("q")), requested, PAGE_SIZE);
+    var found =
+        assignments.assignable(
+            classId,
+            new AssignableFilter(
+                text(params.get("q")), text(params.get("levelCode")), text(params.get("topic"))),
+            requested,
+            PAGE_SIZE);
     int totalPages = Math.max(1, (int) Math.ceil(found.totalItems() / (double) PAGE_SIZE));
     var items =
         found.items().stream()
@@ -150,7 +157,8 @@ class ClassAssignmentQueryHandler implements ReadClassAssignmentsUseCase {
                         a.title(),
                         a.levelCode(),
                         a.levelDisplayName(),
-                        a.topicNames()))
+                        a.topicNames(),
+                        a.assigned()))
             .toList();
     return new AssignableList(
         items, new PageMeta(found.page(), PAGE_SIZE, found.totalItems(), totalPages));

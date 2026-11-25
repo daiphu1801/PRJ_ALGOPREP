@@ -1,6 +1,6 @@
 // SHR0303 against the REAL api path (F6 #20): only the HTTP layer is faked. Mock-data behaviour stays in
 // interview-question-info-view.test.tsx.
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import viMessages from "../../../../../messages/vi.json";
 import { ApiError } from "@/shared/api";
@@ -106,6 +106,31 @@ describe("InterviewQuestionInfoView with the real API", () => {
     open();
     expect(await screen.findByText(m.practiceOff)).toBeInTheDocument();
     expect(screen.getByText("-")).toBeInTheDocument();
+  });
+
+  it("switches detail sections and previews the prompt and follow-ups", async () => {
+    open();
+    fireEvent.click(
+      await screen.findByRole("button", {
+        name: m.followUpsTab.replace("{count}", "1"),
+      }),
+    );
+    expect(screen.getByText("Load factor?")).toBeVisible();
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: m.rubricTab.replace("{count}", "1"),
+      }),
+    );
+    expect(
+      screen.getByRole("progressbar", { name: "Định nghĩa" }),
+    ).toHaveAttribute("aria-valuenow", "100");
+    fireEvent.click(screen.getByRole("button", { name: ta.previewAsLearner }));
+    const preview = within(
+      screen.getByRole("dialog", { name: ta.previewAsLearner }),
+    );
+    expect(preview.getByText("Mô tả thêm của câu hỏi")).toBeVisible();
+    expect(preview.getByText("Load factor?")).toBeVisible();
+    expect(preview.queryByText("Định nghĩa")).not.toBeInTheDocument();
   });
 
   it("shows the not-found state for 404 INB-010 (unknown or retired id)", async () => {

@@ -26,6 +26,7 @@ export function TestcaseGenerationLimitCard() {
     <Card
       title={t("testcaseGen.title")}
       description={t("testcaseGen.subtitle")}
+      className="@container min-w-0"
     >
       {query.isError ? (
         <QueryError query={query} />
@@ -33,6 +34,7 @@ export function TestcaseGenerationLimitCard() {
         <Skeleton className="h-10 w-full" />
       ) : (
         <SettingRow
+          className="@max-[360px]:flex-col @max-[360px]:items-start"
           label={t("testcaseGen.maxLabel")}
           description={t("testcaseGen.maxMeta")}
         >

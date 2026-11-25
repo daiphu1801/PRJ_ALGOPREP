@@ -58,6 +58,10 @@
     **không xoá** lượt nộp/điểm/tiến độ cũ của học viên gắn với bài đó trong lớp, khác hẳn cách F1-26 xoá
     cascade khi gỡ một **học viên** khỏi lớp (hai thao tác gỡ khác đối tượng, không dùng chung một khuôn mẫu
     xoá dữ liệu).
+    **Amendment 2026-11-25** (`DEC-2026-1125-copy-class-assignments`): F2-12 còn bao gồm **sao chép toàn bộ bài đã giao của
+    một lớp sang lớp khác** mà giảng viên phụ trách, actor A2, cùng quyền `CLASS_MANAGEMENT:UPDATE`, một lần xác nhận, không
+    phải chọn từng bài. Chỉ thêm liên kết giao bài, không nhân bản bài toán. Bài lớp nhận đã có và bài đã rút xuống thì bỏ
+    qua. Sao chép một lần, hai lớp không tự đồng bộ về sau.
   - **Bài đã lưu (bookmark) kèm ghi chú riêng tư** (F2-13) — bổ sung theo `06-plan/PROTOTYPE_DEBT.md` mục
     2.1, đối chiếu `09-layoutBase/Bài đã lưu.dc.html`. Người học đánh dấu bài toán để xem lại, kèm ghi chú
     tự do theo từng bookmark. **Chốt 2026-08-24:** ghi chú lưu ở server theo (`user_id`, `problem_id`) —

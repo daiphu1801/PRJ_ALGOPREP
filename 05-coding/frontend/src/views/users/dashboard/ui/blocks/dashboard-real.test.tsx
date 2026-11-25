@@ -14,7 +14,6 @@ vi.mock("@/shared/api", async (importOriginal) =>
 // Import after the mocks.
 import { ApiError } from "@/shared/api";
 import { apiMock, resetApiMock } from "@/shared/test/real-api";
-import { ActivityBlock } from "./activity-block";
 import { StatCardsRow } from "./stat-cards-row";
 
 const m = viMessages.dashboard;
@@ -94,63 +93,5 @@ describe("StatCardsRow with the real API", () => {
     expect(
       screen.getAllByRole("button", { name: m.retry }).length,
     ).toBeGreaterThan(0);
-  });
-});
-
-describe("ActivityBlock with the real API", () => {
-  beforeEach(() => {
-    resetApiMock();
-  });
-
-  function days(active: Record<number, number>) {
-    const end = Date.UTC(2026, 10, 5);
-    return Array.from({ length: 364 }, (_, i) => ({
-      day: new Date(end - (363 - i) * 86_400_000).toISOString().slice(0, 10),
-      submissionCount: active[363 - i] ?? 0,
-    }));
-  }
-
-  it("counts the days that have submissions", async () => {
-    const list = days({ 0: 3, 5: 1 });
-    routes({
-      "/identity/me/activity-calendar": () => ({
-        from: list[0]?.day,
-        to: list[363]?.day,
-        days: list,
-      }),
-    });
-
-    render(withTestProviders(<ActivityBlock />));
-
-    expect(
-      await screen.findByText(m.activity.summary.replace("{days}", "2")),
-    ).toBeInTheDocument();
-  });
-
-  it("shows the empty message for a year with no submission", async () => {
-    const list = days({});
-    routes({
-      "/identity/me/activity-calendar": () => ({
-        from: list[0]?.day,
-        to: list[363]?.day,
-        days: list,
-      }),
-    });
-
-    render(withTestProviders(<ActivityBlock />));
-
-    expect(await screen.findByText(m.activity.empty)).toBeInTheDocument();
-  });
-
-  it("shows the error state when #55 fails", async () => {
-    routes({
-      "/identity/me/activity-calendar": () => {
-        throw new ApiError("IDT-503", 503, "down");
-      },
-    });
-
-    render(withTestProviders(<ActivityBlock />));
-
-    expect(await screen.findByText(m.errorGeneric)).toBeInTheDocument();
   });
 });

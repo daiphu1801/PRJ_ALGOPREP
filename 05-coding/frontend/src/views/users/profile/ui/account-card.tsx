@@ -3,27 +3,43 @@
 // Khu vực D. "Mã người dùng" is the first 8 characters of the user id, uppercased (BD Q5, closed
 // 2026-10-18: no extra column, the full UUID is never shown to the learner).
 import type { ReactNode } from "react";
+import { IdCard } from "lucide-react";
 import { useT } from "@/shared/i18n";
 import { formatDateVN } from "@/shared/lib";
-import { Card, Skeleton } from "@/shared/ui";
+import { Badge, Card, Skeleton } from "@/shared/ui";
 import type { UserProfile } from "@/entities/user";
 
-export function AccountCard({
-  profile,
-  roleKey,
-}: {
-  profile: UserProfile | undefined;
-  /** Overrides the mock learner role for the instructor and admin shells. */
-  roleKey?: "instructor" | "admin";
-}) {
+export function AccountCard({ profile }: { profile: UserProfile | undefined }) {
   const t = useT("profile");
 
   return (
-    <Card title={t("account.title")}>
-      <dl className="flex flex-col gap-2 text-sm">
+    <Card
+      title={
+        <span className="flex items-center gap-2">
+          <IdCard
+            size={18}
+            aria-hidden="true"
+            className="text-[var(--color-primary)]"
+          />
+          {t("account.title")}
+        </span>
+      }
+    >
+      <dl className="divide-y divide-[var(--color-border)] text-sm">
+        <Row label={t("account.role")}>
+          {profile ? (
+            <Badge variant="blue" className="max-w-full whitespace-normal">
+              {profile.roleName}
+            </Badge>
+          ) : (
+            <Skeleton className="h-4 w-20" />
+          )}
+        </Row>
         <Row label={t("account.userCode")}>
           {profile ? (
-            profile.userId.slice(0, 8).toUpperCase()
+            <span className="font-mono tracking-wide">
+              {profile.userId.slice(0, 8).toUpperCase()}
+            </span>
           ) : (
             <Skeleton className="h-4 w-20" />
           )}
@@ -35,21 +51,6 @@ export function AccountCard({
             <Skeleton className="h-4 w-20" />
           )}
         </Row>
-        <Row label={t("account.role")}>
-          {profile ? (
-            roleKey ? (
-              t(
-                roleKey === "admin"
-                  ? "account.roleAdmin"
-                  : "account.roleInstructor",
-              )
-            ) : (
-              profile.roleName
-            )
-          ) : (
-            <Skeleton className="h-4 w-20" />
-          )}
-        </Row>
       </dl>
     </Card>
   );
@@ -57,9 +58,9 @@ export function AccountCard({
 
 function Row({ label, children }: { label: string; children: ReactNode }) {
   return (
-    <div className="flex items-center justify-between gap-3 border-b border-[var(--color-border)] py-2 last:border-0">
+    <div className="flex items-center justify-between gap-3 py-3 first:pt-1 last:pb-0">
       <dt className="text-[var(--color-text-muted)]">{label}</dt>
-      <dd className="font-mono text-[var(--color-text)]">{children}</dd>
+      <dd className="min-w-0 text-end font-medium wrap-anywhere">{children}</dd>
     </div>
   );
 }

@@ -27,46 +27,30 @@ describe("DashboardView", () => {
 
     // Dashboard half.
     expect(await screen.findByText(/Điểm yếu tuần này:/)).toBeInTheDocument();
-    expect(
-      screen.getByRole("region", { name: "Năng lực theo chủ đề" }),
-    ).toBeInTheDocument();
     // my_progress half, merged in by DEC-2026-0927-student-area-merge-and-shared-shell.
     expect(
       await screen.findByRole("table", { name: "Theo chủ đề" }),
     ).toBeInTheDocument();
-    expect(
-      screen.getByRole("heading", { name: "Nên ưu tiên" }),
-    ).toBeInTheDocument();
   });
 
-  // Owner decision 2026-10-13: the greeting and "Nên ưu tiên" never name different weakest topics.
-  it("pins the greeting's weakest topic at the top of Nên ưu tiên", async () => {
+  // DEC-2026-1123-student-dashboard-trim: each fact is shown once. The radar and "Nên ưu tiên" repeated the topic
+  // table and the greeting, the 12-month heatmap repeated the daily chart.
+  it("no longer shows the radar, Nên ưu tiên or the 12-month heatmap", async () => {
     renderView();
-
-    const greeting = await screen.findByText(/Điểm yếu tuần này:/);
-    const topic = /Điểm yếu tuần này: (.+) — năng lực/.exec(
-      greeting.textContent ?? "",
-    )![1]!;
-
     await screen.findByRole("table", { name: "Theo chủ đề" });
-    const firstFocus = await waitFor(() => {
-      const links = screen
-        .getAllByRole("link")
-        .filter((a) =>
-          a.getAttribute("href")?.startsWith("/problems?topicId="),
-        );
-      expect(links.length).toBeGreaterThan(0);
-      return links[0]!;
-    });
-    expect(firstFocus.textContent).toContain(topic);
-    expect(firstFocus.textContent).toContain("thấp nhất");
+
+    expect(
+      screen.queryByRole("region", { name: "Năng lực theo chủ đề" }),
+    ).toBeNull();
+    expect(screen.queryByRole("heading", { name: "Nên ưu tiên" })).toBeNull();
+    expect(screen.queryByText(/Hoạt động 12 tháng/)).toBeNull();
   });
 
   it("drives every range-aware block from the one screen-level control", async () => {
     renderView();
 
     // Scoped to the chart's own region, and counted on the line's points rather than on dots: a dense
-    // series draws no dots (they would stretch into ellipses), and the radar beside it draws circles.
+    // series draws no dots (they would stretch into ellipses).
     const plottedPoints = () =>
       screen
         .getByRole("region", { name: "Bài nộp theo ngày" })
@@ -93,25 +77,22 @@ describe("DashboardView", () => {
     );
   });
 
-  // Owner decision 2026-10-18: the range also filters the interview block, scores are 0 to 10, and
-  // each session card draws one bar per rubric criterion.
-  it("filters the interview block by range and draws 4 rubric bars per session", async () => {
+  // Owner decision 2026-10-18: the range also filters the interview block; DEC-2026-1123-student-dashboard-trim
+  // turned each session into one line (score and weakest criterion) instead of four bars.
+  it("filters the interview block by range and shows one line per session", async () => {
     renderView();
 
-    // 30d: 6 sessions in range, the card lists the last 3 (owner D3), each with its own 4 bars.
+    // 30d: 6 sessions in range, the card lists the last 3 (owner D3).
     expect(await screen.findAllByText(/^Phiên ngày /)).toHaveLength(3);
-    expect(screen.getAllByText(/ \/ 10$/).length).toBeGreaterThanOrEqual(3);
+    expect(screen.getAllByText(/^Cần cải thiện: /)).toHaveLength(3);
     expect(
-      screen.getAllByRole("progressbar", { name: "Độ rõ ràng" }),
-    ).toHaveLength(3);
+      screen.queryAllByRole("progressbar", { name: "Độ rõ ràng" }),
+    ).toHaveLength(0);
 
     fireEvent.click(screen.getByRole("button", { name: "7 ngày" }));
 
     await waitFor(() =>
       expect(screen.getAllByText(/^Phiên ngày /)).toHaveLength(2),
     );
-    expect(
-      screen.getAllByRole("progressbar", { name: "Độ rõ ràng" }),
-    ).toHaveLength(2);
   });
 });

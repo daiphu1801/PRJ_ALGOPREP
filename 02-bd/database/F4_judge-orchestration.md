@@ -198,7 +198,37 @@ Một dòng duy nhất (`CHECK (id = 1)`), chỉ ADMIN sửa qua thẻ "Sandbox"
 
 **Quy tắc thời điểm áp dụng (G3).** Một thay đổi ở `language_configs`, `grading_defaults` hoặc `sandbox_settings` có hiệu lực với một job từ lúc worker **bắt đầu chấm** nó, không phải lúc bài được nộp; job đã bắt đầu chấm thì chạy nốt với cấu hình nó đã đọc. **`judge.submissions` không lưu giới hạn thời gian/bộ nhớ hiệu dụng và không lưu snapshot cấu hình** (Sửa 2026-10-22 (đồng bộ DB, phase 2, DEC-2026-1022-ai-judge-schema-sync), JD-08, `DEC-2026-1022-ai-judge-schema-sync`): không RD nào đòi truy vết giới hạn và học viên không thấy nó, nên sau khi admin đổi cấu hình không thể biết một lượt nộp cũ đã chấm với giới hạn nào. Điều này được chấp nhận.
 
+### 1.11. `worker_status` (F4-10, `DEC-2026-1122-f4-queue-consumers-and-throughput-on-adm0401`)
+
+Sửa 2026-11-22. **Trạng thái: đã dựng** (migration `V4.003__create_worker_status.sql` đã chạy trên DB demo, Flyway `success = t`). Một dòng duy nhất (`CHECK (id = 1)`), cùng khuôn `cluster_settings`, lưu **số luồng chấm bài (RabbitMQ consumer) mà worker được bầu vừa báo về** và lần đổi số luồng gần nhất. Bảng này đảo lại phần "số liệu cụm đọc từ Prometheus, không thêm bảng" của `DEC-2026-1010-admin-operations-regroup`: API đọc dòng này, nên worker có thể chạy ở tiến trình khác với API và màn `ADM0401` không phụ thuộc máy chủ đo đạc. Khác `cluster_settings`: bảng đó do ADMIN sửa, bảng này **chỉ worker ghi, màn chỉ đọc**, không có `updated_by`.
+
+Bảng 1.11.1 liệt kê cột của `worker_status`.
+
+| Cột | Kiểu | Ghi chú |
+| :--- | :--- | :--- |
+| `id` | SMALLINT PK | CHECK `id = 1` |
+| `consumers_target` | INT NOT NULL | CHECK `>= 1`; số consumer mục tiêu (`1` đến trần `judge.autoscale.max-workers`, mặc định 8) |
+| `consumers_active` | INT NOT NULL | CHECK `>= 0`; số consumer thực đang chạy lúc báo, có thể khác mục tiêu khi đang chờ bài chấm xong rồi mới dừng consumer thừa |
+| `reported_at` | TIMESTAMPTZ NOT NULL | Giờ của **DB** lúc worker báo (`now()` trong câu upsert), không phải giờ tiến trình worker, để so sánh với giờ DB lúc đọc không lệch đồng hồ |
+| `last_scale_at` | TIMESTAMPTZ | NULL cho tới lần đổi mục tiêu đầu tiên; giờ DB lúc đổi |
+| `last_scale_from` | INT | Mục tiêu trước khi đổi; NULL cùng nhóm |
+| `last_scale_to` | INT | Mục tiêu sau khi đổi; NULL cùng nhóm |
+| `last_scale_reason` | VARCHAR(16) | `BACKLOG` (hàng đợi vượt ngưỡng, tăng), `IDLE` (hàng đợi rỗng bốn lượt liên tiếp, giảm), `DISABLED` (tắt tự động mở rộng, về 1); CHECK thuộc tập ba giá trị khi khác NULL |
+| `last_scale_pending` | BIGINT | Số job `PENDING` lúc đổi; NULL cùng nhóm |
+
+Bảng 1.11.1: Cột của `judge.worker_status`.
+
+**Nhóm `last_scale_*`** gồm năm cột `last_scale_at`, `last_scale_from`, `last_scale_to`, `last_scale_reason`, `last_scale_pending`; hoặc cả năm cùng NULL (chưa đổi lần nào) hoặc cả năm có giá trị. Các CHECK nhóm này (cùng NULL hoặc cùng khác NULL, `last_scale_from >= 1`, `last_scale_to >= 1`, `last_scale_pending >= 0`) là đề xuất của BD `[SoT: Suy luận]`, không phải điều kế hoạch `06-plan/nexa-plan/261122-1840-f4-adm0401-luong-cham-thong-luong.md` đã nêu; lát backend có thể bỏ nếu thấy thừa.
+
+**Ghi.** Chỉ **worker được bầu** (giữ khoá leader, `03-dd/jobs/F4_judge-orchestration.md` JOB-JD-05) ghi, bằng một câu upsert (`INSERT ... ON CONFLICT (id) DO UPDATE`) sau **mỗi lần `scale()`**, kể cả lần không đổi mục tiêu, để `reported_at` luôn tươi chừng nào worker còn sống. Mỗi lần ghi cập nhật `consumers_target`, `consumers_active`, `reported_at`. Chỉ khi mục tiêu **đổi** mới ghi thêm nhóm `last_scale_*` (giờ DB, mục tiêu cũ, mục tiêu mới, lý do, số job chờ lúc đổi); lần không đổi giữ nguyên nhóm này. Không có dòng seed: bảng rỗng cho tới lần báo đầu tiên. Không có job dọn, không có lịch sử (đóng Q5 của RD `ADM0401`, ponytail bậc 3). **Lỗi ghi không được làm dừng việc scale**: worker ghi log cảnh báo và đi tiếp; chu kỳ sau ghi lại.
+
+**Đọc.** Chỉ API snapshot (`GET /judge/admin/queue/snapshot`, `03-dd/api/F4_judge-orchestration.md` mục 16) đọc. Dòng có `reported_at` cũ hơn **60 giây** (hằng số trong mã, ponytail bậc 5, không vào `application.yml` và không có ô nhập) hoặc bảng chưa có dòng nào được coi là **cũ**: snapshot trả `consumers = null`, không trả số cũ như thể còn đúng. Mốc 60 giây bằng bốn chu kỳ `scale()` mặc định 15 giây, nên một lần ghi lỡ không làm khối nhấp nháy.
+
+**Truy cập chéo module.** Bảng thuộc schema `judge`, chỉ module này đọc và ghi, không cổng đọc cho module khác.
+
 ## 2. Chỉ mục (index) đáng chú ý
+
+Sửa 2026-11-22: `worker_status` chỉ có một dòng, khoá chính `id` là đủ, không thêm chỉ mục.
 
 - `submissions(status, updated_at)` — job sweep quét theo điều kiện mục 1.1.
 - `submissions(user_id, problem_id, submitted_at DESC)` — lịch sử nộp bài của một học viên cho một bài. ~~Cột cũ ghi `created_at`~~: bảng không có `created_at`, mốc nộp là `submitted_at` (dòng 31); sửa 2026-10-14 (`DEC-2026-1014-instructor-submissions-list-details`). Chỉ mục `submissions(status, updated_at)` ở dòng trên đúng với cột `updated_at` của bảng (dòng 34), không đổi.
@@ -216,6 +246,8 @@ Sửa 2026-10-29 (F4-08): bản cũ ghi "không dùng Redis", đã lỗi thời.
 
 `language_configs` (seed 3 dòng), `grading_defaults`, `sandbox_settings` và `generator_sandbox_settings` (seed 1 dòng mỗi bảng) → `submissions` → `judge_run_tokens` → `submission_testcase_results` →
 `callback_logs` → `outbox_events` → `cluster_settings` (seed 1 dòng).
+
+Sửa 2026-11-22: thêm `worker_status` (mục 1.11) bằng migration riêng `V4.003__create_worker_status.sql`, đứng sau `V4.002` (seed); bảng không có FK và không có seed.
 
 Sửa 2026-10-22 (đồng bộ DB, phase 1): `judge_run_tokens` phải đứng trước `submission_testcase_results` vì cột `judge_run_token_id` là FK; thêm `generator_sandbox_settings` (mục 1.8, trước đó thiếu). Kiểm đủ FK: `judge_run_tokens` → `submissions`; `submission_testcase_results` → `submissions`, `judge_run_tokens`; `callback_logs` → `judge_run_tokens`; các bảng còn lại không có FK nội bộ.
 
@@ -249,7 +281,7 @@ Sửa 2026-10-22 (đồng bộ DB, phase 1): `judge_run_tokens` phải đứng t
 - `.nexa/domain-registry.json` — domain `judge-orchestration`, scope: `submission`,
   `submission_testcase_result`, `judge_run_token`, `callback_log`, `language_config`.
 - `.nexa/control/decision-registry.md` — `DEC-2026-0912-judge-callback-contract`,
-  `DEC-2026-0912-judge-outbox-pattern`.
+  `DEC-2026-0912-judge-outbox-pattern`, `DEC-2026-1122-f4-queue-consumers-and-throughput-on-adm0401` (mục 1.11).
 
 ## 8. Hợp đồng DDL (đóng F4-01, 2026-10-29)
 

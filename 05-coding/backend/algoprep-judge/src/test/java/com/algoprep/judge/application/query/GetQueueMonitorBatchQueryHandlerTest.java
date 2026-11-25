@@ -25,7 +25,7 @@ class GetQueueMonitorBatchQueryHandlerTest {
     var queue = mock(QueueMonitorRepository.class);
     var infra = mock(GetInfraSummaryUseCase.class);
     var now = Instant.parse("2026-11-05T00:00:00Z");
-    var state = new Snapshot(now, "NORMAL", 1, false, true, 20, null, 10, 8);
+    var state = new Snapshot(now, "NORMAL", 1, false, true, 20, null, 10, 8, 0, null, null);
     var settings = new JobSettings(20, 24, now);
     when(snapshots.read()).thenReturn(state);
     when(queue.jobSettings()).thenReturn(settings);

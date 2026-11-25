@@ -137,6 +137,21 @@ class SampleSolutionRunnerBridgeTest {
     when(evaluation.evaluate(any()))
         .thenReturn(new EvaluationResult(Verdict.SYSTEM_ERROR, "down", null, List.of()));
 
-    assertThatThrownBy(() -> bridge.run(request(true))).isInstanceOf(IllegalStateException.class);
+    assertThatThrownBy(() -> bridge.run(request(true)))
+        .isInstanceOf(IllegalStateException.class)
+        .hasMessageContaining("down");
+  }
+
+  @Test
+  void inputsThatDoNotMatchTheDeclaredParametersAreTheAuthorsDataNotAnOutage() {
+    prepared();
+    when(evaluation.evaluate(any()))
+        .thenReturn(
+            new EvaluationResult(Verdict.SYSTEM_ERROR, "SPEC_UNAVAILABLE", null, List.of()));
+
+    assertThatThrownBy(() -> bridge.run(request(true)))
+        .isInstanceOf(com.algoprep.common.exception.DomainRuleViolationException.class)
+        .extracting(e -> ((com.algoprep.common.exception.AlgoPrepException) e).errorCode())
+        .isEqualTo("PRB-060");
   }
 }

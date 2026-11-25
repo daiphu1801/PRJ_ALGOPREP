@@ -1,5 +1,5 @@
-// Mock-mode behaviour of ADM0403 (the mock honours the same filters and cursor as the server): "Tải
-// thêm" loads the next page, the day range filters it, and a lock row shows its reason while an unlock
+// Mock-mode behaviour of ADM0403: paging uses a cursor, the day range filters it,
+// and a lock row shows its reason while an unlock
 // row does not. The real-API path is in admin-system-log-real.test.tsx.
 import type { ReactElement } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -53,16 +53,25 @@ describe("AdminSystemLogView", () => {
     );
   });
 
-  it("loads 50 more rows from the load-more button", async () => {
+  it("shows 50 rows per page and returns to the cached first page", async () => {
     await renderView(<AdminSystemLogView />);
-    const before = rows().length;
-    fireEvent.click(screen.getByRole("button", { name: "loadMore:50" }));
-    await waitFor(() => expect(rows()).toHaveLength(before + 50));
+    const firstRow = rows()[0]?.textContent;
+    expect(rows()).toHaveLength(50);
+    expect(firstRow).toBeTruthy();
+    expect(screen.getByRole("button", { name: "pagePrevious" })).toBeDisabled();
+    fireEvent.click(screen.getByRole("button", { name: "pageNext" }));
+    await screen.findByText("pageLabel:2,50");
+    expect(rows()).toHaveLength(50);
+    expect(rows()[0]?.textContent).not.toBe(firstRow);
+    fireEvent.click(screen.getByRole("button", { name: "pagePrevious" }));
+    expect(screen.getByText("pageLabel:1,50")).toBeInTheDocument();
+    expect(rows()[0]?.textContent).toBe(firstRow);
   });
 
   it("filters by day range, inclusive on both ends", async () => {
     await renderView(<AdminSystemLogView />);
-    fireEvent.click(screen.getByRole("button", { name: "loadMore:50" }));
+    fireEvent.click(screen.getByRole("button", { name: "pageNext" }));
+    await screen.findByText("pageLabel:2,50");
 
     fireEvent.change(screen.getByLabelText("dateFrom"), {
       target: { value: "2026-10-08" },
@@ -73,6 +82,8 @@ describe("AdminSystemLogView", () => {
 
     // Today's seed rows only: the synthetic history starts yesterday.
     await waitFor(() => expect(rows()).toHaveLength(10));
+    expect(screen.getByText("pageLabel:1,10")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "pageNext" })).toBeDisabled();
   });
 
   it("returns nothing, and says why, when the range is reversed", async () => {

@@ -14,6 +14,9 @@ import { useT } from "@/shared/i18n";
 import { toast } from "@/shared/lib/toast-store";
 import { Button, Modal, SelectField, TextArea } from "@/shared/ui";
 
+const DATA_FIELD_CLASS =
+  "max-h-48 resize-y field-sizing-content font-mono text-[12.5px]";
+
 type FormShellProps = {
   title: string;
   onClose: () => void;
@@ -124,21 +127,21 @@ export function TestcaseDialog({
     >
       <TextArea
         label={t("columnInput")}
-        rows={3}
+        rows={1}
         value={largeInput ? t("dialog.largeSide") : input}
         disabled={largeInput}
         invalid={touched && !largeInput && input.length === 0}
         onChange={(event) => setInput(event.target.value)}
-        className="font-mono text-[12.5px]"
+        className={DATA_FIELD_CLASS}
       />
       <TextArea
         label={t("columnExpected")}
-        rows={3}
+        rows={1}
         value={largeExpected ? t("dialog.largeSide") : expected}
         disabled={largeExpected}
         invalid={touched && !largeExpected && expected.length === 0}
         onChange={(event) => setExpected(event.target.value)}
-        className="font-mono text-[12.5px]"
+        className={DATA_FIELD_CLASS}
       />
       <SelectField
         label={t("columnVisibility")}
@@ -197,19 +200,19 @@ export function ExampleDialog({
     >
       <TextArea
         label={t("exampleInput")}
-        rows={2}
+        rows={1}
         value={input}
         invalid={touched && !input.trim()}
         onChange={(event) => setInput(event.target.value)}
-        className="font-mono text-[12.5px]"
+        className={DATA_FIELD_CLASS}
       />
       <TextArea
         label={t("exampleOutput")}
-        rows={2}
+        rows={1}
         value={output}
         invalid={touched && !output.trim()}
         onChange={(event) => setOutput(event.target.value)}
-        className="font-mono text-[12.5px]"
+        className={DATA_FIELD_CLASS}
       />
       <TextArea
         label={t("exampleExplanation")}

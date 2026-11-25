@@ -56,13 +56,17 @@ function watch() {
   return () => toasts.result.current.map((item) => [item.tone, item.message]);
 }
 
-function renderCard() {
+function renderCard(showTargetPosition = true, initialProfile = profile) {
   client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   client.invalidateQueries = invalidate;
   render(
     <QueryClientProvider client={client}>
       <NextIntlClientProvider locale="vi" messages={viMessages}>
-        <PersonalInfoCard profile={profile} onProfileSaved={onProfileSaved} />
+        <PersonalInfoCard
+          profile={initialProfile}
+          onProfileSaved={onProfileSaved}
+          showTargetPosition={showTargetPosition}
+        />
       </NextIntlClientProvider>
     </QueryClientProvider>,
   );
@@ -88,6 +92,27 @@ describe("PersonalInfoCard", () => {
   it("shows the stored phone number", () => {
     renderCard();
     expect(field(p.form.phone)).toHaveValue("0901 234 567");
+  });
+
+  it("omits the stored target position from both the staff form and its update", async () => {
+    const initialProfile = saved({ targetPosition: "Senior Engineer" });
+    apiMock.patch.mockResolvedValue(initialProfile);
+    renderCard(false, initialProfile);
+
+    expect(
+      screen.queryByLabelText(p.form.targetPosition),
+    ).not.toBeInTheDocument();
+    set(p.form.currentPosition, "Engineer");
+    save();
+
+    await waitFor(() =>
+      expect(apiMock.patch).toHaveBeenCalledWith(PROFILE, {
+        displayName: initialProfile.displayName,
+        schoolOrCompany: "",
+        currentPosition: "Engineer",
+        phone: initialProfile.phone,
+      }),
+    );
   });
 
   it("sends the trimmed phone with the other four fields and toasts success", async () => {

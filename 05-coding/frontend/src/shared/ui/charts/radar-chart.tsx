@@ -24,6 +24,7 @@ export function RadarChart({
   ariaLabel,
   accentColorVar = "--color-primary",
   emphasizeLowest = false,
+  className = "max-w-[400px]",
 }: {
   points: RadarPoint[];
   /** Required: an SVG with role="img" is invisible to a screen reader without one. */
@@ -31,6 +32,8 @@ export function RadarChart({
   accentColorVar?: string;
   /** Draws the lowest axis label in the warning colour, so the eye lands on what to improve first. */
   emphasizeLowest?: boolean;
+  /** Width cap of the drawing (the height follows the viewBox); a screen that must fit a smaller slot passes its own. */
+  className?: string;
 }) {
   if (points.length < 3) return null;
 
@@ -72,7 +75,7 @@ export function RadarChart({
       viewBox="-50 -14 400 276"
       role="img"
       aria-label={ariaLabel}
-      className="block h-auto w-full max-w-[400px] overflow-visible"
+      className={`block h-auto w-full overflow-visible ${className}`}
     >
       {RINGS.map((fraction) => (
         <polygon

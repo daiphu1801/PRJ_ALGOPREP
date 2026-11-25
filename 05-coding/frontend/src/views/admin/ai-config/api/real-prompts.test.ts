@@ -140,7 +140,7 @@ describe("realGetAiConfigPage (#14 + #15)", () => {
       status: "live",
       modelId: "claude-sonnet",
       systemInstruction: "live SOLUTION_REVIEW",
-      maxTokens: "1.600 token",
+      maxTokens: 1600,
       updatedAt: "11/08/2026",
     });
     // publishedAt null falls back to createdAt.
@@ -150,6 +150,7 @@ describe("realGetAiConfigPage (#14 + #15)", () => {
       interview: {
         systemInstruction: "draft interview",
         modelId: "claude-haiku",
+        maxTokens: 1600,
         guards: { ...guards, citeLines: false },
       },
     });
@@ -239,6 +240,7 @@ describe("realSavePromptDraft (#16)", () => {
       feature: "review",
       systemInstruction: "Chi thi moi",
       modelId: "claude-haiku",
+      maxTokens: 4600,
       guards: {
         noFullSolution: false,
         citeLines: true,
@@ -248,6 +250,7 @@ describe("realSavePromptDraft (#16)", () => {
     expect(put).toHaveBeenCalledWith(`${BASE}/SOLUTION_REVIEW/draft`, {
       systemInstruction: "Chi thi moi",
       modelId: "claude-haiku",
+      maxTokens: 4600,
       responseGuards: {
         citeLines: true,
         answerInVietnamese: false,
@@ -262,11 +265,13 @@ describe("realSavePromptDraft (#16)", () => {
       feature: "testcase",
       systemInstruction: "x",
       modelId: "claude-haiku",
+      maxTokens: 8192,
       guards: null,
     });
     expect(put).toHaveBeenCalledWith(`${BASE}/GENERATE_TESTCASE/draft`, {
       systemInstruction: "x",
       modelId: "claude-haiku",
+      maxTokens: 8192,
       responseGuards: null,
     });
   });
@@ -284,6 +289,7 @@ describe("realSavePromptDraft (#16)", () => {
         feature: "interview",
         systemInstruction: "x",
         modelId: "m",
+        maxTokens: 4096,
         guards,
       }),
     ).rejects.toMatchObject({ code, status });
@@ -331,6 +337,7 @@ describe("realPublishPrompts (#17)", () => {
           expectedActivePromptId: "active-SOLUTION_REVIEW",
           systemInstruction: "edited",
           modelId: "claude-haiku",
+          maxTokens: 1600,
           responseGuards: guards,
         },
         {
@@ -338,6 +345,7 @@ describe("realPublishPrompts (#17)", () => {
           expectedActivePromptId: "active-MOCK_INTERVIEW",
           systemInstruction: "live MOCK_INTERVIEW",
           modelId: "claude-sonnet",
+          maxTokens: 1600,
           responseGuards: { ...guards, noFullSolution: false },
         },
         {
@@ -345,6 +353,7 @@ describe("realPublishPrompts (#17)", () => {
           expectedActivePromptId: "active-GENERATE_TESTCASE",
           systemInstruction: "live GENERATE_TESTCASE",
           modelId: "claude-haiku",
+          maxTokens: 1600,
           responseGuards: null,
         },
       ],

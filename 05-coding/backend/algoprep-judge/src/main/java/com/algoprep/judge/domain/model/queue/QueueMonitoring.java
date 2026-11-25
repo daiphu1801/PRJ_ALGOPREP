@@ -8,6 +8,12 @@ import java.util.UUID;
 public final class QueueMonitoring {
   private QueueMonitoring() {}
 
+  /** The last target change the grading worker reported; reason is BACKLOG, IDLE or DISABLED. */
+  public record LastScaling(Instant at, int from, int to, String reason, long pendingCount) {}
+
+  /** Grading consumers as the elected worker last reported them (judge.worker_status). */
+  public record Consumers(int target, int active, Instant reportedAt, LastScaling lastScaling) {}
+
   public record Facts(
       Instant generatedAt,
       boolean paused,
@@ -15,7 +21,8 @@ public final class QueueMonitoring {
       int autoscaleJobThreshold,
       long pendingCount,
       Long avgWaitMillis,
-      int latencyCapSeconds) {}
+      int latencyCapSeconds,
+      Consumers consumers) {}
 
   public record Snapshot(
       Instant generatedAt,
@@ -26,8 +33,12 @@ public final class QueueMonitoring {
       int autoscaleJobThreshold,
       Long avgWaitMillis,
       int latencyCapSeconds,
-      int workerAutoscaleMax) {
-    public static Snapshot from(Facts facts, int maximum) {
+      int workerAutoscaleMax,
+      long finishedLastMinute,
+      Integer estimatedClearSeconds,
+      Consumers consumers) {
+    public static Snapshot from(
+        Facts facts, int maximum, long finishedLastMinute, Integer estimatedClearSeconds) {
       String status =
           facts.paused()
               ? "PAUSED"
@@ -41,7 +52,10 @@ public final class QueueMonitoring {
           facts.autoscaleJobThreshold(),
           facts.avgWaitMillis(),
           facts.latencyCapSeconds(),
-          maximum);
+          maximum,
+          finishedLastMinute,
+          estimatedClearSeconds,
+          facts.consumers());
     }
   }
 

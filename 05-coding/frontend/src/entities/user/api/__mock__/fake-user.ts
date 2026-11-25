@@ -52,14 +52,19 @@ let profileEdited = false;
 /** Same account, shown with the identity fields that fit the area it is opened from. */
 const AREA_IDENTITY: Record<
   "instructor" | "admin",
-  Pick<UserProfile, "schoolOrCompany" | "currentPosition" | "targetPosition">
+  Pick<
+    UserProfile,
+    "roleName" | "schoolOrCompany" | "currentPosition" | "targetPosition"
+  >
 > = {
   instructor: {
+    roleName: "Giảng viên",
     schoolOrCompany: "Khoa Công nghệ thông tin, Đại học Cần Thơ",
     currentPosition: "Giảng viên",
     targetPosition: "Giảng viên chính",
   },
   admin: {
+    roleName: "Quản trị viên",
     schoolOrCompany: "AlgoPrep",
     currentPosition: "Quản trị hệ thống",
     targetPosition: "Quản trị hệ thống",
@@ -69,12 +74,11 @@ const AREA_IDENTITY: Record<
 export function fakeGetMyProfile(
   area: "student" | "instructor" | "admin" = "student",
 ): Promise<UserProfile> {
-  // Once the user saves the form, their own values win over the per-area sample identity.
-  return delay(
-    area === "student" || profileEdited
-      ? profile
-      : { ...profile, ...AREA_IDENTITY[area] },
-  );
+  if (area === "student") return delay(profile);
+
+  const { roleName, ...sampleWork } = AREA_IDENTITY[area];
+  // A profile edit replaces the sample work details but keeps the role of this mock session.
+  return delay({ ...profile, ...(!profileEdited && sampleWork), roleName });
 }
 
 export function fakeUpdateMyProfile(
@@ -86,7 +90,10 @@ export function fakeUpdateMyProfile(
     displayName: input.displayName,
     schoolOrCompany: input.schoolOrCompany || null,
     currentPosition: input.currentPosition || null,
-    targetPosition: input.targetPosition || null,
+    targetPosition:
+      input.targetPosition === undefined
+        ? profile.targetPosition
+        : input.targetPosition || null,
     phone: input.phone || null,
   };
   return delay(profile, 600);

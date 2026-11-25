@@ -32,9 +32,20 @@ type AssignmentDto = {
 
 type AssignableDto = {
   problemId: string;
+  code?: string;
   title: string;
   levelCode: string;
   topicNames: string[];
+  assigned: boolean;
+};
+
+/** Filters of #51; "all" (or empty) means no filter. */
+export type AssignableParams = {
+  classId: string;
+  q: string;
+  level: string;
+  topic: string;
+  page: number;
 };
 
 const trimmed = (q: string) => (q.trim() ? { q: q.trim() } : {});
@@ -82,22 +93,32 @@ export async function realAssignmentSummary(): Promise<AssignmentSummary> {
   };
 }
 
-/** #51: published bank problems not yet given to the class, in `code` order. */
+/** #51: published bank problems in `code` order, each flagged when the class already has it. */
 export async function realListAssignable(
-  classId: string,
-  q: string,
-  page: number,
+  params: AssignableParams,
 ): Promise<{ items: AssignableProblem[]; page: PageMeta }> {
   const dto = await api.get<{ items: AssignableDto[]; page: PageMeta }>(
-    `${BASE}/classes/${classId}/assignable-problems`,
-    { ...trimmed(q), page },
+    `${BASE}/classes/${params.classId}/assignable-problems`,
+    {
+      ...trimmed(params.q),
+      ...(params.level !== "all" && params.level
+        ? { levelCode: params.level }
+        : {}),
+      ...(params.topic !== "all" && params.topic
+        ? { topic: params.topic }
+        : {}),
+      page: params.page,
+    },
   );
   return {
     items: dto.items.map((item) => ({
       id: item.problemId,
+      code: item.code,
       title: item.title,
       topic: item.topicNames[0] ?? "",
+      topics: item.topicNames,
       difficulty: item.levelCode,
+      assigned: item.assigned,
     })),
     page: dto.page,
   };

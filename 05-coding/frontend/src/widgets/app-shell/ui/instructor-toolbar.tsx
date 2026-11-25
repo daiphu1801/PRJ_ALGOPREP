@@ -6,7 +6,7 @@ import { useT } from "@/shared/i18n";
 import { INSTRUCTOR_NAV_MISC } from "../model/instructor-nav";
 import { AreaToolbar } from "./area-toolbar";
 
-/** Same toolbar row as the Admin area; the name comes from the mock profile of the instructor. */
+/** Uses the same toolbar and signed-in profile data as the Admin area. */
 export function InstructorToolbar() {
   const t = useT("instructorNav");
   const profile = useMyProfile("instructor").data;
@@ -16,7 +16,7 @@ export function InstructorToolbar() {
       name={name}
       userId={profile?.userId}
       avatarVersion={profile?.avatarVersion}
-      roleLabel={t("roleLabel")}
+      roleLabel={profile?.roleName ?? t("roleLabel")}
       items={INSTRUCTOR_NAV_MISC.map(({ key, href, labelKey, icon }) => ({
         key,
         href,

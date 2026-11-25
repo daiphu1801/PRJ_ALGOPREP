@@ -28,14 +28,7 @@ vi.mock("../api", async (importOriginal) => {
           data: undefined,
           refetch: force.refetch,
         };
-      if (
-        force.mode === "empty" &&
-        [
-          "useTopProblems",
-          "useSubmissionsByMonth",
-          "useUserRetention",
-        ].includes(name)
-      )
+      if (force.mode === "empty" && name === "useTopProblems")
         return {
           isLoading: false,
           isError: false,
@@ -75,13 +68,11 @@ describe("AdminOverviewView", () => {
       screen.getByRole("heading", { level: 1, name: "title" }),
     ).toBeInTheDocument();
     for (const key of [
-      "submissionsByLanguage",
       "verdictDistribution",
-      "difficultyBreakdown",
       "submissionsByDay",
-      "submissionsByMonth",
       "topProblems",
-      "userRetention",
+      "submissionsByMonth",
+      "submissionsByLanguage",
     ] as const) {
       expect(await screen.findByText(t.blocks[key])).toBeInTheDocument();
     }
@@ -99,10 +90,9 @@ describe("AdminOverviewView", () => {
       screen.getByText(t.blocks.passwordResetsSummary),
     ).toBeInTheDocument();
     expect(
-      await screen.findByText(new RegExp(`${t.blocks.weekTotal}: \\d+`)),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText(new RegExp(`${t.blocks.dailyAverage}: `)),
+      await screen.findByText(
+        new RegExp(`${t.blocks.weekTotal} · ${t.blocks.dailyAverage}: \\d+`),
+      ),
     ).toBeInTheDocument();
     expect(
       await screen.findByRole("link", { name: t.blocks.viewAll }),
@@ -114,11 +104,11 @@ describe("AdminOverviewView", () => {
     await renderOverview();
 
     const messages = await screen.findAllByText(t.errorGeneric);
-    // 3 stat cards + 7 other blocks.
-    expect(messages.length).toBeGreaterThanOrEqual(9);
+    // 3 stat cards + 3 other blocks.
+    expect(messages.length).toBeGreaterThanOrEqual(6);
     fireEvent.click(screen.getAllByRole("button", { name: t.retry })[0]!);
     expect(force.refetch).toHaveBeenCalledTimes(1);
-    fireEvent.click(screen.getAllByRole("button", { name: t.retry })[4]!);
+    fireEvent.click(screen.getAllByRole("button", { name: t.retry })[3]!);
     await waitFor(() => expect(force.refetch).toHaveBeenCalledTimes(2));
   });
 
@@ -127,6 +117,6 @@ describe("AdminOverviewView", () => {
     await renderOverview();
 
     const empties = await screen.findAllByText(t.emptyGeneric);
-    expect(empties).toHaveLength(3);
+    expect(empties).toHaveLength(1);
   });
 });

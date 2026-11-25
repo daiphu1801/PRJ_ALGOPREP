@@ -17,6 +17,7 @@ export type FeatureChange = {
   feature: AiFeatureKey;
   instruction: boolean;
   model: { from: string; to: string } | null;
+  tokens: { from: number | ""; to: number | "" } | null;
   guards: number;
 };
 
@@ -50,11 +51,19 @@ export function describeChanges(
           before.modelId !== prompt.modelId
             ? { from: before.modelId, to: prompt.modelId }
             : null,
+        tokens:
+          before.maxTokens !== prompt.maxTokens
+            ? { from: before.maxTokens, to: prompt.maxTokens }
+            : null,
         guards,
       };
     })
     .filter(
-      (change) => change.instruction || change.model || change.guards > 0,
+      (change) =>
+        change.instruction ||
+        change.model ||
+        change.tokens ||
+        change.guards > 0,
     );
 }
 
@@ -66,7 +75,10 @@ export function pendingByFeature(
   const counts: PendingCounts = { review: 0, interview: 0, testcase: 0 };
   for (const change of describeChanges(saved, draft)) {
     counts[change.feature] =
-      (change.instruction ? 1 : 0) + (change.model ? 1 : 0) + change.guards;
+      Number(change.instruction) +
+      Number(Boolean(change.model)) +
+      Number(Boolean(change.tokens)) +
+      change.guards;
   }
   return counts;
 }
@@ -94,6 +106,7 @@ export function withServerDrafts(page: AiConfigPage): AiConfigPage {
       ...prompt,
       systemInstruction: stored.systemInstruction,
       modelId: stored.modelId,
+      maxTokens: stored.maxTokens,
     };
   });
   return { ...page, prompts, guards };

@@ -61,6 +61,31 @@ export type QueuePage = {
  */
 export type QueueState = "ok" | "paused" | "overloaded" | "backlog";
 
+/** Why the grading worker last changed its consumer target (F4 DD 16.2). */
+export type ScaleReason = "BACKLOG" | "IDLE" | "DISABLED";
+
+/**
+ * The real "Luồng chấm" block (DEC-2026-1122-f4-queue-consumers-and-throughput-on-adm0401). `consumers` is
+ * null while the worker has not reported or its report is older than 60 s; the throughput figures come from
+ * submissions, so they stay. `null` for the whole block means the mock source, which keeps the old worker list.
+ */
+export type GradingBlock = {
+  consumers: {
+    target: number;
+    active: number;
+    max: number;
+    lastScaling: {
+      at: number;
+      from: number;
+      to: number;
+      reason: ScaleReason;
+      pendingCount: number;
+    } | null;
+  } | null;
+  finishedLastMinute: number;
+  estimatedClearSeconds: number | null;
+};
+
 export type QueueSettings = {
   autoscaleThreshold: number;
   jobsPerPage: number;
@@ -73,13 +98,14 @@ export type QueueSummary = {
   pendingCount: number;
   controls: ClusterControls;
   latency: { seconds: number | null; label: string };
-  settings: QueueSettings;
+  settings: QueueSettings | null;
   workers: Worker[];
   workerCount: number;
   maxWorkers: number;
+  grading: GradingBlock | null;
   /** Epoch ms the snapshot was taken. */
   generatedAt: number;
-  infra: { warn: number; error: number };
+  infra: { warn: number; error: number } | null;
 };
 
 export type QueueTab = "waiting" | "failed" | "all";

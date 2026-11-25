@@ -47,6 +47,7 @@ export { splitOutline } from "./lib/split-outline";
 export { nextReviewDays } from "./lib/next-review";
 export { resetRecallAndBookmarkState } from "./api/__mock__/learner-mock";
 export { InterviewQuestionCard } from "./ui/interview-question-card";
+export { InterviewQuestionPreview } from "./ui/interview-question-preview";
 export { InterviewQuestionListRow } from "./ui/interview-question-list-row";
 export { RecallLevelPicker } from "./ui/recall-level-picker";
 export { BookmarkToggle } from "./ui/bookmark-toggle";

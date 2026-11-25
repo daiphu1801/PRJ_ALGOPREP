@@ -146,6 +146,9 @@ Câu chống chèn và câu theo `response_guards` là **văn bản cố định
 | `usdPerMillionTokens` | số không âm, tối đa 4 chữ số thập phân, giá trị `<= 999999.9999`; DB `CHECK (>= 0)` | `AIR-V18` | 400 | Presentation, DB | `DB5:230`; giao diện tự đưa âm hoặc không phải số về 0 (`A303` Q4), máy chủ vẫn kiểm |
 | `priceId`, `alertId` | UUID có thật | `AIR-121`, `AIR-120` | 404 | Application | |
 | `rangeDays` | `7`, `14`, `30`; mặc định `14` | `AIR-V19` | 400 | Presentation | `A302` EVT-1 |
+| `page`, `size` (mục 31A) | `page` từ 1 mặc định 1; `size` 1 đến 50 mặc định 20 | `AIR-V20` | 400 | Presentation | `[SoT: Suy luận]` |
+| `entryType`, `status`, `level`, `scoreBand`, `sort`, `order` (mục 31A) | `status` chỉ `COMPLETED`, `ABANDONED`; `sort` `startedAt` hoặc `score`; `order` `asc` hoặc `desc`; không phân biệt hoa thường với enum | `AIR-V21` | 400 | Presentation | `[SoT: Suy luận]` |
+| `q` (mục 31A) | cắt khoảng trắng, tối đa 100 ký tự, dài hơn thì cắt | | | Presentation | `[SoT: Suy luận]` |
 | Quyền ngân sách | `AI_TOKEN_BUDGET:UPDATE` cho 19, 20, 29; `AI_TOKEN_BUDGET:READ` cho 27 đến 31; 18 và 21 chấp nhận `AI_TOKEN_BUDGET:READ` hoặc `AI_CONFIG:READ`; 22 đến 26 đòi `AI_CONFIG:UPDATE` (23 đòi `AI_CONFIG:READ`); mọi endpoint kèm `baseCategory = ADMIN` | `AIR-301` | 403 | Application | `SEC5:68-75` |
 | Singleton | `ai_token_budget_configs.id = 1` (`CHECK (id = 1)`) | | | DB | `DB5:208` |
 

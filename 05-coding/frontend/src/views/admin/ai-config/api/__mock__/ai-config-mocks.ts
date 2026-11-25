@@ -18,7 +18,7 @@ const PROMPTS: PromptConfig[] = [
     modelId: "claude-sonnet",
     systemInstruction:
       "Bạn là trợ lý chấm bài giải thuật toán. Chỉ ra độ phức tạp và điểm cần sửa, trích đoạn mã liên quan. Không đưa lời giải đầy đủ.",
-    maxTokens: "1.600 token",
+    maxTokens: 4096,
     updatedAt: "11/08",
   },
   {
@@ -28,7 +28,7 @@ const PROMPTS: PromptConfig[] = [
     modelId: "claude-sonnet",
     systemInstruction:
       "Bạn là người phỏng vấn kỹ thuật. Hỏi tiếp theo câu trả lời của ứng viên qua ba giai đoạn: Giải trình, Phản biện, Mở rộng quy mô; cuối phiên chấm theo rubric bốn tiêu chí.",
-    maxTokens: "1.200 token",
+    maxTokens: 4096,
     updatedAt: "19/08",
   },
   {
@@ -38,7 +38,7 @@ const PROMPTS: PromptConfig[] = [
     modelId: "claude-haiku",
     systemInstruction:
       "Bạn viết script sinh dữ liệu testcase từ đề bài. Chỉ sinh input, không tự viết output; output chạy thật từ đáp án mẫu.",
-    maxTokens: "2.000 token",
+    maxTokens: 8192,
     updatedAt: "20/08",
   },
 ];

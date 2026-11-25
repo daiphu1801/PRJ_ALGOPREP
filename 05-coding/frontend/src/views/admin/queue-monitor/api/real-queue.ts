@@ -1,9 +1,12 @@
 import { api } from "@/shared/api";
 import type {
+  GradingBlock,
   JobStatus,
   JobsPage,
   QueueState,
+  QueueSettings as QueueSettingsModel,
   QueueSummary,
+  ScaleReason,
 } from "../model/types";
 export type QueueSnapshot = {
   generatedAt: string;
@@ -15,6 +18,20 @@ export type QueueSnapshot = {
   avgWaitMillis: number | null;
   latencyCapSeconds: number;
   workerAutoscaleMax: number;
+  finishedLastMinute?: number;
+  estimatedClearSeconds?: number | null;
+  consumers?: {
+    target: number;
+    active: number;
+    reportedAt: string;
+    lastScaling: {
+      at: string;
+      from: number;
+      to: number;
+      reason: ScaleReason;
+      pendingCount: number;
+    } | null;
+  } | null;
 };
 export type QueueSettings = {
   autoscaleJobThreshold: number;
@@ -35,15 +52,26 @@ export type QueueJobs = {
   totalCount: number;
   counts: { waiting: number; failed: number; all: number };
 };
-export async function readQueue() {
-  const [snapshot, settings, infra] = await Promise.all([
-    api.get<QueueSnapshot>("/judge/admin/queue/snapshot"),
-    api.get<QueueSettings>("/judge/admin/queue/settings"),
-    api.get<{ warnCount: number; errorCount: number }>(
-      "/judge/admin/queue/infra-summary",
-    ),
-  ]);
-  return { snapshot, settings, infra };
+export function readQueue() {
+  return api.get<QueueSnapshot>("/judge/admin/queue/snapshot");
+}
+export async function readQueueSettings(): Promise<QueueSettingsModel> {
+  const {
+    autoscaleJobThreshold,
+    jobsPerPage,
+    errorRetentionHours,
+    latencyCapSeconds,
+  } = await api.get<QueueSettings>("/judge/admin/queue/settings");
+  return {
+    autoscaleThreshold: autoscaleJobThreshold,
+    jobsPerPage,
+    errorRetentionHours,
+    latencyCapSeconds,
+  };
+}
+export async function readQueueInfra() {
+  const infra = await api.get<InfraSummary>("/judge/admin/queue/infra-summary");
+  return { warn: infra.warnCount, error: infra.errorCount };
 }
 export function readJobs(tab: string, page: number) {
   return api.get<QueueJobs>("/judge/admin/queue/jobs", { tab, page });
@@ -78,10 +106,16 @@ const STATE: Record<QueueSnapshot["status"], QueueState> = {
 /** Fields the live STOMP batch also carries, so it can refresh them without refetching the settings. */
 export function summaryFromSnapshot(
   snapshot: QueueSnapshot,
-  infra: InfraSummary,
+  infra: InfraSummary | null,
 ): Pick<
   QueueSummary,
-  "state" | "pendingCount" | "controls" | "latency" | "generatedAt" | "infra"
+  | "state"
+  | "pendingCount"
+  | "controls"
+  | "latency"
+  | "generatedAt"
+  | "infra"
+  | "grading"
 > {
   const seconds =
     snapshot.avgWaitMillis == null
@@ -96,19 +130,46 @@ export function summaryFromSnapshot(
     },
     latency: { seconds, label: seconds == null ? "—" : `${seconds}s` },
     generatedAt: Date.parse(snapshot.generatedAt),
-    infra: { warn: infra.warnCount, error: infra.errorCount },
+    infra: infra && { warn: infra.warnCount, error: infra.errorCount },
+    grading: gradingFrom(snapshot),
+  };
+}
+
+/** Never carries the previous batch over: a missing report is `consumers: null`, not the last numbers. */
+function gradingFrom(snapshot: QueueSnapshot): GradingBlock {
+  const reported = snapshot.consumers;
+  const last = reported?.lastScaling;
+  return {
+    consumers: reported
+      ? {
+          target: reported.target,
+          active: reported.active,
+          max: snapshot.workerAutoscaleMax,
+          lastScaling: last
+            ? {
+                at: Date.parse(last.at),
+                from: last.from,
+                to: last.to,
+                reason: last.reason,
+                pendingCount: last.pendingCount,
+              }
+            : null,
+        }
+      : null,
+    finishedLastMinute: snapshot.finishedLastMinute ?? 0,
+    estimatedClearSeconds: snapshot.estimatedClearSeconds ?? null,
   };
 }
 
 export function toQueueSummary(data: {
   snapshot: QueueSnapshot;
-  settings: QueueSettings;
-  infra: InfraSummary;
+  settings: QueueSettings | null;
+  infra: InfraSummary | null;
 }): QueueSummary {
   const { snapshot, settings } = data;
   return {
     ...summaryFromSnapshot(snapshot, data.infra),
-    settings: {
+    settings: settings && {
       autoscaleThreshold: settings.autoscaleJobThreshold,
       jobsPerPage: settings.jobsPerPage,
       errorRetentionHours: settings.errorRetentionHours,

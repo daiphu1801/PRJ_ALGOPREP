@@ -1,6 +1,6 @@
 # Test case QA — F2: giao bài và sự kiện lớp
 
-> 13 ca thiết kế cho AC-72–80; TDD F2, DD API §50–55, BR-18–20. Chưa thực thi. Dùng đồng hồ T0 cố định; mỗi ca chụp assignment, submission, Outbox và thống kê trước/sau.
+> 15 ca thiết kế cho AC-72–80, AC-96, AC-97 (hai ca cuối thêm 2026-11-23); TDD F2, DD API §50–55, BR-18–20. Chưa thực thi. Dùng đồng hồ T0 cố định; mỗi ca chụp assignment, submission, Outbox và thống kê trước/sau.
 
 ### TC-F2-AC72-01 — Danh sách tất cả gộp bài theo lớp, giữ bài rút
 | Field | Value |
@@ -44,7 +44,7 @@
 | Evidence | hai response, dữ liệu stats đầu vào. |
 | Design review | Đã review; chưa thực thi |
 
-### TC-F2-AC74-01 — Danh sách có thể giao bỏ bài hiện hành và bài không xuất bản
+### TC-F2-AC74-01 — Danh sách có thể giao liệt kê bài đang giao (`assigned = true`), bỏ bài không xuất bản
 | Field | Value |
 | :--- | :--- |
 | AC / DD source | AC-74; DD §52 |
@@ -53,10 +53,10 @@
 | Preconditions | I phụ trách A; P đang giao A; S từng giao rồi gỡ; T published chưa giao; U unpublished; V deleted; C lớp của J. |
 | Test data | Token I; `GET /instructor/classes/{A}/assignable-problems` và cùng route với C; P active A, S có `removed_at=T0-1d`, T/U/V chưa giao. |
 | Steps | GET assignable A và C bằng I. |
-| Expected | A có S,T; không P,U,V. C `403 PRB-005`, không lộ bài của J. |
+| Expected | A có P (`assigned=true`), S và T (`assigned=false`); không U,V; thứ tự theo `code`. C `403 PRB-005`, không lộ bài của J. Viết lại 2026-11-23 (`DEC-2026-1123-assign-problems-dedicated-screen`), trước đó "A có S,T; không P". |
 | Cleanup | Dọn fixture |
 | Evidence | responses và assignment rows. |
-| Design review | Đã review; chưa thực thi |
+| Design review | Đã review theo hợp đồng cũ; viết lại 2026-11-23, chưa thực thi |
 
 ### TC-F2-AC75-01 — Giao lô thành công từng phần, thử lại bỏ qua
 | Field | Value |
@@ -183,3 +183,31 @@
 | Cleanup | Dọn fixture |
 | Evidence | event IDs và DB before/after. |
 | Design review | Đã review; chưa thực thi |
+
+### TC-F2-AC96-01 — Lọc theo độ khó, chủ đề, từ khoá và phân trang
+| Field | Value |
+| :--- | :--- |
+| AC / DD source | AC-96; DD §52.2, PB52-N2, PB52-B2 |
+| Kind / priority | Normal + boundary, P1 |
+| Environment | API, DB |
+| Preconditions | I phụ trách A; 25 bài published ở hai mức khó L1, L2 và hai chủ đề T1, T2 (một bài có cả T1 và T2); P đang giao A và thuộc L1/T1; C lớp của J. |
+| Test data | Token I; `GET /instructor/classes/{A}/assignable-problems` với `levelCode=L1`; `topic=T2`; cả hai; thêm `q`; `levelCode=NOPE`; không tham số, `page` 0 và 1; cùng `levelCode=L1` với lớp C. |
+| Steps | GET từng tổ hợp bằng I. |
+| Expected | Mỗi bộ lọc chỉ giữ bài khớp đúng mã mức hoặc đúng tên chủ đề, các bộ lọc cộng dồn, P vẫn có mặt khi khớp (`assigned=true`); tổng và số trang tính trên tập đã lọc, trang 1 không lặp trang 0; `levelCode=NOPE` trả `items=[]` với `200`; không tham số trả cả 25 bài trên 2 trang; lớp C `403 PRB-005`. |
+| Cleanup | Dọn fixture |
+| Evidence | responses và `page` meta. |
+| Design review | Thiết kế 2026-11-23; chưa thực thi |
+
+### TC-F2-AC97-01 — Cờ `assigned` theo từng lớp và sau khi giao, gỡ
+| Field | Value |
+| :--- | :--- |
+| AC / DD source | AC-97; DD §52.3, §52.5, §53.3, PB52-N1, PB52-B1 |
+| Kind / priority | Normal + boundary, P0 |
+| Environment | API, DB |
+| Preconditions | I phụ trách A và B; P đang giao A; S từng giao A rồi gỡ (`removed_at=T0-1d`); T chưa giao; U unpublished đang giao A. |
+| Test data | Token I; GET assignable A và B; `POST /instructor/classes/{A}/assignments` với `{problemIds:[T]}` rồi `{problemIds:[P]}`; `DELETE /instructor/classes/{A}/assignments/{P}`; GET lại A. |
+| Steps | GET A và B; POST T vào A; POST P vào A; DELETE P khỏi A; GET A. |
+| Expected | Ban đầu A: P `true`, S `false`, T `false`, không U; B: P, S, T đều `false`. Sau POST T: T `true`. POST P (đã giao) vào `skippedIds`, không tạo dòng thứ hai. Sau DELETE P: P `false`. |
+| Cleanup | Dọn fixture |
+| Evidence | responses và assignment rows. |
+| Design review | Thiết kế 2026-11-23; chưa thực thi |

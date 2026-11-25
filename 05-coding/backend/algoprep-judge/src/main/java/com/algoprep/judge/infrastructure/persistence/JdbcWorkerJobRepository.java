@@ -3,6 +3,7 @@ package com.algoprep.judge.infrastructure.persistence;
 import com.algoprep.judge.domain.exception.WorkerPersistenceException;
 import com.algoprep.judge.domain.model.execution.WorkerControl;
 import com.algoprep.judge.domain.model.execution.WorkerJob;
+import com.algoprep.judge.domain.model.execution.WorkerReport;
 import com.algoprep.judge.domain.model.execution.WorkerSettings;
 import com.algoprep.judge.domain.ports.out.WorkerJobRepository;
 import java.util.Optional;
@@ -78,6 +79,44 @@ class JdbcWorkerJobRepository implements WorkerJobRepository {
               (r, n) ->
                   new WorkerControl(r.getBoolean(1), r.getBoolean(2), r.getInt(3), r.getLong(4)))
           .single();
+    } catch (RuntimeException e) {
+      throw new WorkerPersistenceException();
+    }
+  }
+
+  @Override
+  public void report(WorkerReport report) {
+    var scale = report.scale();
+    String columns =
+        scale == null
+            ? ""
+            : ",last_scale_at,last_scale_from,last_scale_to,last_scale_reason,last_scale_pending";
+    String values = scale == null ? "" : ",now(),:from,:to,:reason,:pending";
+    String updates =
+        scale == null
+            ? ""
+            : ",last_scale_at=EXCLUDED.last_scale_at,last_scale_from=EXCLUDED.last_scale_from,last_scale_to=EXCLUDED.last_scale_to,last_scale_reason=EXCLUDED.last_scale_reason,last_scale_pending=EXCLUDED.last_scale_pending";
+    try {
+      var statement =
+          jdbc.getObject()
+              .sql(
+                  "INSERT INTO judge.worker_status (id,consumers_target,consumers_active,reported_at"
+                      + columns
+                      + ") VALUES (1,:target,:active,now()"
+                      + values
+                      + ") ON CONFLICT (id) DO UPDATE SET consumers_target=EXCLUDED.consumers_target,"
+                      + "consumers_active=EXCLUDED.consumers_active,reported_at=EXCLUDED.reported_at"
+                      + updates)
+              .param("target", report.target())
+              .param("active", report.active());
+      if (scale != null) {
+        statement
+            .param("from", scale.from())
+            .param("to", scale.to())
+            .param("reason", scale.reason())
+            .param("pending", scale.pendingCount());
+      }
+      statement.update();
     } catch (RuntimeException e) {
       throw new WorkerPersistenceException();
     }

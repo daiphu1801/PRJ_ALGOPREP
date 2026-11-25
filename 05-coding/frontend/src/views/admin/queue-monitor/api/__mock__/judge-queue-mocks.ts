@@ -172,6 +172,8 @@ export function fetchQueueSummary(): QueueSummary {
     workers: page.workers,
     workerCount: page.workerCount,
     maxWorkers: page.maxWorkers,
+    // The mock keeps its illustrative worker list; the real "Luồng chấm" block has no mock (BR-SC-05).
+    grading: null,
     generatedAt: page.generatedAt,
     infra: countRecentInfraAlerts(),
   };

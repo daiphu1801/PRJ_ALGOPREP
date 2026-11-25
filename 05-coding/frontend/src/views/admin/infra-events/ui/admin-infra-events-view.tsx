@@ -25,9 +25,9 @@ import { toast } from "@/shared/lib/toast-store";
 import {
   Button,
   Card,
-  EmptyState,
   FilterBar,
   FilterMenu,
+  PageContainer,
   PageHeader,
   QueryError,
   Skeleton,
@@ -66,14 +66,21 @@ export function AdminInfraEventsView({
   const rangeInvalid = Boolean(
     filters.from && filters.to && filters.from > filters.to,
   );
+  const filtered = Boolean(
+    filters.q.trim() ||
+    filters.level !== "all" ||
+    filters.service !== "all" ||
+    filters.from ||
+    filters.to,
+  );
 
   return (
-    <div>
+    <PageContainer variant="content">
       <PageHeader
         title={t("title")}
         description={t("subtitle")}
         actions={
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             {/* BD ADM0404 A NO3 / EVT-5: back to the queue screen (UX review B6). */}
             <Button
               asChild
@@ -98,7 +105,7 @@ export function AdminInfraEventsView({
         }
       />
 
-      <Card className="min-w-0 px-[18px] py-4">
+      <Card className="flex min-w-0 grow flex-col px-[18px] py-4">
         <p className="mb-3 text-[12.5px] text-[var(--color-text-muted)]">
           {t("caption")}{" "}
           <Link
@@ -116,11 +123,6 @@ export function AdminInfraEventsView({
             onChange: (q) => change({ q }),
             maxLength: 100,
           }}
-          resultCount={
-            total == null
-              ? undefined
-              : t("resultCount", { shown: events.length, total })
-          }
         >
           <FilterMenu
             label={t("levelFilterLabel")}
@@ -143,67 +145,87 @@ export function AdminInfraEventsView({
               ...feed.services.map((name) => ({ value: name, label: name })),
             ]}
           />
-          <DateRangeFields
-            from={filters.from}
-            to={filters.to}
-            fromLabel={t("dateFrom")}
-            toLabel={t("dateTo")}
-            onFromChange={(from) => change({ from })}
-            onToChange={(to) => change({ to })}
-            invalid={rangeInvalid}
-          />
+          {filtered && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setFilters(NO_FILTERS)}
+            >
+              {t("clearFilters")}
+            </Button>
+          )}
         </FilterBar>
 
-        {feed.error ? (
-          <QueryError query={feed.query} />
-        ) : feed.isLoading ? (
-          <div className="flex flex-col gap-2" role="status">
-            {Array.from({ length: 8 }, (_, index) => (
-              <Skeleton key={index} className="h-[52px] w-full" />
-            ))}
+        <details className="mb-3 rounded-lg border border-[var(--color-border)] px-3 py-2">
+          <summary className="cursor-pointer text-sm font-medium">
+            {filters.from || filters.to
+              ? t("dateRangeActive", {
+                  from: filters.from || "…",
+                  to: filters.to || "…",
+                })
+              : t("dateRange")}
+          </summary>
+          <div className="mt-2">
+            <DateRangeFields
+              from={filters.from}
+              to={filters.to}
+              fromLabel={t("dateFrom")}
+              toLabel={t("dateTo")}
+              onFromChange={(from) => change({ from })}
+              onToChange={(to) => change({ to })}
+              invalid={rangeInvalid}
+            />
           </div>
-        ) : events.length === 0 ? (
-          <EmptyState>
-            <span className="flex flex-col items-center gap-2">
-              {t("emptyFiltered")}
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setFilters(NO_FILTERS)}
-              >
-                {t("clearFilters")}
-              </Button>
-            </span>
-          </EmptyState>
-        ) : (
-          <ul aria-label={t("listLabel")} className="flex flex-col gap-0.5">
-            {events.map((event) => (
-              <EventRow
-                key={event.id}
-                event={event}
-                levelLabel={t(`level.${event.level}`)}
-              />
-            ))}
-          </ul>
-        )}
+        </details>
 
-        <div className="mt-1.5 flex items-center gap-3 border-t border-[var(--color-border)] px-2.5 pt-3">
-          {total == null ? null : (
-            <span className="text-[12.5px] text-[var(--color-text-muted)]">
-              {t("pageLabel", { shown: events.length, total })}
-            </span>
+        <div className="grow border-t border-[var(--color-border)] pt-3">
+          {feed.error ? (
+            <QueryError query={feed.query} />
+          ) : feed.isLoading ? (
+            <div className="flex flex-col gap-2" role="status">
+              {Array.from({ length: 8 }, (_, index) => (
+                <Skeleton key={index} className="h-[52px] w-full" />
+              ))}
+            </div>
+          ) : events.length === 0 ? (
+            <p
+              role="status"
+              className="rounded-lg bg-[var(--color-track)] px-3 py-6 text-center text-sm text-[var(--color-text-muted)]"
+            >
+              {t(filtered ? "emptyFiltered" : "emptyUnfiltered")}
+            </p>
+          ) : (
+            <ul aria-label={t("listLabel")} className="flex flex-col gap-0.5">
+              {events.map((event) => (
+                <EventRow
+                  key={event.id}
+                  event={event}
+                  levelLabel={t(`level.${event.level}`)}
+                />
+              ))}
+            </ul>
           )}
-          <Button
-            variant="ghost"
-            size="sm"
-            className="ml-auto border border-[var(--color-border)]"
-            onClick={feed.loadMore}
-            disabled={!feed.hasMore || feed.loadingMore}
-          >
-            {t("loadMore", { count: 20 })}
-          </Button>
         </div>
+
+        {events.length > 0 && (
+          <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-[var(--color-border)] pt-3">
+            <span className="text-[12.5px] text-[var(--color-text-muted)]">
+              {total == null
+                ? t("loadedCount", { count: events.length })
+                : t("pageLabel", { shown: events.length, total })}
+            </span>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="ml-auto border border-[var(--color-border)]"
+              onClick={feed.loadMore}
+              disabled={!feed.hasMore || feed.loadingMore}
+            >
+              {t("loadMore", { count: 20 })}
+            </Button>
+          </div>
+        )}
       </Card>
-    </div>
+    </PageContainer>
   );
 }

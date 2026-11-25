@@ -25,7 +25,7 @@ class JdbcPromptTemplateRepository implements PromptTemplateRepository {
   private static final JsonMapper JSON = JsonMapper.builder().build();
   private static final Pattern VERSION = Pattern.compile("^v(\\d+)\\.(\\d+)$");
   private static final String COLUMNS =
-      "id, feature_code, version, status, system_instruction, model_id,"
+      "id, feature_code, version, status, system_instruction, model_id, max_tokens,"
           + " response_guards::text AS guards, response_schema_version, published_at, created_at";
   private static final String FEATURE_ORDER =
       "CASE feature_code WHEN 'SOLUTION_REVIEW' THEN 0 WHEN 'MOCK_INTERVIEW' THEN 1 ELSE 2 END";
@@ -99,10 +99,12 @@ class JdbcPromptTemplateRepository implements PromptTemplateRepository {
     return jdbc.getObject()
         .sql(
             "UPDATE ai.prompt_templates SET system_instruction = :instruction, model_id = :model,"
-                + " response_guards = CAST(:guards AS jsonb) WHERE id = :id RETURNING "
+                + " max_tokens = :maxTokens, response_guards = CAST(:guards AS jsonb)"
+                + " WHERE id = :id RETURNING "
                 + COLUMNS)
         .param("instruction", content.systemInstruction())
         .param("model", content.modelId())
+        .param("maxTokens", content.maxTokens())
         .param("guards", guardsJson(content.guards()))
         .param("id", draftId)
         .query(JdbcPromptTemplateRepository::map)
@@ -123,10 +125,12 @@ class JdbcPromptTemplateRepository implements PromptTemplateRepository {
         .sql(
             "UPDATE ai.prompt_templates SET status = 'ACTIVE', published_at = now(),"
                 + " system_instruction = :instruction, model_id = :model,"
-                + " response_guards = CAST(:guards AS jsonb) WHERE id = :id RETURNING "
+                + " max_tokens = :maxTokens, response_guards = CAST(:guards AS jsonb)"
+                + " WHERE id = :id RETURNING "
                 + COLUMNS)
         .param("instruction", content.systemInstruction())
         .param("model", content.modelId())
+        .param("maxTokens", content.maxTokens())
         .param("guards", guardsJson(content.guards()))
         .param("id", draftId)
         .query(JdbcPromptTemplateRepository::map)
@@ -140,11 +144,11 @@ class JdbcPromptTemplateRepository implements PromptTemplateRepository {
     return jdbc.getObject()
         .sql(
             "INSERT INTO ai.prompt_templates (id, feature_code, version, status, system_instruction,"
-                + " response_schema_version, model_id, response_guards, created_by, published_at)"
+                + " response_schema_version, model_id, max_tokens, response_guards, created_by, published_at)"
                 + " VALUES (:id, :feature, :version, :status, :instruction,"
                 + " (SELECT response_schema_version FROM ai.prompt_templates"
                 + "   WHERE feature_code = :feature ORDER BY created_at DESC LIMIT 1),"
-                + " :model, CAST(:guards AS jsonb), :actor,"
+                + " :model, :maxTokens, CAST(:guards AS jsonb), :actor,"
                 + " CASE WHEN CAST(:status AS text) = 'ACTIVE' THEN now() END) RETURNING "
                 + COLUMNS)
         .param("id", UUID.randomUUID())
@@ -153,6 +157,7 @@ class JdbcPromptTemplateRepository implements PromptTemplateRepository {
         .param("status", status.name())
         .param("instruction", content.systemInstruction())
         .param("model", content.modelId())
+        .param("maxTokens", content.maxTokens())
         .param("guards", guardsJson(content.guards()))
         .param("actor", actor)
         .query(JdbcPromptTemplateRepository::map)
@@ -199,7 +204,8 @@ class JdbcPromptTemplateRepository implements PromptTemplateRepository {
         new PromptContent(
             rs.getString("system_instruction"),
             rs.getString("model_id"),
-            guards(rs.getString("guards"))),
+            guards(rs.getString("guards")),
+            rs.getObject("max_tokens", Integer.class)),
         rs.getString("response_schema_version"),
         instant(rs, "published_at"),
         instant(rs, "created_at"));

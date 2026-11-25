@@ -62,11 +62,9 @@ test("a learner with submissions sees both halves with figures that match the da
     page.getByRole("heading", { name: m.greeting.title }),
   ).toBeVisible({ timeout: 15_000 });
 
-  // Dashboard half: the blocks of the prototype.
+  // Dashboard half: the blocks kept by DEC-2026-1123-student-dashboard-trim (radar and heatmap removed).
   for (const block of [
     m.daily.title,
-    m.radar.title,
-    m.activity.title,
     m.suggested.title,
     m.interviews.title,
     m.reviews.title,
@@ -94,9 +92,10 @@ test("a learner with submissions sees both halves with figures that match the da
   await expect(
     page.getByRole("table", { name: mp.topics.title, exact: true }),
   ).toBeVisible();
-  await expect(
-    page.getByRole("heading", { name: mp.focus.title }),
-  ).toBeVisible();
+  // "Nên ưu tiên" was removed with the radar (DEC-2026-1123-student-dashboard-trim): never two weakest topics.
+  await expect(page.getByRole("heading", { name: "Nên ưu tiên" })).toHaveCount(
+    0,
+  );
   // Area chrome: the footer belongs to every student screen.
   await expect(page.getByRole("contentinfo")).toBeVisible();
 });

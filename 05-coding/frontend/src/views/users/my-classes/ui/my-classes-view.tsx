@@ -5,10 +5,12 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import Link from "next/link";
+import { ArrowRight, UserRound } from "lucide-react";
 import { useMyClassProblems } from "@/entities/problem";
 import { isMockMode } from "@/shared/api";
 import {
-  formatClassSchedule,
+  classScheduleParts,
   useJoinClass,
   useMyClasses,
   type MyClass,
@@ -16,13 +18,15 @@ import {
 import { useApiErrorMessage, useT } from "@/shared/i18n";
 import { toast } from "@/shared/lib/toast-store";
 import {
+  Badge,
   Button,
   Card,
+  DataTable,
   EmptyState,
   QueryError,
   ProgressBar,
   TextField,
-  SeeAllLink,
+  type DataTableColumn,
 } from "@/shared/ui";
 
 // Server codes are 8 characters (02-bd/database/F1_identity.md mục 1.9); the cap leaves slack for pasted spaces.
@@ -52,6 +56,87 @@ export function MyClassesView() {
   const dayLabel = (day: number) => tm(`schedule.dayShort.${day}`);
   const list = classes.data ?? [];
 
+  const columns: DataTableColumn<MyClass>[] = [
+    {
+      key: "name",
+      width: "28%",
+      header: t("card.className"),
+      render: (klass) => (
+        <Link
+          href={`/classes/${klass.id}`}
+          aria-label={t("card.viewDetailOf", { name: klass.name })}
+          className="block truncate font-semibold hover:underline"
+          title={klass.name}
+        >
+          {klass.name}
+        </Link>
+      ),
+    },
+    {
+      key: "instructor",
+      header: t("card.instructor"),
+      width: "17%",
+      render: (klass) => (
+        <span className="flex items-center gap-1.5">
+          <UserRound
+            size={14}
+            className="shrink-0 text-[var(--color-text-muted)]"
+          />
+          <span className="truncate">{klass.instructorName}</span>
+        </span>
+      ),
+    },
+    {
+      key: "schedule",
+      header: t("card.schedule"),
+      width: "20%",
+      render: (klass) => {
+        const parts = classScheduleParts(klass.schedule, dayLabel);
+        return (
+          <span className="block text-[12.5px]">
+            <span className="block">{parts.when}</span>
+            {parts.room ? (
+              <span
+                className="block truncate text-[var(--color-text-muted)]"
+                title={parts.room}
+              >
+                {parts.room}
+              </span>
+            ) : null}
+          </span>
+        );
+      },
+    },
+    {
+      key: "progress",
+      header: t("detail.progress"),
+      width: "24%",
+      render: (klass) => <ClassProgressCell klass={klass} />,
+    },
+    {
+      key: "status",
+      header: t("card.status"),
+      width: "11%",
+      render: (klass) => <ClassStatusCell klass={klass} />,
+    },
+    {
+      key: "open",
+      header: <span className="sr-only">{t("card.viewDetail")}</span>,
+      width: "48px",
+      align: "right",
+      render: (klass) => (
+        <Link
+          href={`/classes/${klass.id}`}
+          tabIndex={-1}
+          aria-hidden
+          className="inline-flex text-[var(--color-text-muted)]"
+        >
+          <ArrowRight size={16} />
+        </Link>
+      ),
+    },
+  ];
+
   return (
     <div className="p-6">
       <div className="mb-4">
@@ -61,55 +146,62 @@ export function MyClassesView() {
         </p>
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_320px]">
-        <div className="grid min-w-0 gap-4">
-          {classes.isLoading ? (
-            <EmptyState>{t("loading")}</EmptyState>
-          ) : classes.isError ? (
-            <QueryError query={classes} />
-          ) : list.length === 0 ? (
-            <Card className="px-[18px] py-4">
-              <EmptyState>{t("empty")}</EmptyState>
-            </Card>
-          ) : (
-            list.map((klass) => (
-              <ClassCard
-                key={klass.id}
-                klass={klass}
-                schedule={formatClassSchedule(klass.schedule, dayLabel)}
-              />
-            ))
-          )}
-        </div>
-
-        <Card className="h-fit px-[18px] py-4">
-          <h2 className="text-sm font-semibold">{t("join.title")}</h2>
-          <p className="mb-3 mt-1 text-[12.5px] text-[var(--color-text-muted)]">
-            {t("join.hint")}
-          </p>
-          <form onSubmit={submitCode} className="grid gap-3">
+      <Card className="mb-4 px-[18px] py-3">
+        <form
+          onSubmit={submitCode}
+          className="flex flex-wrap items-center gap-3"
+        >
+          <div className="min-w-[200px] flex-1">
+            <h2 className="text-sm font-semibold">{t("join.title")}</h2>
+            <p className="text-[12.5px] text-[var(--color-text-muted)]">
+              {t("join.hint")}
+            </p>
+          </div>
+          <div className="w-full sm:w-[220px]">
             <TextField
               label={t("join.label")}
+              hideLabel
               value={code}
               maxLength={CODE_MAX_LENGTH}
               placeholder="K7P2M9QX"
               autoComplete="off"
               onChange={(event) => setCode(event.target.value)}
             />
-            <Button type="submit" disabled={join.isPending}>
-              {t("join.submit")}
-            </Button>
-          </form>
+          </div>
+          <Button type="submit" disabled={join.isPending}>
+            {t("join.submit")}
+          </Button>
+        </form>
+      </Card>
+
+      {classes.isLoading ? (
+        <EmptyState>{t("loading")}</EmptyState>
+      ) : classes.isError ? (
+        <QueryError query={classes} />
+      ) : list.length === 0 ? (
+        <Card className="px-[18px] py-4">
+          <EmptyState>{t("empty")}</EmptyState>
         </Card>
-      </div>
+      ) : (
+        <Card className="min-h-[calc(calc(100*var(--dvh1))-25rem)] min-w-0 px-[18px] py-3">
+          <DataTable
+            caption={t("title")}
+            columns={columns}
+            rows={list}
+            rowKey={(klass) => klass.id}
+            emptyMessage={t("empty")}
+            minWidth={860}
+          />
+        </Card>
+      )}
     </div>
   );
 }
 
-function ClassCard({ klass, schedule }: { klass: MyClass; schedule: string }) {
-  const t = useT("myClasses");
+// One first-page read per class; meta covers every page, never just the returned 20 rows. The status
+// and the progress cells both call this: react-query shares the one request.
+function useClassProgress(klass: MyClass) {
   const real = !isMockMode();
-  // One first-page read per class; meta covers every page, never just the returned 20 rows.
   const assignments = useMyClassProblems(klass.id, 1, real);
   const total = real
     ? (assignments.data?.meta?.totalAssigned ?? null)
@@ -117,63 +209,50 @@ function ClassCard({ klass, schedule }: { klass: MyClass; schedule: string }) {
   const solved = real
     ? (assignments.data?.meta?.solvedCount ?? null)
     : (klass.assignments ?? []).filter((a) => a.solved).length;
+  return { assignments, real, total, solved };
+}
+
+function ClassStatusCell({ klass }: { klass: MyClass }) {
+  const t = useT("myClasses");
+  const { total, solved } = useClassProgress(klass);
+  if (solved === null || total === null || total === 0) return null;
+  return solved >= total ? (
+    <Badge variant="success">{t("card.allDone")}</Badge>
+  ) : (
+    <Badge>{t("card.remaining", { count: total - solved })}</Badge>
+  );
+}
+
+function ClassProgressCell({ klass }: { klass: MyClass }) {
+  const t = useT("myClasses");
+  const { assignments, real, total, solved } = useClassProgress(klass);
+  if (real && assignments.isError) return <QueryError query={assignments} />;
+  if (real && assignments.isLoading) {
+    return (
+      <span className="text-[12px] text-[var(--color-text-muted)]">
+        {t("card.progressLoading")}
+      </span>
+    );
+  }
+  if (total === null || total === 0) return null;
   const progress =
     solved === null
-      ? t("card.assignedCount", { total: total ?? 0 })
-      : t("card.progress", { solved, total: total ?? 0 });
-
+      ? t("card.assignedCount", { total })
+      : t("card.progress", { solved, total });
   return (
-    <Card className="min-w-0 px-[18px] py-4">
-      <h2 className="text-base font-semibold">{klass.name}</h2>
-      {klass.description ? (
-        <p className="mt-1 text-[12.5px] text-[var(--color-text-muted)]">
-          {klass.description}
-        </p>
+    <div className="flex items-center gap-3">
+      {solved !== null ? (
+        <ProgressBar
+          value={solved}
+          max={total}
+          label={progress}
+          height={4}
+          className="min-w-0 flex-1"
+        />
       ) : null}
-      <dl className="mt-3 grid gap-1 text-[12.5px] sm:grid-cols-[110px_1fr]">
-        <dt className="text-[var(--color-text-muted)]">
-          {t("card.instructor")}
-        </dt>
-        <dd>{klass.instructorName}</dd>
-        {schedule ? (
-          <>
-            <dt className="text-[var(--color-text-muted)]">
-              {t("card.schedule")}
-            </dt>
-            <dd>{schedule}</dd>
-          </>
-        ) : null}
-        <dt className="text-[var(--color-text-muted)]">{t("card.joined")}</dt>
-        <dd>{klass.joinedAtLabel}</dd>
-      </dl>
-
-      {real && assignments.isError ? <QueryError query={assignments} /> : null}
-      {real && assignments.isLoading ? (
-        <p className="mt-4 text-[12px] text-[var(--color-text-muted)]">
-          {t("card.progressLoading")}
-        </p>
-      ) : total !== null && total > 0 ? (
-        <div className="mt-4">
-          {solved !== null ? (
-            <ProgressBar
-              value={solved}
-              max={total}
-              label={progress}
-              height={6}
-              className="mb-1.5"
-            />
-          ) : null}
-          <p className="text-[12px] text-[var(--color-text-muted)]">
-            {progress}
-          </p>
-        </div>
-      ) : null}
-      <SeeAllLink
-        href={`/classes/${klass.id}`}
-        aria-label={t("card.viewDetailOf", { name: klass.name })}
-      >
-        {t("card.viewDetail")}
-      </SeeAllLink>
-    </Card>
+      <span className="shrink-0 text-[12px] text-[var(--color-text-muted)]">
+        {progress}
+      </span>
+    </div>
   );
 }

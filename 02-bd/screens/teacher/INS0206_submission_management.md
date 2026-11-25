@@ -63,11 +63,11 @@
 | Mã chức năng RD | Chưa cấp mã `Fx-nn` (206-Q10, `DEC-2026-1014-instructor-submissions-list-rules` mục 10) |
 | Trục tài liệu | Màn hình (`02-bd/screens/`) |
 | Actor | A2 (`INSTRUCTOR`) |
-| Phiên bản | V0.7 |
+| Phiên bản | V0.8 |
 | Người tạo | Nhóm phát triển AlgoPrep |
 | Ngày tạo | 2026/10/14 |
 | Người cập nhật | Nhóm phát triển AlgoPrep |
-| Ngày cập nhật | 2026/11/18 |
+| Ngày cập nhật | 2026/11/23 |
 
 ---
 
@@ -82,6 +82,7 @@
 | V0.5 | Sheet 4.4 (Hiện trạng bản dựng NO 11) | Dựng prototype Phase 4-5 (bài giao theo lớp, phân trang 20, from=). Dòng 11: liên kết tên học viên còn trong lớp nay mang `?from=submissions`, nên trang chi tiết học viên (`INS0204`) sáng mục "Bài nộp" ở sidebar (khớp Sheet 9 NO 6). Không đổi yêu cầu hay quyết định thiết kế. **Chưa duyệt hình** | 2026/10/18 | AI |
 | V0.6 | Sheet 4 (4.2, 4.4 NO 13), 5 (B NO 2), 7 (7.1 NO 19, 7.2 NO 7, 7.3 NO 4) | Sửa 2026-11-18 (F1-35, `DEC-2026-1117-user-avatar-upload`, chưa duyệt hình). Cột "Học viên" của bảng bài nộp nay hiện ảnh đại diện thật (hoặc chữ viết tắt khi chưa có ảnh hoặc ảnh lỗi), đọc `avatarVersion` của `ListInstructorSubmissions` (F4 mục 13.3). | 2026/11/18 | Claude |
 | V0.7 | Sheet 3 (đích Xem bài nộp), 4.5 (bảng slice) | Sửa 2026-11-18 (chưa duyệt hình). Ghi chú học viên đã rời lớp: trang kết quả giữ tên, ảnh, tên lớp trong thẻ ngữ cảnh và có huy hiệu "Đã rời lớp" (theo `USR0201` V0.16); bảng danh sách của INS0206 không đổi (vẫn hiện ảnh). Sửa bảng slice: bỏ nhắc `initialsOfClassStudent` mà view không dùng. | 2026/11/18 | Claude |
+| V0.8 | Sheet 4.4 (vùng C, Hiện trạng bản dựng NO 14) | Sửa 2026/11/23, **chưa duyệt hình, RD không đổi, chỉ trình bày**: bảng bài nộp bỏ cuộn ngang (`DataTable minWidth={0}`, trước là 960). Ở cửa sổ rộng 1100px bảng không còn cuộn ngang; chữ dài xuống dòng (tối đa hai dòng). Mã: `05-coding/frontend/src/views/teacher/submission-management/ui/submission-management-view.tsx:268`. Ảnh chụp: `06-plan/reports/261123-0030-giao-bai-man-rieng/img-cuon-ngang/` (`ins0206`) | 2026/11/23 | AI |
 
 ---
 
@@ -275,7 +276,7 @@ Bố cục luồng dọc một cột trong container `max-width: 1320px` của k
 | Khung điều hướng + chân trang | Khung chung | `_shell.md`; mục "Bài nộp" sáng [Nguồn: 05-coding/frontend/e2e/instructor-submission-readonly.spec.ts:64-67] |
 | A — Đầu trang | `submission-management-view.tsx:161-164` | Tiêu đề "Bài nộp" và dòng mô tả. **Không có dải thẻ số liệu** (REQ-09) [Nguồn: submission-management-view.tsx:159-252 không có thẻ số liệu] |
 | B — Thanh lọc | `submission-management-view.tsx:167-214` | Một hàng gập dòng: ô tìm kiếm (giãn), menu lọc Lớp, menu lọc Kết quả, số dòng khớp ở mép phải |
-| C — Bảng bài nộp | `submission-management-view.tsx:87-157,216-230` | Cột: Học viên, Lớp, Bài tập, Ngôn ngữ, Trạng thái, Tỉ lệ testcase, Nộp lúc, icon Xem bài nộp. Bề rộng tối thiểu 960px, cuộn ngang khi hẹp |
+| C — Bảng bài nộp | `submission-management-view.tsx:87-157,216-230` | Cột: Học viên, Lớp, Bài tập, Ngôn ngữ, Trạng thái, Tỉ lệ testcase, Nộp lúc, icon Xem bài nộp. Không đặt bề rộng tối thiểu (`minWidth={0}` từ 2026/11/23, trước là 960px): ở cửa sổ rộng 1100px không cuộn ngang, chữ dài xuống dòng (xem Hiện trạng bản dựng NO 14) |
 | D — Phân trang | `submission-management-view.tsx:232-251` | Nút Trước/Sau và dòng "Trang {n} / {tổng}" |
 | E — Trạng thái thay chỗ bảng | `submission-management-view.tsx:221-228` | Khung chờ, rỗng, lỗi (bản dựng chỉ có một thông điệp rỗng chung) |
 
@@ -301,6 +302,7 @@ Bảng này ghi chỗ bản dựng lệch thiết kế ở trên; **không phả
 | 11 | Cột Lớp và liên kết tên học viên còn trong lớp đúng thiết kế: liên kết sang `INS0204` `/instructor/classes/{classId}/students/{studentId}?from=submissions` (cập nhật 2026/10/18: thêm `from=submissions`; `instructorActiveHrefOverride` sáng "Bài nộp" cho route này, test `instructor-sidebar.test.ts:21-32`; chưa duyệt hình). Nút Xem bài nộp mang `?studentId=&classId=&from=submissions` (Sheet 3). Trang kết quả giảng viên có breadcrumb `Bài nộp / Lượt nộp`: mở từ danh sách thì bấm mục đầu gọi `router.back()` nên bộ lọc, ô tìm và trang của danh sách được khôi phục; sidebar giữ sáng "Bài nộp". Không còn tham số `from` hay trang kết quả là nợ ở dòng này. Phần còn nợ ở phía trang kết quả (nguồn chủ lượt nộp từ lượt nộp, 404 theo cửa sổ lớp) nằm ở BD `USR0201` mục "Vùng giảng viên (A2)", Hiện trạng NO 1, 4, 6 | `submission-management-view.tsx:104-111,155-165`; `views/teacher/submission-context/ui/instructor-submission-context.tsx:59-82`; `widgets/app-shell/ui/instructor-sidebar.tsx:46-64` | Khớp REQ-08, REQ-17; Sheet 3 thêm `from=submissions` | Phần liên kết tên, tham số `from`, breadcrumb và sidebar: Đã dựng, chưa duyệt hình | Cập nhật 2026/10/14. Chỉ lùi lịch sử khi `from=submissions` có mặt và còn lịch sử; không còn lịch sử thì đi thẳng `/instructor/submissions` (mất bộ lọc). Chưa có ảnh Playwright chụp lại |
 | 12 | Quy tắc chọn lớp "lần giao mới nhất không sau `submitted_at`" (mục 4.1, Phạm vi) **chưa mô hình hoá**: mỗi dòng lấy lớp của chính học viên (`student.classId`), nên không có trường hợp một học viên ở hai lớp cùng giao một bài | `model/rows.ts:49-54` | Gắn lượt nộp với lớp có `assigned_at` mới nhất không sau `submitted_at` (`DEC-2026-1014-instructor-submissions-list-details`) | Còn nợ | Dữ liệu mẫu không có học viên ở hai lớp; quy tắc thuộc truy vấn máy chủ, DD chốt |
 | 13 | Cột "Học viên" hiện ảnh đại diện (`UserAvatar` cỡ nhỏ) trước tên, theo `avatarVersion` của từng dòng; chưa có ảnh hoặc ảnh lỗi thì chữ viết tắt, cả dòng học viên đã rời lớp | `submission-management-view.tsx:107-112`; `features/submission-rows/api/instructor-submissions.ts:30,49`; `features/submission-rows/model/rows.ts:58` | Item B NO 2 (V0.6) | Đã dựng 2026-11-17, chưa duyệt hình | Không có nợ riêng |
+| 14 | Bảng bài nộp không cuộn ngang: `DataTable minWidth={0}` (trước là 960); ở cửa sổ rộng 1100px bảng vừa khung, chữ dài xuống dòng (tối đa hai dòng). Chứng cứ: ảnh chụp `ins0206` trong `06-plan/reports/261123-0030-giao-bai-man-rieng/img-cuon-ngang/` | `submission-management-view.tsx:268` | Trình bày, không đổi yêu cầu | Đã dựng 2026/11/23, chưa duyệt hình | Không có nợ riêng |
 
 [Nguồn: 05-coding/frontend/src/views/teacher/submission-management/ui/submission-management-view.tsx; model/rows.ts; model/rows.test.ts;
 05-coding/frontend/e2e/instructor-submission-readonly.spec.ts:49-89]

@@ -6,6 +6,7 @@ import com.algoprep.judge.application.ports.in.queue.ListQueueJobsUseCase;
 import com.algoprep.judge.domain.model.queue.QueueMonitoring.Jobs;
 import com.algoprep.judge.domain.model.queue.QueueMonitoring.Snapshot;
 import com.algoprep.judge.domain.ports.out.QueueMonitorRepository;
+import com.algoprep.judge.domain.ports.out.SubmissionReadRepository;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -16,11 +17,15 @@ import org.springframework.transaction.annotation.Transactional;
 class GetQueueMonitorQueryHandler
     implements GetQueueSnapshotUseCase, ListQueueJobsUseCase, InitializingBean {
   private final QueueMonitorRepository repository;
+  private final SubmissionReadRepository submissions;
   private final int maximum;
 
   GetQueueMonitorQueryHandler(
-      QueueMonitorRepository repository, @Value("${judge.autoscale.max-workers:8}") int maximum) {
+      QueueMonitorRepository repository,
+      SubmissionReadRepository submissions,
+      @Value("${judge.autoscale.max-workers:8}") int maximum) {
     this.repository = repository;
+    this.submissions = submissions;
     this.maximum = maximum;
   }
 
@@ -34,7 +39,15 @@ class GetQueueMonitorQueryHandler
   @Override
   @Transactional(readOnly = true, isolation = Isolation.REPEATABLE_READ)
   public Snapshot read() {
-    return Snapshot.from(repository.snapshot(), maximum);
+    var facts = repository.snapshot();
+    // Same throughput and formula as the learner's queue estimate
+    // (DEC-2026-1115-f4-queue-wait-in-progress-snapshot).
+    long finished = submissions.finishedLastMinute();
+    return Snapshot.from(
+        facts,
+        maximum,
+        finished,
+        SubmissionReadProjection.estimate(facts.pendingCount(), finished));
   }
 
   @Override

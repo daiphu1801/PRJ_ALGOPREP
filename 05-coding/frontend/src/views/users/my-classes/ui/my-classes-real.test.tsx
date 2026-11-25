@@ -49,13 +49,16 @@ describe("MyClassesView with the real API", () => {
     apiMock.get.mockResolvedValue({ items: [MINE] });
   });
 
-  it("lists the learner's classes with the instructor and the join date, and no progress bar", async () => {
+  it("lists the learner's classes as rows with the instructor, schedule and a link, and no progress bar", async () => {
     render(withTestProviders(<MyClassesView />));
 
     expect(await screen.findByText(MINE.name)).toBeInTheDocument();
     expect(apiMock.get).toHaveBeenCalledWith("/identity/me/classes");
     expect(screen.getByText("Thầy Nam")).toBeInTheDocument();
-    expect(screen.getByText("01/11/2026")).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: /Lập trình Java K21/ }),
+    ).toHaveAttribute("href", "/classes/c1");
+    expect(screen.getByText(/19:00–21:00/)).toBeInTheDocument();
     expect(screen.queryByText(/Đã xong/)).toBeNull();
   });
 

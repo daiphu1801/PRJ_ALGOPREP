@@ -61,6 +61,11 @@ export type AcceptedSubmissionOption = {
   id: string;
   problemTitle: string;
   language: string;
+  /** ISO time of the Accepted submission (F4 #23 `submittedAt`); tells apart two submissions of one problem. */
+  submittedAt?: string;
+  /** Problem code and its level label, when F2 metadata answered (F4 #23 `problem`). */
+  problemCode?: string;
+  levelLabel?: string;
 };
 
 export type BankQuestionOption = {

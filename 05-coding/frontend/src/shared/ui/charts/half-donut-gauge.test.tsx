@@ -17,6 +17,16 @@ describe("HalfDonutGauge", () => {
     expect(screen.getByText(/WA — 40%/)).toBeInTheDocument();
   });
 
+  it("draws the center content inside the half circle only", () => {
+    const slices = [{ label: "AC", value: 1, colorVar: "--color-primary" }];
+    const { rerender } = render(
+      <HalfDonutGauge slices={slices} center={<b>89%</b>} />,
+    );
+    expect(screen.getByText("89%")).toBeInTheDocument();
+    rerender(<HalfDonutGauge slices={slices} center={<b>89%</b>} fullCircle />);
+    expect(screen.queryByText("89%")).not.toBeInTheDocument();
+  });
+
   it("wholePercents always sums to 100, giving leftover points to the largest remainder", () => {
     // Rounding each third alone gives 33 + 33 + 33 = 99.
     expect(wholePercents([1, 1, 1]).reduce((a, b) => a + b, 0)).toBe(100);

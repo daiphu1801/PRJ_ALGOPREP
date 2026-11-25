@@ -10,8 +10,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
-import { formatClassSchedule, useMyClass } from "@/entities/class";
+import { ArrowLeft, CalendarClock, MapPin, UserRound } from "lucide-react";
+import { classScheduleParts, useMyClass } from "@/entities/class";
 import { useMyClassProblems, type ClassProblemRow } from "@/entities/problem";
 import { useLocale, useT } from "@/shared/i18n";
 import { formatDateVN } from "@/shared/lib";
@@ -36,11 +36,22 @@ export function MyClassDetailView({ classId }: { classId: string }) {
   const classQuery = useMyClass(classId);
   const { data: klass, isLoading } = classQuery;
   const [page, setPage] = useState(1);
+  const [expanded, setExpanded] = useState(false);
   // Real data only: the class of the mock carries its own assignments.
   const problemsQuery = useMyClassProblems(
     classId,
     page,
     Boolean(klass) && klass?.assignments === undefined,
+  );
+
+  const DoLink = ({ href, title }: { href: string; title: string }) => (
+    <Link
+      href={href}
+      aria-label={`${t("detail.doIt")} ${title}`}
+      className="inline-flex items-center rounded-full border border-[var(--color-border)] px-3 py-1 text-[12px] font-semibold hover:bg-[var(--color-surface-hover)]"
+    >
+      {t("detail.doIt")}
+    </Link>
   );
 
   const back = (
@@ -75,14 +86,9 @@ export function MyClassDetailView({ classId }: { classId: string }) {
   const assignments = klass.assignments;
   const solved = (assignments ?? []).filter((a) => a.solved).length;
   const total = assignments?.length ?? 0;
-  const progress = t("card.progress", { solved, total });
   const classProblems = problemsQuery.data;
   const totalAssigned = classProblems?.meta.totalAssigned ?? 0;
   const solvedCount = classProblems?.meta.solvedCount ?? null;
-  const schedule = formatClassSchedule(klass.schedule, (day) =>
-    tm(`schedule.dayShort.${day}`),
-  );
-
   const columns: DataTableColumn<MyClassAssignment>[] = [
     {
       key: "title",
@@ -116,6 +122,16 @@ export function MyClassDetailView({ classId }: { classId: string }) {
         </Badge>
       ),
     },
+    {
+      key: "action",
+      header: <span className="sr-only">{t("detail.doIt")}</span>,
+      width: "110px",
+      align: "right",
+      render: (a) =>
+        a.solved ? null : (
+          <DoLink href={`/problems/${a.problemId}`} title={a.title} />
+        ),
+    },
   ];
 
   const stateKey = {
@@ -145,6 +161,14 @@ export function MyClassDetailView({ classId }: { classId: string }) {
         ),
     },
     {
+      key: "level",
+      header: t("detail.colLevel"),
+      width: "110px",
+      render: (row) => (
+        <span className="text-[12.5px]">{row.levelDisplayName}</span>
+      ),
+    },
+    {
       key: "assignedAt",
       header: t("detail.colAssignedAt"),
       width: "130px",
@@ -164,144 +188,196 @@ export function MyClassDetailView({ classId }: { classId: string }) {
         </Badge>
       ),
     },
+    {
+      key: "action",
+      header: <span className="sr-only">{t("detail.doIt")}</span>,
+      width: "110px",
+      align: "right",
+      render: (row) =>
+        row.withdrawn || row.solveState === "solved" ? null : (
+          <DoLink href={`/problems/${row.problemId}`} title={row.title} />
+        ),
+    },
   ];
 
-  const info: [string, string][] = [
-    [t("card.instructor"), klass.instructorName],
-    [t("card.schedule"), schedule || t("detail.noSchedule")],
-    [t("card.joined"), klass.joinedAtLabel],
-  ];
+  const parts = classScheduleParts(klass.schedule, (day) =>
+    tm(`schedule.dayShort.${day}`),
+  );
+  const shownTotal = assignments ? total : totalAssigned;
+  const shownSolved = assignments ? solved : solvedCount;
+  const done =
+    shownSolved !== null && shownTotal > 0 && shownSolved >= shownTotal;
+  const remaining = shownSolved === null ? 0 : shownTotal - shownSolved;
+  const longDescription = (klass.description?.length ?? 0) > 160;
 
   return (
     <div className="p-6">
       <div className="mb-4 flex items-start gap-3">
         {back}
         <div className="min-w-0">
-          <h1 className="text-lg font-bold tracking-tight">{klass.name}</h1>
+          <div className="flex flex-wrap items-center gap-2">
+            <h1 className="text-lg font-bold tracking-tight">{klass.name}</h1>
+            {done ? (
+              <Badge variant="success">{t("card.allDone")}</Badge>
+            ) : remaining > 0 ? (
+              <Badge>{t("card.remaining", { count: remaining })}</Badge>
+            ) : null}
+          </div>
           {klass.description ? (
-            <p className="text-[12.5px] text-[var(--color-text-muted)]">
-              {klass.description}
-            </p>
+            <>
+              <p
+                className={
+                  "max-w-3xl text-[12.5px] text-[var(--color-text-muted)] " +
+                  (expanded ? "" : "line-clamp-2")
+                }
+              >
+                {klass.description}
+              </p>
+              {longDescription ? (
+                <button
+                  type="button"
+                  onClick={() => setExpanded((value) => !value)}
+                  className="mt-0.5 text-[12px] font-semibold text-[var(--color-primary)] hover:underline"
+                >
+                  {t(expanded ? "detail.showLess" : "detail.showMore")}
+                </button>
+              ) : null}
+            </>
           ) : null}
         </div>
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-[320px_minmax(0,1fr)]">
-        <div className="grid h-fit gap-4">
-          <Card className="px-[18px] py-4">
-            <h2 className="mb-2 text-sm font-semibold">{t("detail.info")}</h2>
-            <dl className="grid gap-2 text-[12.5px]">
-              {info.map(([label, value]) => (
-                <div key={label}>
-                  <dt className="text-[var(--color-text-muted)]">{label}</dt>
-                  <dd className="font-medium">{value}</dd>
-                </div>
-              ))}
-            </dl>
-          </Card>
-          {assignments ? (
-            <Card className="px-[18px] py-4">
-              <h2 className="mb-2 text-sm font-semibold">
-                {t("detail.progress")}
-              </h2>
-              <ProgressBar
-                value={solved}
-                max={Math.max(total, 1)}
-                label={progress}
-                height={8}
-                className="mb-1.5"
-              />
-              <p className="text-[12.5px] text-[var(--color-text-muted)]">
-                {progress}
-              </p>
-            </Card>
-          ) : null}
-        </div>
+      <Card className="mb-4 px-[18px] py-4">
+        <h2 className="sr-only">{t("detail.info")}</h2>
+        <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(220px,0.8fr)]">
+          <dl className="text-[12.5px]">
+            <dt className="text-[var(--color-text-muted)]">
+              {t("card.instructor")}
+            </dt>
+            <dd className="mt-0.5 flex items-center gap-1.5 text-[13.5px] font-medium">
+              <UserRound size={14} className="text-[var(--color-text-muted)]" />
+              {klass.instructorName}
+            </dd>
+            <dt className="mt-3 text-[var(--color-text-muted)]">
+              {t("card.joined")}
+            </dt>
+            <dd className="mt-0.5 font-medium">{klass.joinedAtLabel}</dd>
+          </dl>
 
-        {assignments === undefined ? (
-          <Card className="min-w-0 px-[18px] py-4">
-            <h2 className="mb-3 text-sm font-semibold">
-              {t("card.assignments")}
-            </h2>
-            {problemsQuery.isError ? (
-              <QueryError query={problemsQuery} />
-            ) : !classProblems ? (
-              <Skeleton className="h-24" />
+          <dl className="text-[12.5px]">
+            <dt className="text-[var(--color-text-muted)]">
+              {t("card.schedule")}
+            </dt>
+            <dd className="mt-1">
+              {parts.when || parts.room || parts.period ? (
+                <span className="flex flex-wrap gap-1.5">
+                  {parts.when ? (
+                    <Badge>
+                      <CalendarClock size={12} />
+                      {parts.when}
+                    </Badge>
+                  ) : null}
+                  {parts.room ? (
+                    <Badge>
+                      <MapPin size={12} />
+                      {parts.room}
+                    </Badge>
+                  ) : null}
+                  {parts.period ? <Badge>{parts.period}</Badge> : null}
+                </span>
+              ) : (
+                <span className="text-[var(--color-text-muted)]">
+                  {t("detail.noSchedule")}
+                </span>
+              )}
+            </dd>
+            {parts.note ? (
+              <dd className="mt-2 text-[var(--color-text-muted)]">
+                {parts.note}
+              </dd>
+            ) : null}
+          </dl>
+
+          <div>
+            <h3 className="text-[12.5px] text-[var(--color-text-muted)]">
+              {t("detail.progress")}
+            </h3>
+            {shownSolved === null ? (
+              totalAssigned > 0 ? (
+                <p className="mt-1 text-[12.5px] text-[var(--color-text-muted)]">
+                  {t("detail.progressUnknown", { total: shownTotal })}
+                </p>
+              ) : null
             ) : (
               <>
-                {solvedCount === null ? (
-                  <p className="mb-3 text-[12.5px] text-[var(--color-text-muted)]">
-                    {t("detail.progressUnknown", { total: totalAssigned })}
-                  </p>
-                ) : (
-                  <div className="mb-3">
-                    <ProgressBar
-                      value={solvedCount}
-                      max={Math.max(totalAssigned, 1)}
-                      label={t("card.progress", {
-                        solved: solvedCount,
-                        total: totalAssigned,
-                      })}
-                      height={8}
-                      className="mb-1.5"
-                    />
-                    <p className="text-[12.5px] text-[var(--color-text-muted)]">
-                      {t("card.progress", {
-                        solved: solvedCount,
-                        total: totalAssigned,
-                      })}
-                    </p>
-                  </div>
-                )}
-                {totalAssigned === 0 ? (
-                  <EmptyState>{t("card.noAssignments")}</EmptyState>
-                ) : (
-                  <>
-                    <DataTable
-                      columns={problemColumns}
-                      rows={classProblems.items}
-                      rowKey={(row) => row.problemId}
-                      caption={t("card.assignments")}
-                      emptyMessage={t("card.noAssignments")}
-                    />
-                    {classProblems.page.totalPages > 1 ? (
-                      <Pagination
-                        page={classProblems.page.number}
-                        pageSize={classProblems.page.size}
-                        total={classProblems.page.totalItems}
-                        onPageChange={setPage}
-                        summary={t("detail.pageSummary", {
-                          page: classProblems.page.number,
-                          total: classProblems.page.totalPages,
-                        })}
-                        previousLabel={t("detail.previous")}
-                        nextLabel={t("detail.next")}
-                      />
-                    ) : null}
-                  </>
-                )}
+                <p className="mt-0.5 text-[13.5px] font-medium">
+                  {t("card.progress", {
+                    solved: shownSolved,
+                    total: shownTotal,
+                  })}
+                </p>
+                <ProgressBar
+                  value={shownSolved}
+                  max={Math.max(shownTotal, 1)}
+                  label={t("card.progress", {
+                    solved: shownSolved,
+                    total: shownTotal,
+                  })}
+                  height={6}
+                  className="mt-2"
+                />
               </>
             )}
-          </Card>
-        ) : (
-          <Card className="min-w-0 px-[18px] py-4">
-            <h2 className="mb-3 text-sm font-semibold">
-              {t("card.assignments")}
-            </h2>
-            {total === 0 ? (
-              <EmptyState>{t("card.noAssignments")}</EmptyState>
-            ) : (
+          </div>
+        </div>
+      </Card>
+
+      <Card className="min-w-0 px-[18px] py-4">
+        <h2 className="mb-3 text-sm font-semibold">{t("card.assignments")}</h2>
+        {assignments === undefined ? (
+          problemsQuery.isError ? (
+            <QueryError query={problemsQuery} />
+          ) : !classProblems ? (
+            <Skeleton className="h-24" />
+          ) : totalAssigned === 0 ? (
+            <EmptyState>{t("card.noAssignments")}</EmptyState>
+          ) : (
+            <>
               <DataTable
-                columns={columns}
-                rows={assignments}
-                rowKey={(a) => a.problemId}
+                columns={problemColumns}
+                rows={classProblems.items}
+                rowKey={(row) => row.problemId}
                 caption={t("card.assignments")}
                 emptyMessage={t("card.noAssignments")}
               />
-            )}
-          </Card>
+              {classProblems.page.totalPages > 1 ? (
+                <Pagination
+                  page={classProblems.page.number}
+                  pageSize={classProblems.page.size}
+                  total={classProblems.page.totalItems}
+                  onPageChange={setPage}
+                  summary={t("detail.pageSummary", {
+                    page: classProblems.page.number,
+                    total: classProblems.page.totalPages,
+                  })}
+                  previousLabel={t("detail.previous")}
+                  nextLabel={t("detail.next")}
+                />
+              ) : null}
+            </>
+          )
+        ) : total === 0 ? (
+          <EmptyState>{t("card.noAssignments")}</EmptyState>
+        ) : (
+          <DataTable
+            columns={columns}
+            rows={assignments}
+            rowKey={(a) => a.problemId}
+            caption={t("card.assignments")}
+            emptyMessage={t("card.noAssignments")}
+          />
         )}
-      </div>
+      </Card>
     </div>
   );
 }

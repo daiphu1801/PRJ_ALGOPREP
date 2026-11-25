@@ -1,4 +1,4 @@
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { api, isMockMode } from "@/shared/api";
 import type { SubmissionStatus, SubmissionLanguage } from "../model/types";
 import { SUBMISSION_LANGUAGE_LABEL } from "../model/result-filter";
@@ -15,19 +15,21 @@ type HistoryPage = {
     submittedAt: string;
   }[];
 };
+/** One server page (20 rows) of the student's history in the class; the previous page stays while the next loads. */
 export function useStudentClassSubmissionHistory(
   classId: string,
   studentId: string,
+  pageNumber: number,
 ) {
-  return useInfiniteQuery({
-    queryKey: ["submission", "class-history", classId, studentId],
-    initialPageParam: 1,
+  return useQuery({
+    queryKey: ["submission", "class-history", classId, studentId, pageNumber],
     enabled: !isMockMode(),
     retry: false,
-    queryFn: async ({ pageParam }) => {
+    placeholderData: keepPreviousData,
+    queryFn: async () => {
       const page = await api.get<HistoryPage>(
         `/judge/instructor/classes/${encodeURIComponent(classId)}/students/${encodeURIComponent(studentId)}/submissions`,
-        { page: pageParam },
+        { page: pageNumber },
       );
       return {
         ...page,
@@ -49,7 +51,5 @@ export function useStudentClassSubmissionHistory(
         })),
       };
     },
-    getNextPageParam: (page) =>
-      page.page * page.pageSize < page.totalCount ? page.page + 1 : undefined,
   });
 }

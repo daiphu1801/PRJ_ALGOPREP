@@ -106,11 +106,7 @@ class GenerateTestcaseScriptCommandHandler implements GenerateTestcaseScriptUseC
               TestcaseScriptSchema.NAME,
               template.responseSchemaVersion(),
               TestcaseScriptSchema.JSON),
-          new CallOptions(
-              template.modelId(),
-              CallOptions.GENERATE_TESTCASE_MAX_TOKENS,
-              TOTAL_TIMEOUT,
-              TOTAL_TIMEOUT));
+          new CallOptions(template.modelId(), template.maxTokens(), TOTAL_TIMEOUT, TOTAL_TIMEOUT));
     } catch (AiProviderUnavailableException | AiInvalidResponseException failure) {
       throw failure;
     } catch (RuntimeException failure) {
@@ -126,7 +122,8 @@ class GenerateTestcaseScriptCommandHandler implements GenerateTestcaseScriptUseC
         t.systemInstruction() + "\n" + SCRIPT_CONTRACT,
         t.guards(),
         t.modelId(),
-        t.responseSchemaVersion());
+        t.responseSchemaVersion(),
+        t.maxTokens());
   }
 
   static String problemText(TestcaseScriptGeneration.Input input) {

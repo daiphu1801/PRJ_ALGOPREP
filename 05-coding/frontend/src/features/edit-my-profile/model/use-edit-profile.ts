@@ -68,6 +68,7 @@ export type SaveProfileResult =
 export function useEditProfile(
   profile: UserProfile,
   onProfileSaved: (next: UserProfile) => void,
+  showTargetPosition: boolean,
 ) {
   const [saved, setSaved] = useState(() => toFormValues(profile));
   const [fields, setFields] = useState(saved);
@@ -103,7 +104,7 @@ export function useEditProfile(
       displayName: fields.displayName,
       schoolOrCompany: fields.schoolOrCompany,
       currentPosition: fields.currentPosition,
-      targetPosition: fields.targetPosition,
+      ...(showTargetPosition ? { targetPosition: fields.targetPosition } : {}),
       phone: fields.phone,
     };
     const parsed = profileFormSchema.safeParse(input);
@@ -163,7 +164,7 @@ export function useEditProfile(
     } finally {
       setIsSaving(false);
     }
-  }, [fields, saved.email, onProfileSaved]);
+  }, [fields, saved.email, onProfileSaved, showTargetPosition]);
 
   const closeEmailOtp = useCallback(() => setEmailOtpTarget(null), []);
 

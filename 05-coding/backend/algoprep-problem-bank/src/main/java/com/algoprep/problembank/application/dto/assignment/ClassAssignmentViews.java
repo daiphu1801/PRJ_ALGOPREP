@@ -33,7 +33,8 @@ public final class ClassAssignmentViews {
       String title,
       String levelCode,
       String levelDisplayName,
-      List<String> topicNames) {}
+      List<String> topicNames,
+      boolean assigned) {}
 
   /** Section 52. */
   public record AssignableList(List<AssignableItem> items, PageMeta page) {}

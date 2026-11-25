@@ -1,18 +1,20 @@
 // PROTOTYPE — no DD yet. See 06-plan/PROTOTYPE_DEBT.md
 //
 // Instructor overview (INS0101), rebuilt 2026-10-18 on the owner's request "đẹp và đầy đủ" from shared parts
-// (shared first): row 1 = two figure cards (Lớp phụ trách, Tổng học viên) + the half-donut of learners who are
-// active or absent; row 2 = "Lớp của tôi" (completion bars), "Bài giao cho lớp" (submission bars), "Lịch dạy
-// trong tuần" (agenda from the class schedules); row 3 = daily submission chart, "Bài nộp gần đây" and "Hoạt động
-// gần đây". The old blocks "Cần chấm tay", the card "Điểm TB lớp" and the chart "Tiến độ học viên" stay dropped
-// (DEC-2026-1013-remove-instructor-manual-grading, DEC-2026-1014-instructor-overview-trim-and-nav-label).
-// Not yet approved by the owner: the three added blocks (daily chart, recent submissions, weekly schedule).
+// (shared first), compacted 2026-11-22 to follow the admin overview: one `@container` root so breakpoints follow
+// the width left beside the sidebar (not the viewport); left column = "Học viên" (summary + half-donut + absent by
+// class) over "Lớp của tôi" and "Bài giao cho lớp"; right column = "Lịch dạy trong tuần", taken out of the flow so
+// a long week scrolls inside its card instead of stretching the row; bottom row = daily chart (mock only),
+// "Bài nộp gần đây", "Hoạt động gần đây". The two KPI stat cards were folded into the "Học viên" card head (they
+// repeated its numbers). The old blocks "Cần chấm tay", the card "Điểm TB lớp" and the chart "Tiến độ học viên"
+// stay dropped (DEC-2026-1013-remove-instructor-manual-grading, DEC-2026-1014-instructor-overview-trim-and-nav-label).
+// Not yet approved by the owner: the added blocks (daily chart, recent submissions, weekly schedule) and the
+// 2026-11-22 layout.
 "use client";
 
 import { UserAvatar } from "@/entities/user";
-import { useMemo, useSyncExternalStore } from "react";
+import { useMemo, useSyncExternalStore, type ReactNode } from "react";
 import Link from "next/link";
-import { GraduationCap, Users } from "lucide-react";
 import { useTopAssignedProblems } from "@/entities/class-assignment";
 import {
   useClassStudents,
@@ -34,12 +36,13 @@ import {
   AgendaList,
   Badge,
   Card,
+  ColumnChart,
   HalfDonutGauge,
   RankedProgressList,
   QueryError,
   RecentList,
+  Skeleton,
   StackedBarChart,
-  StatCard,
   type AgendaDay,
 } from "@/shared/ui";
 
@@ -50,6 +53,8 @@ const CLASS_COLOR_VARS = [
   "--color-admin-cyan",
   "--color-admin-warn",
 ];
+// Each list block shows at most this many rows so the whole page reads in one screen.
+const ACTIVITY_LIMIT = 5;
 const DAY_KEYS = [1, 2, 3, 4, 5, 6, 7] as const;
 const DAY_MS = 86_400_000;
 const FAILED_STATUSES = [
@@ -74,6 +79,19 @@ const dayMonth = (time: number) =>
     month: "2-digit",
   });
 
+/** Skeleton while a block loads, the shared retry state when it fails, its body otherwise. */
+function BlockBody({
+  query,
+  children,
+}: {
+  query: { isLoading: boolean; isError: boolean; refetch: () => unknown };
+  children: ReactNode;
+}) {
+  if (query.isLoading) return <Skeleton className="h-24" />;
+  if (query.isError) return <QueryError query={query} />;
+  return children;
+}
+
 export function InstructorOverviewView() {
   const t = useT("instructorOverview");
   const tVerdict = useT("submissionResult");
@@ -84,7 +102,8 @@ export function InstructorOverviewView() {
   const classesQuery = useInstructorClassSummary();
   const classes = classesQuery.data ?? [];
   const totals = useInstructorClassTotals().data;
-  const activity = useClassActivity().data;
+  const activityQuery = useClassActivity();
+  const activity = activityQuery.data;
   const topQuery = useTopAssignedProblems();
   const topAssignments = topQuery.data ?? [];
   const students = useClassStudents().data;
@@ -171,42 +190,39 @@ export function InstructorOverviewView() {
 
   if (classesQuery.isError) return <QueryError query={classesQuery} />;
 
+  // Only classes with someone absent are listed; a column of "0 vắng" rows is noise.
+  const absentClasses = classes.filter((klass) => (klass.absentCount ?? 0) > 0);
+  const summary = `${t("kpi.classesCount", { count: classes.length })} · ${t("kpi.classesMeta", { count: totalStudents })}`;
+
   return (
-    <div className="flex flex-col gap-3.5">
+    <div className="@container flex min-w-0 flex-1 flex-col gap-3">
       <h1 className="sr-only">{t("title")}</h1>
 
-      <div className="grid grid-cols-1 gap-3.5 lg:grid-cols-3">
-        <div className="grid grid-cols-2 gap-3.5 lg:flex lg:flex-col">
-          <StatCard
-            className="lg:flex-1"
-            icon={GraduationCap}
-            iconColorVar="--color-admin-teal"
-            label={t("kpi.classes")}
-            value={classes.length}
-            meta={t("kpi.classesMeta", { count: totalStudents })}
-          />
-          <StatCard
-            className="lg:flex-1"
-            icon={Users}
-            iconColorVar="--color-admin-cyan"
-            label={t("kpi.students")}
-            value={totalStudents}
-            meta={
-              hasMetrics
-                ? t("kpi.studentsMeta", { count: absentStudents })
-                : undefined
-            }
-          />
-        </div>
+      {/* One grid of six cards, each holding at most ~5 rows, so the page reads in a single screen: row 1 =
+          students, class completion, assignments; row 2 = schedule, recent submissions, recent activity. */}
+      <div className="grid grid-cols-1 gap-3 @min-[640px]:grid-cols-2 @min-[960px]:grid-cols-3">
         {hasMetrics ? (
           <Card
-            className="h-full lg:col-span-2"
+            className="h-full"
             title={t("students.title")}
-            description={t("students.subtitle")}
+            description={summary}
           >
-            <div className="grid items-center gap-5 md:grid-cols-2">
-              <div className="relative mx-auto w-full max-w-[300px]">
+            <div className="@container">
+              <div
+                className={`grid items-center gap-3 ${absentClasses.length > 0 ? "@min-[520px]:grid-cols-2" : ""}`}
+              >
                 <HalfDonutGauge
+                  chartClassName="max-w-[180px]"
+                  center={
+                    <>
+                      <span className="block text-[22px] leading-none font-bold">
+                        {activePercent}%
+                      </span>
+                      <span className="text-[11px] text-[var(--color-text-muted)]">
+                        {t("students.activeRate")}
+                      </span>
+                    </>
+                  }
                   slices={[
                     {
                       label: t("students.active"),
@@ -220,39 +236,41 @@ export function InstructorOverviewView() {
                     },
                   ]}
                 />
-                <p className="pointer-events-none absolute inset-x-0 top-[34px] text-center">
-                  <span className="block text-[26px] leading-none font-bold">
-                    {activePercent}%
-                  </span>
-                  <span className="text-[11.5px] text-[var(--color-text-muted)]">
-                    {t("students.activeRate")}
-                  </span>
-                </p>
-              </div>
-              <div>
-                <p className="mb-2 text-[12px] font-semibold text-[var(--color-text-muted)]">
-                  {t("students.byClass")}
-                </p>
-                <RankedProgressList
-                  numbered={false}
-                  accentColorVar="--color-admin-warn"
-                  items={classes.map((klass) => ({
-                    label: klass.name,
-                    value: klass.absentCount ?? 0,
-                    valueLabel: t("students.absentCount", {
-                      count: klass.absentCount ?? 0,
-                    }),
-                  }))}
-                />
+                {absentClasses.length > 0 ? (
+                  <div className="min-w-0">
+                    <p className="mb-2 text-[12px] font-semibold text-[var(--color-text-muted)]">
+                      {t("students.byClass")}
+                    </p>
+                    <RankedProgressList
+                      numbered={false}
+                      accentColorVar="--color-admin-warn"
+                      items={absentClasses.map((klass) => ({
+                        label: klass.name,
+                        value: klass.absentCount ?? 0,
+                        valueLabel: t("students.absentCount", {
+                          count: klass.absentCount ?? 0,
+                        }),
+                      }))}
+                    />
+                  </div>
+                ) : null}
               </div>
             </div>
           </Card>
-        ) : null}
-      </div>
+        ) : (
+          <Card
+            className="h-full"
+            title={t("kpi.classes")}
+            description={summary}
+          >
+            <p className="text-[26px] leading-none font-bold">
+              {classes.length}
+            </p>
+          </Card>
+        )}
 
-      <div className="grid grid-cols-1 gap-3.5 lg:grid-cols-3">
         <Card
-          className="h-full"
+          className="flex h-full flex-col"
           title={t("classes.title")}
           description={t("classes.subtitle")}
           action={
@@ -261,20 +279,21 @@ export function InstructorOverviewView() {
             </Link>
           }
         >
-          <RankedProgressList
-            numbered={false}
+          <ColumnChart
+            className="flex-1"
+            max={100}
             accentColorVar="--color-admin-teal"
             items={classes.map((klass) => ({
-              label: `${klass.name} · ${t("classes.students", { count: klass.studentCount })}`,
+              label: klass.name,
               value: klass.completionPct ?? 0,
               valueLabel:
-                klass.completionPct == null ? "" : `${klass.completionPct}%`,
+                klass.completionPct == null ? "-" : `${klass.completionPct}%`,
             }))}
           />
         </Card>
 
         <Card
-          className="h-full"
+          className="flex h-full flex-col"
           title={t("assignments.title")}
           description={t("assignments.subtitle")}
           action={
@@ -283,42 +302,121 @@ export function InstructorOverviewView() {
             </Link>
           }
         >
-          {topQuery.isError ? (
-            <QueryError query={topQuery} />
-          ) : topAssignments.length === 0 ? (
-            <p className="text-[13px] text-[var(--color-text-muted)]">
-              {t("empty")}
-            </p>
-          ) : (
-            <RankedProgressList
-              numbered={false}
-              accentColorVar="--color-admin-cyan"
-              items={topAssignments.map((row) => ({
-                label: row.title,
-                value: row.submissionCount,
-                valueLabel: row.submissionCount.toLocaleString("vi-VN"),
+          <BlockBody query={topQuery}>
+            {topAssignments.length === 0 ? (
+              <p className="text-[13px] text-[var(--color-text-muted)]">
+                {t("empty")}
+              </p>
+            ) : (
+              <ColumnChart
+                className="flex-1"
+                accentColorVar="--color-admin-cyan"
+                items={topAssignments.map((row) => ({
+                  label: row.title,
+                  value: row.submissionCount,
+                  valueLabel: row.submissionCount.toLocaleString("vi-VN"),
+                }))}
+              />
+            )}
+          </BlockBody>
+        </Card>
+
+        {/* From 960px the schedule leaves the flow, so the row height comes from the two lists beside it and
+            a long week scrolls inside the card instead of stretching the row. */}
+        <div className="@min-[960px]:relative @min-[960px]:min-h-[16rem]">
+          <Card
+            className="flex h-full flex-col @min-[960px]:absolute @min-[960px]:inset-0"
+            title={t("schedule.title")}
+            description={t("schedule.subtitle")}
+          >
+            <div className="-m-1 min-h-0 flex-1 overflow-y-auto p-1">
+              <AgendaList days={agendaDays} emptyLabel={t("schedule.empty")} />
+            </div>
+          </Card>
+        </div>
+
+        <Card
+          className="h-full"
+          title={t("submissions.title")}
+          description={t("submissions.subtitle")}
+          action={
+            <Link href="/instructor/submissions" className={LINK_CLASS}>
+              {t("submissions.linkViewAll")}
+            </Link>
+          }
+        >
+          <BlockBody query={mock ? readableQuery : realPage}>
+            <RecentList
+              emptyLabel={t("submissions.empty")}
+              items={recentRows.map((row) => ({
+                id: row.key,
+                href: `/instructor/submissions/${row.submissionId}?studentId=${row.studentId}&classId=${row.classId}&from=submissions`,
+                leading: (
+                  <UserAvatar
+                    userId={row.studentId}
+                    name={row.studentName}
+                    avatarVersion={row.studentAvatarVersion}
+                    size="sm"
+                  />
+                ),
+                title: row.studentName,
+                subtitle: `${row.problemTitle} · ${new Date(
+                  row.submittedAt,
+                ).toLocaleString("vi-VN", {
+                  dateStyle: "short",
+                  timeStyle: "short",
+                })}`,
+                trailing: (
+                  <Badge variant={SUBMISSION_STATUS_VARIANT[row.status]}>
+                    {tVerdict(`verdict.${row.status}`)}
+                  </Badge>
+                ),
               }))}
             />
-          )}
+          </BlockBody>
         </Card>
 
         <Card
           className="h-full"
-          title={t("schedule.title")}
-          description={t("schedule.subtitle")}
+          title={t("activity.title")}
+          description={t("activity.subtitle", { count: ACTIVITY_LIMIT })}
         >
-          <AgendaList days={agendaDays} emptyLabel={t("schedule.empty")} />
+          <BlockBody query={activityQuery}>
+            <RecentList
+              emptyLabel={t("empty")}
+              items={(activity ?? []).slice(0, ACTIVITY_LIMIT).map((event) => ({
+                id: event.id,
+                leading: (
+                  <span
+                    aria-hidden="true"
+                    className="block h-2 w-2 rounded-full"
+                    style={{
+                      background: event.attention
+                        ? "var(--color-admin-warn)"
+                        : "var(--color-admin-teal)",
+                    }}
+                  />
+                ),
+                title: (
+                  <span className="whitespace-normal">
+                    {event.activityType
+                      ? tActivity(`type.${event.activityType}`, {
+                          name: event.actorName ?? "",
+                        })
+                      : event.text}
+                  </span>
+                ),
+                subtitle: event.timeLabel,
+              }))}
+            />
+          </BlockBody>
         </Card>
-      </div>
 
-      <div
-        className={`grid grid-cols-1 gap-3.5 ${mock ? "lg:grid-cols-3" : "lg:grid-cols-2"}`}
-      >
         {/* ponytail: real mode hides the daily chart (owner, 2026-11-07): no endpoint counts submissions per day
             for an instructor, and one 20-row page of #13 would draw it wrong. Add a F4 daily-counts read if the demo needs it. */}
         {mock ? (
           <Card
-            className="h-full"
+            className="h-full @min-[640px]:col-span-full"
             title={t("chart.title")}
             description={t("chart.subtitle")}
           >
@@ -351,83 +449,6 @@ export function InstructorOverviewView() {
             )}
           </Card>
         ) : null}
-
-        <Card
-          className="h-full"
-          title={t("submissions.title")}
-          description={t("submissions.subtitle")}
-          action={
-            <Link href="/instructor/submissions" className={LINK_CLASS}>
-              {t("submissions.linkViewAll")}
-            </Link>
-          }
-        >
-          {!mock && realPage.isError ? (
-            <QueryError query={realPage} />
-          ) : (
-            <RecentList
-              emptyLabel={t("submissions.empty")}
-              items={recentRows.map((row) => ({
-                id: row.key,
-                href: `/instructor/submissions/${row.submissionId}?studentId=${row.studentId}&classId=${row.classId}&from=submissions`,
-                leading: (
-                  <UserAvatar
-                    userId={row.studentId}
-                    name={row.studentName}
-                    avatarVersion={row.studentAvatarVersion}
-                    size="sm"
-                  />
-                ),
-                title: row.studentName,
-                subtitle: `${row.problemTitle} · ${new Date(
-                  row.submittedAt,
-                ).toLocaleString("vi-VN", {
-                  dateStyle: "short",
-                  timeStyle: "short",
-                })}`,
-                trailing: (
-                  <Badge variant={SUBMISSION_STATUS_VARIANT[row.status]}>
-                    {tVerdict(`verdict.${row.status}`)}
-                  </Badge>
-                ),
-              }))}
-            />
-          )}
-        </Card>
-
-        <Card
-          className="h-full"
-          title={t("activity.title")}
-          description={t("activity.subtitle")}
-        >
-          <RecentList
-            emptyLabel={t("empty")}
-            items={(activity ?? []).map((event) => ({
-              id: event.id,
-              leading: (
-                <span
-                  aria-hidden="true"
-                  className="block h-2 w-2 rounded-full"
-                  style={{
-                    background: event.attention
-                      ? "var(--color-admin-warn)"
-                      : "var(--color-admin-teal)",
-                  }}
-                />
-              ),
-              title: (
-                <span className="whitespace-normal">
-                  {event.activityType
-                    ? tActivity(`type.${event.activityType}`, {
-                        name: event.actorName ?? "",
-                      })
-                    : event.text}
-                </span>
-              ),
-              subtitle: event.timeLabel,
-            }))}
-          />
-        </Card>
       </div>
     </div>
   );

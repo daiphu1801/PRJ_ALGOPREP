@@ -168,6 +168,7 @@
     "PRB-056": "The change could not be saved. Try again later.",
     "PRB-057": "Your solve status could not be read, so progress is not shown. Try again later.",
     "PRB-058": "The class list could not be read. Try again later.",
+    "PRB-060": "The testcase data does not match the parameters declared in the function signature. If the solution is a stdin program, clear the function name and parameters on the Spec tab; if it is a function, fix the testcases so their order and types match.",
     "INB-010": "This question no longer exists or has been retired.",
     "INB-011": "The topic does not exist. Reload the list.",
     "INB-012": "The level does not exist. Reload the list.",
@@ -251,6 +252,7 @@
     "AIR-V17": "The model name must not be empty and has at most 100 characters.",
     "AIR-V18": "The price is not valid.",
     "AIR-V19": "The day range must be 7, 14 or 30.",
+    "AIR-V40": "The output token limit is invalid or exceeds the selected model's limit.",
     "UNKNOWN_ERROR": "Something went wrong. Please try again",
     "IDT-V29": "The image must be PNG, JPEG or WebP",
     "IDT-V30": "The image is too large, 512 KB at most",
@@ -444,7 +446,8 @@
     "assignment": {
       "title": "Class assignments",
       "empty": "No problem assigned yet",
-      "meta": "Assigned {date}"
+      "meta": "Assigned {date}",
+      "viewAll": "View all {count} problems"
     },
     "language": {
       "java": "Java",
@@ -746,7 +749,9 @@
       "submissionsSummary": "Total submissions",
       "activeUsersSummary": "Active users",
       "passwordResetsSummary": "Password reset requests",
+      "previousPeriodZero": "Previous period: 0",
       "submissionsByLanguage": "Submissions by language",
+      "languageWindow": "Last 20 days",
       "verdictDistribution": "Verdict distribution",
       "difficultyBreakdown": "Difficulty breakdown",
       "submissionsByDay": "Submissions by day",
@@ -776,12 +781,12 @@
   },
   "adminLanguageConfig": {
     "title": "Languages and judge limits",
-    "subtitle": "Per-language time multipliers applied to every problem",
+    "subtitle": "Choose languages and set grading limits.",
     "save": "Save",
     "languagesTitle": "Supported languages",
-    "languagesSubtitle": "Enable or disable a language and adjust its multiplier",
+    "languagesSubtitle": "Multiply the base limit by the language’s factor. For example, 1,000 ms × 2 = 2,000 ms.",
     "columnLanguage": "Language",
-    "columnEnabled": "On",
+    "columnEnabled": "Allow submissions",
     "timeMultiplierFor": "Time multiplier for {language}",
     "enableLanguage": "Enable {language}",
     "unitMs": "ms",
@@ -789,55 +794,55 @@
     "unitKb": "KB",
     "unitSec": "s",
     "defaultsTitle": "Default limits",
-    "defaultsSubtitle": "Used when a problem declares none of its own",
+    "defaultsSubtitle": "Used when a problem has no limits of its own.",
     "defaults": {
       "timeLimitMs": {
-        "label": "Time limit",
+        "label": "Maximum run time",
         "meta": "Multiplied by the language factor"
       },
       "memoryLimitMb": {
-        "label": "Memory limit",
+        "label": "Maximum memory",
         "meta": "Applies to every language"
       },
       "outputLimitKb": {
-        "label": "Output size",
+        "label": "Maximum output size",
         "meta": "Exceeding it reports Output limit"
       },
       "compileTimeoutSec": {
-        "label": "Compile time",
+        "label": "Maximum compile time",
         "meta": "Not counted toward the run limit"
       }
     },
     "generator": {
-      "title": "Testcase data generator script",
-      "subtitle": "Limits applied when the system runs the script the AI wrote to generate inputs (F2-14). Separate from submissions",
-      "languageLabel": "Script language",
-      "languageMeta": "Fixed, not editable",
+      "title": "AI-generated test data",
+      "subtitle": "These limits apply when the system runs AI-generated code to produce test inputs.",
+      "languageLabel": "Data generation language",
+      "languageMeta": "Fixed for all data generation runs.",
       "runtime": {
         "label": "Maximum run time",
-        "meta": "A script running longer than this is dropped entirely"
+        "meta": "The system stops generating data when this time is exceeded."
       },
       "output": {
-        "label": "Maximum output size",
-        "meta": "Total output above this drops the whole script"
+        "label": "Maximum data size",
+        "meta": "The system discards results that exceed this total size."
       }
     },
     "saveFailed": "Could not save the language and limits configuration. Try again later.",
     "loadFailed": "Could not load the language and limits configuration. Try again later.",
-    "errorInvalidGenerator": "Run time must be 1 to 300 seconds and output size 1 to 1024 MB",
-    "sandboxTitle": "Sandbox",
+    "errorInvalidGenerator": "Enter a run time from 1 to 300 seconds and a data size from 1 to 1,024 MB.",
+    "sandboxTitle": "Grading environment",
     "sandbox": {
       "networkAccess": {
         "label": "Allow network access",
-        "meta": "Always off in the judging sandbox"
+        "meta": "When off, submitted programs cannot access the network during grading."
       },
       "limitChildProcesses": {
         "label": "Limit child processes",
-        "meta": "At most 60 processes"
+        "meta": "When on, a submitted program is limited to 60 processes."
       },
       "returnStderr": {
-        "label": "Return stderr to students",
-        "meta": "Truncated to the first 2 KB"
+        "label": "Show program error messages to learners",
+        "meta": "Shows messages from the program for failed sample tests on standard input/output problems."
       }
     },
     "saveDone": "Language and limit configuration saved",
@@ -847,24 +852,26 @@
     "historyLink": "View change history",
     "tabsLabel": "Configuration groups",
     "tabLanguages": "Languages and limits",
-    "tabAdvanced": "Sandbox and testcase generation",
+    "tabAdvanced": "Grading environment and test data",
     "columnMultipliers": "Multipliers",
-    "multiplierTime": "TIME",
+    "multiplierTime": "Time",
+    "multiplierTimeFull": "Time",
+    "multiplierMemoryFull": "Memory",
     "multiplierMemory": "RAM",
     "memoryMultiplierFor": "Memory multiplier for {language}",
-    "columnEffective": "Effective limit",
+    "columnEffective": "Limits after applying multipliers",
     "effectiveLimit": "{time} ms · {memory} MB",
     "unsavedCount": "{count} unsaved changes",
-    "appliesNote": "Applies to new submissions from the moment you save",
+    "appliesNote": "New limits apply to submissions that start grading after you save.",
     "confirmDisable": {
       "title": "Turn off a language?",
-      "body": "You are about to turn off: {languages}. A disabled language can no longer be picked on the solving screen for new submissions. Earlier submissions keep their verdict.",
+      "body": "Learners will no longer be able to submit new solutions in {languages}. Earlier submissions are still processed and keep their results.",
       "yes": "Turn off and save",
       "no": "Cancel"
     },
     "unsaved": {
       "title": "Unsaved changes",
-      "body": "Save and leave, leave without saving (changes are lost), or stay and keep editing.",
+      "body": "You can save before leaving or stay on the page to keep editing.",
       "saveAndLeave": "Save and leave",
       "leave": "Leave without saving",
       "stay": "Stay"
@@ -937,12 +944,15 @@
       "content": "Content"
     },
     "resultCount": "{count} rows loaded",
-    "pageLabel": "{shown} most recent rows loaded",
-    "loadMore": "Load {count} more",
+    "pageLabel": "Page {page} · {shown} events",
+    "pagePrevious": "Previous page",
+    "pageNext": "Next page",
+    "pageLoading": "Loading page…",
     "emptyFiltered": "No event matches the current filter",
     "clearFilters": "Clear filters",
     "activeAdminsTitle": "Active admins",
     "activeAdminsSubtitle": "By most recent action",
+    "activeAdminsEmpty": "No recent activity data.",
     "breakdownTitle": "Actions by category · 7 days",
     "infraNote": "Infrastructure events (worker, AI, backup) live on the Judge queue screen",
     "eventListLabel": "Event list",
@@ -1066,6 +1076,15 @@
     "columnActions": "Actions",
     "actionChangeRole": "Change role",
     "actionChangeRoleFor": "Change the role of {name}",
+    "details": {
+      "open": "View account details for {name}",
+      "title": "Account details",
+      "id": "Account ID",
+      "passwordLabel": "Login password",
+      "passwordSet": "Set",
+      "passwordUnset": "Not set",
+      "close": "Close"
+    },
     "actionResetPassword": "Reset password",
     "actionResetPasswordFor": "Reset the password of {name}",
     "actionLock": "Lock account",
@@ -1159,13 +1178,15 @@
       "save": "Save",
       "cancel": "Cancel",
       "errorMin": "Enter a whole number of {min} or more",
-      "autoscaleThreshold": "Worker autoscale threshold",
-      "autoscaleThresholdHint": "Waiting jobs needed before the cluster adds a worker.",
-      "jobsPerPage": "Rows per page in the job table",
-      "errorRetention": "How long failed system jobs stay",
-      "latencyCap": "Latency bar ceiling",
-      "unitJobs": "jobs",
-      "unitRows": "rows",
+      "autoscaleThreshold": "Waiting submissions threshold for adding threads",
+      "autoscaleThresholdHint": "When autoscaling is on, one thread is added if the waiting count exceeds this threshold on two consecutive checks.",
+      "jobsPerPage": "Submissions shown per page",
+      "errorRetention": "How long to show system errors",
+      "errorRetentionHint": "After this time, the submission leaves the error list. Its record is kept.",
+      "latencyCap": "Time at which the wait bar is full",
+      "latencyCapHint": "For example, with 10 seconds set, the bar fills at 10 seconds. The number still shows the actual average wait.",
+      "unitJobs": "submissions",
+      "unitRows": "submissions",
       "unitHours": "hours",
       "unitSeconds": "seconds",
       "saved": "Queue settings saved"
@@ -1174,15 +1195,46 @@
     "subtitle": "go-judge worker cluster, waiting jobs and queue controls",
     "refresh": "Refresh",
     "refreshDone": "Queue data refreshed",
+    "refreshing": "Refreshing…",
+    "refreshFailed": "Could not refresh queue data",
+    "refreshPartial": "Some data could not be refreshed",
+    "loading": "Loading…",
+    "metricsLabel": "Operational metrics",
+    "settingsUnavailable": "Could not load queue settings",
     "state": {
       "ok": "Normal",
       "paused": "Paused",
       "overloaded": "Worker overloaded",
       "backlog": "{count} jobs backed up",
       "stale": "Stale data",
-      "staleHint": "No newer data for over a minute. Press Refresh."
+      "staleHint": "No new data for over a minute.",
+      "fallback": "Live connection lost. Trying periodic updates.",
+      "unavailable": "Could not load the queue status"
     },
     "updatedAt": "Updated at {time}",
+    "grading": {
+      "title": "Grading threads",
+      "subtitle": "Grading threads reported by the worker, grading speed and the estimated time to drain the queue",
+      "running": "Grading threads running / maximum",
+      "runningValue": "{active} / {max}",
+      "target": "Target",
+      "noReport": "No report received from the grading worker",
+      "lastScaling": "Last change",
+      "noScaling": "No change yet",
+      "scaledUp": "{time} · up from {from} to {to} · {reason} · {pending} waiting",
+      "scaledDown": "{time} · down from {from} to {to} · {reason} · {pending} waiting",
+      "reason": {
+        "BACKLOG": "Queue backlog",
+        "IDLE": "Queue empty",
+        "DISABLED": "Autoscale turned off"
+      },
+      "throughput": "Grading speed",
+      "throughputValue": "{count} per minute",
+      "clear": "Estimated time to drain",
+      "clearUnknown": "Not enough data",
+      "clearSeconds": "about {count} seconds",
+      "clearMinutes": "about {count} minutes"
+    },
     "workersTitle": "go-judge worker cluster",
     "workersSubtitle": "{count} workers · autoscale up to {max}",
     "workerStatus": {
@@ -1192,34 +1244,44 @@
     },
     "workerLoadLabel": "Load of {id}",
     "workerJobs": "{count} jobs",
-    "controlsTitle": "Controls",
+    "controlsTitle": "Controls and grading details",
     "historyLink": "View change history",
     "latencyTitle": "Average wait",
+    "pendingTitle": "Submissions waiting",
+    "latencyUnavailable": "No wait measurements yet",
     "control": {
       "paused": {
-        "label": "Pause queue consumption",
-        "meta": "Hold jobs back, do not hand them to workers",
+        "label": "Pause intake of new submissions",
+        "meta": "New submissions stay queued. Grading already in progress continues.",
         "doneOn": "Paused accepting new submissions",
         "doneOff": "Resumed accepting new submissions",
         "confirmTitle": "Pause queue consumption?",
         "confirmBody": "Pausing queue consumption makes new submissions wait. Jobs already being graded run to completion. Continue?"
       },
       "autoscale": {
-        "label": "Autoscale workers",
-        "meta": "Add workers when the queue exceeds {threshold} jobs",
-        "doneOn": "Worker autoscaling turned on",
-        "doneOff": "Worker autoscaling turned off",
-        "confirmTitle": "Turn off worker autoscaling?",
-        "confirmBody": "Turning autoscaling off means the cluster will not add workers when the queue backs up. Continue?"
+        "label": "Automatically adjust grading threads",
+        "meta": "Add grading threads when the queue exceeds {threshold} submissions",
+        "metaUnknown": "Add grading threads when the queue exceeds the configured threshold",
+        "doneOn": "Automatic grading thread adjustment turned on",
+        "doneOff": "Automatic grading thread adjustment turned off",
+        "confirmTitle": "Turn off automatic grading thread adjustment?",
+        "confirmBody": "The system will return to one grading thread after the extra threads finish their current submissions. Continue?"
       }
     },
     "confirm": {
       "yes": "Continue",
       "no": "Cancel"
     },
-    "jobsTitle": "Jobs in the queue",
+    "jobsTitle": "Submissions in the queue",
     "jobsSubtitle": "Click the Wait column header to change the sort order",
-    "jobTabsLabel": "Filter jobs by status",
+    "sortWaitDesc": "Longest wait first",
+    "sortWaitAsc": "Shortest wait first",
+    "jobTabsLabel": "Filter submissions by status",
+    "tabLabels": {
+      "waiting": "Waiting",
+      "failed": "Failed",
+      "all": "All"
+    },
     "tabWaiting": "Waiting {count}",
     "tabFailed": "Failed {count}",
     "tabAll": "All {count}",
@@ -1232,13 +1294,19 @@
       "waiting": "Waiting",
       "sandboxError": "Sandbox error"
     },
-    "emptyJobs": "No jobs in this group",
+    "emptyJobsByTab": {
+      "waiting": "No submissions are waiting.",
+      "failed": "No failed grading attempts.",
+      "all": "No submissions in this list."
+    },
     "pageSummary": "{from}-{to} of {total}",
     "pagePrevious": "Previous",
     "pageNext": "Next",
     "infraTitle": "Infrastructure events",
-    "infraSummary": "{warn} warnings, {error} errors on the latest day",
-    "infraLink": "See all events"
+    "infraSummary": "{warn} warnings, {error} errors in the last 24 hours",
+    "infraLink": "See all events",
+    "infraErrorLink": "See infrastructure errors",
+    "infraUnavailable": "Could not load infrastructure metrics"
   },
   "adminInfraEvents": {
     "title": "Infrastructure events",
@@ -1262,6 +1330,10 @@
     "dateTo": "To date",
     "rangeInvalid": "The start date cannot be later than the end date",
     "emptyFiltered": "No events match the filters",
+    "emptyUnfiltered": "No infrastructure events recorded",
+    "dateRange": "Filter by date",
+    "dateRangeActive": "Date range: {from} – {to}",
+    "loadedCount": "Showing {count} events",
     "clearFilters": "Clear filters",
     "listLabel": "Infrastructure event list",
     "pageLabel": "Showing {shown} of {total} events",
@@ -1271,9 +1343,9 @@
   },
   "adminPermissionMatrix": {
     "title": "Permission matrix",
-    "subtitle": "Role × Function × Action · changes take effect immediately",
+    "subtitle": "Permissions by role and function. Changes take effect immediately.",
     "scopeNoticeTitle": "What this matrix governs",
-    "scopeNoticeBody": "Functions and Actions are fixed seed data and read-only — only Roles can be created, edited or deleted. A STUDENT's basic learning rights (view/submit, review, interview, practise) do not go through this matrix.",
+    "scopeNoticeBody": "Select a role to grant or revoke permissions for each function. The lists of functions and actions are fixed. Basic student learning permissions are managed separately.",
     "roleSwitcherLabel": "Select a role",
     "addRole": "+ New role",
     "newRoleLabel": "New role name",
@@ -1352,8 +1424,12 @@
       "draft": "Draft"
     },
     "metaModel": "Model",
-    "metaMaxTokens": "Limit",
-    "metaUpdated": "Updated {date}",
+    "metaMaxTokens": "Max output tokens per call",
+    "maxTokensHint": "Takes effect when you publish this configuration.",
+    "maxTokensInvalid": "Enter a whole number between 1 and 32,768.",
+    "metaUpdatedLabel": "Updated",
+    "instructionPreview": "System instruction preview",
+    "instructionEmpty": "No system instruction configured.",
     "guardsTitle": "Answer guards",
     "guard": {
       "noFullSolution": {
@@ -1411,6 +1487,7 @@
       "item": {
         "instruction": "System instruction edited",
         "model": "Model: {from} to {to}",
+        "tokens": "Output tokens: {from, number} to {to, number}",
         "guards": "Answer rules: {count} items"
       }
     },
@@ -1513,6 +1590,7 @@
     "blockFailed": "Could not load this block. Try again later.",
     "title": "Problem management",
     "subtitle": "{total} problems · {published} visible in the problem bank",
+    "importProblems": "Add many",
     "newProblem": "New problem",
     "searchLabel": "Search problems",
     "searchPlaceholder": "Search by code or title",
@@ -1590,7 +1668,6 @@
       },
       "error": {
         "empty": "Level name cannot be empty",
-    "importProblems": "Add many",
         "duplicate": "A level with this name already exists"
       }
     },
@@ -1668,83 +1745,6 @@
     "confirmUnpublish": "Withdraw {count} selected problems?",
     "unpublishHint": "These problems will leave the learner catalog. Submission history is preserved."
   },
-  "interviewQuestionManagement": {
-    "title": "Interview question bank",
-    "loadFailed": "Could not load the question list. Try again later.",
-    "retry": "Try again",
-    "subtitle": "{total} questions · instructors and admins can edit all of them",
-    "manageTopics": "Manage topics",
-    "topicManager": {
-      "title": "Manage question topics",
-      "hint": "Topics are defined by the administrator, with no limit on how many. Only a topic with no questions can be deleted.",
-      "starLabel": "Use the STAR framework for {name}",
-      "nameLabel": "Topic name",
-      "newLabel": "New topic",
-      "newPlaceholder": "Example: Computer networks",
-      "add": "Add",
-      "save": "Save name",
-      "close": "Close",
-      "usage": "{count} questions",
-      "deleteBlocked": "{count} questions remain, cannot delete",
-      "done": {
-        "add": "Topic added",
-        "rename": "Topic renamed",
-        "remove": "Topic deleted"
-      },
-      "error": {
-        "empty": "Topic name cannot be empty",
-        "duplicate": "A topic with this name already exists"
-      },
-      "starEnabled": "STAR framework enabled for {name}",
-      "starDisabled": "STAR framework disabled for {name}",
-      "moveUp": "Move up",
-      "moveDown": "Move down"
-    },
-    "manageLevels": "Manage difficulty",
-    "levelManager": {
-      "title": "Manage question difficulty",
-      "hint": "Difficulty levels are defined by admins, with no limit on how many. A level can only be deleted once no question uses it.",
-      "nameLabel": "Level name",
-      "newLabel": "New level",
-      "newPlaceholder": "e.g. Very hard",
-      "add": "Add",
-      "save": "Save name",
-      "close": "Close",
-      "usage": "{count} questions",
-      "deleteBlocked": "{count} questions still use it, cannot delete",
-      "deleteLast": "At least one level must remain",
-      "done": {
-        "add": "Level added",
-        "rename": "Level renamed",
-        "remove": "Level deleted"
-      },
-      "error": {
-        "empty": "Level name cannot be empty",
-        "duplicate": "A level with this name already exists"
-      },
-      "moveUp": "Move up",
-      "moveDown": "Move down"
-    },
-    "importCsv": "Import CSV",
-    "csvImport": {
-      "title": "Import questions from a CSV file",
-      "hint": "A UTF-8 CSV file with a header row. Valid rows are added to the bank; invalid rows are skipped and listed below.",
-      "columns": "Required columns: topic, level, question, rubric (the cell may be empty). Optional: follow_ups, content, suggested_approach, core_keywords, sample_answer. A question whose text already exists is skipped, never overwritten; at most 500 rows. Topic and level take the name shown on screen or the key.",
-      "listFormat": "follow_ups, suggested_approach, core_keywords: items separated by |.",
-      "rubricFormat": "rubric: criteria as name:weight separated by |; weights must total 100. Leave empty for no rubric.",
-      "downloadTemplate": "Download template",
-      "close": "Close",
-      "choose": "Choose CSV file",
-      "chooseAnother": "Choose another file",
-      "importing": "Importing…",
-      "failed": "Import failed, try again later.",
-      "errorsLabel": "Skipped rows",
-      "summary": "Imported {imported} of {total} questions",
-      "rowError": "Line {line}: {reason}",
-      "toast": "Imported {count} questions from the CSV file",
-      "fileError": {
-        "empty": "The file has no data rows.",
-        "missingColumns": "Missing required columns: {detail}.",
   "problemImport": {
     "title": "Add many problems",
     "back": "Back to problem management",
@@ -1923,6 +1923,83 @@
     "titlesExist": "The bank already has problems titled: {titles}. Check before importing them twice.",
     "openEditorOf": "Open {title} in a new tab"
   },
+  "interviewQuestionManagement": {
+    "title": "Interview question bank",
+    "loadFailed": "Could not load the question list. Try again later.",
+    "retry": "Try again",
+    "subtitle": "{total} questions · instructors and admins can edit all of them",
+    "manageTopics": "Manage topics",
+    "topicManager": {
+      "title": "Manage question topics",
+      "hint": "Topics are defined by the administrator, with no limit on how many. Only a topic with no questions can be deleted.",
+      "starLabel": "Use the STAR framework for {name}",
+      "nameLabel": "Topic name",
+      "newLabel": "New topic",
+      "newPlaceholder": "Example: Computer networks",
+      "add": "Add",
+      "save": "Save name",
+      "close": "Close",
+      "usage": "{count} questions",
+      "deleteBlocked": "{count} questions remain, cannot delete",
+      "done": {
+        "add": "Topic added",
+        "rename": "Topic renamed",
+        "remove": "Topic deleted"
+      },
+      "error": {
+        "empty": "Topic name cannot be empty",
+        "duplicate": "A topic with this name already exists"
+      },
+      "starEnabled": "STAR framework enabled for {name}",
+      "starDisabled": "STAR framework disabled for {name}",
+      "moveUp": "Move up",
+      "moveDown": "Move down"
+    },
+    "manageLevels": "Manage difficulty",
+    "levelManager": {
+      "title": "Manage question difficulty",
+      "hint": "Difficulty levels are defined by admins, with no limit on how many. A level can only be deleted once no question uses it.",
+      "nameLabel": "Level name",
+      "newLabel": "New level",
+      "newPlaceholder": "e.g. Very hard",
+      "add": "Add",
+      "save": "Save name",
+      "close": "Close",
+      "usage": "{count} questions",
+      "deleteBlocked": "{count} questions still use it, cannot delete",
+      "deleteLast": "At least one level must remain",
+      "done": {
+        "add": "Level added",
+        "rename": "Level renamed",
+        "remove": "Level deleted"
+      },
+      "error": {
+        "empty": "Level name cannot be empty",
+        "duplicate": "A level with this name already exists"
+      },
+      "moveUp": "Move up",
+      "moveDown": "Move down"
+    },
+    "importCsv": "Import CSV",
+    "csvImport": {
+      "title": "Import questions from a CSV file",
+      "hint": "A UTF-8 CSV file with a header row. Valid rows are added to the bank; invalid rows are skipped and listed below.",
+      "columns": "Required columns: topic, level, question, rubric (the cell may be empty). Optional: follow_ups, content, suggested_approach, core_keywords, sample_answer. A question whose text already exists is skipped, never overwritten; at most 500 rows. Topic and level take the name shown on screen or the key.",
+      "listFormat": "follow_ups, suggested_approach, core_keywords: items separated by |.",
+      "rubricFormat": "rubric: criteria as name:weight separated by |; weights must total 100. Leave empty for no rubric.",
+      "downloadTemplate": "Download template",
+      "close": "Close",
+      "choose": "Choose CSV file",
+      "chooseAnother": "Choose another file",
+      "importing": "Importing…",
+      "failed": "Import failed, try again later.",
+      "errorsLabel": "Skipped rows",
+      "summary": "Imported {imported} of {total} questions",
+      "rowError": "Line {line}: {reason}",
+      "toast": "Imported {count} questions from the CSV file",
+      "fileError": {
+        "empty": "The file has no data rows.",
+        "missingColumns": "Missing required columns: {detail}.",
         "tooManyRows": "The file has more than {detail} data rows; split it and import again."
       },
       "reason": {
@@ -1987,7 +2064,7 @@
   },
   "interviewQuestionAuthoring": {
     "titleNew": "Author an interview question",
-    "subtitle": "Saving makes the question live — there is no separate publish step",
+    "subtitle": "Changes go live when saved",
     "titleEdit": "Edit question {code}",
     "notFoundTitle": "Question not found",
     "notFoundBody": "This question was not found. It may have been removed from the bank.",
@@ -1995,10 +2072,18 @@
     "classifySubtitle": "Topic and level drive the filters in the question bank",
     "back": "Back",
     "previewAsLearner": "Preview as learner",
+    "previewEmpty": "No question content yet.",
+    "previewClose": "Close",
     "save": "Save",
     "saving": "Saving…",
     "savedAt": "Saved at {time}",
+    "saved": "Saved",
     "unsaved": "Not saved",
+    "sectionsLabel": "Jump to an editing section",
+    "sectionQuestion": "Question",
+    "sectionFollowUps": "Follow-ups",
+    "sectionRubric": "Criteria",
+    "savedContext": "Saved context",
     "group1Title": "Question content",
     "group1Subtitle": "The question body is written in Markdown",
     "questionLabel": "Question",
@@ -2047,7 +2132,7 @@
   },
   "problemAuthoring": {
     "notFound": "Problem not found.",
-    "subtitle": "Topic {topic} · publish once the checklist passes",
+    "subtitle": "Topic {topic}",
     "back": "Back",
     "previewAsLearner": "Preview as learner",
     "previewNeedsSave": "Save the problem before previewing",
@@ -2067,6 +2152,7 @@
     "saveHint": {
       "saving": "Saving...",
       "saved": "Saved",
+      "new": "New draft",
       "dirty": "Unsaved changes",
       "error": "Save failed, try again"
     },
@@ -2076,12 +2162,18 @@
       "examples": "Examples ({count})",
       "testcases": "Testcases ({count})",
       "ai": "AI guidance",
-      "spec": "Spec"
+      "spec": "Spec",
+      "solution": "Reference solution"
     },
     "statementTitle": "Statement",
     "statementSubtitle": "Written in Markdown with LaTeX support",
     "titleLabel": "Title",
     "bodyLabel": "Statement body",
+    "bodyMode": {
+      "edit": "Edit Markdown",
+      "preview": "Preview Markdown",
+      "empty": "The problem statement is empty."
+    },
     "limitsTitle": "Constraints and limits",
     "limitsSubtitle": "Applies to every language; override per language on the Languages screen",
     "limit": {
@@ -2149,7 +2241,9 @@
         "tooManyPairs": "{count} pairs chosen, at most {limit} at a time.",
         "totalTooLarge": "The total size is over {limit}.",
         "tooManyTestcases": "The problem would have {count} testcases, at most {limit}."
-      }
+      },
+      "visibilityDefault": "The first {count} testcases are set to Public so they can be used as examples. You can change each row in the Visibility column.",
+      "visibilityOf": "Visibility of {file}"
     },
     "addExample": "Add example",
     "runSolution": "Run reference solution",
@@ -2215,6 +2309,9 @@
       "published": "Published"
     },
     "checklistTitle": "Publish checklist",
+    "checklistProgress": "{done}/{total} requirements met",
+    "testcaseRow": "Testcase {number}",
+    "statusApproved": "Approved",
     "checklistBlockTitle": "Cannot publish yet",
     "checklistBlockBody": "{count} requirements still unmet.",
     "checkDone": "Done",
@@ -2269,7 +2366,10 @@
       "exampleDeleted": "Worked example deleted",
       "draftApproved": "Draft testcase approved",
       "draftRejected": "Draft testcase rejected",
-      "droppedDuplicateInput": "Dropped {count} duplicate inputs"
+      "droppedDuplicateInput": "Dropped {count} duplicate inputs",
+      "examplesNoPublic": "There are no approved public testcases to use as examples yet.",
+      "examplesNothingNew": "The public testcases are already in the examples list.",
+      "examplesFromTestcases": "Added {count} examples from public testcases. Add the explanations."
     },
     "runBlocked": {
       "noSolution": "Enter the reference solution before running it.",
@@ -2332,6 +2432,8 @@
       "ioSubtitle": "Standard I/O model: learners read stdin and print stdout exactly as these two descriptions say.",
       "stdinFormat": "stdin read format",
       "stdoutFormat": "stdout print format",
+      "stdinPlaceholder": "Example: Line 1 is an integer n. Line 2 has n integers separated by spaces.",
+      "stdoutPlaceholder": "Example: A single integer, the sum of the even elements.",
       "matchingTitle": "Matching strategy",
       "matchingSubtitle": "How a learner's output is compared with the expected one.",
       "matchingStrategy": "Matching strategy",
@@ -2376,7 +2478,21 @@
       "stubSubtitle": "Illustrated from the signature above; the real starter code is generated by the harness. The name is derived: Python uses snake_case, Java and C++ camelCase.",
       "overrideName": "{language} function name (empty = derived)"
     },
-    "generateNeedsSave": "Save the problem changes before generating testcases with AI."
+    "generateNeedsSave": "Save the problem changes before generating testcases with AI.",
+    "kind": {
+      "title": "Problem type",
+      "subtitle": "Choose how learners submit. This decides whether a function signature is needed.",
+      "stdio": "stdin program",
+      "function": "Function (wrapper)",
+      "stdioHint": "Learners write the whole program: read from stdin and print the answer to stdout. No function name or parameters to declare.",
+      "functionHint": "Learners write only the function body to the signature you declare on the Spec tab; the system reads the input and prints the result. You must declare the name, parameters and return type, and the testcase data must follow the parameter order."
+    },
+    "runNote": {
+      "success": "Reference solution passes",
+      "warn": "Reference solution fails",
+      "negative": "The reference solution could not run"
+    },
+    "examplesFromTestcases": "Copy from public testcases"
   },
   "problemPreview": {
     "notFound": "Problem not found.",
@@ -2398,7 +2514,8 @@
     "loadFailed": "Could not load the problem. Try again later.",
     "back": "Back to list",
     "edit": "Edit problem",
-    "subtitle": "Code #{code} · topic {topic}",
+    "subtitle": "Topic {topic} · Problem code {code}",
+    "subtitleTopic": "Topic {topic}",
     "statTestcases": "Approved testcases",
     "statTestcasesMeta": "{count} testcases awaiting review",
     "statPublic": "Public testcases",
@@ -2409,10 +2526,31 @@
     "guardOn": "On",
     "guardOff": "Off",
     "aiBriefEmpty": "No problem-specific context yet.",
+    "sectionsLabel": "Problem details",
+    "sectionSpec": "Specification",
+    "sectionCoverage": "Testcase coverage",
+    "coverageSummary": "{approved}/{total} approved testcases",
+    "coverageEmpty": "None yet",
+    "allTestcases": "All testcases",
+    "uncategorizedTestcases": "Uncategorized",
+    "testcaseCategoryFilter": "Testcase category",
+    "testcaseNumber": "Testcase {number}",
+    "testcasePageSummary": "{from}–{to} of {total} testcases",
+    "previousTestcasePage": "Previous",
+    "nextTestcasePage": "Next",
+    "testcasePage": "Page {number}",
+    "testcaseApproved": "Approved",
+    "expectedOutput": "Expected output",
+    "emptyTestcaseValue": "(Empty)",
+    "solutionEmpty": "No reference solution yet.",
+    "unspecified": "Not specified",
     "specTitle": "Problem spec",
     "specSubtitle": "Function signature (function-wrapper model), standard I/O format and how results are matched. Read-only, edit it on the edit page."
   },
   "interviewQuestionInfo": {
+    "sectionsLabel": "Question details",
+    "followUpsTab": "Follow-ups ({count})",
+    "rubricTab": "Criteria ({count})",
     "back": "Back to list",
     "edit": "Edit question",
     "title": "Question {code}",
@@ -2709,7 +2847,99 @@
     "completingLabel": "Scoring the session...",
     "hintBlockTitle": "Hint",
     "earlyExitNoTurnBody": "You have not answered anything yet, so there is nothing to score. The session is left and closes on its own.",
-    "earlyExitNoTurnConfirm": "Leave session"
+    "earlyExitNoTurnConfirm": "Leave session",
+    "hero": {
+      "statSessions": "Sessions completed",
+      "statAverage": "Average score",
+      "statWeakest": "Criterion to practise"
+    },
+    "source": {
+      "submittedOn": "Submitted {date}",
+      "showMore": "Show {count} more",
+      "showLess": "Show less",
+      "pickedLabel": "Selected"
+    },
+    "opening": {
+      "title": "Opening your interview",
+      "preparing": "Preparing the session",
+      "stepSent": "Session settings sent",
+      "stepWriting": "The AI interviewer is writing the opening question",
+      "stepEnter": "Enter the interview room",
+      "elapsed": "Waited {time}",
+      "usual": "Usually takes about {seconds} seconds",
+      "slow": "Taking a little longer than usual, the system is still working. You do not need to reload.",
+      "composing": "The interviewer is writing a question"
+    },
+    "scoring": {
+      "title": "Scoring the session",
+      "body": "The AI is reading the whole conversation and scoring the four criteria.",
+      "elapsed": "Waited {time}"
+    },
+    "scoreLevel": {
+      "weak": "Weak",
+      "fair": "Fair",
+      "good": "Good"
+    },
+    "legend": {
+      "title": "Score band",
+      "weak": "below 5",
+      "fair": "5 to below 8",
+      "good": "8 and above"
+    },
+    "result": {
+      "summaryTitle": "Overall feedback",
+      "radarLabel": "Shape of your skills across the four criteria"
+    },
+    "rubricShort": {
+      "clarity": "Clarity",
+      "technicalAccuracy": "Technical",
+      "pushbackHandling": "Pushback",
+      "complexityAwareness": "Complexity"
+    },
+    "history": {
+      "title": "Interview history",
+      "subtitle": "Sessions you finished or left unfinished. Open one to see its scorecard and conversation.",
+      "back": "Back to mock interview",
+      "seeAll": "See all",
+      "empty": "No session matches. Scores of graded sessions appear here.",
+      "error": "Could not load the session history. The rest of the screen still works.",
+      "viewDetail": "View detail",
+      "col": {
+        "date": "Started",
+        "source": "Source",
+        "level": "Level",
+        "turns": "Turns",
+        "score": "Score",
+        "status": "Status"
+      },
+      "status": {
+        "completed": "Completed",
+        "abandoned": "Abandoned"
+      },
+      "filter": {
+        "searchLabel": "Search interview sessions",
+        "searchPlaceholder": "Search by question or topic",
+        "source": "Source",
+        "status": "Status",
+        "band": "Score band",
+        "level": "Level",
+        "all": "All"
+      },
+      "footer": {
+        "pageSize": "Rows per page",
+        "summary": "Showing {from} to {to} of {total} sessions",
+        "previous": "Previous",
+        "next": "Next",
+        "pageLabel": "Page {page}"
+      },
+      "detail": {
+        "title": "Interview session detail",
+        "back": "Back to interview history",
+        "noScore": "This session was left unfinished, so it has no score. The conversation is below.",
+        "transcript": "Conversation",
+        "noTurns": "This session has no turns yet."
+      }
+    }
   },
   "interviewBankList": {
     "startDrill": "Quick drill · {count}",
@@ -3009,6 +3239,28 @@
         "withdrawn": "Withdrawn"
       }
     },
+    "copy": {
+      "button": "Copy to another class",
+      "noOtherClass": "You have no other class to copy to",
+      "sourceEmpty": "This class has no problems to copy",
+      "title": "Copy problems from {className}",
+      "target": "To class",
+      "targetPlaceholder": "Choose the receiving class",
+      "loading": "Reading the problems of both classes...",
+      "retry": "Try again",
+      "sourceCount": "{className} has",
+      "alreadyHas": "{className} already has",
+      "withdrawn": "Unpublished, cannot be assigned",
+      "willAssign": "Will be assigned",
+      "nothingLeft": "{className} has no problems left to assign.",
+      "confirm": "Copy {count} problems",
+      "confirmEmpty": "Copy",
+      "sending": "Copying...",
+      "done": "Assigned {count} problems to {className}",
+      "skipped": "{count} problems the class already has were skipped",
+      "refused": "{count} problems could not be assigned: {titles}.",
+      "partial": "Only {done}/{total} problems were assigned, press again to send the rest."
+    },
     "filterAll": "All",
     "cancel": "Cancel",
     "pageSummary": "Page {page} / {total}",
@@ -3024,19 +3276,42 @@
     },
     "toast": {
       "removed": "Removed \"{title}\" from the class",
-      "failed": "Could not remove the assignment, please try again",
-      "assigned": "Assigned {count} problems to {className}",
-      "assignFailed": "Could not assign the problems, please try again",
-      "assignSkipped": "{count} problems were already given to the class and were skipped",
-      "assignRefused": "{count} problems could not be assigned."
+      "failed": "Could not remove the assignment, please try again"
+    }
+  },
+  "classAssignProblems": {
+    "title": "Assign problems to a class",
+    "subtitle": "Pick published problems from the bank and give them to a class",
+    "back": "Back to Class assignments",
+    "classLabel": "Class",
+    "search": "Search by code or title",
+    "levelFilter": "Difficulty",
+    "topicFilter": "Topic",
+    "filterAll": "All",
+    "resultCount": "{count} problems",
+    "col": {
+      "title": "Problem",
+      "topic": "Topic",
+      "difficulty": "Difficulty"
     },
-    "assign": {
-      "title": "Assign problems to a class",
-      "classLabel": "Class",
-      "listLabel": "Bank problems not yet given to this class",
-      "loading": "Loading…",
-      "empty": "No problems left to assign to this class",
-      "confirm": "Assign {count}"
+    "assigned": "Assigned",
+    "selectAll": "Select every assignable problem on this page",
+    "selectRow": "Select {title}",
+    "empty": "No problem matches the filters",
+    "loadFailed": "Could not load the problems. Please try again later.",
+    "pageSummary": "Page {page} of {total}",
+    "previous": "Previous",
+    "next": "Next",
+    "selection": "{count} selected, assign to {className}",
+    "overLimit": "At most {max} problems per call",
+    "clear": "Clear",
+    "confirm": "Assign {count}",
+    "noClass": "You do not teach any class yet.",
+    "noClassLink": "Create a class first",
+    "toast": {
+      "assigned": "Assigned {count} problem(s) to {className}",
+      "skipped": "{count} problem(s) were already in the class and were skipped",
+      "refused": "{count} problem(s) could not be assigned."
     }
   },
   "classProgress": {
@@ -3137,13 +3412,10 @@
       },
       "btnViewResult": "View result",
       "btnViewResultOf": "View the result of {problem}",
-      "filter": {
-        "label": "Filter by result",
-        "all": "All",
-        "accepted": "Accepted",
-        "failed": "Not passed"
-      },
-      "resultCount": "{count} submissions"
+      "resultCount": "{count} submissions",
+      "pageSummary": "Page {page} / {total}",
+      "previous": "Previous",
+      "next": "Next"
     },
     "empty": "No data yet",
     "cancel": "Cancel",
@@ -3206,6 +3478,7 @@
     "title": "Instructor overview",
     "kpi": {
       "classes": "Classes in charge",
+      "classesCount": "{count} classes",
       "classesMeta": "{count} students",
       "students": "Total students",
       "studentsMeta": "{count} absent"
@@ -3262,7 +3535,7 @@
     },
     "activity": {
       "title": "Recent activity",
-      "subtitle": "Latest 10 items",
+      "subtitle": "Latest {count} items",
       "type": {
         "SUBMISSION_ACCEPTED": "{name} just had a submission Accepted",
         "SOLUTION_REVIEW_COMPLETED": "{name} just received a solution review",
@@ -3280,14 +3553,17 @@
     "settingsShortcut": "Account settings",
     "form": {
       "title": "Personal details",
+      "contactGroup": "Contact",
+      "workGroup": "Education and work",
       "displayName": "Full name",
       "email": "Email",
-      "schoolOrCompany": "School / company",
-      "currentPosition": "Current role",
-      "targetPosition": "Target position",
+      "schoolOrCompany": "School or workplace",
+      "currentPosition": "Current job title",
+      "targetPosition": "Target job title",
       "phone": "Phone number",
       "revert": "Revert",
       "save": "Save changes",
+      "unsaved": "Unsaved changes",
       "savedToast": "Profile saved",
       "invalid": "The profile details are not valid",
       "saveFailed": "Could not save the profile. Try again later.",
@@ -3306,9 +3582,7 @@
     "account": {
       "title": "Account",
       "joinedAt": "Joined",
-      "role": "Role",
-      "roleInstructor": "Instructor",
-      "roleAdmin": "Administrator",
+      "role": "System role",
       "userCode": "User code"
     },
     "practice": {
@@ -3450,7 +3724,7 @@
     },
     "saveBar": {
       "title": "Status",
-      "statusIdle": "Theme and language apply immediately; the rest is saved with the button below.",
+      "statusIdle": "No changes to save.",
       "statusDirty": "You have unsaved changes.",
       "save": "Save settings",
       "saved": "Settings saved.",
@@ -3525,14 +3799,6 @@
     "difficulty": {
       "title": "By difficulty"
     },
-    "focus": {
-      "title": "Focus next",
-      "allSolved": "You have solved every topic's problems",
-      "reasonWeakest": "Skill {score}/100 — the lowest",
-      "reasonLowestAc": "{rate}% AC — the weakest topic",
-      "reasonMostUnsolved": "{remaining} problems left, {rate}% AC",
-      "reasonStale": "No submission in {days} days"
-    },
     "interview": {
       "title": "Mock interviews",
       "newSession": "Start a new session",
@@ -3597,31 +3863,14 @@
       "chartLabel": "Submissions per day: {total} submissions, {average} per day on average",
       "empty": "No submissions in this range"
     },
-    "radar": {
-      "title": "Skill by topic",
-      "subtitle": "Scored 0-100. Shows the {count} lowest-scoring topics, from acceptance rate and how much of the topic is solved; the topic to improve first is in orange",
-      "empty": "At least 3 topics with data are needed to draw this chart"
-    },
-    "activity": {
-      "title": "Activity, last 12 months",
-      "summary": "{days} active days in the last 12 months",
-      "less": "Less",
-      "more": "More",
-      "tooltip": "{day}: {count} submissions",
-      "tooltipNone": "{day}: no submissions",
-      "empty": "No activity in the last 12 months"
-    },
     "suggested": {
       "title": "Suggested problems",
-      "count": "{count} problems",
-      "difficultyLabel": "Filter by difficulty",
-      "topicLabel": "Filter by topic",
       "colProblem": "Problem",
       "colTopic": "Topic",
       "colDifficulty": "Difficulty",
       "colAcRate": "AC rate",
       "tagFunction": "function",
-      "empty": "No problem matches these filters"
+      "allSolved": "You have solved every suggested problem. Find more on the Problems page."
     },
     "topics": {
       "title": "Topic progress",
@@ -3632,9 +3881,7 @@
       "title": "Mock Interview",
       "session": "Session on {date}",
       "empty": "No interview sessions yet",
-      "summary": "{count} sessions · average {score} / 10",
-      "summaryNoScore": "{count} sessions · no session scored yet",
-      "weakest": "weakest: {criterion}"
+      "sessionWeakest": "To improve: {criterion} ({score}/10)"
     },
     "reviews": {
       "title": "Solution Review",
@@ -3715,7 +3962,12 @@
       "viewDetail": "View class details",
       "viewDetailOf": "View details of {name}",
       "progressLoading": "Loading progress…",
-      "assignedCount": "{total} assigned problems"
+      "assignedCount": "{total} assigned problems",
+      "allDone": "Completed",
+      "remaining": "{count} left",
+      "joinedOn": "Joined",
+      "className": "Class",
+      "status": "Status"
     },
     "detail": {
       "back": "Back to my classes",
@@ -3730,7 +3982,13 @@
       "progressUnknown": "{total} problems assigned; how many you solved could not be read.",
       "pageSummary": "Page {page} / {total}",
       "previous": "Previous",
-      "next": "Next"
+      "next": "Next",
+      "colLevel": "Level",
+      "showMore": "Show more",
+      "showLess": "Show less",
+      "period": "Period",
+      "note": "Note",
+      "doIt": "Solve"
     }
   }
 }

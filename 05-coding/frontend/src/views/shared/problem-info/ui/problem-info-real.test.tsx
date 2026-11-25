@@ -1,7 +1,7 @@
 // SHR0203 against the REAL api path (F2 #33): only the HTTP layer is faked. What matters: counts come
 // from the summary when the caller may not read testcase bodies, a read-only viewer sees no reference
 // solution and no edit button, and a missing problem reads as not found.
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import viMessages from "../../../../../messages/vi.json";
 import { ApiError } from "@/shared/api";
@@ -91,12 +91,16 @@ describe("ProblemInfoView with the real API", () => {
   beforeEach(() => resetApiMock());
 
   it("shows the stored problem, the reference solution and the edit button to its author", async () => {
-    routes(dto());
+    routes(dto({ code: "TWO-SUM" }));
     open();
     expect(
       await screen.findByRole("heading", { level: 1, name: "Two Sum" }),
     ).toBeInTheDocument();
-    expect(screen.getByText(m.solutionToggle)).toBeInTheDocument();
+    expect(screen.getByText(/Mã bài TWO-SUM$/)).toBeInTheDocument();
+    expect(screen.queryByText(new RegExp(P))).toBeNull();
+    expect(screen.queryByText("SECRET-CODE")).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: ta.solutionTitle }));
+    expect(screen.getByText("SECRET-CODE")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: m.edit })).toHaveAttribute(
       "href",
       `/admin/problems/${P}/edit`,
@@ -113,7 +117,7 @@ describe("ProblemInfoView with the real API", () => {
     );
     open();
     await screen.findByRole("heading", { level: 1, name: "Two Sum" });
-    expect(screen.queryByText(m.solutionToggle)).toBeNull();
+    expect(screen.queryByRole("button", { name: ta.solutionTitle })).toBeNull();
     expect(screen.queryByRole("link", { name: m.edit })).toBeNull();
     const approved = screen.getByText(m.statTestcases).nextElementSibling;
     expect(approved).toHaveTextContent("8");
@@ -123,7 +127,87 @@ describe("ProblemInfoView with the real API", () => {
     expect(screen.getByText(m.statPublic).nextElementSibling).toHaveTextContent(
       "2",
     );
-    expect(screen.queryByText(ta.coverageTitle)).toBeNull();
+    expect(
+      screen.queryByRole("button", { name: m.sectionCoverage }),
+    ).toBeNull();
+  });
+
+  it("filters the authorized testcase list and opens an individual case", async () => {
+    const testcase = {
+      id: "case-1",
+      position: 1,
+      visibility: "HIDDEN",
+      origin: "MANUAL",
+      approved: true,
+      category: null,
+      input: "sample input",
+      inputStorage: "INLINE",
+      expectedOutput: "sample expected output",
+      expectedOutputStorage: "INLINE",
+    };
+    routes(dto({ testcases: [testcase] }));
+    open();
+    fireEvent.click(
+      await screen.findByRole("button", { name: m.sectionCoverage }),
+    );
+    expect(screen.queryByText("sample input")).toBeNull();
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: `${m.testcaseCategoryFilter}: ${m.allTestcases}`,
+      }),
+    );
+    fireEvent.click(
+      screen.getByRole("option", { name: m.uncategorizedTestcases }),
+    );
+    const row = screen.getByRole("button", { name: /Testcase 1/ });
+    fireEvent.click(row);
+    expect(row).toHaveAttribute("aria-expanded", "true");
+    expect(screen.getByText("sample input")).toBeVisible();
+    expect(screen.getByText("sample expected output")).toBeVisible();
+  });
+
+  it("paginates after filtering and returns to page one when the category changes", async () => {
+    const testcases = Array.from({ length: 13 }, (_, index) => ({
+      id: `case-${index + 1}`,
+      position: index + 1,
+      visibility: "HIDDEN",
+      origin: "MANUAL",
+      approved: true,
+      category: index === 0 ? null : "TYPICAL",
+      input: `input-${index + 1}`,
+      inputStorage: "INLINE",
+      expectedOutput: "expected",
+      expectedOutputStorage: "INLINE",
+    }));
+    routes(dto({ testcases }));
+    open();
+    fireEvent.click(
+      await screen.findByRole("button", { name: m.sectionCoverage }),
+    );
+    expect(screen.queryByText("Testcase 11")).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: m.nextTestcasePage }));
+    expect(screen.getByText("Testcase 11")).toBeVisible();
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: `${m.testcaseCategoryFilter}: ${m.allTestcases}`,
+      }),
+    );
+    fireEvent.click(
+      screen.getByRole("option", { name: `${ta.category.typical} (12)` }),
+    );
+    expect(screen.getByText("Testcase 2")).toBeVisible();
+    expect(screen.getByText("Testcase 11")).toBeVisible();
+    expect(screen.queryByText("Testcase 12")).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: m.nextTestcasePage }));
+    const row = screen.getByRole("button", { name: /Testcase 12/ });
+    fireEvent.click(row);
+    expect(screen.getByText("input-12")).toBeVisible();
+    fireEvent.click(
+      screen.getByRole("button", { name: m.previousTestcasePage }),
+    );
+    expect(screen.queryByText("input-12")).not.toBeInTheDocument();
   });
 
   it("not found (PRB-010, also an A2 asking for someone else's draft) and a forbidden read are told apart", async () => {

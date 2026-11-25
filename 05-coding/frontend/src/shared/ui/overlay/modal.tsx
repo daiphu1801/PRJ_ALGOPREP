@@ -62,6 +62,13 @@ export function Modal({
 
     function onKeyDown(event: KeyboardEvent) {
       if (event.key === "Escape") {
+        // Let an open listbox inside the dialog dismiss itself and restore its trigger focus.
+        if (
+          event.target instanceof Element &&
+          panel?.contains(event.target) &&
+          panel.contains(event.target.closest('[role="listbox"]'))
+        )
+          return;
         event.stopPropagation();
         if (dismissible) onClose();
         return;

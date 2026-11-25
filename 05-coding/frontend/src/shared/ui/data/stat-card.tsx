@@ -69,7 +69,7 @@ export function StatCard({
       <p
         className={cn(
           "text-xs font-semibold tracking-[0.08em] text-[var(--color-text-subtle)] uppercase",
-          bare ? "mb-4" : "mb-2.5",
+          bare ? "mb-2" : "mb-2.5",
         )}
       >
         {label}

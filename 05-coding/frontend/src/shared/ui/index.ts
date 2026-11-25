@@ -63,6 +63,7 @@ export { GroupedBarChart } from "./charts/grouped-bar-chart";
 export { DotGrid } from "./charts/dot-grid";
 export { LineChartWithTotal } from "./charts/line-chart-with-total";
 export { RankedProgressList } from "./charts/ranked-progress-list";
+export { ColumnChart } from "./charts/column-chart";
 export {
   StackedBarChart,
   type StackedBar,

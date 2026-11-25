@@ -15,7 +15,11 @@ export type {
   MyClassAssignment,
   StudentStatus,
 } from "./model/types";
-export { formatClassSchedule } from "./model/schedule";
+export {
+  formatClassSchedule,
+  formatClassScheduleBrief,
+  classScheduleParts,
+} from "./model/schedule";
 export { STUDENT_STATUS_VARIANT } from "./model/status";
 export {
   useClassActivity,

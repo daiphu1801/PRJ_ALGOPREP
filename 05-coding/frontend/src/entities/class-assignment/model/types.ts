@@ -41,11 +41,12 @@ export const assignmentSummarySchema = z.object({
 });
 export type AssignmentSummary = z.infer<typeof assignmentSummarySchema>;
 
-// A published bank problem that can still be given to a class (02-bd/screens/teacher/INS0202_class_assignments.md).
+// A published bank problem offered by the "Giao bài cho lớp" screen (DEC-2026-1123-assign-problems-dedicated-screen).
+// `assigned`: the class already has it; the row is listed dimmed and cannot be ticked.
 export type AssignableProblem = Pick<
   AssignedProblem,
   "id" | "title" | "topic" | "difficulty"
->;
+> & { code?: string; topics?: string[]; assigned: boolean };
 
 /** What a batch assign did, per problem (DD #52): new, already given, or refused with a PRB code. */
 export type AssignResult = {

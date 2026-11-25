@@ -21,7 +21,11 @@ export function RateLimitsCard() {
   const update = useUpdateLimitsConfig();
 
   return (
-    <Card title={t("limitsTitle")} description={t("limitsSubtitle")}>
+    <Card
+      title={t("limitsTitle")}
+      description={t("limitsSubtitle")}
+      className="@container min-w-0"
+    >
       {query.isError ? (
         <BlockError query={query} />
       ) : !query.data ? (
@@ -30,6 +34,7 @@ export function RateLimitsCard() {
         <div className="flex flex-col gap-2.5">
           {RATE_LIMITS.map(({ key, unit }) => (
             <SettingRow
+              className="@max-[360px]:flex-col @max-[360px]:items-start"
               key={key}
               label={t(`limit.${key}.label`)}
               description={t(`limit.${key}.meta`)}

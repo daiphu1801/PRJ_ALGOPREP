@@ -4,6 +4,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { SHELL_PADDING_X, SHELL_PADDING_Y } from "@/shared/api/config";
 import { BrandMark, ThemeLangSwitcher } from "@/shared/ui";
 import { useT } from "@/shared/i18n";
 import { cn } from "@/shared/lib";
@@ -15,7 +16,7 @@ import { LOGOUT_ITEM_KEY, useSignOut } from "../model/use-sign-out";
 
 /**
  * Matches 09-layoutBase/Dashboard AlgoPrep.dc.html:50-92 (the same header every Student screen
- * repeats): a sticky, full-bleed strip whose inner bar is a 58px glass pill capped at 1400px —
+ * repeats): a sticky, full-bleed strip whose inner bar is a full-width 58px glass pill —
  * brand + GO-JUDGE badge on the left, the nav in the middle, theme/language switcher and the
  * avatar menu on the right. Before this existed the whole Student area rendered the placeholder
  * header from `app-shell.tsx` (brand + area name only), so none of the 12 screens had any
@@ -63,8 +64,15 @@ export function StudentHeader() {
     pathname === href || pathname.startsWith(`${href}/`);
 
   return (
-    <header className="sticky top-0 z-30 bg-[linear-gradient(var(--color-background)_82%,transparent)] px-3 pb-3 pt-3.5 sm:px-5">
-      <div className="student-header-bar glass-surface relative mx-auto flex h-[58px] max-w-[1400px] items-center gap-2 rounded-2xl border border-[var(--color-border)] px-3 shadow-sm sm:gap-4 sm:px-4 lg:gap-7 lg:px-5">
+    <header
+      className={cn(
+        "sticky top-0 z-30 bg-[linear-gradient(var(--color-background)_82%,transparent)]",
+        SHELL_PADDING_X,
+        SHELL_PADDING_Y,
+        "pb-0",
+      )}
+    >
+      <div className="glass-surface relative flex h-[58px] w-full items-center gap-2 rounded-2xl border border-[var(--color-border)] px-3 shadow-sm sm:gap-4 sm:px-4 lg:gap-7 lg:px-5">
         <button
           ref={navButtonRef}
           type="button"

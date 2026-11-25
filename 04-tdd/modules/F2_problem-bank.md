@@ -599,10 +599,10 @@ Tiêu chí nghiệm thu ngân hàng bài toán, testcase, danh mục, giao bài 
 
 - **Nguồn**: [SoT: 03-dd/api/F2_problem-bank.md] §51; [SoT: 03-dd/logic/F2_problem-bank.md].
 
-### AC-74 — Chọn bài để giao (§52)
+### AC-74 — Chọn bài để giao: liệt kê cả bài đã giao, gắn cờ `assigned` (§52)
 - **Tiền điều kiện**: lớp A đã giao P; bài S từng giao rồi gỡ; có bài nháp và bài đã xoá.
-- **Hành động**: gọi `assignable-problems` của lớp A.
-- **Kết quả mong đợi**: có S và các bài xuất bản chưa giao; không có P, không có bài nháp/đã xoá; lớp không phụ trách `403 PRB-005`.
+- **Hành động**: gọi `assignable-problems` của lớp A (không kèm bộ lọc).
+- **Kết quả mong đợi** (viết lại 2026-11-23, `DEC-2026-1123-assign-problems-dedicated-screen`; trước đó "không có P"): có P với `assigned = true`, có S và các bài xuất bản chưa giao với `assigned = false`; không có bài nháp/đã xoá; thứ tự theo `code`; lớp không phụ trách `403 PRB-005`. Triển khai backend của đợt này đang làm, chưa kiểm chứng.
 
 - **Nguồn**: [SoT: 03-dd/api/F2_problem-bank.md] §52; [SoT: 03-dd/logic/F2_problem-bank.md].
 
@@ -770,6 +770,20 @@ Tiêu chí nghiệm thu ngân hàng bài toán, testcase, danh mục, giao bài 
 - **Kết quả mong đợi**: chỉ bốn scalar an toàn, phản ánh cấu hình hiện tại; một trong hai quyền được phép, thiếu cả hai 403 PRB-002, anonymous 401. Nguồn lỗi 503 PRB-050 cố định, không lộ cause hoặc fallback hằng. Bài hiện hành giữ limits riêng.
 - **Nguồn**: DD F2 §64; DEC-2026-1110-f2-authoring-defaults.
 
+### AC-96 — Lọc danh sách chọn bài theo độ khó và chủ đề (§52)
+
+- **Tiền điều kiện**: lớp A do giảng viên I phụ trách; có bài xuất bản ở nhiều mức khó và nhiều chủ đề, trong đó có bài đã giao cho A; có hơn 20 bài xuất bản.
+- **Hành động**: gọi `assignable-problems` của lớp A lần lượt với `levelCode`, với `topic` (tên chủ đề), với cả hai và thêm `q`; rồi với giá trị không khớp bài nào; rồi bỏ trống cả hai; lặp ở trang 2.
+- **Kết quả mong đợi**: mỗi bộ lọc chỉ giữ bài khớp đúng mã mức hoặc đúng tên chủ đề, các bộ lọc cộng dồn; tổng số và phân trang tính trên tập đã lọc; giá trị không khớp trả danh sách rỗng, không lỗi; bỏ trống thì không lọc; bài `assigned = true` vẫn được lọc như bài khác. Lớp không phụ trách vẫn `403 PRB-005` dù có bộ lọc.
+- **Nguồn**: [SoT: 03-dd/api/F2_problem-bank.md] §52.2, PB52-N2, PB52-B2; [SoT: .nexa/control/decision-registry.md] `DEC-2026-1123-assign-problems-dedicated-screen`.
+
+### AC-97 — Cờ `assigned` phản ánh đúng việc đang giao cho lớp (§52, §53, §54)
+
+- **Tiền điều kiện**: lớp A và lớp B của giảng viên I; bài P đang giao cho A; bài S từng giao cho A rồi gỡ; bài T chưa giao cho lớp nào.
+- **Hành động**: gọi `assignable-problems` của A và của B; giao T cho A; gỡ P khỏi A; gọi lại của A.
+- **Kết quả mong đợi**: ở A, P `assigned = true`, S và T `assigned = false`; ở B cả ba `assigned = false` (cờ theo từng lớp). Sau khi giao T cho A thì T `assigned = true`; sau khi gỡ P thì P `assigned = false`. Giao lại bài `assigned = true` qua #52 vẫn vào `skippedIds`, không tạo dòng thứ hai. Bài `UNPUBLISHED`/đã xoá không xuất hiện dù đang giao.
+- **Nguồn**: [SoT: 03-dd/api/F2_problem-bank.md] §52.3, §52.5, §53.3, PB52-N1, PB52-B1.
+
 ## 3. Truy vết
 
 Bảng 1: Truy vết tiêu chí nghiệm thu sang endpoint, khối quy tắc, test case QA và test mã nguồn. Cột "Test case QA" giữ ID test case do `testcase-generation` sinh (tài liệu QA); cột "Test mã nguồn" liệt kê test thật đã kiểm bằng grep, theo dạng `Lớp:dòng` (dòng của phương thức test); "Trạng thái" ghi bằng chữ theo bảng 2.
@@ -863,7 +877,7 @@ Mutation test của các lát gần đây (quyền, riêng tư, tiền) chưa l�
 | AC-71 | §49 | [TC-F2-AC71-01–02](../testcases/modules/F2_problem-bank/F2_ai_generation.md) | AiTestcaseGenerationFlowTest.aProviderFailureIsPrb051WithNoTestcaseNoTurnNoLedgerAndTheRestOfF2KeepsWorking; AiTestcaseGenerationFlowTest.aBadSchemaIsPrb051WithNoTestcaseNoTurnButItsTokensAreStillRecorded; AiTestcaseGenerationFlowTest.aSecondRunWhileOneIsActiveIs409AndNeverReachesTheAi; AiTestcaseGenerationFlowTest.aSandboxFaultIsPrb050AndChangesNothing | Code xong, chưa test toàn bộ | F2-9. Tranh chấp song song kiểm bằng khoá Redis đặt sẵn, chưa có test hai luồng thật. Full reactor AiTestcaseGenerationFlowTest 16/16 và unit F2 đạt với provider/sandbox có đối tượng giả theo fixture. Pipeline provider thật chưa đạt (JSON lỗi/body rỗng503 PRB-051); owner giao F5 xử lý, xem f5-live-generation-handoff.md. Giữ trạng thái chờ nghiệm thu live pipeline, không coi scripted provider là provider thật. |
 | AC-72 | §50 | [TC-F2-AC72-01–02](../testcases/modules/F2_problem-bank/F2_class_assignments.md) | ClassAssignmentFlowTest:164; ClassAssignmentFlowTest:192; ClassAssignmentFlowTest:210 | Đạt |  |
 | AC-73 | §51 | [TC-F2-AC73-01](../testcases/modules/F2_problem-bank/F2_class_assignments.md) | ClassAssignmentFlowTest:246 | Đạt |  |
-| AC-74 | §52 | [TC-F2-AC74-01](../testcases/modules/F2_problem-bank/F2_class_assignments.md) | ClassAssignmentFlowTest:289 | Đạt |  |
+| AC-74 | §52 (sửa 2026-11-23) | [TC-F2-AC74-01](../testcases/modules/F2_problem-bank/F2_class_assignments.md) | ClassAssignmentFlowTest.assignableProblemsListAssignedOnesFlaggedAndHideUnpublishedOnes (chạy lại 2026-11-23, 12 test đạt) | Đạt | Hợp đồng đổi 2026-11-23, test đã viết lại theo hợp đồng mới |
 | AC-75 | §53, BR-18 | [TC-F2-AC75-01–03](../testcases/modules/F2_problem-bank/F2_class_assignments.md) | ClassAssignmentFlowTest:308; ClassAssignmentFlowTest:346; ClassAssignmentFlowTest:367 | Đạt |  |
 | AC-76 | §54, BR-18 | [TC-F2-AC76-01](../testcases/modules/F2_problem-bank/F2_class_assignments.md) | ClassAssignmentFlowTest:388 | Đạt |  |
 | AC-77 | §55 | [TC-F2-AC77-01](../testcases/modules/F2_problem-bank/F2_class_assignments.md) | ClassAssignmentFlowTest:271; ClassAssignmentFlowTest:210 | Đạt |  |
@@ -885,6 +899,8 @@ Mutation test của các lát gần đây (quyền, riêng tư, tiền) chưa l�
 | AC-93 | BR-11, §40, §43, §58, DB 1.15 | [TC-F2-AC93-01, -02, -03, -04, -05](../testcases/modules/F2_problem-bank/F2_snapshot_grading.md) | SnapshotPublicationFlowTest:226; SnapshotPublicationFlowTest:252; SnapshotPublicationFlowTest:265; SnapshotPublicationFlowTest:343; SnapshotPublicationFlowTest:439; SnapshotPublicationFlowTest:457; ProblemGradingReadFlowTest:236; ProblemGradingReadFlowTest:263; PersistedWorkerFlowTest:1013; ProblemPublishStatusHttpFlowTest:213 | Đạt | GR và PersistedWorkerFlowTest nằm ở `bootstrap/judge/`; PersistedWorkerFlowTest bị bỏ qua (Skipped 16) trong full regression 2026-11-06, các lớp còn lại xanh. Nhánh epsilon bổ sung 2026-10-29 chưa có testcase riêng. |
 | AC-94 | JOB-PB-02 | [TC-F2-AC94-01 đến -03](../testcases/modules/F2_problem-bank/F2_outbox_delivery_cleanup.md) | ProblemOutboxRelayFlowTest:162; ProblemOutboxRelayFlowTest:182; F2CloseoutFlowTest.cleanupIsSafeAcrossTwoProcessesAndRollsBackAMidBatchFailure | Đạt | Full reactor F2CloseoutFlowTest 8/8 và ProblemOutboxRelayFlowTest 9/9 đạt: hai cleanup đồng thời tổng12 dòng, trigger lỗi giữa lô rollback giữ3 dòng. Chứng cứ không chỉ là source job. |
 | AC-95 | #57, §64 | [TC-F2-AC95-01–13](../testcases/modules/F2_problem-bank/F2_authoring_defaults.md) | ReadAuthoringDefaultsQueryHandlerTest; F2CloseoutFlowTest.authoringDefaultsRequiresAuthorPermissionAndUsesTheLiveSettings; F2CloseoutFlowTest.authoringDefaultsAcceptsCreateAndReadIndependently; real-authoring-closure.test.ts; f2-closure-real.spec.ts: current backend defaults | Đạt | Log final-reactor-r3 xác nhận F2CloseoutFlowTest 8/8, 0 lỗi/skip: HTTP 401/403 và hai role CREATE-only/READ-only dùng JWT thật, exact 4 key. Browser NEW defaults đạt 1/1 (20261111-f2-new-defaults-real.log), khớp API/DB và không tạo bài. Unit lỗi đại diện trả503 cố định; hai nguồn dùng cùng catch. Adapter giữ defaults/copy limits và từ chối fallback khi lỗi. QA13 ca review/kiểm cấu trúc 0 lỗi, chưa có run record đủ13 ca; cap-fault và expired-token tại riêng #57 chưa chạy riêng, không claim các permutation đó đạt. Xem ac95-qa-design-review.md trong báo cáo closure. |
+| AC-96 | §52 | [TC-F2-AC96-01](../testcases/modules/F2_problem-bank/F2_class_assignments.md) | ClassAssignmentFlowTest.assignableProblemsListAssignedOnesFlaggedAndHideUnpublishedOnes (chạy lại 2026-11-23, 12 test đạt) (đoạn lọc `levelCode`, `topic`, tổng số bản ghi) | Đạt | Lát backend 2026-11-23 |
+| AC-97 | §52, §53, §54 | [TC-F2-AC97-01](../testcases/modules/F2_problem-bank/F2_class_assignments.md) | ClassAssignmentFlowTest.assignableProblemsListAssignedOnesFlaggedAndHideUnpublishedOnes (chạy lại 2026-11-23, 12 test đạt) (đoạn cờ `assigned`, bài gỡ rồi giao lại) | Đạt | Lát backend 2026-11-23 |
 
 Bảng 3: Tổng hợp trạng thái 94 tiêu chí (2026-11-06, sau full regression; cập nhật 2026-11-08: AC-59 chuyển Đạt, đếm lại từ bảng truy vết)
 
@@ -924,6 +940,8 @@ Bảng hiện hành 2026-11-11 (đếm lại từ 95 hàng truy vết, gồm AC-
 | Code xong, chưa test toàn bộ | 7 |
 | Một phần | 0 |
 | Total | 95 |
+
+Cập nhật 2026-11-23 (`DEC-2026-1123-assign-problems-dedicated-screen`): AC-74 viết lại theo hợp đồng mới, thêm AC-96 và AC-97; backend đã làm và `ClassAssignmentFlowTest` chạy lại đạt (12 test, 2026-11-23), nên hiện hành là Đạt 90, Code xong chưa test toàn bộ 7, Một phần 0, Chưa làm 0, Tổng 97 `[SoT: Suy luận, cộng từ bảng 2026-11-11 phía trên]`.
 
 Nguồn cập nhật: full reactor `20261111-093608-624-f2-final-reactor-verify-r3.log` có F2 unit514/514 và 34 lớp bootstrap F2 tổng297 test, 0 failure/error, 1 sandbox test gated được kiểm riêng ở đợt scoped sau đó; xem [bảng lớp](../../06-plan/reports/261110-f2-full-closure/be-f2-suite-summary.md) và [BE validation](../../06-plan/reports/261110-f2-full-closure/be-validation.md). Toàn reactor lượt này exit1 vì ba oracle migration còn kỳ vọng schema cũ; không đổi nghĩa thành toàn bộ verify đã xanh chỉ vì các lớp F2 xanh. Kết quả scoped khắc phục được ghi riêng trong BE validation.
 

@@ -36,4 +36,26 @@ describe("StatCardWithSparkline", () => {
     expect(screen.getByText("—")).toBeInTheDocument();
     expect(screen.queryByText(/%/)).not.toBeInTheDocument();
   });
+
+  it("shows the previous count for a missing delta and keeps a measured zero percent", () => {
+    const { rerender } = render(
+      <StatCardWithSparkline
+        {...base}
+        deltaPercent={null}
+        deltaDirection="none"
+        noComparisonLabel="Kỳ trước: 0"
+      />,
+    );
+    expect(screen.getByText("Kỳ trước: 0")).toBeInTheDocument();
+
+    rerender(
+      <StatCardWithSparkline
+        {...base}
+        deltaPercent={0}
+        deltaDirection="none"
+        noComparisonLabel="Kỳ trước: 0"
+      />,
+    );
+    expect(screen.getByText("0,0%")).toBeInTheDocument();
+  });
 });

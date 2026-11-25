@@ -23,7 +23,7 @@ test("only the three in-scope AI features are shown", async ({ page }) => {
   // "Gợi ý" must not survive anywhere — legend, column label or subtitle.
   await expect(page.getByText(/gợi ý/i)).toHaveCount(0);
   await expect(
-    page.getByText("Phân tích, phỏng vấn và sinh testcase cộng lại"),
+    page.getByText("Tách theo tính năng, 14 ngày gần nhất"),
   ).toBeVisible();
 });
 
@@ -33,9 +33,10 @@ test("the anomaly notice warns without claiming the account was locked", async (
   await page.goto("/admin/ai-usage");
 
   // DEC-2026-0831-ai-usage-anomaly-alert: soft warning for review, never an automatic lock.
-  const notice = page.getByText("Một tài khoản dùng bất thường").locator("..");
-  await expect(notice).toContainText("hệ thống không tự khoá");
-  await expect(notice.getByRole("button")).toHaveCount(0);
+  await expect(page.getByText("Một tài khoản dùng bất thường")).toBeVisible();
+  await expect(page.getByText(/hệ thống không tự khoá/)).toBeVisible();
+  // The only action is "mark as reviewed"; there is no lock button.
+  await expect(page.getByRole("button", { name: /khoá/i })).toHaveCount(0);
 });
 
 test("only items with a source remain: no export button, no testcase-cost notice, no stale footnote", async ({

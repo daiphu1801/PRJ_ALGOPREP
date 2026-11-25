@@ -45,6 +45,7 @@ import {
 } from "../api";
 import { useApiErrorMessage, useLocale, useT } from "@/shared/i18n";
 import { formatRelativeVN, textTone, useDebounced } from "@/shared/lib";
+import { useMediaQuery } from "@/shared/lib/use-media-query";
 import { toast } from "@/shared/lib/toast-store";
 import { checkLock, checkRoleChange, partitionByStatus } from "../model/guards";
 import { AddAccountDialog } from "./add-account-dialog";
@@ -57,6 +58,9 @@ import {
   Card,
   ConfirmDialog,
   DataTable,
+  EmptyState,
+  Modal,
+  PageContainer,
   PageHeader,
   Pagination,
   QueryBoundary,
@@ -130,6 +134,7 @@ function AdminUserManagementInner({
   onFiltersChange: (patch: Partial<AdminUserListParams>) => void;
 }) {
   const t = useT("adminUserManagement");
+  const compact = useMediaQuery("(max-width: 1200px)");
   const apiMessage = useApiErrorMessage();
   const locale = useLocale() === "en" ? "en" : "vi";
   const actions = useAdminUserActions();
@@ -154,8 +159,10 @@ function AdminUserManagementInner({
   } | null>(null);
   const [unlockTargets, setUnlockTargets] = useState<AdminUser[] | null>(null);
   const [roleTarget, setRoleTarget] = useState<AdminUser | null>(null);
+  const [detailId, setDetailId] = useState<string | null>(null);
   const [resetTarget, setResetTarget] = useState<AdminUser | null>(null);
   const [avatarTarget, setAvatarTarget] = useState<AdminUser | null>(null);
+  const detailUser = accounts.find((user) => user.id === detailId);
 
   // Role, status and free text combine with AND — same as the mockup's own filter (dc.html:449-453).
   const users = useMemo(() => {
@@ -426,7 +433,12 @@ function AdminUserManagementInner({
     ),
   };
 
-  const columns: DataTableColumn<AdminUser>[] = [
+  const [identityColumn, roleColumn, statusColumn, actionsColumn]: [
+    DataTableColumn<AdminUser>,
+    DataTableColumn<AdminUser>,
+    DataTableColumn<AdminUser>,
+    DataTableColumn<AdminUser>,
+  ] = [
     {
       key: "user",
       header: t("columnUser"),
@@ -438,12 +450,19 @@ function AdminUserManagementInner({
             avatarVersion={user.avatarVersion}
             size="sm"
           />
-          <span className="min-w-0">
-            <span className="block truncate font-semibold">{user.name}</span>
+          <div className="min-w-0">
+            <button
+              type="button"
+              aria-label={t("details.open", { name: user.name })}
+              onClick={() => setDetailId(user.id)}
+              className="block max-w-full cursor-pointer truncate rounded-sm text-left font-semibold text-[var(--color-primary)] underline decoration-transparent underline-offset-2 hover:decoration-current focus-visible:outline-2 focus-visible:outline-offset-2"
+            >
+              {user.name}
+            </button>
             <span className="block truncate font-mono text-[11px] text-[var(--color-text-subtle)]">
               {user.email}
             </span>
-          </span>
+          </div>
         </div>
       ),
     },
@@ -457,8 +476,6 @@ function AdminUserManagementInner({
         </Badge>
       ),
     },
-    ...(hasCounts ? activityColumns : []),
-    ...(hasLastActive ? [lastActiveColumn] : []),
     {
       key: "status",
       header: t("columnStatus"),
@@ -527,12 +544,26 @@ function AdminUserManagementInner({
       ),
     },
   ];
+  const metrics = [
+    ...(hasCounts ? activityColumns : []),
+    ...(hasLastActive ? [lastActiveColumn] : []),
+  ];
+  const columns = [
+    identityColumn,
+    roleColumn,
+    ...metrics,
+    statusColumn,
+    actionsColumn,
+  ];
+  const allSelected =
+    users.length > 0 && users.every((user) => selected.has(user.email));
 
   return (
-    <div>
+    <PageContainer variant="content" className="@container">
       <PageHeader
         title={t("title")}
         description={t("subtitle")}
+        className="[&_h1]:whitespace-normal [&_p]:whitespace-normal"
         actions={
           <Button variant="cta" size="sm" onClick={() => setAdding(true)}>
             {t("addAccount")}
@@ -540,156 +571,225 @@ function AdminUserManagementInner({
         }
       />
 
-      <Card className="mb-4 min-w-0 px-[18px] py-4">
-        <FilterBar
-          search={{
-            label: t("searchLabel"),
-            placeholder: t("searchPlaceholder"),
-            value: query,
-            onChange: changeQuery,
-          }}
-          resultCount={t("resultCount", {
-            shown: users.length,
-            total: page.totalUsers.toLocaleString("vi-VN"),
-          })}
-        >
-          <FilterMenu
-            label={t("roleFilterLabel")}
-            value={role}
-            onValueChange={changeRole}
-            options={[
-              { value: "all", label: t("filterAll") },
-              { value: "student", label: t("role.student") },
-              { value: "instructor", label: t("role.instructor") },
-              { value: "admin", label: t("role.admin") },
-            ]}
-          />
-          <FilterMenu
-            label={t("statusFilterLabel")}
-            value={status}
-            onValueChange={changeStatus}
-            options={[
-              { value: "all", label: t("filterAll") },
-              { value: "active", label: t("status.active") },
-              { value: "pending", label: t("status.pending") },
-              { value: "locked", label: t("status.locked") },
-            ]}
-          />
-        </FilterBar>
+      <div className="grid min-w-0 grow gap-4 @min-[1340px]:grid-cols-[minmax(0,1fr)_minmax(280px,0.34fr)]">
+        <Card className="flex min-w-0 flex-col px-[18px] py-4">
+          <FilterBar
+            search={{
+              label: t("searchLabel"),
+              placeholder: t("searchPlaceholder"),
+              value: query,
+              onChange: changeQuery,
+            }}
+            resultCount={t("resultCount", {
+              shown: users.length,
+              total: page.totalUsers.toLocaleString("vi-VN"),
+            })}
+          >
+            <FilterMenu
+              label={t("roleFilterLabel")}
+              value={role}
+              onValueChange={changeRole}
+              options={[
+                { value: "all", label: t("filterAll") },
+                { value: "student", label: t("role.student") },
+                { value: "instructor", label: t("role.instructor") },
+                { value: "admin", label: t("role.admin") },
+              ]}
+            />
+            <FilterMenu
+              label={t("statusFilterLabel")}
+              value={status}
+              onValueChange={changeStatus}
+              options={[
+                { value: "all", label: t("filterAll") },
+                { value: "active", label: t("status.active") },
+                { value: "pending", label: t("status.pending") },
+                { value: "locked", label: t("status.locked") },
+              ]}
+            />
+          </FilterBar>
 
-        <BulkActionBar
-          count={selected.size}
-          label={t("selectionLabel", { count: selected.size })}
-        >
-          {/* Always enabled: a disabled button cannot say why. With nothing to change it raises a
+          <BulkActionBar
+            count={selected.size}
+            label={t("selectionLabel", { count: selected.size })}
+          >
+            {/* Always enabled: a disabled button cannot say why. With nothing to change it raises a
               warning toast that explains instead (owner instruction 2026-10-11). */}
-          <Button
-            variant="ghost"
-            size="sm"
-            className="border border-[var(--color-border)] text-[var(--color-admin-negative-text)]"
-            onClick={() =>
-              lockable.length === 0
-                ? toast.warning(t("lockNothing"))
-                : requestLock(lockable, unlockable.length)
-            }
-          >
-            {t("bulkLock")}
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="border border-[var(--color-border)]"
-            onClick={() =>
-              unlockable.length === 0
-                ? toast.warning(t("unlockNothing"))
-                : setUnlockTargets(unlockable)
-            }
-          >
-            {t("bulkUnlock")}
-          </Button>
-        </BulkActionBar>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="border border-[var(--color-border)] text-[var(--color-admin-negative-text)]"
+              onClick={() =>
+                lockable.length === 0
+                  ? toast.warning(t("lockNothing"))
+                  : requestLock(lockable, unlockable.length)
+              }
+            >
+              {t("bulkLock")}
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="border border-[var(--color-border)]"
+              onClick={() =>
+                unlockable.length === 0
+                  ? toast.warning(t("unlockNothing"))
+                  : setUnlockTargets(unlockable)
+              }
+            >
+              {t("bulkUnlock")}
+            </Button>
+          </BulkActionBar>
 
-        <DataTable
-          caption={t("tableCaption")}
-          columns={columns}
-          rows={users}
-          rowKey={(user) => user.email}
-          emptyMessage={t("emptyFiltered")}
-          minWidth={910}
-          selection={{
-            selectedKeys: selected,
-            onToggleRow: toggleRow,
-            onToggleAll: toggleAll,
-            selectAllLabel: t("selectAll", { count: users.length }),
-            rowLabel: (user) => t("selectRow", { name: user.name }),
-          }}
-        />
+          {compact ? (
+            users.length ? (
+              <div className="mb-3">
+                <label className="mb-2 flex min-h-10 cursor-pointer items-center gap-2 px-1 text-sm font-medium">
+                  <input
+                    type="checkbox"
+                    checked={allSelected}
+                    ref={(node) => {
+                      if (node)
+                        node.indeterminate =
+                          !allSelected &&
+                          users.some((user) => selected.has(user.email));
+                    }}
+                    onChange={(event) => toggleAll(event.target.checked)}
+                    className="h-4 w-4 shrink-0 accent-[var(--color-admin-teal)]"
+                  />
+                  {t("selectAll", { count: users.length })}
+                </label>
+                <ul
+                  aria-label={t("tableCaption")}
+                  className="grid gap-2.5 @min-[550px]:grid-cols-2"
+                >
+                  {users.map((user) => (
+                    <li
+                      key={user.email}
+                      className="glass-surface flex min-w-0 flex-col gap-2.5 rounded-xl border border-[var(--color-border)] p-3"
+                    >
+                      <div className="flex min-w-0 items-start gap-2.5">
+                        <input
+                          type="checkbox"
+                          checked={selected.has(user.email)}
+                          onChange={() => toggleRow(user.email)}
+                          aria-label={t("selectRow", { name: user.name })}
+                          className="mt-2 h-4 w-4 shrink-0 cursor-pointer accent-[var(--color-admin-teal)]"
+                        />
+                        <div className="min-w-0 [&_.truncate]:whitespace-normal [&_.truncate]:[overflow-wrap:anywhere]">
+                          {identityColumn.render(user)}
+                        </div>
+                      </div>
+                      <div className="flex flex-wrap items-center gap-2.5">
+                        {roleColumn.render(user)}
+                        {statusColumn.render(user)}
+                      </div>
+                      {metrics.length > 0 && (
+                        <dl className="flex flex-wrap gap-x-3 gap-y-1.5 text-xs">
+                          {metrics.map(({ key, header, render }) => (
+                            <div key={key}>
+                              <dt className="text-[var(--color-text-muted)]">
+                                {header}
+                              </dt>
+                              <dd>{render(user)}</dd>
+                            </div>
+                          ))}
+                        </dl>
+                      )}
+                      <div className="mt-auto border-t border-[var(--color-border)] pt-2 [&>span]:flex-wrap [&_button]:min-h-9 [&_button]:min-w-9">
+                        {actionsColumn.render(user)}
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : (
+              <EmptyState>{t("emptyFiltered")}</EmptyState>
+            )
+          ) : (
+            <DataTable
+              caption={t("tableCaption")}
+              columns={columns}
+              rows={users}
+              rowKey={(user) => user.email}
+              emptyMessage={t("emptyFiltered")}
+              minWidth={910}
+              selection={{
+                selectedKeys: selected,
+                onToggleRow: toggleRow,
+                onToggleAll: toggleAll,
+                selectAllLabel: t("selectAll", { count: users.length }),
+                rowLabel: (user) => t("selectRow", { name: user.name }),
+              }}
+            />
+          )}
 
-        <Pagination
-          page={filters.page}
-          pageSize={ADMIN_USERS_PAGE_SIZE}
-          total={page.totalUsers}
-          onPageChange={changePage}
-          summary={t("pageLabel", {
-            page: filters.page,
-            totalPages: page.totalPages,
-            shown: users.length,
-          })}
-          previousLabel={t("previous")}
-          nextLabel={t("next")}
-        />
-      </Card>
-
-      <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
-        <Card
-          title={t("roleDistributionTitle")}
-          description={t("roleDistributionSubtitle", {
-            total: page.totalUsers.toLocaleString("vi-VN"),
-          })}
-        >
-          <RankedProgressList
-            numbered={false}
-            items={page.roleDistribution.map((item) => ({
-              label:
-                item.role === "deactivated"
-                  ? t("role.deactivated")
-                  : t(`role.${item.role}`),
-              value: item.percent,
-              valueLabel: item.label,
-              colorVar: ROLE_BAR_COLOR_VAR[item.role],
-            }))}
+          <Pagination
+            page={filters.page}
+            pageSize={ADMIN_USERS_PAGE_SIZE}
+            total={page.totalUsers}
+            onPageChange={changePage}
+            summary={t("pageLabel", {
+              page: filters.page,
+              totalPages: page.totalPages,
+              shown: users.length,
+            })}
+            previousLabel={t("previous")}
+            nextLabel={t("next")}
           />
         </Card>
 
-        <Card
-          title={t("pendingTitle")}
-          // BD ADM0201 F NO2 / EVT-16: plain navigation, no leave-confirm (nothing unsaved here).
-          action={
-            <Link
-              href="/admin/system-log"
-              className="text-[12.5px] font-semibold text-[var(--color-primary)] hover:underline"
-            >
-              {t("auditLogLink")}
-            </Link>
-          }
-        >
-          <div className="flex flex-col gap-2.5">
-            {page.pendingTasks.map((task) => (
-              <SettingRow
-                key={task.key}
-                label={t(`pending.${task.key}.label`)}
-                description={t(`pending.${task.key}.meta`)}
+        <div className="grid min-w-0 gap-4 @min-[740px]:grid-cols-2 @min-[1340px]:grid-cols-1 @min-[1340px]:content-start">
+          <Card
+            title={t("roleDistributionTitle")}
+            description={t("roleDistributionSubtitle", {
+              total: page.totalUsers.toLocaleString("vi-VN"),
+            })}
+          >
+            <RankedProgressList
+              numbered={false}
+              items={page.roleDistribution.map((item) => ({
+                label:
+                  item.role === "deactivated"
+                    ? t("role.deactivated")
+                    : t(`role.${item.role}`),
+                value: item.percent,
+                valueLabel: item.label,
+                colorVar: ROLE_BAR_COLOR_VAR[item.role],
+              }))}
+            />
+          </Card>
+
+          <Card
+            title={t("pendingTitle")}
+            // BD ADM0201 F NO2 / EVT-16: plain navigation, no leave-confirm (nothing unsaved here).
+            action={
+              <Link
+                href="/admin/system-log"
+                className="text-[12.5px] font-semibold text-[var(--color-primary)] hover:underline"
               >
-                <span
-                  className="font-mono text-[13px] font-semibold"
-                  style={{ color: textTone(task.colorVar) }}
+                {t("auditLogLink")}
+              </Link>
+            }
+          >
+            <div className="flex flex-col gap-2.5">
+              {page.pendingTasks.map((task) => (
+                <SettingRow
+                  key={task.key}
+                  label={t(`pending.${task.key}.label`)}
+                  description={t(`pending.${task.key}.meta`)}
                 >
-                  {task.count}
-                </span>
-              </SettingRow>
-            ))}
-          </div>
-        </Card>
+                  <span
+                    className="font-mono text-[13px] font-semibold"
+                    style={{ color: textTone(task.colorVar) }}
+                  >
+                    {task.count}
+                  </span>
+                </SettingRow>
+              ))}
+            </div>
+          </Card>
+        </div>
       </div>
 
       <AddAccountDialog
@@ -714,6 +814,70 @@ function AdminUserManagementInner({
         onClose={() => setRoleTarget(null)}
         onConfirm={applyRoleChange}
       />
+
+      <Modal
+        open={detailUser !== undefined}
+        onClose={() => setDetailId(null)}
+        title={t("details.title")}
+        className="scrollbar-glass max-h-[calc(calc(100*var(--dvh1))-2rem)] overflow-y-auto"
+        footer={
+          <Button
+            variant="ghost"
+            className="border border-[var(--color-border)]"
+            onClick={() => setDetailId(null)}
+          >
+            {t("details.close")}
+          </Button>
+        }
+      >
+        {detailUser ? (
+          <div className="flex min-w-0 flex-col gap-4">
+            <div className="flex min-w-0 items-center gap-3">
+              <UserAvatar
+                userId={detailUser.id}
+                name={detailUser.name}
+                avatarVersion={detailUser.avatarVersion}
+              />
+              <div className="min-w-0 [overflow-wrap:anywhere]">
+                <p className="font-semibold text-[var(--color-text)]">
+                  {detailUser.name}
+                </p>
+                <p className="text-xs">{detailUser.email}</p>
+              </div>
+            </div>
+            <dl className="grid gap-3 rounded-xl border border-[var(--color-border)] p-3 min-[380px]:grid-cols-2">
+              {[roleColumn, statusColumn, ...metrics].map(
+                ({ key, header, render }) => (
+                  <div key={key} className="min-w-0">
+                    <dt className="text-xs">{header}</dt>
+                    <dd className="mt-1 text-[var(--color-text)] [&>span]:justify-start">
+                      {render(detailUser)}
+                    </dd>
+                  </div>
+                ),
+              )}
+              {detailUser.hasPassword !== undefined ? (
+                <div>
+                  <dt className="text-xs">{t("details.passwordLabel")}</dt>
+                  <dd className="mt-1 text-[var(--color-text)]">
+                    {t(
+                      detailUser.hasPassword
+                        ? "details.passwordSet"
+                        : "details.passwordUnset",
+                    )}
+                  </dd>
+                </div>
+              ) : null}
+              <div className="min-w-0 min-[380px]:col-span-2">
+                <dt className="text-xs">{t("details.id")}</dt>
+                <dd className="mt-1 font-mono text-xs [overflow-wrap:anywhere]">
+                  {detailUser.id}
+                </dd>
+              </div>
+            </dl>
+          </div>
+        ) : null}
+      </Modal>
 
       {/* Reset is per person (RD ADM0201 Q7): the temporary password goes to that one inbox, so the
           dialog names the address instead of a count. */}
@@ -780,6 +944,6 @@ function AdminUserManagementInner({
           ) : null}
         </ul>
       </ConfirmDialog>
-    </div>
+    </PageContainer>
   );
 }

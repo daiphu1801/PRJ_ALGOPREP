@@ -297,6 +297,18 @@ class RunReferenceSolutionQueryHandlerTest {
   }
 
   @Test
+  void aTestcaseThatDoesNotMatchTheSignatureKeepsItsOwnCodeAndGivesTheSlotBack() {
+    cases.add(testcase(1, "HIDDEN", true));
+    when(runner.run(any()))
+        .thenThrow(
+            new com.algoprep.common.exception.DomainRuleViolationException(
+                "PRB-060", "Testcase input does not match the declared function parameters"));
+
+    assertThat(code(command(null, null, null))).isEqualTo("PRB-060");
+    verify(quota).refund(eq(actor), any());
+  }
+
+  @Test
   void aBrokenAnswerShapeCountsAsASandboxFailure() {
     cases.addAll(List.of(testcase(1, "HIDDEN", true), testcase(2, "HIDDEN", true)));
     when(runner.run(any()))

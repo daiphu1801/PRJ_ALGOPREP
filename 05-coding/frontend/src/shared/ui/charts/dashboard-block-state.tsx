@@ -6,10 +6,12 @@
 // DEC-2026-0831-admin-overview-ui-decisions). Purely presentational — no admin/dashboard domain
 // type — so it lives in shared/ui per SYS0102_frontend_architecture.md section 2.A-B.
 import type { ReactNode } from "react";
+import { cn } from "@/shared/lib";
 import { toast } from "@/shared/lib/toast-store";
 import { Button, EmptyState, ErrorState, Skeleton } from "@/shared/ui";
 
 type DashboardBlockStateProps = {
+  className?: string;
   title: string;
   isLoading: boolean;
   isError: boolean;
@@ -42,6 +44,7 @@ function failedAgain(result: unknown): boolean {
 }
 
 export function DashboardBlockState({
+  className,
   title,
   isLoading,
   isError,
@@ -66,7 +69,7 @@ export function DashboardBlockState({
   return (
     <section
       aria-label={title}
-      className={`glass-card p-3 ${minHeightClassName}`}
+      className={cn("glass-card p-3", minHeightClassName, className)}
     >
       {!hideTitle && (
         <Heading className="mb-2 text-sm font-semibold text-[var(--color-text)]">

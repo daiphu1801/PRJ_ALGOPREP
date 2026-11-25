@@ -4,8 +4,9 @@
 // toán" button (:115-120), 4 stat cards — bài đã gán, lượt nộp tuần này, AC trung bình, cần chấm
 // tay (:123-134, values :259-264), filter row: search + class tabs + result count (:138-149,
 // :266-271), assigned-problem table incl. the "Gán cho lớp" column (:151-170, :152-153, :161).
-// "+ Gán từ ngân hàng bài toán" opens the "Giao bài cho lớp" popup on this screen (2026-10-11;
-// DEC-2026-0831-class-assignments-round2 put it on problem_list, which is a learner screen); "Chi tiết" wires to problem_detail per RD Q8 (closed),
+// "+ Gán từ ngân hàng bài toán" opens the dedicated screen /instructor/assignments/new with the class tab as
+// ?classId= (DEC-2026-1123-assign-problems-dedicated-screen, which replaced the popup of
+// DEC-2026-1011 and the problem-list route of DEC-2026-1122); "Chi tiết" wires to problem_detail per RD Q8 (closed),
 // not the interview-bank link the prototype file is described as having in
 // 01-rd/screens/teacher/INS0202_class_assignments.md:80-84. The remove popup asks for a class
 // first only when the row spans more than one class, matching the N-N problem-class relation
@@ -15,9 +16,10 @@
 // independent from "Lớp của tôi" (LH) [09-layoutBase/Giáo viên - Lớp của tôi.dc.html:221-222].
 "use client";
 
-import { useState } from "react";
-import Link from "next/link";
+import { useCallback, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
+import { Eye, Trash2 } from "lucide-react";
 import {
   useAssignmentSummary,
   useClassAssignmentsPage,
@@ -33,13 +35,14 @@ import {
 import { useApiErrorMessage, useT } from "@/shared/i18n";
 import { useDebounced } from "@/shared/lib";
 import { toast } from "@/shared/lib/toast-store";
-import { AssignProblemDialog } from "./assign-problem-dialog";
 import {
   Badge,
   Button,
   Card,
   ConfirmDialog,
   DataTable,
+  IconAction,
+  PageContainer,
   PageHeader,
   Pagination,
   FilterMenu,
@@ -47,6 +50,7 @@ import {
   TextField,
   type DataTableColumn,
 } from "@/shared/ui";
+import { CopyAssignmentsDialog } from "./copy-assignments-dialog";
 
 // 20 rows per page for a table that merges many rows (DEC-2026-1014-instructor-batch5-6-nav-pagination-rubric).
 const PAGE_SIZE = 20;
@@ -61,6 +65,19 @@ function topicSummary(row: AssignedRow): { text: string; title: string } {
     title: all.join(", "),
   };
 }
+
+/** First class plus "+n"; the full list stays in the tooltip, so the column never forces a horizontal scroll. */
+function classSummary(row: AssignedRow): { text: string; title: string } {
+  const names = row.assignedClassNames;
+  return {
+    text:
+      names.length > 1 ? `${names[0]} +${names.length - 1}` : (names[0] ?? ""),
+    title: names.join(", "),
+  };
+}
+
+/** Whole percent, so a ratio such as 22.2222 reads as 22%. */
+const percent = (value: number) => `${Math.round(value)}%`;
 
 export function ClassAssignmentsView() {
   const t = useT("classAssignments");
@@ -93,10 +110,23 @@ export function ClassAssignmentsView() {
     q,
     page,
   });
-  const [assigning, setAssigning] = useState(false);
   const [removeTarget, setRemoveTarget] = useState<AssignedRow | null>(null);
   const [removeClassChoice, setRemoveClassChoice] = useState<string>("");
   const removeAssignment = useRemoveAssignment();
+
+  // "Sao chép sang lớp khác": needs one class to copy from and another of the instructor to copy to.
+  const [copyOpen, setCopyOpen] = useState(false);
+  const closeCopy = useCallback(() => setCopyOpen(false), []);
+  const copySource = classes.find((c) => c.id === classTab);
+  const copyTargets = classes.filter((c) => c.id !== classTab);
+  const copyBlocked =
+    copyTargets.length === 0
+      ? t("copy.noOtherClass")
+      : q === "" &&
+          !assignmentsQuery.isPlaceholderData &&
+          assignmentsQuery.data?.page.totalItems === 0
+        ? t("copy.sourceEmpty")
+        : undefined;
 
   const pageRows = assignmentsQuery.data?.items ?? [];
   const totalRows = assignmentsQuery.data?.page.totalItems ?? 0;
@@ -111,7 +141,7 @@ export function ClassAssignmentsView() {
       header: t("assignmentList.col.title"),
       render: (row) => (
         <span className="flex flex-wrap items-center gap-x-2 gap-y-1">
-          <span className="whitespace-nowrap">{row.title}</span>
+          <span>{row.title}</span>
           {row.withdrawn ? (
             <Badge variant="warn">{t("assignmentList.col.withdrawn")}</Badge>
           ) : null}
@@ -138,9 +168,10 @@ export function ClassAssignmentsView() {
     {
       key: "assignedClasses",
       header: t("assignmentList.col.assignedClasses"),
-      render: (row) => (
-        <span className="truncate">{row.assignedClassNames.join(", ")}</span>
-      ),
+      render: (row) => {
+        const classes = classSummary(row);
+        return <span title={classes.title}>{classes.text}</span>;
+      },
     },
     {
       key: "submissionCount",
@@ -158,33 +189,33 @@ export function ClassAssignmentsView() {
       key: "acRate",
       header: t("assignmentList.col.acRate"),
       align: "right",
-      render: (row) =>
-        statsFor(row).acRate === null ? "-" : `${statsFor(row).acRate}%`,
+      render: (row) => {
+        const acRate = statsFor(row).acRate;
+        return acRate === null ? "-" : percent(acRate);
+      },
     },
     {
       key: "actions",
       header: "",
       align: "right",
       render: (row) => (
-        <div className="flex justify-end gap-2">
-          <Button variant="ghost" size="sm" asChild>
-            <Link href={`/instructor/problems/${row.id}`}>
-              {t("assignmentList.col.btnDetail")}
-            </Link>
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="text-[var(--color-admin-negative)]"
+        <div className="flex justify-end gap-1.5">
+          <IconAction
+            icon={Eye}
+            label={t("assignmentList.col.btnDetail")}
+            href={`/instructor/problems/${row.id}`}
+          />
+          <IconAction
+            icon={Trash2}
+            tone="danger"
+            label={t("assignmentList.col.btnRemove")}
             onClick={() => {
               setRemoveTarget(row);
               setRemoveClassChoice(
                 classTab !== "all" ? classTab : (row.assignedClassIds[0] ?? ""),
               );
             }}
-          >
-            {t("assignmentList.col.btnRemove")}
-          </Button>
+          />
         </div>
       ),
     },
@@ -193,7 +224,7 @@ export function ClassAssignmentsView() {
   const summary = summaryQuery.data;
 
   return (
-    <div>
+    <PageContainer variant="content" className="@container">
       <PageHeader
         title={t("header.title")}
         // The count comes from #50; while it is unknown no number is shown (never a made-up 0).
@@ -205,15 +236,42 @@ export function ClassAssignmentsView() {
                 "header.avgAcRate",
                 {
                   value:
-                    summary.avgAcRate == null ? "-" : `${summary.avgAcRate}%`,
+                    summary.avgAcRate == null
+                      ? "-"
+                      : percent(summary.avgAcRate),
                 },
               )}`
             : undefined
         }
         actions={
-          <Button variant="cta" size="sm" onClick={() => setAssigning(true)}>
-            {t("header.btnAssignFromBank")}
-          </Button>
+          <>
+            {copySource ? (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="border border-[var(--color-border)]"
+                // aria-disabled, not disabled: the reason stays reachable by hover and keyboard.
+                aria-disabled={copyBlocked !== undefined || undefined}
+                title={copyBlocked}
+                onClick={() => {
+                  if (copyBlocked === undefined) setCopyOpen(true);
+                }}
+              >
+                {t("copy.button")}
+              </Button>
+            ) : null}
+            <Button variant="cta" size="sm" asChild>
+              <Link
+                href={
+                  classTab === "all"
+                    ? "/instructor/assignments/new"
+                    : `/instructor/assignments/new?classId=${classTab}`
+                }
+              >
+                {t("header.btnAssignFromBank")}
+              </Link>
+            </Button>
+          </>
         }
       />
 
@@ -221,7 +279,7 @@ export function ClassAssignmentsView() {
           chấm tay, điểm TB — is already the stat strip of instructor_overview, and repeating it on
           each screen pushed the actual worklist below the fold. These screens now open straight on
           their list + filter bar. Deliberate divergence from the mockup's own per-screen strip. */}
-      <Card>
+      <Card className="grow">
         <div className="mb-3.5 flex flex-wrap items-center gap-2.5">
           <TextField
             label={t("assignmentList.search")}
@@ -235,6 +293,7 @@ export function ClassAssignmentsView() {
             wrapperClassName="min-w-[220px] flex-1"
           />
           <FilterMenu
+            align="end"
             label={t("assignmentList.classTabs")}
             value={classTab}
             onValueChange={(value) =>
@@ -270,10 +329,12 @@ export function ClassAssignmentsView() {
           }
           emptyMessage={t("emptyAssignments")}
           errorMessage={t("loadFailed")}
-          minWidth={900}
+          minWidth={0}
         />
 
         <Pagination
+          className="mt-auto"
+          hideWhenSinglePage
           page={page}
           pageSize={PAGE_SIZE}
           total={totalRows}
@@ -288,12 +349,6 @@ export function ClassAssignmentsView() {
           nextLabel={t("next")}
         />
       </Card>
-
-      <AssignProblemDialog
-        open={assigning}
-        onClose={() => setAssigning(false)}
-        defaultClassId={classTab === "all" ? undefined : classTab}
-      />
 
       <ConfirmDialog
         open={removeTarget !== null}
@@ -333,6 +388,19 @@ export function ClassAssignmentsView() {
           />
         ) : null}
       </ConfirmDialog>
-    </div>
+
+      {copyOpen && copySource ? (
+        <CopyAssignmentsDialog
+          source={copySource}
+          targets={copyTargets}
+          onClose={closeCopy}
+          onCopied={(targetId) => {
+            setCopyOpen(false);
+            setQuery("");
+            setUrlParams({ classId: targetId, q: null, page: null });
+          }}
+        />
+      ) : null}
+    </PageContainer>
   );
 }

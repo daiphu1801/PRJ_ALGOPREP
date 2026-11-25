@@ -906,7 +906,7 @@ Không có tham số.
 | `items[].modelId` | string ≤ 50 | |
 | `items[].responseGuards` | object \| null | `{ citeLines, answerInVietnamese, noFullSolution }`, `null` với `GENERATE_TESTCASE` (`DB5:25`) |
 | `items[].responseSchemaVersion` | string | chỉ đọc |
-| `items[].maxTokens` | int | **chỉ đọc**, không có đường ghi (`A301` dòng 445). Bản dựng hiện lấy từ hằng số `CallOptions.maxTokensFor(feature)` (`05-coding/backend/algoprep-ai-review/src/main/java/com/algoprep/aireview/domain/model/CallOptions.java`), chưa đọc từ `application.yml` (lệch DD, ghi nhận 2026-11-14): 8192 cho `GENERATE_TESTCASE` (model suy luận dùng hết 4096 token làm nội dung rỗng, lỗi F-01), 4096 cho các tính năng còn lại |
+| `items[].maxTokens` | int | Giới hạn token đầu ra mỗi lần gọi, lưu theo phiên bản prompt. Mặc định 8192 cho `GENERATE_TESTCASE`, 4096 cho các tính năng còn lại |
 | `items[].publishedAt`, `createdAt` | ISO-8601 | màn lấy `createdAt` khi `publishedAt` null (`A301` dòng 443) |
 | `modelOptions[]` | string[] | bí danh `default` luôn đứng đầu, sau đó là các model dev khai báo ở `application.yml`, không trùng lặp (`DEC-2026-1010-admin-selects-model-per-prompt`, `DEC-2026-1112-ai-model-alias-default-always-allowed`) |
 
@@ -918,7 +918,7 @@ Không có tham số.
 
 ### 14.5 Luồng xử lý
 
-Đọc `prompt_templates` với `status IN ('ACTIVE','DRAFT')`, ghép `maxTokens` theo `feature_code` và `modelOptions` từ cấu hình. Không chạm LLM.
+Đọc `prompt_templates` với `status IN ('ACTIVE','DRAFT')`. Lấy `maxTokens` của từng phiên bản, dùng mặc định theo tính năng cho dòng cũ. `modelOptions` lấy từ cấu hình.
 
 ### 14.6 Truy cập dữ liệu
 
@@ -1002,6 +1002,7 @@ Một truy vấn theo `feature_code`.
 | `featureCode` | path enum | Có | | |
 | `systemInstruction` | string | Có | sau khi bỏ khoảng trắng đầu cuối không rỗng; tối đa 20.000 ký tự `[SoT: Suy luận]` | `A301` Sheet 9 NO 5 dòng 528; chuỗi là **dữ liệu** admin nhập, không ghép ở client (`A301` dòng 442) |
 | `modelId` | string | Có | thuộc `modelOptions` | `A301` Sheet 9 NO 13 dòng 531 |
+| `maxTokens` | int | Không | Từ 1 đến 32.768 và trong giới hạn model nếu đã cấu hình | Khi bỏ qua, dùng giá trị của bản nháp hiện có, hoặc của bản đang chạy nếu chưa có nháp |
 | `responseGuards` | object \| null | Có | `GENERATE_TESTCASE`: bắt buộc `null`; hai tính năng còn lại: bắt buộc object đủ ba khoá boolean `citeLines`, `answerInVietnamese`, `noFullSolution` | `noFullSolution` nhận cả `true` lẫn `false`, **máy chủ không ép `true`** (`DEC-2026-1011-ai-no-full-solution-can-be-turned-off`) |
 
 ### 16.3 Response 200
@@ -1015,6 +1016,7 @@ Một đối tượng như phần tử `items[]` của mục 14.3 (dòng `DRAFT`
 | 400 | `AIR-V11` | `featureCode` không hợp lệ | |
 | 400 | `AIR-V12` | `systemInstruction` rỗng hoặc quá dài | "Chỉ thị hệ thống không được để trống." |
 | 400 | `AIR-V13` | `responseGuards` sai hình dạng so với `featureCode` | |
+| 400 | `AIR-V40` | `maxTokens` sai kiểu hoặc nằm ngoài giới hạn áp dụng | Có thể khai báo trần theo ID model tại `algoprep.ai.models.max-output-tokens`. Bí danh `default` dùng trần của model mặc định |
 | 422 | `AIR-202` | `modelId` ngoài `modelOptions` (bí danh `default` luôn hợp lệ, kể cả khi không có trong cấu hình) | "Model này không được phép sử dụng." |
 | 403 | `AIR-301` | thiếu quyền | |
 
@@ -1061,6 +1063,7 @@ BR-AI-13: đã có `DRAFT` của feature thì cập nhật tại chỗ; chưa c�
 | `changes[].expectedActivePromptId` | UUID | Có | | id bản `ACTIVE` mà màn đã tải; khác bản `ACTIVE` hiện tại thì xung đột (`A301` Sheet 9 NO 6 dòng 529) |
 | `changes[].systemInstruction` | string | Không | như mục 16.2 | vắng thì dùng của `DRAFT` nếu có, không thì của `ACTIVE` |
 | `changes[].modelId` | string | Không | thuộc `modelOptions` | vắng thì dùng của `DRAFT`/`ACTIVE` |
+| `changes[].maxTokens` | int | Không | như mục 16.2 | vắng thì dùng của `DRAFT`/`ACTIVE`. Có hiệu lực sau khi phát hành thành công |
 | `changes[].responseGuards` | object \| null | Không | như mục 16.2 | |
 
 ### 17.3 Response 200
@@ -1074,6 +1077,7 @@ BR-AI-13: đã có `DRAFT` của feature thì cập nhật tại chỗ; chưa c�
 | HTTP | error.code | Khi nào | Ghi chú |
 | :-: | :--- | :--- | :--- |
 | 400 | `AIR-V11`, `AIR-V12`, `AIR-V13`, `AIR-V14` | feature lạ, chỉ thị rỗng, guards sai, `changes` rỗng hoặc trùng feature | `AIR-V14`: danh sách `changes` sai |
+| 400 | `AIR-V40` | `maxTokens` sai kiểu hoặc vượt giới hạn | Hoàn tác toàn bộ |
 | 409 | `AIR-201` | bản `ACTIVE` hiện tại khác `expectedActivePromptId` | "Cấu hình đã được người khác cập nhật. Vui lòng tải lại màn hình." Hoàn tác toàn bộ |
 | 422 | `AIR-202` | `modelId` ngoài danh sách | hoàn tác toàn bộ |
 | 422 | `AIR-205` | không có thay đổi nào so với bản `ACTIVE` | không tạo phiên bản trống `[SoT: Suy luận]` |
@@ -1822,6 +1826,78 @@ Gom `token_usage` 30 ngày theo `problem_id` (không null); một lời gọi `p
 | T-TP-02 | Boundary | Dòng `MOCK_INTERVIEW` (`problem_id` NULL) không xuất hiện |
 | T-TP-03 | Abnormal | `problem-bank` lỗi: 200, `problemTitle = null` |
 
+## 31A. GET /me/interview-sessions
+
+Mục 31A (không đánh lại số các mục sau) thêm 2026-11-23 cho màn lịch sử phiên phỏng vấn của học viên (xem `06-plan/261123-1100-no-tai-lieu-sau-cai-tien-ui-ux.md` mục 23). Mục 13 vẫn dùng cho khối tóm tắt: trần 10 phiên, không phân trang, không có nguồn.
+
+### 31A.1 Hợp đồng
+
+| Mục | Giá trị |
+| :--- | :--- |
+| Xác thực | JWT |
+| Quyền | JWT; chỉ dữ liệu của người gọi |
+| Idempotent | có (đọc) |
+| Tên | `ListMyInterviewSessions` |
+| Ghi chú | Chỉ đọc Postgres, chạy được khi LLM chết. Gồm phiên `COMPLETED` và `ABANDONED`; phiên đang chạy không có trong danh sách. Chi tiết một phiên đọc bằng mục 9 |
+
+### 31A.2 Request
+
+| Trường | Kiểu | Bắt buộc | Ràng buộc | Ghi chú |
+| :--- | :--- | :-: | :--- | :--- |
+| `q` | query string | Không | cắt khoảng trắng hai đầu, tối đa 100 ký tự (dài hơn thì cắt, không báo lỗi); rỗng = không tìm | `ILIKE` trên `question_text` và `topics` (dạng chuỗi JSON); ký tự `%`, `_`, `\` là chữ thường. Không tìm theo tên bài của nguồn `SUBMISSION` (thuộc `problem-bank`, tránh phụ thuộc chéo) |
+| `entryType` | query enum | Không | `SUBMISSION`, `QUESTION_BANK`, `TOPIC_SELECTION` | không phân biệt hoa thường |
+| `status` | query enum | Không | `COMPLETED`, `ABANDONED` | giá trị đang chạy bị từ chối |
+| `level` | query enum | Không | `INTERN`, `JUNIOR`, `MIDDLE`, `SENIOR` | phiên `SUBMISSION` không có cấp độ nên không khớp bộ lọc này |
+| `scoreBand` | query enum | Không | `WEAK` (dưới 5), `FAIR` (từ 5 đến dưới 8), `GOOD` (từ 8) | phiên không có điểm không khớp bất kỳ mức nào |
+| `sort` | query enum | Không | `startedAt` (mặc định), `score` | `score` đặt phiên không có điểm xuống cuối ở cả hai chiều |
+| `order` | query enum | Không | `desc` (mặc định), `asc` | |
+| `page` | query int | Không | từ 1, mặc định 1 | |
+| `size` | query int | Không | 1 đến 50, mặc định 20 | |
+
+### 31A.3 Response 200
+
+| Trường | Kiểu | Ghi chú |
+| :--- | :--- | :--- |
+| `items[]` | array | một dòng mỗi phiên; thứ tự theo `sort`, hoà thì `started_at` giảm dần rồi `id` |
+| `items[].sessionId`, `entryType`, `startedAt`, `endedAt` | | `sessionId` mở chi tiết bằng mục 9 |
+| `items[].status` | enum | `COMPLETED` hoặc `ABANDONED` |
+| `items[].questionText` | string \| null | chỉ có với `QUESTION_BANK` |
+| `items[].topics[]` | array | chỉ có với `TOPIC_SELECTION`, còn lại là mảng rỗng |
+| `items[].interviewerLevel` | enum \| null | `null` với `SUBMISSION` |
+| `items[].turnCount`, `maxTurns` | int, int \| null | |
+| `items[].overallScore` | number \| null | tính trong SQL từ bốn dòng rubric với trọng số của `RubricCriterion` (cùng công thức `InterviewResult.overall`, hai chữ số thập phân); `null` khi `ABANDONED` hoặc có ít hơn bốn dòng rubric |
+| `page` | object | `{ number, size, totalItems, totalPages }`, cùng dạng với mục 13A của `problem-bank` |
+
+### 31A.4 Lỗi
+
+| HTTP | error.code | Khi nào | Ghi chú |
+| :-: | :--- | :--- | :--- |
+| 400 | `AIR-V20` | `page` nhỏ hơn 1 hoặc `size` ngoài 1 đến 50, hoặc không phải số | |
+| 400 | `AIR-V21` | `entryType`, `status`, `level`, `scoreBand`, `sort` hoặc `order` ngoài tập giá trị | một mã cho cả sáu tham số |
+
+### 31A.5 Luồng xử lý
+
+Hai truy vấn trong một giao dịch chỉ đọc: đếm tổng, rồi lấy trang. Bảng `rubric_scores` gom theo phiên với trọng số lấy từ `RubricCriterion` (không chép trọng số vào SQL), nối trái với `interview_sessions`; phiên đủ bốn dòng mới có điểm. Lọc theo người gọi bằng `user_id`, nên không đọc được phiên của người khác (index `(user_id, started_at DESC)`).
+
+### 31A.6 Truy cập dữ liệu
+
+| Bảng | Thao tác | Ghi chú |
+| :--- | :--- | :--- |
+| `ai.interview_sessions`, `ai.rubric_scores` | R | |
+
+### 31A.7 Test viewpoints
+
+Cài đặt: `InterviewHistoryFlowTest` (Postgres và Redis thật, JWT thật).
+
+| ID | Loại | Nội dung |
+| :--- | :--- | :--- |
+| T-HS-01 | Normal | Phiên của người khác và phiên đang chạy không xuất hiện; mới nhất trước; `ABANDONED` có `overallScore = null` |
+| T-HS-02 | Normal | Lọc `status`, `scoreBand`, `level`, `entryType`, và tổ hợp |
+| T-HS-03 | Normal | Tìm theo chủ đề và theo câu hỏi, không phân biệt hoa thường; `%` là chữ thường |
+| T-HS-04 | Boundary | `sort=score`: phiên không điểm xuống cuối ở cả `asc` và `desc`; `size=2&page=2` cho `totalPages` đúng; trang quá cuối trả mảng rỗng với `totalItems` thật |
+| T-HS-05 | Boundary | Phiên có 3/4 dòng rubric: không có điểm, không khớp bộ lọc mức điểm |
+| T-HS-06 | Abnormal | `size=51`, `page=0`, `page=abc`: `AIR-V20`; `scoreBand`, `status=EXPLAIN`, `level`, `entryType`, `sort`, `order` lạ: `AIR-V21`; không token: 401 |
+
 ## 32. Cổng trong tiến trình cho module khác
 
 Bốn cổng vào (inbound port, `application/ports/in`) mà module khác gọi qua cổng ra do **họ** khai (`dependency-map.md` mục 1, `DEC-2026-0820-architecture-baseline`). Không cổng nào mở route HTTP.
@@ -1937,8 +2013,11 @@ Mã chung: `401` thiếu hoặc hết hạn token (không thuộc `AIR`).
 | `AIR-V17` | | 400 | `modelName` rỗng hoặc quá 100 ký tự | 24, 25 |
 | `AIR-V18` | | 400 | `usdPerMillionTokens` âm, không phải số hoặc quá khoảng | 25 |
 | `AIR-V19` | | 400 | `rangeDays` không thuộc `7`, `14`, `30` | 27 |
+| `AIR-V20` | | 400 | `page` nhỏ hơn 1, `size` ngoài 1 đến 50 hoặc không phải số | 31A |
+| `AIR-V21` | | 400 | `entryType`, `status`, `level`, `scoreBand`, `sort` hoặc `order` ngoài tập giá trị | 31A |
+| `AIR-V40` | | 400 | Giới hạn token đầu ra sai kiểu hoặc vượt mức áp dụng cho prompt | 16, 17 |
 
-Khoảng đã dùng: `AIR-101` đến `AIR-503` (26 mã nghiệp vụ và hạ tầng) và `AIR-V01` đến `AIR-V19` (19 mã). Cột "Tên (BD)" ghi mã nghiệp vụ mà BD đặt (`AI_BUDGET_EXCEEDED`, `AI_PROVIDER_UNAVAILABLE`, `SUBMISSION_NOT_ACCEPTED`, `ARCH5:80,270,297`); `error.code` trả về luôn là mã `AIR-nnn`, giao diện dịch qua `messages/{locale}.json`.
+Cột "Tên (BD)" ghi mã nghiệp vụ mà BD đặt (`AI_BUDGET_EXCEEDED`, `AI_PROVIDER_UNAVAILABLE`, `SUBMISSION_NOT_ACCEPTED`, `ARCH5:80,270,297`). Giao diện dịch `error.code` qua `messages/{locale}.json`.
 
 ## 35. Câu hỏi mở và đề xuất cần chủ dự án quyết
 

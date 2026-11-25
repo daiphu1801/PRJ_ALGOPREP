@@ -152,7 +152,8 @@ export function removeAssignmentFromClass(
 
 // Published bank problems no class has yet. Problems already in `assignments` are offered too, for
 // the classes that do not have them.
-const EXTRA_BANK: AssignableProblem[] = [
+type BankProblem = Omit<AssignableProblem, "assigned">;
+const EXTRA_BANK: BankProblem[] = [
   { id: "704", title: "Binary Search", topic: "Mảng", difficulty: "EASY" },
   {
     id: "200",
@@ -174,20 +175,26 @@ const EXTRA_BANK: AssignableProblem[] = [
   },
 ];
 
+/** Every published problem; the ones the class already has are flagged, not left out (#51). */
 export function listAssignableProblems(
   classId: string,
 ): Promise<AssignableProblem[]> {
   const knownIds = new Set(assignments.map((a) => a.id));
   return delay([
     ...assignments
-      .filter((a) => !a.assignedClassIds.includes(classId))
-      .map(({ id, title, topic, difficulty }) => ({
+      .filter((a) => !a.withdrawn)
+      .map(({ id, title, topic, topics, difficulty, assignedClassIds }) => ({
         id,
         title,
         topic,
+        topics,
         difficulty,
+        assigned: assignedClassIds.includes(classId),
       })),
-    ...EXTRA_BANK.filter((b) => !knownIds.has(b.id)),
+    ...EXTRA_BANK.filter((b) => !knownIds.has(b.id)).map((b) => ({
+      ...b,
+      assigned: false,
+    })),
   ]);
 }
 

@@ -50,11 +50,11 @@
 | Tên vật lý (slug) | `class_management` |
 | Trục tài liệu | Màn hình (`02-bd/screens/`) |
 | Actor | A2 (`INSTRUCTOR`) |
-| Phiên bản | V0.16 |
+| Phiên bản | V0.18 |
 | Người tạo | Nhóm phát triển AlgoPrep |
 | Ngày tạo | 2026/09/21 |
 | Người cập nhật | Nhóm phát triển AlgoPrep |
-| Ngày cập nhật | 2026/10/18 |
+| Ngày cập nhật | 2026/11/23 |
 
 ---
 
@@ -79,6 +79,8 @@
 | V0.14 | Sheet 4 (Hiện trạng bản dựng), 5 Khu vực C | Sửa 2026-11-02 (task #12, nối FE với API thật). (1) Màn gọi F1 #19 đến #22; hộp thoại tạo/sửa giữ nội dung khi máy chủ từ chối. (2) Ba cột hoàn thành, điểm TB, vắng bài chỉ hiện khi có số liệu F4 (#56 chưa làm). Không có câu hỏi mở mới. |
 | V0.15 | Sheet 4 (Hiện trạng bản dựng), 5 Khu vực C | Sửa 2026-11-07 (F1-7, nối FE). Màn đọc F1 #56 (`useInstructorClassSummary`): ba cột hoàn thành, điểm TB, vắng bài hiện với API thật. Lớp chưa giao bài có `completionPercent = null` nên cột hiện "-", không phải 0%. Khi F4 lỗi (`503 IDT-507`) màn lùi về danh sách #19 và ẩn ba cột. Chưa duyệt hình. Câu hỏi mở còn lại: `INS0101` vẫn đọc #19 (chưa đổi sang #56). |
 | V0.16 | Sheet 5 Khu vực D NO 4, 7.1 NO 20 | Sửa 2026-11-18 (owner chốt): bỏ ô chữ cái đầu sinh ở giao diện khỏi mô tả cột "Học viên"; màn này không hiện ảnh đại diện (F1-35), việc hiện ảnh ở INS0203, INS0204, INS0205 không đổi. Chưa duyệt hình. |
+| V0.17 | Hiện trạng bản dựng | Sửa 2026-11-22. **Chưa duyệt hình, RD không đổi, chỉ trình bày.** Gốc trang là `PageContainer variant="content"` và thẻ bảng `grow`, nên bảng dãn tới sát chân trang, padding do layout shared giữ (cùng cách Admin). Dòng phụ dưới tên lớp chỉ còn ngày, giờ, phòng (`formatClassScheduleBrief`); ngày bắt đầu/kết thúc và ghi chú xem ở trang chi tiết lớp. | 2026/11/22 | Claude |
+| V0.18 | Sheet 4 (4.4, Hiện trạng bản dựng) | Sửa 2026/11/23, **chưa duyệt hình, RD không đổi, chỉ trình bày**: bảng danh sách lớp bỏ cuộn ngang (`DataTable minWidth={0}`, trước là 860). Ở cửa sổ rộng 1100px bảng không còn cuộn ngang; chữ dài xuống dòng (tối đa hai dòng). Thêm một hàng ở Bảng 4.4a; dòng prototype `min-width: 700px` ở bảng 4.4 chỉ là bằng chứng của `.dc.html`. Mã: `05-coding/frontend/src/views/teacher/class-management/ui/class-management-view.tsx:217`. Ảnh chụp: `06-plan/reports/261123-0030-giao-bai-man-rieng/img-cuon-ngang/` (`ins0201`) | 2026/11/23 | AI |
 
 ---
 
@@ -312,7 +314,7 @@ design system cuối cùng.
 | Dải thẻ số liệu | `:123-134`, dữ liệu `:253-258` | Lưới `auto-fit minmax(200px, 1fr)`; prototype vẽ 4 thẻ (Tổng số lớp, Hoàn thành TB, Cần chấm tay, Học viên vắng bài), thiết kế từ 2026/10/13 còn 3 (bỏ Cần chấm tay) |
 | Lưới thẻ lớp | `:136-157`, dữ liệu `:260-265` | Lưới `auto-fit minmax(300px, 1fr)`; mỗi thẻ có tên lớp, lịch học, huy hiệu số học viên, thanh tiến độ, và 3 số ở chân thẻ trong prototype: Điểm TB, Cần chấm, Vắng bài; thiết kế từ 2026/10/13 còn 2 (bỏ Cần chấm) |
 | Khối "Danh sách học viên" — hàng tiêu đề | `:160-167`, dữ liệu tab `:267-272` | Tiêu đề khối bên trái, cụm tab lọc theo lớp bên phải (Tất cả + tên từng lớp) |
-| Khối "Danh sách học viên" — bảng | `:169-187`, dữ liệu `:274-284` | Lưới 6 cột `minmax(160px,1.4fr) 120px 90px 90px 120px 110px`, `min-width: 700px`, cuộn ngang khi hẹp |
+| Khối "Danh sách học viên" — bảng | `:169-187`, dữ liệu `:274-284` | Lưới 6 cột `minmax(160px,1.4fr) 120px 90px 90px 120px 110px`, `min-width: 700px`, cuộn ngang khi hẹp (**chỉ là prototype `.dc.html`**; bản dựng Next.js không còn cuộn ngang từ 2026/11/23, xem Bảng 4.4a) |
 | Chân trang | không có | Cả 5 prototype khu Giảng viên đều không có `<footer>` [Nguồn: 02-bd/screens/teacher/_shell.md:31] |
 
 **Hiện trạng bản dựng (2026/10/18, Phase 4-5, chưa duyệt hình).** Bảng 4.4a ghi hai điểm của bản dựng Next.js liên quan tới quy tắc chọn thẻ lớp và điều hướng sau khi tạo lớp.
@@ -323,6 +325,7 @@ Bảng 4.4a: Hiện trạng bản dựng của INS0201.
 | :--- | :--- | :--- | :--- |
 | Bấm lại thẻ lớp đang chọn thì bỏ chọn, trở về "Tất cả" (V0.10) | **Chưa áp dụng được: bản dựng không có chọn thẻ lớp.** Danh sách lớp là một bảng thường trong thẻ (mỗi dòng có liên kết tên lớp sang chi tiết lớp); khối "Danh sách học viên" đã chuyển sang `INS0203`, và liên kết mở danh sách học viên theo lớp (`/instructor/students?classId=`) nằm ở trang chi tiết lớp | `views/teacher/class-management/ui/class-management-view.tsx:1-12,78-83`; `views/teacher/class-detail/ui/class-detail-view.tsx:246` | Chưa áp dụng được |
 | Sau khi tạo lớp, về đâu (Q2 của `INS0205`) | Tạo lớp thành công thì toast rồi `router.push` sang `/instructor/classes/{id}` (chi tiết lớp); nút mũi tên Quay lại ở chi tiết lớp là `IconAction` với `href="/instructor/classes"` nên về danh sách lớp | `class-management-view.tsx:234-239`; `views/teacher/class-detail/ui/class-detail-view.tsx:73-77` | Dựng, chưa duyệt hình |
+| Bảng danh sách lớp không cuộn ngang (2026/11/23) | `DataTable minWidth={0}` (trước là 860): ở cửa sổ rộng 1100px bảng vừa khung, không có thanh cuộn ngang; chữ dài xuống dòng (tối đa hai dòng). Chứng cứ: ảnh chụp `ins0201` trong `06-plan/reports/261123-0030-giao-bai-man-rieng/img-cuon-ngang/` | `class-management-view.tsx:217` | Dựng, chưa duyệt hình |
 
 Bốn nhóm điều khiển dưới đây **không có trong prototype** và do BD này thiết kế bổ sung, vì yêu cầu F1-24
 tới F1-27 đã chốt mà prototype vẽ trước thời điểm đó [Nguồn: 01-rd/screens/teacher/INS0201_class_management.md:70-74]:

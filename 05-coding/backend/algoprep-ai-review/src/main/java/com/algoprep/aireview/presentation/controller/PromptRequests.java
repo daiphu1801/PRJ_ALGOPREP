@@ -57,6 +57,14 @@ final class PromptRequests {
     return node != null && node.isString() ? node.asString() : null;
   }
 
+  static Integer maxTokens(JsonNode node) {
+    if (node == null) return null;
+    if (!node.isIntegralNumber() || !node.canConvertToInt()) {
+      throw new AiInvalidRequestException("AIR-V40", "maxTokens must be an integer");
+    }
+    return node.intValue();
+  }
+
   /** GENERATE_TESTCASE needs null; the others an object of exactly the three boolean keys. */
   static ResponseGuards guards(FeatureCode feature, JsonNode node, boolean optional) {
     boolean absent = node == null || node.isNull();
@@ -109,7 +117,8 @@ final class PromptRequests {
               expectedId(item.get("expectedActivePromptId")),
               instruction(item.get("systemInstruction"), true),
               modelId(item.get("modelId")),
-              guards(feature, item.get("responseGuards"), true)));
+              guards(feature, item.get("responseGuards"), true),
+              maxTokens(item.get("maxTokens"))));
     }
     return result;
   }

@@ -3,6 +3,7 @@ package com.algoprep.problembank.infrastructure.persistence;
 import static com.algoprep.problembank.infrastructure.persistence.FakeJdbc.row;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.algoprep.problembank.domain.model.assignment.ClassAssignmentModels.AssignableFilter;
 import java.time.Instant;
 import java.util.Set;
 import java.util.UUID;
@@ -72,9 +73,10 @@ class JdbcClassAssignmentRepositoryTest {
                 "title", "T",
                 "level_code", "EASY",
                 "display_name", "Easy",
-                "topic_names", new Object[] {}));
+                "topic_names", new Object[] {},
+                "assigned", true));
 
-    var page = repo.assignable(C, null, 99, 10);
+    var page = repo.assignable(C, new AssignableFilter(null, null, null), 99, 10);
 
     assertThat(page.totalItems()).isEqualTo(25);
     assertThat(page.page()).isEqualTo(3);
@@ -89,7 +91,7 @@ class JdbcClassAssignmentRepositoryTest {
   void assignableOfEmptyResultStaysOnPageOneWithEscapedSearch() {
     db.onQuery("SELECT count(*)", 0L);
 
-    var page = repo.assignable(C, "a_b", 4, 10);
+    var page = repo.assignable(C, new AssignableFilter("a_b", null, null), 4, 10);
 
     assertThat(page.page()).isEqualTo(1);
     assertThat(page.items()).isEmpty();

@@ -4,9 +4,7 @@
 // (DEC-2026-1010-split-ai-admin-screens). Rate limits, the token cap, prices and the testcase cap
 // moved to admin_ai_limits. Everything here is a draft until "Lưu và phát hành".
 //
-// Layout still follows 09-layoutBase/Admin - Cấu hình AI.dc.html for the individual cards (sticky
-// header with the publish CTA :147-157), but the page is no longer the mockup's two
-// columns: a tab holds only a few cards so they stack in one.
+// The publish action stays in the page header while the prompt and safeguards adapt to the available width.
 //
 // The "Chạy đối chiếu" (pre-release comparison) card was dropped 2026-10-23 (DEC-2026-1023-drop-ai-regression-run).
 // Three popups sit on top (phase 4 of
@@ -18,6 +16,7 @@
 "use client";
 
 import { useState } from "react";
+import { History, Pencil } from "lucide-react";
 import {
   FEATURE_KEYS,
   GUARDED_FEATURES,
@@ -40,6 +39,7 @@ import {
   withInstruction,
   withServerDrafts,
 } from "../model/changes";
+import { isValidMaxTokens, MAX_OUTPUT_TOKENS } from "../model/types";
 import { ApiError } from "@/shared/api";
 import { useApiErrorMessage, useT } from "@/shared/i18n";
 import { useUnsavedChangesGuard } from "@/shared/lib";
@@ -52,11 +52,13 @@ import {
   ErrorState,
   FilterMenu,
   Modal,
+  PageContainer,
   PageHeader,
   QueryBoundary,
   SegmentedTabs,
   SettingRow,
   TextArea,
+  TextField,
   Toggle,
   UnsavedChangesDialog,
   type BadgeVariant,
@@ -146,9 +148,10 @@ function AdminAiConfigViewInner({
 
   const prompt = draft.prompts.find((item) => item.feature === feature)!;
   const savedPrompt = saved.prompts.find((item) => item.feature === feature)!;
+  const tokensChanged = prompt.maxTokens !== savedPrompt.maxTokens;
   // A prompt whose instruction was edited shows as a draft until it is published (BD EVT-2, EVT-3).
   const displayStatus: PromptStatus =
-    prompt.systemInstruction !== savedPrompt.systemInstruction
+    prompt.systemInstruction !== savedPrompt.systemInstruction || tokensChanged
       ? "draft"
       : prompt.status;
   const history = draft.versionHistory.filter(
@@ -178,8 +181,13 @@ function AdminAiConfigViewInner({
 
   /** The check in front of every publish; a failure explains itself in a toast. */
   function canPublish(): boolean {
+    if (saveDraft.isPending || publish.isPending) return false;
     if (pendingTotal === 0) {
       toast.info(t("noChanges"));
+      return false;
+    }
+    if (draft.prompts.some((item) => !isValidMaxTokens(item.maxTokens))) {
+      toast.error(t("maxTokensInvalid"));
       return false;
     }
     return true;
@@ -209,6 +217,26 @@ function AdminAiConfigViewInner({
     setEditing({ text: prompt.systemInstruction, invalid: false });
   }
 
+  function storePromptDraft(systemInstruction: string, maxTokens: number) {
+    return saveDraft.mutateAsync({
+      feature,
+      systemInstruction,
+      modelId: prompt.modelId,
+      maxTokens,
+      guards: isGuarded(feature) ? draft.guards[feature] : null,
+    });
+  }
+
+  async function saveTokenDraft() {
+    if (!isValidMaxTokens(prompt.maxTokens) || saveDraft.isPending) return;
+    try {
+      await storePromptDraft(prompt.systemInstruction, prompt.maxTokens);
+      toast.success(t("editDialog.saved"));
+    } catch (error) {
+      toast.error(apiMessage(error));
+    }
+  }
+
   async function saveEdit() {
     if (!editing || saveDraft.isPending) return;
     // BD Sheet 9 NO 5: an empty instruction is not saved.
@@ -217,14 +245,13 @@ function AdminAiConfigViewInner({
       toast.error(t("editDialog.errorEmpty"));
       return;
     }
-    // F5 #16 stores the draft on the server together with the model and guards as they stand now.
+    if (!isValidMaxTokens(prompt.maxTokens)) {
+      toast.error(t("maxTokensInvalid"));
+      return;
+    }
+    // F5 #16 stores the complete draft as it stands now.
     try {
-      await saveDraft.mutateAsync({
-        feature,
-        systemInstruction: editing.text,
-        modelId: prompt.modelId,
-        guards: isGuarded(feature) ? draft.guards[feature] : null,
-      });
+      await storePromptDraft(editing.text, prompt.maxTokens);
     } catch (error) {
       setEditing({ ...editing, invalid: true });
       toast.error(apiMessage(error));
@@ -264,10 +291,11 @@ function AdminAiConfigViewInner({
   }));
 
   return (
-    <div>
+    <PageContainer variant="content" className="@container">
       <PageHeader
         title={t("title")}
         description={t("subtitle")}
+        className="[&_h1]:whitespace-normal [&_p]:whitespace-normal"
         actions={
           <>
             {pendingTotal > 0 ? (
@@ -279,6 +307,7 @@ function AdminAiConfigViewInner({
                   variant="ghost"
                   size="sm"
                   className="border border-[var(--color-border)]"
+                  disabled={saveDraft.isPending || publish.isPending}
                   onClick={() => setDiscardOpen(true)}
                 >
                   {t("discard")}
@@ -288,6 +317,7 @@ function AdminAiConfigViewInner({
             <Button
               variant="cta"
               size="sm"
+              disabled={saveDraft.isPending || publish.isPending}
               aria-disabled={pendingTotal === 0 || undefined}
               onClick={() => canPublish() && setPublishOpen(true)}
             >
@@ -299,6 +329,7 @@ function AdminAiConfigViewInner({
 
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <SegmentedTabs
+          className="w-full flex-wrap overflow-visible [&>button]:h-auto [&>button]:min-h-9 [&>button]:flex-1 [&>button]:whitespace-normal [&>button]:py-1.5 @min-[650px]:w-auto @min-[650px]:[&>button]:flex-none"
           label={t("tabsLabel")}
           options={tabOptions}
           value={feature}
@@ -308,40 +339,48 @@ function AdminAiConfigViewInner({
           variant="ghost"
           size="sm"
           onClick={() => setHistoryOpen(true)}
-          className="border border-[var(--color-border)]"
+          className="min-h-9 gap-2 border border-[var(--color-border)]"
         >
+          <History size={15} aria-hidden="true" />
           {t("versionLog")}
         </Button>
       </div>
 
-      <div className="flex min-w-0 flex-col gap-4">
-        <Card title={t("promptsTitle")} description={t("promptsSubtitle")}>
-          <div className="glass-surface rounded-2xl border border-[var(--color-border)] px-3.5 py-3.5">
-            <div className="mb-1.5 flex flex-wrap items-center gap-2.5">
-              <span className="text-[13.5px] font-semibold">
-                {t(`feature.${prompt.feature}`)}
-              </span>
-              <span className="rounded-md bg-[var(--color-track)] px-1.5 py-0.5 font-mono text-[11px] text-[var(--color-text-muted)]">
-                {prompt.version}
-              </span>
-              <Badge variant={STATUS_VARIANT[displayStatus]}>
-                {t(`promptStatus.${displayStatus}`)}
-              </Badge>
+      <div
+        className={
+          isGuarded(feature)
+            ? "grid min-w-0 gap-4 @min-[800px]:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]"
+            : "grid min-w-0 gap-4"
+        }
+      >
+        <Card className="min-w-0">
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div className="flex min-w-0 flex-wrap items-center gap-2">
+                <h2 className="text-[15px] font-bold">
+                  {t(`feature.${prompt.feature}`)}
+                </h2>
+                <span className="rounded-md bg-[var(--color-track)] px-1.5 py-0.5 font-mono text-[11px] text-[var(--color-text-muted)]">
+                  {prompt.version}
+                </span>
+                <Badge variant={STATUS_VARIANT[displayStatus]}>
+                  {t(`promptStatus.${displayStatus}`)}
+                </Badge>
+              </div>
               <Button
                 variant="ghost"
                 size="sm"
-                className="ml-auto"
+                className="min-h-9 gap-2 border border-[var(--color-border)]"
                 onClick={openEdit}
               >
+                <Pencil size={15} aria-hidden="true" />
                 {t("editPrompt")}
               </Button>
             </div>
-            <p className="mb-2.5 text-[12.5px] leading-relaxed text-pretty text-[var(--color-text-muted)]">
+            <p className="text-sm leading-relaxed text-pretty text-[var(--color-text-muted)]">
               {t(`promptDescription.${prompt.feature}`)}
             </p>
-            {/* The subtle tone sits on the two caption spans, not the row: FilterMenu's value inherits
-                its colour, and on the dark track it fell to 3.6:1 (admin UX review F4). */}
-            <div className="flex flex-wrap items-end gap-x-4 gap-y-2 text-xs">
+            <div className="flex flex-wrap items-end gap-x-4 gap-y-3 border-t border-[var(--color-border)] pt-4 text-xs">
               <FilterMenu
                 label={t("metaModel")}
                 value={prompt.modelId}
@@ -351,21 +390,62 @@ function AdminAiConfigViewInner({
                   label: id,
                 }))}
               />
-              <span className="text-[var(--color-text-subtle)]">
-                {t("metaMaxTokens")}{" "}
-                <span className="font-mono text-[var(--color-text-muted)]">
-                  {prompt.maxTokens}
-                </span>
-              </span>
-              <span className="text-[var(--color-text-subtle)]">
-                {t("metaUpdated", { date: prompt.updatedAt })}
-              </span>
+              <TextField
+                label={t("metaMaxTokens")}
+                type="number"
+                min={1}
+                max={MAX_OUTPUT_TOKENS}
+                step={1}
+                value={prompt.maxTokens}
+                invalid={!isValidMaxTokens(prompt.maxTokens)}
+                onChange={(event) => {
+                  const maxTokens =
+                    event.target.value === "" ? "" : event.target.valueAsNumber;
+                  setDraft((previous) => ({
+                    ...previous,
+                    prompts: previous.prompts.map((item) =>
+                      item.feature === feature ? { ...item, maxTokens } : item,
+                    ),
+                  }));
+                }}
+                wrapperClassName="w-full @min-[400px]:w-[200px]"
+                className="font-mono"
+              />
+              {tokensChanged ? (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => void saveTokenDraft()}
+                  disabled={
+                    !isValidMaxTokens(prompt.maxTokens) ||
+                    saveDraft.isPending ||
+                    publish.isPending
+                  }
+                >
+                  {t("editDialog.save")}
+                </Button>
+              ) : null}
+              <dl className="min-w-0">
+                <div>
+                  <dt className="text-[var(--color-text-muted)]">
+                    {t("metaUpdatedLabel")}
+                  </dt>
+                  <dd className="font-medium">{prompt.updatedAt}</dd>
+                </div>
+              </dl>
             </div>
+            <p className="text-xs text-[var(--color-text-muted)]">
+              {t(
+                isValidMaxTokens(prompt.maxTokens)
+                  ? "maxTokensHint"
+                  : "maxTokensInvalid",
+              )}
+            </p>
           </div>
         </Card>
 
         {isGuarded(feature) ? (
-          <Card title={t("guardsTitle")}>
+          <Card title={t("guardsTitle")} className="min-w-0">
             <div className="flex flex-col gap-2.5">
               {GUARD_KEYS.map((key) => (
                 <SettingRow
@@ -390,6 +470,27 @@ function AdminAiConfigViewInner({
           </Card>
         ) : null}
       </div>
+
+      <Card
+        title={t("instructionPreview")}
+        className="mt-4 flex min-w-0 grow flex-col"
+      >
+        {prompt.systemInstruction.trim() ? (
+          <pre
+            key={feature}
+            tabIndex={0}
+            role="region"
+            aria-label={t("instructionPreview")}
+            className="glass-surface grow overflow-auto rounded-xl border border-[var(--color-border)] p-4 font-mono text-xs leading-relaxed whitespace-pre-wrap [overflow-wrap:anywhere] focus-visible:outline-2 focus-visible:outline-[var(--color-primary)] max-lg:max-h-[min(calc(48*var(--dvh1)),28rem)]"
+          >
+            {prompt.systemInstruction}
+          </pre>
+        ) : (
+          <p className="text-sm text-[var(--color-text-muted)]">
+            {t("instructionEmpty")}
+          </p>
+        )}
+      </Card>
 
       <Modal
         open={historyOpen}
@@ -540,6 +641,9 @@ function AdminAiConfigViewInner({
                     })}
                   </li>
                 ) : null}
+                {change.tokens ? (
+                  <li>{t("publishDialog.item.tokens", change.tokens)}</li>
+                ) : null}
                 {change.guards > 0 ? (
                   <li>
                     {t("publishDialog.item.guards", { count: change.guards })}
@@ -572,6 +676,6 @@ function AdminAiConfigViewInner({
       >
         {t("unsaved.body")}
       </UnsavedChangesDialog>
-    </div>
+    </PageContainer>
   );
 }

@@ -15,7 +15,11 @@ import { FilterMenu } from "./filter-menu";
 type PaginationProps = {
   page: number;
   pageSize: number;
-  total: number;
+  /** Total matching rows, when the API provides it. */
+  total?: number;
+  /** Whether another page exists when the API uses a cursor. */
+  hasNextPage?: boolean;
+  nextPending?: boolean;
   onPageChange: (page: number) => void;
   /** e.g. "1-20 trên 143" — the caller formats it, since number formatting is locale-dependent. */
   summary: string;
@@ -23,9 +27,7 @@ type PaginationProps = {
   nextLabel: string;
   /**
    * Renders numbered page buttons between the two arrows
-   * (09-layoutBase/Admin - Quản lý bài tập.dc.html:241-246). Off by default: a timeline-style list
-   * jumps by "load more" instead, and numbers there would promise a fixed pagination that is not
-   * how that data reads.
+   * (09-layoutBase/Admin - Quản lý bài tập.dc.html:241-246). Requires a known total.
    */
   showPageNumbers?: boolean;
   /** Accessible label for one page button, e.g. `Trang ${n}`. Required with showPageNumbers. */
@@ -35,6 +37,8 @@ type PaginationProps = {
   onPageSizeChange?: (size: number) => void;
   /** Accessible name of the picker, e.g. "Số dòng mỗi trang". */
   pageSizeLabel?: string;
+  /** Render nothing while every row fits on one page (the stepper would only say "1 / 1"). */
+  hideWhenSinglePage?: boolean;
   className?: string;
 };
 
@@ -42,6 +46,8 @@ export function Pagination({
   page,
   pageSize,
   total,
+  hasNextPage,
+  nextPending = false,
   onPageChange,
   summary,
   previousLabel,
@@ -51,9 +57,11 @@ export function Pagination({
   pageSizeOptions,
   onPageSizeChange,
   pageSizeLabel,
+  hideWhenSinglePage = false,
   className,
 }: PaginationProps) {
-  const lastPage = Math.max(1, Math.ceil(total / pageSize));
+  const lastPage = Math.max(1, Math.ceil((total ?? 0) / pageSize));
+  if (hideWhenSinglePage && total !== undefined && lastPage === 1) return null;
   // A sliding window of five, clamped at both ends, so a 143-page list does not render 143 buttons.
   const windowStart = Math.max(1, Math.min(page - 2, lastPage - 4));
   const pages = Array.from(
@@ -94,7 +102,7 @@ export function Pagination({
         >
           {previousLabel}
         </Button>
-        {showPageNumbers && pageLabel
+        {total !== undefined && showPageNumbers && pageLabel
           ? pages.map((candidate) => (
               <Button
                 key={candidate}
@@ -116,7 +124,7 @@ export function Pagination({
         <Button
           variant="ghost"
           size="sm"
-          disabled={page >= lastPage}
+          disabled={nextPending || !(hasNextPage ?? page < lastPage)}
           onClick={() => onPageChange(page + 1)}
         >
           {nextLabel}

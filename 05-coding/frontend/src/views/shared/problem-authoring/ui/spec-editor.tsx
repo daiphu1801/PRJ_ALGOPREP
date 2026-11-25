@@ -45,10 +45,16 @@ import {
   TextArea,
   TextField,
 } from "@/shared/ui";
+import { ProblemKindCard, type ProblemKind } from "./problem-kind-card";
 
 type Props = {
   spec: ProblemSpec;
   onChange: (spec: ProblemSpec) => void;
+  /** Stdin/stdout program or function: the signature cards only show for a function problem. */
+  kind: ProblemKind;
+  onKindChange: (kind: ProblemKind) => void;
+  /** The single-page form shows the kind card once, at the top; the Spec tab of the old layout shows it here. */
+  showKind?: boolean;
 };
 
 const LANGUAGE_CHIP: Record<SpecLanguage, string> = {
@@ -57,7 +63,13 @@ const LANGUAGE_CHIP: Record<SpecLanguage, string> = {
   python: "bg-[var(--color-lang-py-bg)] text-[var(--color-lang-py-fg)]",
 };
 
-export function SpecEditor({ spec, onChange }: Props) {
+export function SpecEditor({
+  spec,
+  onChange,
+  kind,
+  onKindChange,
+  showKind = true,
+}: Props) {
   const t = useT("problemAuthoring");
   const { signature } = spec;
   const issues = signatureIssues(signature);
@@ -124,226 +136,246 @@ export function SpecEditor({ spec, onChange }: Props) {
 
   return (
     <div className="flex flex-col gap-3.5">
-      {exceedsSchema(spec) && preview.data?.wrapperSupported !== false ? (
+      {showKind ? (
+        <ProblemKindCard value={kind} onChange={onKindChange} />
+      ) : null}
+
+      {kind === "function" &&
+      exceedsSchema(spec) &&
+      preview.data?.wrapperSupported !== false ? (
         <NoticeTile tone="warn" title={t("spec.wrapperUnsupportedTitle")}>
           {t("spec.wrapperUnsupportedBody")}
         </NoticeTile>
       ) : null}
 
-      <Card
-        title={t("spec.signatureTitle")}
-        description={t("spec.signatureSubtitle")}
-      >
-        <div className="grid gap-2.5 md:grid-cols-2">
-          <TextField
-            label={t("spec.functionName")}
-            value={signature.functionName}
-            onChange={(event) =>
-              patchSignature({ functionName: event.target.value })
-            }
-            invalid={
-              issues.includes("functionName") || serverInvalid("/functionName")
-            }
-            className="font-mono"
-          />
-          <TypeField
-            label={t("spec.returnType")}
-            value={signature.returnType}
-            onChange={setReturnType}
-            invalid={issues.includes("returnType")}
-            serverPaths={paths}
-            path="/returnType"
-          />
-        </div>
-
-        <p className="mt-3 mb-1.5 text-[11px] font-semibold tracking-[0.07em] text-[var(--color-text-subtle)] uppercase">
-          {t("spec.parameters")}
-        </p>
-        <ul
-          className={`flex flex-col gap-2 ${serverInvalid("/parameters") ? "rounded border border-[var(--color-danger)] p-2" : ""}`}
-        >
-          {signature.parameters.map((parameter, index) => (
-            <li
-              key={parameter.id}
-              className="grid items-end gap-2 md:grid-cols-[1fr_1.4fr_auto]"
-            >
+      {kind === "function" ? (
+        <>
+          <Card
+            title={t("spec.signatureTitle")}
+            description={t("spec.signatureSubtitle")}
+          >
+            <div className="grid gap-2.5 md:grid-cols-2">
               <TextField
-                label={t("spec.parameterName", { index: index + 1 })}
-                value={parameter.name}
+                label={t("spec.functionName")}
+                value={signature.functionName}
                 onChange={(event) =>
-                  patchSignature({
-                    parameters: signature.parameters.map((row) =>
-                      row.id === parameter.id
-                        ? { ...row, name: event.target.value }
-                        : row,
-                    ),
-                  })
+                  patchSignature({ functionName: event.target.value })
                 }
                 invalid={
-                  issues.includes(`parameterName:${parameter.id}`) ||
-                  issues.includes(`parameterDuplicate:${parameter.id}`) ||
-                  serverInvalid(`/parameters/${index}/name`)
+                  issues.includes("functionName") ||
+                  serverInvalid("/functionName")
                 }
                 className="font-mono"
               />
               <TypeField
-                label={t("spec.parameterType", { index: index + 1 })}
-                value={parameter.type}
-                onChange={(type) =>
-                  patchSignature({
-                    parameters: signature.parameters.map((row) =>
-                      row.id === parameter.id ? { ...row, type } : row,
-                    ),
-                  })
-                }
-                invalid={issues.includes(`parameterType:${parameter.id}`)}
+                label={t("spec.returnType")}
+                value={signature.returnType}
+                onChange={setReturnType}
+                invalid={issues.includes("returnType")}
                 serverPaths={paths}
-                path={`/parameters/${index}/type`}
+                path="/returnType"
               />
-              <IconAction
-                icon={Trash2}
-                label={t("spec.removeParameter", { index: index + 1 })}
-                tone="danger"
-                onClick={() =>
-                  patchSignature({
-                    parameters: signature.parameters.filter(
-                      (row) => row.id !== parameter.id,
-                    ),
-                  })
-                }
-              />
-            </li>
-          ))}
-        </ul>
-        <Button
-          variant="ghost"
-          size="sm"
-          className="mt-2.5 border border-[var(--color-border)]"
-          onClick={() =>
-            patchSignature({
-              parameters: [
-                ...signature.parameters,
-                { id: nextId(), name: "", type: defaultType("INT") },
-              ],
-            })
-          }
-        >
-          <Plus aria-hidden="true" className="mr-1 h-3.5 w-3.5" />
-          {t("spec.addParameter")}
-        </Button>
-      </Card>
+            </div>
 
-      <Card title={t("spec.stubTitle")} description={t("spec.stubSubtitle")}>
-        <SegmentedTabs
-          label={t("spec.preview.languages")}
-          value={language}
-          onValueChange={setLanguage}
-          options={SPEC_LANGUAGES.map((value) => ({
-            value,
-            label: t(`spec.language.${value}`),
-          }))}
-          className="mb-3"
-        />
-        {previewActive && preview.rateLimited ? (
-          <p
-            role="status"
-            className="mb-3 text-sm text-[var(--color-text-muted)]"
-          >
-            {t("spec.preview.rateLimited", {
-              seconds: preview.retryAfterSeconds,
-            })}
-          </p>
-        ) : null}
-        {previewActive &&
-        !preview.rateLimited &&
-        (preview.debouncing || preview.isFetching) ? (
-          <p
-            role="status"
-            className="mb-3 text-sm text-[var(--color-text-muted)]"
-          >
-            {t("spec.preview.loading")}
-          </p>
-        ) : null}
-        {unsupported.length > 0 ? (
-          <NoticeTile tone="warn" title={t("spec.wrapperUnsupportedTitle")}>
-            <span className="block">
-              {unsupported.map((reason, index) => (
-                <span
-                  className="block"
-                  key={`${reason.code}:${reason.path}:${index}`}
+            <p className="mt-3 mb-1.5 text-[11px] font-semibold tracking-[0.07em] text-[var(--color-text-subtle)] uppercase">
+              {t("spec.parameters")}
+            </p>
+            <ul
+              className={`flex flex-col gap-2 ${serverInvalid("/parameters") ? "rounded border border-[var(--color-danger)] p-2" : ""}`}
+            >
+              {signature.parameters.map((parameter, index) => (
+                <li
+                  key={parameter.id}
+                  className="grid items-end gap-2 md:grid-cols-[1fr_1.4fr_auto]"
                 >
-                  {t(
-                    /^HRN-V0[1-7]$/.test(reason.code)
-                      ? `spec.preview.reasons.${reason.code}`
-                      : "spec.preview.unsupported",
-                  )}
-                </span>
+                  <TextField
+                    label={t("spec.parameterName", { index: index + 1 })}
+                    value={parameter.name}
+                    onChange={(event) =>
+                      patchSignature({
+                        parameters: signature.parameters.map((row) =>
+                          row.id === parameter.id
+                            ? { ...row, name: event.target.value }
+                            : row,
+                        ),
+                      })
+                    }
+                    invalid={
+                      issues.includes(`parameterName:${parameter.id}`) ||
+                      issues.includes(`parameterDuplicate:${parameter.id}`) ||
+                      serverInvalid(`/parameters/${index}/name`)
+                    }
+                    className="font-mono"
+                  />
+                  <TypeField
+                    label={t("spec.parameterType", { index: index + 1 })}
+                    value={parameter.type}
+                    onChange={(type) =>
+                      patchSignature({
+                        parameters: signature.parameters.map((row) =>
+                          row.id === parameter.id ? { ...row, type } : row,
+                        ),
+                      })
+                    }
+                    invalid={issues.includes(`parameterType:${parameter.id}`)}
+                    serverPaths={paths}
+                    path={`/parameters/${index}/type`}
+                  />
+                  <IconAction
+                    icon={Trash2}
+                    label={t("spec.removeParameter", { index: index + 1 })}
+                    tone="danger"
+                    onClick={() =>
+                      patchSignature({
+                        parameters: signature.parameters.filter(
+                          (row) => row.id !== parameter.id,
+                        ),
+                      })
+                    }
+                  />
+                </li>
               ))}
-            </span>
-          </NoticeTile>
-        ) : null}
-        <ul className="flex flex-col gap-2.5">
-          {SPEC_LANGUAGES.filter((value) => value === language).map(
-            (language) => (
-              <li
-                key={language}
-                aria-label={t(`spec.language.${language}`)}
-                className="glass-surface grid items-center gap-2.5 rounded-2xl border border-[var(--color-border)] px-3.5 py-3 md:grid-cols-[minmax(0,1fr)_14rem]"
+            </ul>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="mt-2.5 border border-[var(--color-border)]"
+              onClick={() =>
+                patchSignature({
+                  parameters: [
+                    ...signature.parameters,
+                    { id: nextId(), name: "", type: defaultType("INT") },
+                  ],
+                })
+              }
+            >
+              <Plus aria-hidden="true" className="mr-1 h-3.5 w-3.5" />
+              {t("spec.addParameter")}
+            </Button>
+          </Card>
+
+          <Card
+            title={t("spec.stubTitle")}
+            description={t("spec.stubSubtitle")}
+          >
+            <SegmentedTabs
+              label={t("spec.preview.languages")}
+              value={language}
+              onValueChange={setLanguage}
+              options={SPEC_LANGUAGES.map((value) => ({
+                value,
+                label: t(`spec.language.${value}`),
+              }))}
+              className="mb-3"
+            />
+            {previewActive && preview.rateLimited ? (
+              <p
+                role="status"
+                className="mb-3 text-sm text-[var(--color-text-muted)]"
               >
-                <div className="min-w-0">
-                  <div className="mb-1.5 flex items-center gap-2">
+                {t("spec.preview.rateLimited", {
+                  seconds: preview.retryAfterSeconds,
+                })}
+              </p>
+            ) : null}
+            {previewActive &&
+            !preview.rateLimited &&
+            (preview.debouncing || preview.isFetching) ? (
+              <p
+                role="status"
+                className="mb-3 text-sm text-[var(--color-text-muted)]"
+              >
+                {t("spec.preview.loading")}
+              </p>
+            ) : null}
+            {unsupported.length > 0 ? (
+              <NoticeTile tone="warn" title={t("spec.wrapperUnsupportedTitle")}>
+                <span className="block">
+                  {unsupported.map((reason, index) => (
                     <span
-                      aria-hidden="true"
-                      className={`flex h-6 min-w-6 items-center justify-center rounded-lg px-1.5 font-mono text-[11px] font-semibold ${LANGUAGE_CHIP[language]}`}
+                      className="block"
+                      key={`${reason.code}:${reason.path}:${index}`}
                     >
-                      {t(`spec.languageShort.${language}`)}
+                      {t(
+                        /^HRN-V0[1-7]$/.test(reason.code)
+                          ? `spec.preview.reasons.${reason.code}`
+                          : "spec.preview.unsupported",
+                      )}
                     </span>
-                    <span className="text-[13px] font-semibold">
-                      {t(`spec.language.${language}`)}
-                    </span>
-                  </div>
-                  <code className="block overflow-x-auto font-mono text-[12.5px] whitespace-pre">
-                    {isMockMode() ? (
-                      renderSignature(signature, language)
-                    ) : (
-                      <ServerSignature
-                        signature={signature}
-                        language={language}
-                        preview={preview}
-                      />
-                    )}
-                  </code>
-                </div>
-                <TextField
-                  label={t("spec.overrideName", {
-                    language: t(`spec.language.${language}`),
-                  })}
-                  placeholder={derivedName(signature.functionName, language)}
-                  value={signature.nameOverrides[language] ?? ""}
-                  onChange={(event) =>
-                    patchSignature({
-                      nameOverrides: {
-                        ...signature.nameOverrides,
-                        [language]: event.target.value,
-                      },
-                    })
-                  }
-                  invalid={
-                    issues.includes(`override:${language}`) ||
-                    serverInvalid(`/nameOverrides/${language.toUpperCase()}`)
-                  }
-                  className="font-mono"
-                />
-              </li>
-            ),
-          )}
-        </ul>
-      </Card>
+                  ))}
+                </span>
+              </NoticeTile>
+            ) : null}
+            <ul className="flex flex-col gap-2.5">
+              {SPEC_LANGUAGES.filter((value) => value === language).map(
+                (language) => (
+                  <li
+                    key={language}
+                    aria-label={t(`spec.language.${language}`)}
+                    className="glass-surface grid items-center gap-2.5 rounded-2xl border border-[var(--color-border)] px-3.5 py-3 md:grid-cols-[minmax(0,1fr)_14rem]"
+                  >
+                    <div className="min-w-0">
+                      <div className="mb-1.5 flex items-center gap-2">
+                        <span
+                          aria-hidden="true"
+                          className={`flex h-6 min-w-6 items-center justify-center rounded-lg px-1.5 font-mono text-[11px] font-semibold ${LANGUAGE_CHIP[language]}`}
+                        >
+                          {t(`spec.languageShort.${language}`)}
+                        </span>
+                        <span className="text-[13px] font-semibold">
+                          {t(`spec.language.${language}`)}
+                        </span>
+                      </div>
+                      <code className="block overflow-x-auto font-mono text-[12.5px] whitespace-pre">
+                        {isMockMode() ? (
+                          renderSignature(signature, language)
+                        ) : (
+                          <ServerSignature
+                            signature={signature}
+                            language={language}
+                            preview={preview}
+                          />
+                        )}
+                      </code>
+                    </div>
+                    <TextField
+                      label={t("spec.overrideName", {
+                        language: t(`spec.language.${language}`),
+                      })}
+                      placeholder={derivedName(
+                        signature.functionName,
+                        language,
+                      )}
+                      value={signature.nameOverrides[language] ?? ""}
+                      onChange={(event) =>
+                        patchSignature({
+                          nameOverrides: {
+                            ...signature.nameOverrides,
+                            [language]: event.target.value,
+                          },
+                        })
+                      }
+                      invalid={
+                        issues.includes(`override:${language}`) ||
+                        serverInvalid(
+                          `/nameOverrides/${language.toUpperCase()}`,
+                        )
+                      }
+                      className="font-mono"
+                    />
+                  </li>
+                ),
+              )}
+            </ul>
+          </Card>
+        </>
+      ) : null}
 
       <Card title={t("spec.ioTitle")} description={t("spec.ioSubtitle")}>
         <div className="grid gap-3 md:grid-cols-2">
           <TextArea
             label={t("spec.stdinFormat")}
+            placeholder={t("spec.stdinPlaceholder")}
             rows={5}
             value={spec.stdinFormat}
             onChange={(event) => patch({ stdinFormat: event.target.value })}
@@ -351,6 +383,7 @@ export function SpecEditor({ spec, onChange }: Props) {
           />
           <TextArea
             label={t("spec.stdoutFormat")}
+            placeholder={t("spec.stdoutPlaceholder")}
             rows={5}
             value={spec.stdoutFormat}
             onChange={(event) => patch({ stdoutFormat: event.target.value })}
@@ -504,7 +537,9 @@ function ServerSignature({
 }) {
   if (preview.error instanceof ApiError && preview.error.code === "HRN-060")
     return null;
-  if (!preview.data) return <>{renderSignature(signature, language)}</>;
+  // A malformed answer is treated like no answer: the local sketch stays, nothing crashes.
+  if (!preview.data?.declarations)
+    return <>{renderSignature(signature, language)}</>;
   return (
     <>{preview.data.declarations[language.toUpperCase() as "JAVA"] ?? ""}</>
   );

@@ -49,6 +49,7 @@ abstract class PostgresTestBase {
         Statement statement = connection.createStatement()) {
       statement.execute("CREATE SCHEMA IF NOT EXISTS ai");
       runScript(connection, "V5.001__create_ai_tables.sql");
+      runScript(connection, "V5.003__add_prompt_max_tokens.sql");
     } catch (SQLException failure) {
       throw new IllegalStateException(failure);
     }

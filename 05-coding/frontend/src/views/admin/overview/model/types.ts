@@ -56,7 +56,7 @@ export const difficultyBreakdownSchema = z.object({
 export type DifficultyBreakdown = z.infer<typeof difficultyBreakdownSchema>;
 
 export const submissionsByDaySchema = z.object({
-  columns: z.array(z.object({ label: z.string(), intensity: z.number() })),
+  columns: z.array(z.object({ label: z.string(), count: z.number() })),
   weekTotal: z.number(),
   dailyAverage: z.number(),
 });

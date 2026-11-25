@@ -37,6 +37,21 @@ vi.mock("./forced-password-change", () => ({
 import { AppShell } from "./app-shell";
 
 describe("AppShell", () => {
+  it.each(["admin", "instructor", "student"] as const)(
+    "uses the shared full-width container and outer padding for %s",
+    async (area) => {
+      render(await AppShell({ area, children: <p>Page content</p> }));
+
+      const container = screen.getByRole("main").firstElementChild;
+      expect(container).toHaveClass("w-full", "px-[16px]", "py-[18px]");
+      expect(container).not.toHaveAttribute("style");
+      expect(screen.getByText("Page content").parentElement).toHaveClass(
+        "flex-1",
+        "[&>*:only-child]:grow",
+      );
+    },
+  );
+
   it("composes the admin area: sidebar, toolbar, footer and the forced password gate", async () => {
     render(await AppShell({ area: "admin", children: <p>admin page</p> }));
 

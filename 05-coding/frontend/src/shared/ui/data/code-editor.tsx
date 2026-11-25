@@ -8,7 +8,7 @@
 // to public/monaco/vs, and the loader below points at it, so no CDN or network is needed.
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import { loader } from "@monaco-editor/react";
 import type { BeforeMount, OnMount } from "@monaco-editor/react";
@@ -76,6 +76,24 @@ export type CodeEditorLanguage = "java" | "cpp" | "python";
 
 const TAB_SIZE = 4;
 
+// The app scales big viewports with CSS `zoom` on <html> (globals.css `--zoom`). Monaco computes mouse
+// positions from client coordinates and mis-hits lines when an ancestor is zoomed, so the editor lives in a
+// counter-zoomed box (net zoom 1, same on-screen size: percentages are not scaled by zoom), and its
+// font/padding are multiplied instead.
+function useRootZoom(): number {
+  const [zoom, setZoom] = useState(1);
+  useEffect(() => {
+    const read = () =>
+      setZoom(
+        Number.parseFloat(getComputedStyle(document.documentElement).zoom) || 1,
+      );
+    read();
+    window.addEventListener("resize", read);
+    return () => window.removeEventListener("resize", read);
+  }, []);
+  return zoom;
+}
+
 export function CodeEditor({
   value,
   onChange,
@@ -92,6 +110,7 @@ export function CodeEditor({
 }) {
   const { resolvedTheme } = useTheme();
   const [cursor, setCursor] = useState({ line: 1, column: 1 });
+  const zoom = useRootZoom();
 
   const onMount: OnMount = (editor) => {
     editor.onDidChangeCursorPosition((event) =>
@@ -106,46 +125,51 @@ export function CodeEditor({
     <div
       className={`flex min-h-0 flex-col overflow-hidden rounded-lg border border-[var(--color-border)] ${className ?? ""}`}
     >
-      <div className="min-h-0 flex-1">
-        <MonacoEditor
-          value={value}
-          language={language}
-          theme={resolvedTheme === "dark" ? THEME_DARK : THEME_LIGHT}
-          beforeMount={defineThemes}
-          onMount={onMount}
-          onChange={(next) => onChange(next ?? "")}
-          options={{
-            ariaLabel: label,
-            minimap: { enabled: false },
-            fontSize: 13.5,
-            lineHeight: 22,
-            fontFamily:
-              "'JetBrains Mono', 'Fira Code', 'Cascadia Code', Consolas, monospace",
-            fontLigatures: true,
-            tabSize: TAB_SIZE,
-            insertSpaces: true,
-            padding: { top: 12, bottom: 12 },
-            scrollBeyondLastLine: false,
-            smoothScrolling: true,
-            cursorSmoothCaretAnimation: "on",
-            cursorBlinking: "smooth",
-            renderLineHighlight: "line",
-            bracketPairColorization: { enabled: true },
-            guides: { bracketPairs: true, indentation: true },
-            automaticLayout: true,
-            overviewRulerLanes: 0,
-            hideCursorInOverviewRuler: true,
-            overviewRulerBorder: false,
-            scrollbar: {
-              verticalScrollbarSize: 8,
-              horizontalScrollbarSize: 8,
-            },
-            lineNumbersMinChars: 3,
-            folding: true,
-            wordWrap: "off",
-            contextmenu: false,
-          }}
-        />
+      <div className="relative min-h-0 flex-1">
+        <div
+          className="absolute left-0 top-0"
+          style={{ zoom: 1 / zoom, width: "100%", height: "100%" }}
+        >
+          <MonacoEditor
+            value={value}
+            language={language}
+            theme={resolvedTheme === "dark" ? THEME_DARK : THEME_LIGHT}
+            beforeMount={defineThemes}
+            onMount={onMount}
+            onChange={(next) => onChange(next ?? "")}
+            options={{
+              ariaLabel: label,
+              minimap: { enabled: false },
+              fontSize: 13.5 * zoom,
+              lineHeight: 22 * zoom,
+              fontFamily:
+                "'JetBrains Mono', 'Fira Code', 'Cascadia Code', Consolas, monospace",
+              fontLigatures: true,
+              tabSize: TAB_SIZE,
+              insertSpaces: true,
+              padding: { top: 12 * zoom, bottom: 12 * zoom },
+              scrollBeyondLastLine: false,
+              smoothScrolling: true,
+              cursorSmoothCaretAnimation: "on",
+              cursorBlinking: "smooth",
+              renderLineHighlight: "line",
+              bracketPairColorization: { enabled: true },
+              guides: { bracketPairs: true, indentation: true },
+              automaticLayout: true,
+              overviewRulerLanes: 0,
+              hideCursorInOverviewRuler: true,
+              overviewRulerBorder: false,
+              scrollbar: {
+                verticalScrollbarSize: 8 * zoom,
+                horizontalScrollbarSize: 8 * zoom,
+              },
+              lineNumbersMinChars: 3,
+              folding: true,
+              wordWrap: "off",
+              contextmenu: false,
+            }}
+          />
+        </div>
       </div>
       <div className="flex shrink-0 items-center justify-between border-t border-[var(--color-border)] bg-[var(--color-surface-hover)] px-3 py-1 font-mono text-[11px] text-[var(--color-text-muted)]">
         <span>

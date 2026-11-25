@@ -13,6 +13,16 @@
 export type AiFeatureKey = "review" | "interview" | "testcase";
 
 export const FEATURE_KEYS: AiFeatureKey[] = ["review", "interview", "testcase"];
+export const MAX_OUTPUT_TOKENS = 32_768;
+
+export function isValidMaxTokens(value: number | ""): value is number {
+  return (
+    typeof value === "number" &&
+    Number.isInteger(value) &&
+    value >= 1 &&
+    value <= MAX_OUTPUT_TOKENS
+  );
+}
 
 // ACTIVE and DRAFT only: the DB enum has ARCHIVED too but an archived prompt is never listed here.
 // "abTest" was dropped (BD ADM0301 V1.0): one ACTIVE prompt per feature, no A/B.
@@ -26,7 +36,7 @@ export type PromptConfig = {
   modelId: string;
   /** System instruction of the prompt (Lớp 1). Learner code and answers never get concatenated into it. */
   systemInstruction: string;
-  maxTokens: string;
+  maxTokens: number | "";
   updatedAt: string;
 };
 
@@ -64,6 +74,7 @@ export type PromptVersionEntry = {
 export type PromptDraft = {
   systemInstruction: string;
   modelId: string;
+  maxTokens: number;
   guards: GuardSet | null;
 };
 

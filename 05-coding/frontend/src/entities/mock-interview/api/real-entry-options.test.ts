@@ -14,20 +14,40 @@ import {
 describe("entry tab sources", () => {
   beforeEach(() => get.mockReset());
 
-  it("maps accepted submissions and survives a missing problem title", async () => {
+  it("maps accepted submissions with date, code and level, and survives a missing problem", async () => {
     get.mockResolvedValue({
       items: [
         {
           submissionId: "s1",
-          problem: { title: "Two Sum" },
+          problem: { code: "AP001", title: "Two Sum", levelDisplayName: "Dễ" },
           language: "PYTHON",
+          submittedAt: "2026-11-22T09:12:00Z",
         },
-        { submissionId: "s2", problem: null, language: "CPP" },
+        {
+          submissionId: "s2",
+          problem: null,
+          language: "CPP",
+          submittedAt: "2026-11-20T01:00:00Z",
+        },
       ],
     });
     expect(await realListAcceptedSubmissionOptions()).toEqual([
-      { id: "s1", problemTitle: "Two Sum", language: "Python" },
-      { id: "s2", problemTitle: "s2", language: "C++" },
+      {
+        id: "s1",
+        problemTitle: "Two Sum",
+        language: "Python",
+        submittedAt: "2026-11-22T09:12:00Z",
+        problemCode: "AP001",
+        levelLabel: "Dễ",
+      },
+      {
+        id: "s2",
+        problemTitle: "s2",
+        language: "C++",
+        submittedAt: "2026-11-20T01:00:00Z",
+        problemCode: undefined,
+        levelLabel: undefined,
+      },
     ]);
     expect(get).toHaveBeenCalledExactlyOnceWith(
       "/judge/me/accepted-submissions",

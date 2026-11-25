@@ -42,6 +42,7 @@ abstract class PostgresTestBase {
     try (Connection connection = DATA.getConnection()) {
       connection.createStatement().execute("CREATE SCHEMA IF NOT EXISTS judge");
       runScript(connection, "V4.001__create_judge_tables.sql");
+      runScript(connection, "V4.003__create_worker_status.sql");
     } catch (SQLException failure) {
       throw new IllegalStateException(failure);
     }
@@ -69,7 +70,7 @@ abstract class PostgresTestBase {
               "TRUNCATE judge.callback_logs, judge.submission_testcase_results, judge.judge_run_tokens,"
                   + " judge.outbox_events, judge.submissions, judge.language_configs,"
                   + " judge.grading_defaults, judge.sandbox_settings,"
-                  + " judge.generator_sandbox_settings, judge.cluster_settings CASCADE");
+                  + " judge.generator_sandbox_settings, judge.cluster_settings, judge.worker_status CASCADE");
       runScript(connection, "V4.002__seed_judge_defaults.sql");
     }
   }

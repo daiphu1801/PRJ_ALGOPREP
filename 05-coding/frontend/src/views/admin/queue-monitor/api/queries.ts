@@ -4,7 +4,7 @@
 // in mock and real mode: mock reads __mock__/, real calls real-queue.ts and maps the answer, so the
 // screen has a single render tree. Real mode also listens to the STOMP topic and falls back to polling.
 import { useEffect, useState } from "react";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { isMockMode } from "@/shared/api";
 import { useMockMutation, useMockQuery } from "@/shared/api/mock-query";
 import { subscribeJudge } from "@/shared/api/stomp";
@@ -16,6 +16,8 @@ import {
 import {
   readJobs,
   readQueue,
+  readQueueInfra,
+  readQueueSettings,
   saveQueueSettings,
   setQueueControl,
   summaryFromSnapshot,
@@ -35,14 +37,15 @@ const SPEC = "03-dd/api/F4_judge-orchestration.md";
 export const QUEUE_KEY = ["queue-monitor"] as const;
 const POLL_MS = 15_000;
 const LIVE_STALE_MS = 60_000;
+const INFRA_KEY = [...QUEUE_KEY, "infra"] as const;
 
 /**
  * Real mode: subscribes to the live topic and returns the poll interval to use while it is
  * disconnected or silent. Mock mode: nothing to subscribe to, never polls.
  */
-export function useQueueLive(): number | false {
+export function useQueueLive() {
   const cache = useQueryClient();
-  const [connected, setConnected] = useState(false);
+  const [connected, setConnected] = useState<boolean | null>(null);
   const [lastBatch, setLastBatch] = useState(0);
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => {
@@ -73,6 +76,7 @@ export function useQueueLive(): number | false {
           [...QUEUE_KEY, "summary"],
           (previous) => (previous ? { ...previous, ...fresh } : previous),
         );
+        cache.setQueryData(INFRA_KEY, fresh.infra);
         void cache.invalidateQueries({ queryKey: [...QUEUE_KEY, "jobs"] });
       },
     });
@@ -81,20 +85,48 @@ export function useQueueLive(): number | false {
       stop();
     };
   }, [cache]);
-  return !isMockMode() && (!connected || now - lastBatch > LIVE_STALE_MS)
-    ? POLL_MS
-    : false;
+  const silent = lastBatch > 0 && now - lastBatch > LIVE_STALE_MS;
+  const fallback = connected === false || silent;
+  return {
+    poll: !isMockMode() && (!connected || silent) ? POLL_MS : (false as const),
+    fallback,
+  };
 }
 
 export const useQueueSummary = (refetchInterval: number | false) =>
   useMockQuery({
     queryKey: [...QUEUE_KEY, "summary"],
     mock: fetchQueueSummary,
-    real: async () => toQueueSummary(await readQueue()),
+    real: async () =>
+      toQueueSummary({
+        snapshot: await readQueue(),
+        settings: null,
+        infra: null,
+      }),
     spec: SPEC,
     staleTime: 0,
     refetchInterval,
   });
+
+export function useQueueSettings(refetchInterval: number | false) {
+  return useQuery({
+    queryKey: [...QUEUE_KEY, "settings"],
+    queryFn: readQueueSettings,
+    enabled: !isMockMode(),
+    retry: false,
+    refetchInterval,
+  });
+}
+
+export function useQueueInfra(refetchInterval: number | false) {
+  return useQuery({
+    queryKey: INFRA_KEY,
+    queryFn: readQueueInfra,
+    enabled: !isMockMode(),
+    retry: false,
+    refetchInterval,
+  });
+}
 
 export function useQueueJobs(
   tab: QueueTab,
@@ -110,7 +142,6 @@ export function useQueueJobs(
     real: async () => toJobsPage(await readJobs(tab, page)),
     spec: SPEC,
     staleTime: 0,
-    keepPrevious: true,
     refetchInterval,
   });
 }

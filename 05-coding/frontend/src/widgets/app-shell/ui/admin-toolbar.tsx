@@ -20,7 +20,7 @@ export function AdminToolbar() {
       name={name || t("identityNamePlaceholder")}
       userId={name ? profile?.userId : undefined}
       avatarVersion={profile?.avatarVersion}
-      roleLabel={t("adminIdentityPlaceholder")}
+      roleLabel={profile?.roleName ?? t("adminIdentityPlaceholder")}
       items={ADMIN_NAV_MISC.map(({ key, href, labelKey, icon }) => ({
         key,
         href,

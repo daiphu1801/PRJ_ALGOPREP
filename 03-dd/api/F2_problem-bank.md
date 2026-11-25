@@ -120,7 +120,7 @@ Bảng 0.5: Giao bài theo lớp (F2-12) — màn `INS0202`, `INS0101`.
 | :-: | :--- | :--- | :--- | :--- | :-: |
 | 49 | GET | `/instructor/class-assignments` | `ListClassAssignments` | `CLASS_MANAGEMENT:READ`; chỉ lớp người gọi phụ trách | 50 |
 | 50 | GET | `/instructor/class-assignments/summary` | `GetInstructorAssignmentSummary` | `CLASS_MANAGEMENT:READ`; như trên | 51 |
-| 51 | GET | `/instructor/classes/{classId}/assignable-problems` | `ListAssignableProblems` (do `DEC-2026-1011-class-assignment-popup-on-assignments-screen` đặt tên) | `CLASS_MANAGEMENT:READ`; lớp người gọi phụ trách | 52 |
+| 51 | GET | `/instructor/classes/{classId}/assignable-problems` | `ListAssignableProblems` (do `DEC-2026-1011-class-assignment-popup-on-assignments-screen` đặt tên; mở rộng bởi `DEC-2026-1123-assign-problems-dedicated-screen`: thêm `levelCode`, `topic`, trường `assigned`) | `CLASS_MANAGEMENT:READ`; lớp người gọi phụ trách | 52 |
 | 52 | POST | `/instructor/classes/{classId}/assignments` | `AssignProblemsToClass` (cùng DEC) | `CLASS_MANAGEMENT:UPDATE`; như trên | 53 |
 | 53 | DELETE | `/instructor/classes/{classId}/assignments/{problemId}` | `RemoveClassAssignment` | `CLASS_MANAGEMENT:UPDATE`; như trên | 54 |
 | 54 | GET | `/instructor/assigned-problems/top` | `ListMyAssignedProblems` | `CLASS_MANAGEMENT:READ` | 55 |
@@ -2499,6 +2499,7 @@ Không trả `actualOutput` hay diff, kể cả testcase `HIDDEN` (quy tắc 1.4
 | 403 | PRB-002, PRB-003 | | |
 | 404 | PRB-010, PRB-011 | | |
 | 422 | PRB-040 | chưa có đáp án mẫu và yêu cầu không kèm mã | |
+| 422 | PRB-060 | bài khai chữ ký hàm nhưng dữ liệu testcase không đọc được theo các tham số đã khai (mã bọc thoát với `INPUT_ERROR`); thường gặp khi bài thật ra là chương trình stdin mà vẫn khai tên hàm | giữ nguyên bảng, hoàn lại lượt chạy; thông báo hướng dẫn xoá tên hàm và tham số ở tab Đặc tả hoặc sửa testcase |
 | 429 | PRB-055 | người gọi đã chạy đáp án mẫu 10 lần trong 60 giây trượt | `details.retryAfterSeconds`; chỉ §48, không trừ trần sinh AI §49 |
 | 503 | PRB-050 | go-judge không đáp ứng / hết thời gian chờ | toast lỗi hệ thống, giữ nguyên bảng |
 
@@ -2699,24 +2700,28 @@ Các số "lượt nộp tuần này" và chênh lệch đã bỏ (`INS0202:429-
 | Quyền | `CLASS_MANAGEMENT:READ`; lớp người gọi phụ trách |
 | Idempotent | có |
 | Phân trang | có (`pageSize` 20) |
-| Nguồn BD | `DEC-2026-1011-class-assignment-popup-on-assignments-screen` (đòi DD định nghĩa `ListAssignableProblems`); `INS0202_class_assignments.md:493` (EVT-2) |
+| Nguồn BD | `DEC-2026-1011-class-assignment-popup-on-assignments-screen` (đòi DD định nghĩa `ListAssignableProblems`); từ 2026-11-23 màn gọi là `INS0207_class_assign_problems.md` (`DEC-2026-1123-assign-problems-dedicated-screen`), nút mở nằm ở `INS0202_class_assignments.md` |
 
 **Triển khai 2026-11-06 (F2-7, #51).** `GET .../instructor/classes/{classId}/assignable-problems`, sắp theo `code`; bài từng giao rồi gỡ được liệt kê lại.
 
+**Mở rộng 2026-11-23 (`DEC-2026-1123-assign-problems-dedicated-screen`, chủ dự án duyệt).** Thêm hai tham số lọc tuỳ chọn `levelCode` và `topic`, thêm trường `assigned` ở mỗi dòng, và bài đang giao cho lớp **được liệt kê** (trước đây bị loại). Hợp đồng #52 (`AssignProblemsToClass`, mục 53) không đổi. **Trạng thái:** phần triển khai backend của đợt này **đã xong 2026-11-23**: `mvn -pl algoprep-problem-bank -am verify` (focused) đạt 963 test, `ClassAssignmentFlowTest` đạt 12 test (chạy lại bởi lead); chưa chạy toàn bộ bộ test `algoprep-bootstrap`.
+
 ### 52.2 Request (query)
-`q` (cắt còn 100 ký tự, khớp `code`/`title`), `page`, `pageSize` (20). Tham số đường dẫn `classId`.
+`q` (cắt còn 100 ký tự, khớp `code`/`title`), `levelCode` (tuỳ chọn, mã mức độ khó, khớp đúng), `topic` (tuỳ chọn, **tên** chủ đề, khớp đúng), `page`, `pageSize` (20). Tham số đường dẫn `classId`. Bỏ trống `levelCode` hoặc `topic` thì không lọc theo tiêu chí đó; các bộ lọc cộng dồn (AND).
 Quyền ở mức `READ` (liệt kê không đổi dữ liệu); hành động giao là mục 53 với `UPDATE` `[SoT: Suy luận]`.
 
 ### 52.3 Response (2xx)
-`{ "items": [ { "problemId", "code", "title", "levelCode", "levelDisplayName", "topicNames": [string] } ], "page": PageMeta }` — bài `PUBLISHED AND NOT deleted` **chưa** được giao (`removed_at IS NULL`) cho lớp đó. Giảng viên chọn từ **ngân hàng chung**, không chỉ bài của mình (F2-12).
+`{ "items": [ { "problemId", "code", "title", "levelCode", "levelDisplayName", "topicNames": [string], "assigned": boolean } ], "page": PageMeta }` — mọi bài `PUBLISHED AND NOT deleted`, sắp theo `code`, **kể cả** bài đang giao cho lớp đó. `assigned = true` khi bài đang được giao cho lớp (có dòng `class_assignments` với `removed_at IS NULL`); bài từng giao rồi gỡ là `assigned = false`. Giảng viên chọn từ **ngân hàng chung**, không chỉ bài của mình (F2-12). Giao diện làm mờ dòng `assigned = true` và không cho chọn; việc chặn giao trùng vẫn do #52 bảo đảm (bài đã giao vào `skippedIds`).
 
 ### 52.4 Lỗi
 | HTTP | error.code | Khi nào | Ghi chú |
 | :-: | :--- | :--- | :--- |
 | 403 | PRB-002, PRB-005 | thiếu quyền / không phụ trách lớp | |
 
+`levelCode` hoặc `topic` không khớp bài nào thì trả danh sách rỗng, không báo lỗi.
+
 ### 52.5 Luồng xử lý
-Kiểm `InstructorClassPort.isInstructorOfClass`; truy vấn `problems` đã xuất bản `NOT EXISTS (SELECT 1 FROM class_assignments WHERE problem_id = p.id AND class_id = :classId AND removed_at IS NULL)`; lọc, phân trang. Bài đã gỡ trước đây (`removed_at` khác `NULL`) **được liệt kê lại** để giao lại.
+Kiểm `InstructorClassPort.isInstructorOfClass`; truy vấn mọi `problems` đã xuất bản và chưa xoá; cột `assigned` là `EXISTS (SELECT 1 FROM class_assignments WHERE problem_id = p.id AND class_id = :classId AND removed_at IS NULL)`; lọc theo `q`, `levelCode` (qua `problem_levels.code`), `topic` (qua `topics.name`), sắp theo `code`, phân trang 20. Từ 2026-11-23 bài đang giao **được liệt kê** (kèm `assigned = true`) thay vì bị loại bằng `NOT EXISTS`; bài đã gỡ (`removed_at` khác `NULL`) có `assigned = false`.
 
 ### 52.6 Truy cập dữ liệu
 | Bảng/schema | Thao tác | Ghi chú |
@@ -2727,9 +2732,11 @@ Kiểm `InstructorClassPort.isInstructorOfClass`; truy vấn `problems` đã xu�
 ### 52.7 Test viewpoints
 | ID | Loại | Nội dung |
 | :--- | :--- | :--- |
-| PB52-N1 | Normal | bài đã xuất bản chưa giao -> có trong danh sách; bài đã giao cho lớp -> không có |
+| PB52-N1 | Normal | bài đã xuất bản chưa giao -> có trong danh sách với `assigned = false`; bài đã giao cho lớp -> **có** trong danh sách với `assigned = true` (đổi 2026-11-23, trước đó "không có") |
 | PB52-A1 | Abnormal | bài `UNPUBLISHED`/`deleted` không bao giờ xuất hiện; lớp không phụ trách -> `403 PRB-005` |
-| PB52-B1 | Boundary | bài từng giao rồi gỡ -> xuất hiện lại |
+| PB52-B1 | Boundary | bài từng giao rồi gỡ -> `assigned = false` |
+| PB52-N2 | Normal | `levelCode` lọc đúng mức; `topic` lọc đúng tên chủ đề; hai bộ lọc cộng dồn và cộng với `q` |
+| PB52-B2 | Boundary | `levelCode`/`topic` không khớp bài nào -> danh sách rỗng, không lỗi; bỏ trống -> không lọc |
 
 ## 53. POST /instructor/classes/{classId}/assignments (`AssignProblemsToClass`)
 
@@ -2744,7 +2751,7 @@ Kiểm `InstructorClassPort.isInstructorOfClass`; truy vấn `problems` đã xu�
 **Triển khai 2026-11-06 (F2-7, #52).** `POST .../instructor/classes/{classId}/assignments`, quyền `CLASS_MANAGEMENT:UPDATE`. Mỗi bài một giao dịch riêng (`ClassAssignmentExecutor`, gọi từ ngoài mọi giao dịch): dòng giao bài và sự kiện `ProblemAssignedToClass` (routing key `problem.assignment.assigned`) cùng commit hoặc cùng rollback; ghi Outbox lỗi thì bài đó vào `failedItems` với `PRB-056`. Id lặp trong lô chỉ chạy một lần. Chống giao trùng bằng `ON CONFLICT (problem_id, class_id) WHERE removed_at IS NULL DO NOTHING`.
 
 ### 53.2 Request
-`{ "problemIds": [uuid] }` — 1 đến 50 id (popup "Giao n bài", `INS0202:493`).
+`{ "problemIds": [uuid] }` — 1 đến 50 id (nút "Giao n bài" ở thanh dưới màn `INS0207`; trước 2026-11-23 là popup trên `INS0202`).
 
 ### 53.3 Response (2xx)
 `200 { "succeededIds": [uuid], "skippedIds": [uuid], "failedItems": [ { "id", "code", "message" } ] }`. `succeededIds` là bài vừa được giao mới; `skippedIds` là bài đã đang giao cho lớp (không tạo dòng thứ hai); mỗi bài độc lập.
@@ -2755,7 +2762,7 @@ Kiểm `InstructorClassPort.isInstructorOfClass`; truy vấn `problems` đã xu�
 | 400 | PRB-001 | `problemIds` rỗng hoặc quá 50 | |
 | 403 | PRB-002, PRB-005 | thiếu quyền / không phụ trách lớp | |
 | (trong `failedItems`) | PRB-010 | bài không tồn tại | |
-| (trong `failedItems`) | PRB-037 | bài không còn xuất bản (`UNPUBLISHED` hoặc `deleted`), không được giao thêm (`INS0202:520`) | |
+| (trong `failedItems`) | PRB-037 | bài không còn xuất bản (`UNPUBLISHED` hoặc `deleted`), không được giao thêm (Sheet 9 BD `INS0202`) | |
 | (trong `failedItems`) | PRB-056 | ghi Outbox của bài đó thất bại; rollback riêng bài, các bài khác vẫn xử lý; HTTP 200 cho lô | `message` chung, không chứa lỗi SQL hoặc stack trace |
 
 ### 53.5 Luồng xử lý
@@ -3065,7 +3072,7 @@ Bảng 59.2: Sự kiện nhận vào.
 
 ## 60. Bảng mã lỗi `PRB`
 
-Bảng 60.1: Mã lỗi của module (`error.code`, backend trả mã, giao diện dịch qua `messages/{locale}.json`). Dải dùng: `PRB-001` tới `PRB-059` (`PRB-034`, `PRB-035` đã bỏ vì trùng `HRN-V22`, `HRN-V20`). Cảnh báo không chặn dùng tiền tố `PRB-W`.
+Bảng 60.1: Mã lỗi của module (`error.code`, backend trả mã, giao diện dịch qua `messages/{locale}.json`). Dải dùng: `PRB-001` tới `PRB-060` (`PRB-034`, `PRB-035` đã bỏ vì trùng `HRN-V22`, `HRN-V20`). Cảnh báo không chặn dùng tiền tố `PRB-W`.
 
 | Mã | HTTP | Tên enum | Ý nghĩa | Mục dùng |
 | :--- | :-: | :--- | :--- | :--- |
@@ -3112,6 +3119,7 @@ Bảng 60.1: Mã lỗi của module (`error.code`, backend trả mã, giao diệ
 | PRB-057 | 503 | `SOLVE_STATE_UNAVAILABLE` | không đọc được trạng thái giải của người gọi khi endpoint không được phép trả số giả (tiến độ theo mức độ); owner duyệt 2026-11-05 | 14A |
 | PRB-058 | 503 | `CLASS_SERVICE_UNAVAILABLE` | không đọc được danh sách lớp của giảng viên từ `identity` nên không kiểm được quyền sở hữu lớp; owner duyệt 2026-11-06 | 50 đến 55 |
 | PRB-059 | 409 | `PROBLEM_CODE_ALLOCATION_CONFLICT` | Candidate cấp mã dự phòng UUID đầy đủ cũng trùng; thử tạo lại, không trả 500 do quá 20 tiêu đề giống nhau | 35, 36 |
+| PRB-060 | 422 | `REFERENCE_INPUT_SPEC_MISMATCH` | chạy đáp án mẫu ở chế độ bọc hàm nhưng dữ liệu testcase không khớp các tham số đã khai; không còn bị che thành `PRB-050` (2026-11-24) | 48 |
 | PRB-W01 | (cảnh báo, `200`) | `TYPE_OUTSIDE_SCHEMA` | vi phạm mềm `HRN-V01` tới `HRN-V07`, `functionWrapperSupported = false`; mã gốc trong `reasonCode` | 38 |
 
 Mã `PRB-024`, `PRB-026` tới `PRB-029`, `PRB-034`, `PRB-035`, `PRB-038` để trống có chủ đích (dự phòng theo nhóm).
@@ -3177,7 +3185,7 @@ Bảng 61.2: Quyết định đã được ghi nhận tại `DEC-2026-1029-f2-mi
 - BD: `02-bd/architecture/F2_problem-bank.md`, `02-bd/database/F2_problem-bank.md`, `02-bd/security/F2_problem-bank.md`, `02-bd/storage/F2_problem-bank.md`; BD màn `SHR0201`, `SHR0202`, `SHR0203`, `USR0101` tới `USR0104`, `USR0201`, `USR0601`, `INS0101`, `INS0202`, `ADM0303`.
 - Quyết định: `DEC-2026-0830-problem-lifecycle-two-states`, `DEC-2026-0831-problem-management-lifecycle-details`, `DEC-2026-0831-class-assignments-round2`, `DEC-2026-0928-f2-14-generator-script`, `DEC-2026-1003-ai-testcase-generation-quota`,
   `DEC-2026-1003-single-function-signature`, `DEC-2026-1008-problem-delete-and-duplicate`, `DEC-2026-1010-ai-generate-testcase-feature-code`, `DEC-2026-1011-a2-read-published-problems-of-others`,
-  `DEC-2026-1011-class-assignment-popup-on-assignments-screen`, `DEC-2026-1022-problem-bank-schema-sync`, `DEC-2026-1023-db-actor-review-decisions`.
+  `DEC-2026-1011-class-assignment-popup-on-assignments-screen`, `DEC-2026-1123-assign-problems-dedicated-screen`, `DEC-2026-1022-problem-bank-schema-sync`, `DEC-2026-1023-db-actor-review-decisions`.
 - DD: `03-dd/logic/F2_problem-bank.md` (BR-nn), `03-dd/validation/F2_problem-bank.md`, `04-tdd/modules/F2_problem-bank.md` (AC-nn). Job F2 đã có tại `03-dd/jobs/F2_problem-bank.md`: relay và dọn Outbox JOB-PB-01/02.
 - Evidence (đọc sau cùng, không phải SoT): `05-coding/frontend/src/entities/problem/model/draft-types.ts`.
 

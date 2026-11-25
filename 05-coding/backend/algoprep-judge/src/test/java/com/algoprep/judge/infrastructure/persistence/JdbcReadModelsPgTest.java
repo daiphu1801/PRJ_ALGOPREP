@@ -3,6 +3,7 @@ package com.algoprep.judge.infrastructure.persistence;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.algoprep.judge.domain.model.InstructorReadWindow;
+import com.algoprep.judge.domain.model.execution.WorkerReport;
 import com.algoprep.judge.domain.model.infra.InfraEvents.Filter;
 import com.algoprep.judge.domain.model.metrics.AssignmentMetricScope;
 import com.algoprep.judge.domain.model.metrics.AssignmentPeriod;
@@ -402,6 +403,62 @@ class JdbcReadModelsPgTest extends PostgresTestBase {
     assertThat(repo.jobs("all", settings, 0)).hasSize(3);
     assertThat(repo.jobs("all", settings, 0).get(2).status()).isEqualTo("SYSTEM_ERROR");
     assertThat(repo.jobs("pending", new JobSettings(1, 24, settings.asOf()), 1)).isEmpty();
+  }
+
+  @Test
+  void workerReportKeepsOneRowAndTheLastScalingUntilTheNextChange() {
+    var worker = new JdbcWorkerJobRepository(provider());
+    worker.report(new WorkerReport(1, 1, null));
+    assertThat(new JdbcQueueMonitorRepository(provider()).snapshot().consumers().lastScaling())
+        .isNull();
+    worker.report(new WorkerReport(2, 1, new WorkerReport.ScaleEvent(1, 2, "BACKLOG", 22)));
+    worker.report(new WorkerReport(2, 2, null));
+    assertThat(jdbc.sql("SELECT count(*) FROM judge.worker_status").query(Long.class).single())
+        .isEqualTo(1L);
+    var consumers = new JdbcQueueMonitorRepository(provider()).snapshot().consumers();
+    assertThat(consumers.target()).isEqualTo(2);
+    assertThat(consumers.active()).isEqualTo(2);
+    var last = consumers.lastScaling();
+    assertThat(last.from()).isEqualTo(1);
+    assertThat(last.to()).isEqualTo(2);
+    assertThat(last.reason()).isEqualTo("BACKLOG");
+    assertThat(last.pendingCount()).isEqualTo(22);
+    assertThat(last.at()).isNotNull();
+    worker.report(new WorkerReport(1, 1, new WorkerReport.ScaleEvent(2, 1, "IDLE", 0)));
+    assertThat(
+            new JdbcQueueMonitorRepository(provider())
+                .snapshot()
+                .consumers()
+                .lastScaling()
+                .reason())
+        .isEqualTo("IDLE");
+  }
+
+  @Test
+  void aWorkerReportOlderThanSixtySecondsIsStaleAndHidden() {
+    var repo = new JdbcQueueMonitorRepository(provider());
+    assertThat(repo.snapshot().consumers()).isNull();
+    new JdbcWorkerJobRepository(provider()).report(new WorkerReport(3, 3, null));
+    assertThat(repo.snapshot().consumers()).isNotNull();
+    jdbc.sql("UPDATE judge.worker_status SET reported_at = now() - interval '61 seconds'").update();
+    assertThat(repo.snapshot().consumers()).isNull();
+    jdbc.sql("UPDATE judge.worker_status SET reported_at = now() - interval '59 seconds'").update();
+    assertThat(repo.snapshot().consumers()).isNotNull();
+  }
+
+  @Test
+  void workerStatusRejectsAnUnknownReasonAndAPartialScalingEvent() {
+    var worker = new JdbcWorkerJobRepository(provider());
+    org.assertj.core.api.Assertions.assertThatThrownBy(
+            () ->
+                worker.report(
+                    new WorkerReport(2, 1, new WorkerReport.ScaleEvent(1, 2, "OTHER", 1))))
+        .isInstanceOf(com.algoprep.judge.domain.exception.WorkerPersistenceException.class);
+    org.assertj.core.api.Assertions.assertThatThrownBy(
+            () -> worker.report(new WorkerReport(0, 0, null)))
+        .isInstanceOf(com.algoprep.judge.domain.exception.WorkerPersistenceException.class);
+    assertThat(jdbc.sql("SELECT count(*) FROM judge.worker_status").query(Long.class).single())
+        .isZero();
   }
 
   @Test

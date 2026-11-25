@@ -39,7 +39,7 @@ export const profileFormSchema = z.object({
   displayName: displayNameField,
   schoolOrCompany: schoolOrCompanyField,
   currentPosition: currentPositionField,
-  targetPosition: targetPositionField,
+  targetPosition: targetPositionField.optional(),
   phone: phoneField,
 });
 

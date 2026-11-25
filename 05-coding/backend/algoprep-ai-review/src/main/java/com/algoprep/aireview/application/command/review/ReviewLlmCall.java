@@ -34,7 +34,6 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class ReviewLlmCall {
-  static final int MAX_TOKENS = CallOptions.DEFAULT_MAX_TOKENS;
   static final String SCHEMA_NAME = "solution_review";
 
   private final LlmProviderPort llm;
@@ -79,7 +78,8 @@ public class ReviewLlmCall {
               prompt.data(),
               new ResponseSchema(
                   SCHEMA_NAME, template.responseSchemaVersion(), SolutionReviewSchema.JSON),
-              new CallOptions(template.modelId(), MAX_TOKENS, totalTimeout, totalTimeout));
+              new CallOptions(
+                  template.modelId(), template.maxTokens(), totalTimeout, totalTimeout));
     } catch (AiProviderUnavailableException | AiInvalidResponseException failure) {
       throw failure;
     } catch (RuntimeException failure) {

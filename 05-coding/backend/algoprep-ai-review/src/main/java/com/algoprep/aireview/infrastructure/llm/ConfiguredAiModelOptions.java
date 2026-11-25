@@ -2,6 +2,7 @@ package com.algoprep.aireview.infrastructure.llm;
 
 import com.algoprep.aireview.application.ports.out.AiModelOptionsPort;
 import java.util.List;
+import java.util.OptionalInt;
 import java.util.stream.Stream;
 import org.springframework.stereotype.Component;
 
@@ -23,5 +24,12 @@ class ConfiguredAiModelOptions implements AiModelOptionsPort {
             Stream.of(AiProviderProperties.DEFAULT_ALIAS), properties.models().allowed().stream())
         .distinct()
         .toList();
+  }
+
+  @Override
+  public OptionalInt maxOutputTokens(String modelId) {
+    String resolved = properties.resolveModel(modelId);
+    Integer limit = resolved == null ? null : properties.models().maxOutputTokens().get(resolved);
+    return limit == null ? OptionalInt.empty() : OptionalInt.of(limit);
   }
 }

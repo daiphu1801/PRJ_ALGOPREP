@@ -5,7 +5,7 @@ import java.time.Duration;
 /** Per-call limits (DD F5 section 3.1, Bang 4). */
 public record CallOptions(
     String modelId, int maxTokens, Duration firstTokenTimeout, Duration totalTimeout) {
-  /** Output cap shown read-only on the prompt admin screen (DD api F5 section 14.3). */
+  /** Fallback for features and prompt versions without an explicit output cap. */
   public static final int DEFAULT_MAX_TOKENS = 4096;
 
   /**
@@ -15,7 +15,7 @@ public record CallOptions(
    */
   public static final int GENERATE_TESTCASE_MAX_TOKENS = 8192;
 
-  /** The output cap a feature really sends; also what the admin prompt screen shows read-only. */
+  /** Default output cap for one feature. */
   public static int maxTokensFor(FeatureCode feature) {
     return feature == FeatureCode.GENERATE_TESTCASE
         ? GENERATE_TESTCASE_MAX_TOKENS

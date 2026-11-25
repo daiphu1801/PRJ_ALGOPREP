@@ -13,8 +13,13 @@ import type {
 type AcceptedDto = {
   items: {
     submissionId: string;
-    problem: { title: string } | null;
+    problem: {
+      code: string;
+      title: string;
+      levelDisplayName: string;
+    } | null;
     language: string;
+    submittedAt: string;
   }[];
 };
 
@@ -33,6 +38,9 @@ export async function realListAcceptedSubmissionOptions(): Promise<
     // F2 metadata can be down (problem = null): fall back to the id, never a made-up title.
     problemTitle: item.problem?.title ?? item.submissionId,
     language: LANGUAGE_LABEL[item.language] ?? item.language,
+    submittedAt: item.submittedAt,
+    problemCode: item.problem?.code,
+    levelLabel: item.problem?.levelDisplayName,
   }));
 }
 

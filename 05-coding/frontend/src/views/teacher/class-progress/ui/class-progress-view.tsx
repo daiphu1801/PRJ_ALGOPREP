@@ -41,6 +41,7 @@ import {
   ConfirmDialog,
   DataTable,
   IconAction,
+  PageContainer,
   PageHeader,
   Pagination,
   FilterMenu,
@@ -212,13 +213,13 @@ export function ClassProgressView() {
   ];
 
   return (
-    <div>
+    <PageContainer variant="content" className="@container">
       <PageHeader
         title={t("header.title")}
         description={t("header.subtitle")}
       />
 
-      <Card>
+      <Card className="grow">
         <div className="mb-3.5 flex flex-wrap items-center gap-2.5">
           <TextField
             label={t("studentList.searchBox")}
@@ -232,6 +233,7 @@ export function ClassProgressView() {
             wrapperClassName="min-w-[220px] flex-1"
           />
           <FilterMenu
+            align="end"
             label={t("studentList.classTabs")}
             value={classTab}
             onValueChange={(value) =>
@@ -266,10 +268,12 @@ export function ClassProgressView() {
                 : "ready"
           }
           emptyMessage={t("empty")}
-          minWidth={860}
+          minWidth={0}
         />
 
         <Pagination
+          className="mt-auto"
+          hideWhenSinglePage
           page={page}
           pageSize={PAGE_SIZE}
           total={totalRows}
@@ -308,6 +312,6 @@ export function ClassProgressView() {
       >
         {t("popup.removeStudentBody")}
       </ConfirmDialog>
-    </div>
+    </PageContainer>
   );
 }

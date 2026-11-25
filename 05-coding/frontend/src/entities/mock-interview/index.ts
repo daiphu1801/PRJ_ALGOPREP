@@ -39,3 +39,15 @@ export {
   type StartInput,
   type TurnEvent,
 } from "./api/real-interview";
+export {
+  DEFAULT_HISTORY_QUERY,
+  type HistoryScoreBand,
+  type HistoryStatus,
+  type InterviewHistoryItem,
+  type InterviewHistoryPage,
+  type InterviewHistoryQuery,
+} from "./model/history-types";
+export {
+  useInterviewHistory,
+  useInterviewSessionDetail,
+} from "./api/history-queries";

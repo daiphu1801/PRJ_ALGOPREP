@@ -281,6 +281,37 @@ describe("ProblemListView with the real API", () => {
     expect(within(link).queryByText(m.state.solved)).toBeNull();
   });
 
+  it("class assignments: shows 3 problems per class and links to the class for the rest", async () => {
+    const item = (n: number) => ({
+      problemId: String(n),
+      title: `Bài lớp ${n}`,
+      solveState: "UNSOLVED",
+      assignedAt: `2026-11-0${n}T03:00:00Z`,
+    });
+    serve({
+      "/problem-bank/me/class-assignments": () => ({
+        groups: [
+          {
+            classId: "c1",
+            className: "Java K21",
+            items: [1, 2, 3, 4, 5].map(item),
+          },
+          { classId: "c2", className: "DSA K22", items: [item(6)] },
+        ],
+      }),
+    });
+    await renderLoaded();
+
+    expect(await screen.findByText("Bài lớp 3")).toBeInTheDocument();
+    expect(screen.queryByText("Bài lớp 4")).toBeNull();
+    // A class with 3 or fewer problems has nothing more to open.
+    expect(screen.getAllByRole("link", { name: /Xem tất cả \d+ bài/ })).toHaveLength(1);
+    expect(screen.getByRole("link", { name: /Xem tất cả 5 bài/ })).toHaveAttribute(
+      "href",
+      "/classes/c1",
+    );
+  });
+
   it("the table failing shows the retry block, not an empty table", async () => {
     serve({
       "/problem-bank/problems": () => new ApiError("UNKNOWN_ERROR", 503),

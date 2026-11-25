@@ -180,8 +180,9 @@ test("a role change is saved on the server and applies to the next request", asy
     .click();
   await page
     .getByRole("dialog")
-    .getByLabel(m.roleDialog.label)
-    .selectOption("instructor");
+    .getByRole("button", { name: m.roleDialog.label, exact: false })
+    .click();
+  await page.getByRole("option", { name: m.role.instructor }).click();
   await page
     .getByRole("dialog")
     .getByRole("button", { name: m.roleDialog.submit })

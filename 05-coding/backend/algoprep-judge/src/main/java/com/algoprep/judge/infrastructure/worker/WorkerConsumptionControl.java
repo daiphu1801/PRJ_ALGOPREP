@@ -1,6 +1,8 @@
 package com.algoprep.judge.infrastructure.worker;
 
 import com.algoprep.judge.application.dto.execution.WorkerScaling;
+import com.algoprep.judge.domain.model.execution.WorkerControl;
+import com.algoprep.judge.domain.model.execution.WorkerReport;
 import com.algoprep.judge.domain.ports.out.WorkerJobRepository;
 import com.algoprep.judge.domain.ports.out.WorkerLeasePort;
 import com.algoprep.judge.domain.ports.out.WorkerLeasePort.Lease;
@@ -91,6 +93,7 @@ final class WorkerConsumptionControl implements SmartLifecycle {
         resize(before, after, control);
       }
       scaling = proposal;
+      publish(before, after, control);
     } catch (RuntimeException e) {
       // A rejected resize must retain the committed counters and target for the next poll.
       target = scaling.target();
@@ -99,8 +102,27 @@ final class WorkerConsumptionControl implements SmartLifecycle {
     }
   }
 
-  private void resize(
-      int before, int after, com.algoprep.judge.domain.model.execution.WorkerControl control) {
+  /**
+   * Tells the API what this worker is doing; a failed report is logged and never affects scaling.
+   */
+  private void publish(int before, int after, WorkerControl control) {
+    try {
+      var scale =
+          before == after
+              ? null
+              : new WorkerReport.ScaleEvent(
+                  before, after, reason(control, before, after), control.pending());
+      jobs.report(new WorkerReport(after, container.getActiveConsumerCount(), scale));
+    } catch (RuntimeException e) {
+      LOG.warn("Grading status report is unavailable");
+    }
+  }
+
+  private static String reason(WorkerControl control, int before, int after) {
+    return !control.autoscale() ? "DISABLED" : after > before ? "BACKLOG" : "IDLE";
+  }
+
+  private void resize(int before, int after, WorkerControl control) {
     try {
       container.setConcurrency(Integer.toString(after));
     } catch (RuntimeException e) {
@@ -113,7 +135,7 @@ final class WorkerConsumptionControl implements SmartLifecycle {
         after,
         control.pending(),
         control.threshold(),
-        !control.autoscale() ? "DISABLED" : after > before ? "BACKLOG" : "IDLE");
+        reason(control, before, after));
   }
 
   private boolean ownsLeader() {

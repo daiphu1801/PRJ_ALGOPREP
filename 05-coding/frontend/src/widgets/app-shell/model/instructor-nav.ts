@@ -80,16 +80,16 @@ export const INSTRUCTOR_NAV_GROUPS: AdminNavGroup[] = [
 /** Toolbar user menu: own settings and profile stay in the instructor area, "Thoát" signs out. */
 export const INSTRUCTOR_NAV_MISC: AdminNavMiscItem[] = [
   {
-    key: "settings",
-    href: "/instructor/settings",
-    labelKey: "settings",
-    icon: Settings,
-  },
-  {
     key: "profile",
     href: "/instructor/profile",
     labelKey: "profile",
     icon: UserCircle,
+  },
+  {
+    key: "settings",
+    href: "/instructor/settings",
+    labelKey: "settings",
+    icon: Settings,
   },
   {
     key: "logout",

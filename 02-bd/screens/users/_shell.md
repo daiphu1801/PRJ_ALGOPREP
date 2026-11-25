@@ -1,5 +1,7 @@
 # BD — Khung điều hướng dùng chung khu Người học (`_shell`)
 
+> **Cập nhật 2026-11-23 (AI), phiên bản ghi chú V0.6:** theo yêu cầu owner 2026-11-23, sửa trình bày chân trang và mô hình cuộn của khu Người học (bản dựng; **Chưa duyệt hình**). (1) Chân trang nay **một dòng** (thương hiệu + thẻ GO-JUDGE, bản quyền, trạng thái cụm, phiên bản), cao khoảng 41px, trước đây khối hai dòng cao 79px; nội dung và ba vùng không đổi. (2) Khu Người học **cuộn theo trang** (cuộn của tài liệu, thanh cuộn của trình duyệt) và chân trang nối đuôi nội dung; không còn ghim dưới một hộp cuộn bên trong. Admin và Giảng viên giữ hộp cuộn trong. Màn toàn khung (Workspace, Mock Interview đang chạy, `data-fullscreen-view`) vẫn bị buộc vào khung nhìn và ẩn chân trang. Sửa mục 3 (thêm đoạn "Hiện trạng bản dựng 2026-11-23"). Câu hỏi mở của khung: không đổi; một lưu ý mới ghi ở cuối mục 3 (header dính chồng nhẹ lên nội dung khi cuộn), chưa quyết.
+
 > **Cập nhật 2026-11-18 (Claude), phiên bản ghi chú V0.5:** áp `DEC-2026-1117-user-avatar-upload` (F1-35). Nút mở menu người dùng ở header nay hiện ảnh đại diện thật của học viên (hoặc chữ viết tắt khi chưa có ảnh hoặc ảnh lỗi); sửa dòng "Menu người dùng" ở mục 2.1. Chưa duyệt hình. Câu hỏi mở còn lại của khung: không có (mục 6 đã đóng cả 5 câu).
 
 > **Cập nhật 2026-10-23 (Claude), phiên bản ghi chú V0.4:** ghi quyết định owner `DEC-2026-1023-student-class-screens` (owner yêu cầu 2026-10-23: giao diện học viên chưa có màn nào cho lớp). Thanh nav chính có **bảy mục**: thêm mục thứ 7 "Lớp của tôi" dẫn tới `my_classes` (`USR0701`, `/classes`), đặt ở **header, không đặt trong menu avatar**; mục sáng với mọi đường dẫn bắt đầu bằng `/classes/` (khớp tiền tố, `widgets/app-shell/ui/student-header.tsx:51-52`), gồm cả chi tiết lớp `my_class_detail` (`USR0702`, `/classes/{classId}`). Sửa mục 1, 2.1, 2.2 (tiêu đề, bảng, ghi chú), 2.3 và 2.5. Ngăn kéo hamburger dưới `lg` dùng chung danh sách `STUDENT_NAV_ITEMS` nên tự có mục thứ 7 (`student-header.tsx:83,177`), không có đoạn riêng liệt kê mục trong file này. Nguồn bản dựng: `widgets/app-shell/model/student-nav.ts:42-43`, nhãn `messages/vi.json:44`. Chưa duyệt hình.
@@ -127,6 +129,21 @@ Ba nội dung, lấy từ prototype duy nhất có chân trang
 Prototype tĩnh có thêm **số bài đang chờ trong hàng đợi** ở dòng trạng thái (một con số thật đọc từ
 `judge-orchestration`). **Bản thiết kế bỏ con số đó**: dòng trạng thái là câu tĩnh, không polling máy chủ
 (đã chốt 2026-10-18, xem mục 6 Q3). Bản dựng khớp: `05-coding/frontend/src/widgets/app-shell/ui/student-footer.tsx:40-46`.
+
+### Hiện trạng bản dựng 2026-11-23 (**Chưa duyệt hình**)
+
+Bảng 3.1 ghi hai thay đổi trình bày đã dựng ngày 2026-11-23 theo yêu cầu owner; bảng "Trái / Giữa / Phải" ở trên vẫn đúng về nội dung nhưng **không còn là ba cột trên hai dòng** mà là ba vùng trên một hàng.
+
+Bảng 3.1: Hiện trạng chân trang và mô hình cuộn khu Người học
+
+| Nội dung | Hiện trạng bản dựng | Nguồn |
+| :--- | :--- | :--- |
+| Chân trang một dòng | Thương hiệu + thẻ GO-JUDGE, dòng bản quyền, trạng thái cụm, phiên bản nằm cùng một hàng `flex-wrap`; phiên bản đẩy sang phải (`ml-auto`). Bản quyền chuyển lên cạnh thương hiệu thay vì xuống dòng thứ hai; chỉ xuống dòng khi cửa sổ quá hẹp. Cao khoảng 41px (trước đó 79px, đo ở 1280x640 và 1440x900) | `05-coding/frontend/src/widgets/app-shell/ui/student-footer.tsx:27-52` |
+| Khu Người học cuộn theo trang | Các quy tắc khoá khung nhìn và hộp cuộn trong chỉ áp cho `.app-shell-viewport:not(.student-shell)` (Admin, Giảng viên); khu Người học dùng cuộn của tài liệu, chân trang nối sau nội dung. Đo ở 1280x640 trên trang Tổng quan: chiều cao tài liệu 2560, chân trang ở cuối, không có hộp cuộn trong | `05-coding/frontend/src/app/globals.css:712-749` |
+| Màn toàn khung vẫn buộc vào khung nhìn | Màn gắn `data-fullscreen-view` đặt chiều cao bằng khung nhìn, ẩn chân trang (từ `lg` trở lên). Đo ở 1280x640: Workspace cao 640 bằng cửa sổ | `05-coding/frontend/src/app/globals.css:756-783` |
+| Vị trí chân trang trong khung | Chân trang nằm ngoài `<main>`, trong `PageContainer.student-footer-wrap` | `05-coding/frontend/src/widgets/app-shell/ui/app-shell.tsx:106-108` |
+
+Phần trên thay thế cách hiểu cũ "chân trang ghim dưới hộp cuộn trong" của khu này; đoạn cũ không còn đúng cho Người học và giữ lại ở đây làm lịch sử. Lưu ý chưa quyết (không đổi thiết kế): khi cuộn trang, header dính bám đỉnh chồng nhẹ lên nội dung.
 
 ## 4. Vùng nội dung
 

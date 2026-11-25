@@ -2,6 +2,7 @@ package com.algoprep.problembank.infrastructure.persistence;
 
 import com.algoprep.problembank.domain.model.assignment.ClassAssignmentModels.ActiveRow;
 import com.algoprep.problembank.domain.model.assignment.ClassAssignmentModels.Assignable;
+import com.algoprep.problembank.domain.model.assignment.ClassAssignmentModels.AssignableFilter;
 import com.algoprep.problembank.domain.model.assignment.ClassAssignmentModels.AssignablePage;
 import com.algoprep.problembank.domain.model.assignment.ClassAssignmentModels.ProblemState;
 import com.algoprep.problembank.domain.ports.out.ClassAssignmentRepository;
@@ -24,6 +25,18 @@ class JdbcClassAssignmentRepository implements ClassAssignmentRepository {
       ARRAY(SELECT t.name FROM problem.problem_topics pt JOIN problem.topics t ON t.id = pt.topic_id
             WHERE pt.problem_id = p.id ORDER BY t.sort_order, t.name) AS topic_names
       """;
+
+  private static final String ASSIGNABLE_FROM =
+      """
+        FROM problem.problems p JOIN problem.problem_levels pl ON pl.id = p.level_id
+        WHERE p.status = 'PUBLISHED' AND NOT p.deleted
+          AND (CAST(:q AS text) IS NULL OR p.code ILIKE :pattern ESCAPE '\\'
+               OR p.title ILIKE :pattern ESCAPE '\\')
+          AND (CAST(:level AS text) IS NULL OR pl.code = :level)
+          AND (CAST(:topic AS text) IS NULL OR EXISTS (
+                 SELECT 1 FROM problem.problem_topics pt JOIN problem.topics t ON t.id = pt.topic_id
+                 WHERE pt.problem_id = p.id AND t.name = :topic))
+        """;
 
   private final ObjectProvider<JdbcClient> jdbc;
 
@@ -65,23 +78,19 @@ class JdbcClassAssignmentRepository implements ClassAssignmentRepository {
   }
 
   @Override
-  public AssignablePage assignable(UUID classId, String q, int page, int pageSize) {
-    String where =
-        """
-        FROM problem.problems p JOIN problem.problem_levels pl ON pl.id = p.level_id
-        WHERE p.status = 'PUBLISHED' AND NOT p.deleted
-          AND NOT EXISTS (SELECT 1 FROM problem.class_assignments ca
-                          WHERE ca.problem_id = p.id AND ca.class_id = :class AND ca.removed_at IS NULL)
-          AND (CAST(:q AS text) IS NULL OR p.code ILIKE :pattern ESCAPE '\\'
-               OR p.title ILIKE :pattern ESCAPE '\\')
-        """;
+  public AssignablePage assignable(UUID classId, AssignableFilter filter, int page, int pageSize) {
+    String q = filter.q();
+    String levelCode = filter.levelCode();
+    String topic = filter.topic();
+    String where = ASSIGNABLE_FROM;
     String pattern = q == null ? null : "%" + escape(q) + "%";
     long total =
         jdbc.getObject()
             .sql("SELECT count(*) " + where)
-            .param("class", classId)
             .param("q", q)
             .param("pattern", pattern)
+            .param("level", levelCode)
+            .param("topic", topic)
             .query(Long.class)
             .single();
     int pages = Math.max(1, (int) Math.ceil(total / (double) pageSize));
@@ -91,24 +100,33 @@ class JdbcClassAssignmentRepository implements ClassAssignmentRepository {
             .sql(
                 "SELECT p.id, p.code, p.title, pl.code AS level_code, pl.display_name, "
                     + TOPICS
+                    + ", EXISTS (SELECT 1 FROM problem.class_assignments ca"
+                    + " WHERE ca.problem_id = p.id AND ca.class_id = :class"
+                    + " AND ca.removed_at IS NULL) AS assigned "
                     + where
                     + " ORDER BY p.code, p.id LIMIT :limit OFFSET :offset")
             .param("class", classId)
             .param("q", q)
             .param("pattern", pattern)
+            .param("level", levelCode)
+            .param("topic", topic)
             .param("limit", pageSize)
             .param("offset", (long) (shown - 1) * pageSize)
-            .query(
-                (rs, row) ->
-                    new Assignable(
-                        rs.getObject("id", UUID.class),
-                        rs.getString("code"),
-                        rs.getString("title"),
-                        rs.getString("level_code"),
-                        rs.getString("display_name"),
-                        names(rs.getArray("topic_names"))))
+            .query(JdbcClassAssignmentRepository::assignableRow)
             .list();
     return new AssignablePage(items, total, shown);
+  }
+
+  private static Assignable assignableRow(java.sql.ResultSet rs, int row)
+      throws java.sql.SQLException {
+    return new Assignable(
+        rs.getObject("id", UUID.class),
+        rs.getString("code"),
+        rs.getString("title"),
+        rs.getString("level_code"),
+        rs.getString("display_name"),
+        names(rs.getArray("topic_names")),
+        rs.getBoolean("assigned"));
   }
 
   @Override

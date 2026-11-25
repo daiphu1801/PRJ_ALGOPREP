@@ -27,6 +27,8 @@
 // justified at prototype stage.
 "use client";
 
+import { splitFramework } from "../model/split-framework";
+
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -417,9 +419,25 @@ function QuestionDetail({
                       <Badge variant="neutral">{t("study.starTag")}</Badge>
                     ) : null}
                   </p>
-                  <p className="text-[13.5px] whitespace-pre-line text-[var(--color-text)]">
-                    {question.sampleAnswerFramework}
-                  </p>
+                  <div className="grid gap-2.5">
+                    {splitFramework(question.sampleAnswerFramework).map(
+                      (section, index) => (
+                        <div
+                          key={index}
+                          className="rounded-lg border border-[var(--color-border)] p-3"
+                        >
+                          {section.heading ? (
+                            <p className="mb-1 text-[12.5px] font-semibold text-[var(--color-primary)]">
+                              {section.heading}
+                            </p>
+                          ) : null}
+                          <p className="text-[13.5px] leading-relaxed whitespace-pre-line text-[var(--color-text)]">
+                            {section.body}
+                          </p>
+                        </div>
+                      ),
+                    )}
+                  </div>
                 </div>
               ) : null}
 

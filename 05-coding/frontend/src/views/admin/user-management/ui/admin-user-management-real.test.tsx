@@ -318,9 +318,10 @@ describe("AdminUserManagementView with the real API", () => {
     await open();
 
     fireEvent.click(rowAction(m.actionChangeRoleFor, "An Hoc"));
-    fireEvent.change(screen.getByLabelText(m.roleDialog.label), {
-      target: { value: "instructor" },
-    });
+    fireEvent.click(
+      screen.getByRole("button", { name: new RegExp(`^${m.roleDialog.label}`) }),
+    );
+    fireEvent.click(screen.getByRole("option", { name: m.role.instructor }));
     fireEvent.click(button(m.roleDialog.submit));
 
     await waitFor(() =>

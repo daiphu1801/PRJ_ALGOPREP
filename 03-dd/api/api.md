@@ -182,7 +182,7 @@ Bảng 4: Endpoint của `problem-bank`. Cột Mục là số mục trong `03-dd
 | 49 | POST | `/api/v1/problem-bank/authoring/problems/{problemId}/testcases/generate` | `GenerateTestcasesWithAi` |
 | 50 | GET | `/api/v1/problem-bank/instructor/class-assignments` | `ListClassAssignments` |
 | 51 | GET | `/api/v1/problem-bank/instructor/class-assignments/summary` | `GetInstructorAssignmentSummary` |
-| 52 | GET | `/api/v1/problem-bank/instructor/classes/{classId}/assignable-problems` | `ListAssignableProblems` |
+| 52 | GET | `/api/v1/problem-bank/instructor/classes/{classId}/assignable-problems` | `ListAssignableProblems` (từ 2026-11-23: tham số `levelCode`, `topic`, trường `assigned`, liệt kê cả bài đã giao; hợp đồng đầy đủ ở `03-dd/api/F2_problem-bank.md` mục 52, backend đang triển khai) |
 | 53 | POST | `/api/v1/problem-bank/instructor/classes/{classId}/assignments` | `AssignProblemsToClass` |
 | 54 | DELETE | `/api/v1/problem-bank/instructor/classes/{classId}/assignments/{problemId}` | `RemoveClassAssignment` |
 | 55 | GET | `/api/v1/problem-bank/instructor/assigned-problems/top` | `ListMyAssignedProblems` |
@@ -216,7 +216,7 @@ Bảng 6: Endpoint của `judge-orchestration`. Cột Mục là số mục trong
 | 13 | GET | `/api/v1/judge/instructor/submissions` | |
 | 14 | GET | `/api/v1/judge/instructor/submissions/{submissionId}` | |
 | 15 | GET | `/api/v1/judge/instructor/classes/{classId}/students/{studentId}/submissions` | |
-| 16 | GET | `/api/v1/judge/admin/queue/snapshot` | |
+| 16 | GET | `/api/v1/judge/admin/queue/snapshot` | Thêm 2026-11-22: `finishedLastMinute`, `estimatedClearSeconds`, `consumers { target, active, reportedAt, lastScaling }` (nullable); hợp đồng ở mục 16 của file F4, không thêm mã lỗi |
 | 17 | GET | `/api/v1/judge/admin/queue/jobs` | |
 | 18 | GET | `/api/v1/judge/admin/queue/infra-summary` | |
 | 19 | PUT | `/api/v1/judge/admin/queue/consumption` | |
@@ -245,6 +245,7 @@ Bảng 6a: Endpoint của `ai-review`. Cột Mục là số mục trong `03-dd/a
 | 11 | POST | `/api/v1/ai/interview-sessions/{sessionId}/hint` | `RequestInterviewHint` |
 | 12 | POST | `/api/v1/ai/interview-sessions/{sessionId}/complete` | `CompleteInterviewSession` |
 | 13 | GET | `/api/v1/ai/me/interview-sessions/summary` | `GetMyInterviewSummary` |
+| 31A | GET | `/api/v1/ai/me/interview-sessions` | `ListMyInterviewSessions` |
 | 14 | GET | `/api/v1/ai/admin/prompt-templates` | `ListPromptTemplates` |
 | 15 | GET | `/api/v1/ai/admin/prompt-templates/{featureCode}/history` | `GetPromptTemplateHistory` |
 | 16 | PUT | `/api/v1/ai/admin/prompt-templates/{featureCode}/draft` | `UpdatePromptTemplateDraft` |

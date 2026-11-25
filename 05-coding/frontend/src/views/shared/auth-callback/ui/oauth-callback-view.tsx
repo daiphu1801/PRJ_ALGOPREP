@@ -84,7 +84,7 @@ export function OAuthCallbackView({ provider }: { provider: string }) {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center p-6">
+    <main className="flex min-h-[calc(100*var(--vh1))] items-center justify-center p-6">
       <Card title={t("title")} className="w-full max-w-md">
         {view.kind === "working" && (
           <div role="status" aria-live="polite" className="flex flex-col gap-3">

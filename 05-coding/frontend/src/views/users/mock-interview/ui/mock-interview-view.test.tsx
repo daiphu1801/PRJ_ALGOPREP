@@ -57,10 +57,17 @@ describe("MockInterviewView", () => {
     fireEvent.click(stop);
     fireEvent.click(screen.getByRole("button", { name: "Kết thúc" }));
 
-    expect(await screen.findByText(/Độ rõ ràng/)).toBeInTheDocument();
-    expect(screen.getByText(/Độ chính xác kỹ thuật/)).toBeInTheDocument();
-    expect(screen.getByText(/Khả năng phản biện/)).toBeInTheDocument();
-    expect(screen.getByText(/Nhận thức độ phức tạp/)).toBeInTheDocument();
+    // Each label appears twice now: on the radar and as the title of its criterion card.
+    expect((await screen.findAllByText(/Độ rõ ràng/)).length).toBeGreaterThan(
+      0,
+    );
+    expect(screen.getAllByText(/Độ chính xác kỹ thuật/).length).toBeGreaterThan(
+      0,
+    );
+    expect(screen.getAllByText(/Khả năng phản biện/).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Nhận thức độ phức tạp/).length).toBeGreaterThan(
+      0,
+    );
 
     for (const wrongLabel of [
       "Kỹ thuật",
@@ -70,6 +77,14 @@ describe("MockInterviewView", () => {
     ]) {
       expect(screen.queryByText(wrongLabel)).not.toBeInTheDocument();
     }
+  });
+
+  it("shows the submission cards with language, level and the day they were submitted", async () => {
+    renderView();
+
+    expect(await screen.findByText("Nộp 22/11/2026")).toBeInTheDocument();
+    expect(screen.getByText("Python 3")).toBeInTheDocument();
+    expect(screen.getAllByText("Khó").length).toBeGreaterThan(0);
   });
 
   it("does not show technical codes in the source lists", () => {

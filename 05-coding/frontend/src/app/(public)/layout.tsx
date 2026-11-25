@@ -6,7 +6,7 @@ import type { ReactNode } from "react";
 // and /register, which is exactly where the mockup has it.
 export default function PublicLayout({ children }: { children: ReactNode }) {
   return (
-    <div className="grid-backdrop flex min-h-screen items-center justify-center">
+    <div className="grid-backdrop flex min-h-[calc(100*var(--vh1))] items-center justify-center">
       {children}
     </div>
   );

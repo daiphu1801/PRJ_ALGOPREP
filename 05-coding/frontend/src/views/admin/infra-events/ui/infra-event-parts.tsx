@@ -32,7 +32,7 @@ export function EventRow({
 }) {
   return (
     <li
-      className="grid grid-cols-[66px_84px_minmax(180px,1fr)] items-start gap-3 rounded-xl border-l-2 px-2.5 py-2.5 hover:bg-[var(--color-row-hover)]"
+      className="grid grid-cols-[66px_minmax(0,1fr)] items-start gap-x-3 gap-y-1.5 rounded-xl border-l-2 px-2.5 py-2.5 hover:bg-[var(--color-row-hover)] sm:grid-cols-[66px_84px_minmax(0,1fr)]"
       style={{ borderLeftColor: `var(${LEVEL_COLOR_VAR[event.level]})` }}
     >
       <span className="pt-px font-mono text-xs text-[var(--color-text-subtle)]">
@@ -41,11 +41,11 @@ export function EventRow({
       </span>
       <Badge
         variant={LEVEL_VARIANT[event.level]}
-        className="w-full justify-center font-mono"
+        className="w-fit justify-center font-mono sm:w-full"
       >
         {levelLabel}
       </Badge>
-      <span className="min-w-0">
+      <span className="col-span-2 min-w-0 wrap-anywhere sm:col-span-1">
         <span className="block text-[13px] font-semibold text-pretty break-words whitespace-pre-wrap">
           {event.message}
         </span>
@@ -86,7 +86,7 @@ export function DateRangeFields({
           value={from}
           max={to || undefined}
           onChange={(event) => onFromChange(event.target.value)}
-          wrapperClassName="w-[140px]"
+          wrapperClassName="w-[min(140px,40vw)]"
           className="h-[34px]"
         />
       </span>
@@ -100,7 +100,7 @@ export function DateRangeFields({
           min={from || undefined}
           onChange={(event) => onToChange(event.target.value)}
           invalid={invalid}
-          wrapperClassName="w-[140px]"
+          wrapperClassName="w-[min(140px,40vw)]"
           className="h-[34px]"
         />
       </span>

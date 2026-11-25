@@ -1,3 +1,4 @@
+export type { AssignableParams } from "./api/queries";
 export type {
   AssignableProblem,
   AssignedProblem,
@@ -16,3 +17,4 @@ export {
   useRemoveAssignment,
   useTopAssignedProblems,
 } from "./api/queries";
+export { assignInBatches, copyPlan } from "./model/copy-plan";

@@ -84,6 +84,7 @@ class QueueMonitorFlowTest {
     mvc = MockMvcBuilders.webAppContextSetup(context).apply(springSecurity()).build();
     // This class owns the private container and creates no submission-dependent rows.
     jdbc.update("DELETE FROM judge.submissions");
+    jdbc.update("DELETE FROM judge.worker_status");
     jdbc.update(
         "UPDATE judge.cluster_settings SET queue_paused=false,autoscale_enabled=true,autoscale_job_threshold=20,jobs_per_page=20,error_retention_hours=24,latency_cap_seconds=10");
     setRead(true);
@@ -197,7 +198,13 @@ class QueueMonitorFlowTest {
             "autoscaleJobThreshold",
             "avgWaitMillis",
             "latencyCapSeconds",
-            "workerAutoscaleMax");
+            "workerAutoscaleMax",
+            "finishedLastMinute",
+            "estimatedClearSeconds",
+            "consumers");
+    assertThat(snapshot.path("finishedLastMinute").asLong()).isZero();
+    assertThat(snapshot.path("estimatedClearSeconds").isNull()).isTrue();
+    assertThat(snapshot.path("consumers").isNull()).isTrue();
     assertThat(snapshot.path("status").asText()).isEqualTo("NORMAL");
     assertThat(snapshot.path("pendingCount").asLong()).isZero();
     assertThat(snapshot.path("avgWaitMillis").isNull()).isTrue();
@@ -207,6 +214,27 @@ class QueueMonitorFlowTest {
     assertThat(jobs.path("page").asInt()).isEqualTo(1);
     assertThat(jobs.path("pageSize").asInt()).isEqualTo(20);
     assertThat(jobs.path("counts").path("all").asLong()).isZero();
+  }
+
+  @Test
+  void snapshotShowsTheReportedConsumersAndTheLastScalingEventUntilTheReportGoesStale()
+      throws Exception {
+    jdbc.update(
+        "INSERT INTO judge.worker_status(id,consumers_target,consumers_active,reported_at,"
+            + "last_scale_at,last_scale_from,last_scale_to,last_scale_reason,last_scale_pending) "
+            + "VALUES (1,5,4,now(),now()-interval '6 seconds',4,5,'BACKLOG',22)");
+    var consumers = read("/snapshot").path("consumers");
+    assertThat(consumers.path("target").asInt()).isEqualTo(5);
+    assertThat(consumers.path("active").asInt()).isEqualTo(4);
+    assertThat(consumers.path("reportedAt").asText()).isNotBlank();
+    var last = consumers.path("lastScaling");
+    assertThat(last.path("from").asInt()).isEqualTo(4);
+    assertThat(last.path("to").asInt()).isEqualTo(5);
+    assertThat(last.path("reason").asText()).isEqualTo("BACKLOG");
+    assertThat(last.path("pendingCount").asLong()).isEqualTo(22);
+    assertThat(last.path("at").asText()).isNotBlank();
+    jdbc.update("UPDATE judge.worker_status SET reported_at = now() - interval '2 minutes'");
+    assertThat(read("/snapshot").path("consumers").isNull()).isTrue();
   }
 
   @Test

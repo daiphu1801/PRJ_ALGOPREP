@@ -153,6 +153,7 @@ const SESSION_ROWS: [string, string, number, number, number, number][] = [
 
 export function fakeGetInterviewSummary(
   range: ProgressRange = "all",
+  limit = RECENT_SESSION_LIMIT,
 ): Promise<InterviewSummary> {
   const anchor = Date.parse(INTERVIEW_ANCHOR);
   const sessions: RecentInterviewSession[] = SESSION_ROWS.filter(
@@ -188,7 +189,7 @@ export function fakeGetInterviewSummary(
         ? round1(mean(scored.map((s) => s.score!)))
         : null,
       weakestCriterionCode: weakest,
-      recentSessions: sessions.slice(0, RECENT_SESSION_LIMIT),
+      recentSessions: sessions.slice(0, limit),
     },
     500,
   );

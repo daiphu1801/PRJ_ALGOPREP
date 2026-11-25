@@ -960,7 +960,7 @@ function Workspace({
     // below `lg` it is an ordinary stacked page.
     <div
       data-fullscreen-view
-      className="flex min-h-[80dvh] flex-col lg:min-h-0 lg:flex-1"
+      className="flex min-h-[calc(80*var(--dvh1))] flex-col lg:min-h-0 lg:flex-1"
     >
       <div className="mb-3 flex shrink-0 flex-wrap items-center gap-x-3 gap-y-2">
         <Link
@@ -1018,7 +1018,7 @@ function Workspace({
             min={0.25}
             max={0.85}
             storageKey="algoprep-workspace-split-y"
-            className="min-h-[70dvh] flex-1 lg:min-h-0"
+            className="h-[calc(70*var(--dvh1))] shrink-0 lg:h-auto lg:min-h-0 lg:flex-1 lg:shrink"
             first={editorPane}
             second={consolePane}
           />

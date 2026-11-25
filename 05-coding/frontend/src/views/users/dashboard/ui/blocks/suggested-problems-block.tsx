@@ -1,28 +1,30 @@
 // PROTOTYPE — no DD yet. See 06-plan/PROTOTYPE_DEBT.md
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import {
   problemLevelLabel,
   problemLevelTone,
   useProblemLevels,
   useSuggestedProblems,
-  useTopicProgress as useCatalogTopics,
   type CatalogRow,
 } from "@/entities/problem";
 import { useT } from "@/shared/i18n";
 import {
   Badge,
   DataTable,
-  SegmentedTabs,
+  SeeAllLink,
   type DataTableColumn,
 } from "@/shared/ui";
 
+/** Only what is still to do, and few enough to read at a glance (DEC-2026-1123-student-dashboard-trim). */
+const SHOWN = 5;
+
 /**
- * 09-layoutBase/Dashboard AlgoPrep.dc.html:217-266 — "Bài toán gợi ý": difficulty tabs, topic
- * chips, and a 4-column table showing status dot, id, title, `function` tag, topic, difficulty,
- * AC rate.
+ * 09-layoutBase/Dashboard AlgoPrep.dc.html:217-266 — "Bài toán gợi ý": a 4-column table showing status dot,
+ * id, title, `function` tag, topic, difficulty, AC rate. The prototype's difficulty tabs and topic chips were
+ * dropped on 2026-11-23 (DEC-2026-1123-student-dashboard-trim): filtering belongs to the problem list, which
+ * "Xem tất cả" opens, and solved problems are no longer suggested.
  *
  * The server ranks and filters (F2 #12, 03-dd/api/F2_problem-bank.md section 13, USR0601 BR-SC-07):
  * unsolved first, then the topics where the learner scores lowest, at most seven rows. A filter change
@@ -31,11 +33,11 @@ import {
 export function SuggestedProblemsBlock() {
   const t = useT("dashboard");
   const levels = useProblemLevels();
-  const [difficulty, setDifficulty] = useState<string>("all");
-  const [topicId, setTopicId] = useState<string>("all");
-  const topics = useCatalogTopics().data?.items ?? [];
-  const suggestions = useSuggestedProblems(difficulty, topicId);
-  const rows = suggestions.data ?? [];
+  const suggestions = useSuggestedProblems("all", "all");
+  // The server puts unsolved first; a solved one is not a suggestion, so it is left out here.
+  const rows = (suggestions.data ?? [])
+    .filter((problem) => problem.solveState !== "solved")
+    .slice(0, SHOWN);
 
   const solveDot = (problem: CatalogRow) => (
     <span
@@ -116,45 +118,7 @@ export function SuggestedProblemsBlock() {
     <section aria-label={t("suggested.title")} className="glass-card p-3">
       <div className="mb-3 flex items-baseline justify-between gap-3">
         <h2 className="text-sm font-semibold">{t("suggested.title")}</h2>
-        <span className="font-mono text-xs text-[var(--color-text-subtle)]">
-          {t("suggested.count", { count: rows.length })}
-        </span>
-      </div>
-
-      <div className="mb-3 flex flex-wrap items-center gap-2.5">
-        <SegmentedTabs
-          label={t("suggested.difficultyLabel")}
-          value={difficulty}
-          onValueChange={setDifficulty}
-          options={[
-            { value: "all", label: t("filterAll") },
-            ...levels.map((level) => ({
-              value: level.key,
-              label: level.label,
-            })),
-          ]}
-        />
-        <div
-          className="flex flex-wrap gap-1.5"
-          role="group"
-          aria-label={t("suggested.topicLabel")}
-        >
-          {[{ id: "all", name: t("filterAll") }, ...topics].map((topic) => (
-            <button
-              key={topic.id}
-              type="button"
-              aria-pressed={topicId === topic.id}
-              onClick={() => setTopicId(topic.id)}
-              className={`shrink-0 rounded-full border px-3 py-2 text-[12.5px] md:px-2.5 md:py-1 font-medium whitespace-nowrap ${
-                topicId === topic.id
-                  ? "border-[var(--color-primary)] text-[var(--color-primary)]"
-                  : "border-[var(--color-border)] text-[var(--color-text-muted)]"
-              }`}
-            >
-              {topic.name}
-            </button>
-          ))}
-        </div>
+        <SeeAllLink href="/problems">{t("seeAll")}</SeeAllLink>
       </div>
 
       {/* A phone cannot hold four columns: the table scrolled sideways and cut the topic off with no sign
@@ -166,14 +130,14 @@ export function SuggestedProblemsBlock() {
           columns={columns}
           rows={rows}
           rowKey={(problem) => problem.id}
-          emptyMessage={t("suggested.empty")}
+          emptyMessage={t("suggested.allSolved")}
           minWidth={520}
         />
       </div>
       <ul className="flex flex-col gap-2 md:hidden">
         {rows.length === 0 ? (
           <li className="py-6 text-center text-[13px] text-[var(--color-text-muted)]">
-            {t("suggested.empty")}
+            {t("suggested.allSolved")}
           </li>
         ) : (
           rows.map((problem) => (

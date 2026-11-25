@@ -187,7 +187,7 @@ function ProblemOverview({
       </header>
 
       <div className="grid grid-cols-1 gap-6 lg:[grid-template-columns:minmax(0,1fr)_300px]">
-        <Card className="min-w-0 px-7 py-6 lg:min-h-[60dvh]">
+        <Card className="min-w-0 px-7 py-6 lg:min-h-[calc(60*var(--dvh1))]">
           {/* Constraints and the follow-up question are sections of this Markdown, not fields. */}
           <MarkdownPreview size="lg">{detail.statementMd}</MarkdownPreview>
 

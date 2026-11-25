@@ -10,7 +10,17 @@ public record PublishChange(
     UUID expectedActivePromptId,
     String systemInstruction,
     String modelId,
-    ResponseGuards guards) {
+    ResponseGuards guards,
+    Integer maxTokens) {
+
+  public PublishChange(
+      FeatureCode feature,
+      UUID expectedActivePromptId,
+      String systemInstruction,
+      String modelId,
+      ResponseGuards guards) {
+    this(feature, expectedActivePromptId, systemInstruction, modelId, guards, null);
+  }
 
   @Override
   public String toString() {

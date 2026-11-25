@@ -153,6 +153,31 @@ describe("GroupedSidebar via AdminSidebar", () => {
       screen.getByText(viMessages.adminNav.collapseSidebar),
     ).toBeInTheDocument();
   });
+
+  it.each([true, false])(
+    "opens a flyout from the icon rail (narrow: %s)",
+    (narrow) => {
+      stubMatchMedia(narrow);
+      window.localStorage.setItem(STORAGE_KEY, "1");
+      render(withTestProviders(<AdminSidebar />));
+      const group = screen.getByRole("button", {
+        name: viMessages.adminNav.groupContent,
+      });
+      fireEvent.click(group);
+      expect(group).toHaveAttribute("aria-expanded", "true");
+      const link = screen.getByRole("link", {
+        name: viMessages.adminNav.problems,
+      });
+      expect(link).toBeVisible();
+      expect(link).toHaveFocus();
+      expect(screen.getByRole("navigation")).toHaveClass("w-[72px]");
+
+      fireEvent.keyDown(link, { key: "Escape" });
+      expect(group).toHaveAttribute("aria-expanded", "false");
+      expect(group).toHaveFocus();
+      expect(window.localStorage.getItem(STORAGE_KEY)).toBe("1");
+    },
+  );
 });
 
 describe("GroupedSidebar via InstructorSidebar", () => {

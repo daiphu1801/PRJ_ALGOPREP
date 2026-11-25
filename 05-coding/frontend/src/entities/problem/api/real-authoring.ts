@@ -68,6 +68,7 @@ type ExampleDto = {
 
 type DetailDto = {
   id: string;
+  code?: string;
   title: string;
   statementMd: string;
   constraintsMd: string;
@@ -441,6 +442,7 @@ async function readRecord(
   const dto = await api.get<DetailDto>(`${BASE}/${problemId}`);
   return {
     draft: detailToDraft(dto, levels),
+    code: dto.code,
     savedAt: dto.updatedAt,
     aiGeneration: dto.aiGeneration,
     stats: null,

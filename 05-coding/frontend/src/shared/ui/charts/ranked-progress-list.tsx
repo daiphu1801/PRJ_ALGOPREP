@@ -48,12 +48,12 @@ export function RankedProgressList({
       <ul className="space-y-2">
         {items.map((item, index) => (
           <li key={item.label} className="text-xs">
-            <div className="mb-1 flex items-center justify-between text-[var(--color-text)]">
-              <span>
+            <div className="mb-1 flex items-center justify-between gap-2 text-[var(--color-text)]">
+              <span className="min-w-0">
                 {numbered ? `${index + 1}. ` : null}
                 {item.label}
               </span>
-              <span className="font-mono text-[var(--color-text-muted)]">
+              <span className="shrink-0 font-mono text-[var(--color-text-muted)]">
                 {item.valueLabel ?? item.value}
               </span>
             </div>

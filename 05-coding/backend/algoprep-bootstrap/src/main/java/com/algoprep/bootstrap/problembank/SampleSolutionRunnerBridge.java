@@ -1,5 +1,6 @@
 package com.algoprep.bootstrap.problembank;
 
+import com.algoprep.common.exception.DomainRuleViolationException;
 import com.algoprep.judge.application.dto.ExecutionModels.EvaluationRequest;
 import com.algoprep.judge.application.dto.ExecutionModels.EvaluationResult;
 import com.algoprep.judge.application.dto.ExecutionModels.Limits;
@@ -82,7 +83,13 @@ final class SampleSolutionRunnerBridge implements SampleSolutionRunnerPort {
         evaluation.evaluate(
             new EvaluationRequest(prepared.program(), compile, prepared.matching(), cases, false));
     if (result.verdict() == Verdict.SYSTEM_ERROR) {
-      throw new IllegalStateException("Sandbox unavailable");
+      // SPEC_UNAVAILABLE: the wrapper could not read a testcase input as the declared parameters
+      // (exit 90). That is the author's data, not an outage, so it gets its own code (PRB-060).
+      if ("SPEC_UNAVAILABLE".equals(result.failureReason())) {
+        throw new DomainRuleViolationException(
+            "PRB-060", "Testcase input does not match the declared function parameters");
+      }
+      throw new IllegalStateException("Sandbox unavailable: " + result.failureReason());
     }
     return map(request, result);
   }

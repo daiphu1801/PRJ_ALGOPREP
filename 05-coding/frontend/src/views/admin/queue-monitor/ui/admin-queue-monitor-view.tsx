@@ -1,21 +1,3 @@
-// PROTOTYPE — no DD yet. See 06-plan/PROTOTYPE_DEBT.md section 9.
-//
-// Reworked 2026-10-10 from the 09-layoutBase/Admin - Hàng đợi chấm.dc.html layout (sticky header,
-// four worker cards, two toggles, two priority bars, six-column table, event feed), which was too dense
-// for the end user. Agreed redesign, in reading order:
-//   1. a one-line status strip (state + "Cập nhật lúc" + stale warning) instead of KPI cards;
-//   2. the worker cluster as one compact list, next to ONE "Điều khiển" card (latency + two toggles);
-//   3. the job table behind count tabs, default "Đang chờ", four columns, paginated;
-//   4. infrastructure events moved to their own screen (ADM0404), reached from a link row.
-//
-// Dropped on purpose: job priority and the "Job" id column (BD ADM0401 Q4/Q5 — no source for the
-// former, duplicate of the submission id for the latter), and the second latency queue.
-//
-// Cluster controls are real controls (F4-10): pausing consumption and turning autoscale off ask for
-// confirmation first, because both change how every learner's submission is handled.
-//
-// One render tree for mock and real data (2026-11-14): the hooks in ../api return the same shape in
-// both modes. The worker card shows only when the source has worker data (the real snapshot has none).
 "use client";
 
 import Link from "next/link";
@@ -24,18 +6,21 @@ import { useQueryClient } from "@tanstack/react-query";
 import {
   QUEUE_KEY,
   useQueueControl,
+  useQueueInfra,
   useQueueJobs,
   useQueueLive,
+  useQueueSettings,
   useQueueSummary,
   useSaveQueueSettings,
   type ClusterControls,
   type JobStatus,
   type QueueJob,
-  type QueueSummary,
   type QueueTab,
   type WorkerStatus,
 } from "../api";
+import { GradingCard } from "./grading-card";
 import { useApiErrorMessage, useT } from "@/shared/i18n";
+import { useMediaQuery } from "@/shared/lib/use-media-query";
 import { toast } from "@/shared/lib/toast-store";
 import {
   Badge,
@@ -43,8 +28,8 @@ import {
   Card,
   ConfirmDialog,
   DataTable,
+  PageContainer,
   PageHeader,
-  QueryBoundary,
   QueryError,
   Pagination,
   ParamsDialog,
@@ -82,30 +67,27 @@ function clock(epochMs: number): string {
 }
 
 export function AdminQueueMonitorView() {
-  const poll = useQueueLive();
-  const summary = useQueueSummary(poll);
-  return (
-    <QueryBoundary query={summary}>
-      {(data) => <QueueMonitorInner summary={data} poll={poll} />}
-    </QueryBoundary>
-  );
+  const { poll, fallback } = useQueueLive();
+  return <QueueMonitorInner poll={poll} fallback={fallback} />;
 }
 
 function QueueMonitorInner({
-  summary,
   poll,
+  fallback,
 }: {
-  summary: QueueSummary;
   poll: number | false;
+  fallback: boolean;
 }) {
   const t = useT("adminQueueMonitor");
   const errorMessage = useApiErrorMessage();
   const cache = useQueryClient();
+  const compact = useMediaQuery("(max-width: 720px)");
   const [editingParams, setEditingParams] = useState(false);
   const [confirming, setConfirming] = useState<ControlKey | null>(null);
   const [tab, setTab] = useState<QueueTab>("waiting");
   const [pageNumber, setPageNumber] = useState(1);
   const [direction, setDirection] = useState<"asc" | "desc">("desc");
+  const [refreshing, setRefreshing] = useState(false);
   // Ticks so the "stale" state appears without any user action.
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => {
@@ -115,32 +97,50 @@ function QueueMonitorInner({
 
   const jobsQuery = useQueueJobs(tab, pageNumber, direction, poll);
   const jobs = jobsQuery.data;
+  const summaryQuery = useQueueSummary(poll);
+  const settingsQuery = useQueueSettings(poll);
+  const infraQuery = useQueueInfra(poll);
+  const summary = summaryQuery.data;
+  const infra = infraQuery.data ?? summary?.infra;
+  const settings = settingsQuery.data ?? summary?.settings;
   const control = useQueueControl();
   const saveSettings = useSaveQueueSettings();
-  const { settings } = summary;
 
-  const stale = now - summary.generatedAt > STALE_AFTER_MS;
-  const tone: StatusStripTone = summary.state === "ok" ? "success" : "warn";
+  const stale =
+    summary !== undefined && now - summary.generatedAt > STALE_AFTER_MS;
+  const tone: StatusStripTone = summary?.state === "ok" ? "success" : "warn";
   const stateText =
-    summary.state === "backlog"
+    summary?.state === "backlog"
       ? t("state.backlog", { count: summary.pendingCount })
-      : t(`state.${summary.state}`);
+      : summary && t(`state.${summary.state}`);
   const latencyPercent =
-    summary.latency.seconds == null
-      ? 0
+    summary?.latency.seconds == null || !settings
+      ? null
       : Math.min(
           100,
           (summary.latency.seconds / settings.latencyCapSeconds) * 100,
         );
 
-  function refresh() {
-    void cache.invalidateQueries({ queryKey: QUEUE_KEY }).then(() => {
+  async function refresh() {
+    setRefreshing(true);
+    try {
+      const filters = { queryKey: QUEUE_KEY, type: "active" as const };
+      await cache.invalidateQueries(filters);
+      const queries = cache.getQueryCache().findAll(filters);
+      const failed = queries.filter(
+        (query) => query.state.status === "error",
+      ).length;
       setNow(Date.now());
-      toast.success(t("refreshDone"));
-    });
+      if (failed === 0) toast.success(t("refreshDone"));
+      else if (failed === queries.length) toast.error(t("refreshFailed"));
+      else toast.warning(t("refreshPartial"));
+    } finally {
+      setRefreshing(false);
+    }
   }
 
   function apply(key: ControlKey, value: boolean) {
+    if (!summary || summaryQuery.isError) return;
     control.mutate(
       { key, value, expected: summary.controls[key] },
       {
@@ -166,7 +166,9 @@ function QueueMonitorInner({
       key: "submission",
       header: t("columnSubmission"),
       render: (job) => (
-        <span className="font-mono text-[12.5px]">{job.submissionId}</span>
+        <span className="font-mono text-[12.5px] wrap-anywhere">
+          {job.submissionId}
+        </span>
       ),
     },
     {
@@ -200,201 +202,203 @@ function QueueMonitorInner({
   ];
 
   const controlRows: ControlKey[] = ["paused", "autoscale"];
-  const hasWorkers = summary.workers.length > 0;
+  const emptyJobs = t(`emptyJobsByTab.${tab}`);
 
   return (
-    <div>
+    <PageContainer variant="content" className="@container">
       <PageHeader
         title={t("title")}
-        description={t("subtitle")}
+        className="static border-0 bg-transparent shadow-none"
         actions={
           <>
             <Button
               variant="ghost"
               size="sm"
               className="border border-[var(--color-border)]"
+              disabled={!settings || settingsQuery.isError}
               onClick={() => setEditingParams(true)}
             >
               {t("params.open")}
             </Button>
-            <Button variant="cta" size="sm" onClick={refresh}>
-              {t("refresh")}
+            <Button
+              variant="ghost"
+              size="sm"
+              disabled={refreshing}
+              onClick={refresh}
+            >
+              {t(refreshing ? "refreshing" : "refresh")}
             </Button>
           </>
         }
       />
 
       <StatusStrip
-        tone={stale ? "negative" : tone}
-        title={stale ? t("state.stale") : stateText}
-        detail={stale ? t("state.staleHint") : undefined}
+        className="rounded-lg"
+        tone={
+          summaryQuery.isError || stale ? "negative" : summary ? tone : "warn"
+        }
+        title={
+          summaryQuery.isError
+            ? t("state.unavailable")
+            : stale
+              ? t("state.stale")
+              : (stateText ?? t("loading"))
+        }
+        detail={
+          stale
+            ? t("state.staleHint")
+            : fallback
+              ? t("state.fallback")
+              : undefined
+        }
         trailing={
-          <span suppressHydrationWarning>
-            {t("updatedAt", { time: clock(summary.generatedAt) })}
-          </span>
+          summary && (
+            <span suppressHydrationWarning>
+              {t("updatedAt", { time: clock(summary.generatedAt) })}
+            </span>
+          )
         }
       />
 
-      <div
-        className={`mb-4 grid grid-cols-1 gap-4 ${hasWorkers ? "lg:grid-cols-[minmax(0,1.4fr)_minmax(280px,1fr)]" : ""}`}
-      >
-        {hasWorkers ? (
-          <Card
-            title={t("workersTitle")}
-            description={t("workersSubtitle", {
-              count: summary.workerCount,
-              max: summary.maxWorkers,
-            })}
-            className="min-w-0"
+      {summary && (
+        <dl
+          aria-label={t("metricsLabel")}
+          className="grid grid-cols-2 gap-x-4 gap-y-3 border-b border-[var(--color-border)] px-4 pb-4 @min-[670px]:grid-cols-4"
+        >
+          {summary.grading && <GradingCard grading={summary.grading} />}
+          <div>
+            <dt className="text-xs text-[var(--color-text-muted)]">
+              {t("latencyTitle")}
+            </dt>
+            <dd className="mt-1 text-sm font-semibold tabular-nums">
+              {summary.latency.seconds == null
+                ? t("latencyUnavailable")
+                : summary.latency.label}
+              {latencyPercent !== null && (
+                <ProgressBar
+                  value={latencyPercent}
+                  height={4}
+                  label={t("latencyTitle")}
+                  className="mt-1.5 max-w-44"
+                  fill={
+                    latencyPercent > 70
+                      ? "var(--color-admin-warn)"
+                      : "var(--color-admin-teal)"
+                  }
+                />
+              )}
+            </dd>
+          </div>
+        </dl>
+      )}
+
+      <section aria-labelledby="queue-jobs-title" className="min-w-0 px-4 py-4">
+        <h2 id="queue-jobs-title" className="mb-3 text-base font-semibold">
+          {t("jobsTitle")}
+        </h2>
+        <SegmentedTabs
+          label={t("jobTabsLabel")}
+          value={tab}
+          onValueChange={(next) => {
+            setTab(next);
+            setPageNumber(1);
+          }}
+          className="mb-3 w-fit flex-wrap"
+          options={[
+            {
+              value: "waiting",
+              label:
+                jobs && !jobsQuery.isError
+                  ? t("tabWaiting", { count: jobs.counts.waiting })
+                  : t("tabLabels.waiting"),
+            },
+            {
+              value: "failed",
+              label:
+                jobs && !jobsQuery.isError
+                  ? t("tabFailed", { count: jobs.counts.failed })
+                  : t("tabLabels.failed"),
+            },
+            {
+              value: "all",
+              label:
+                jobs && !jobsQuery.isError
+                  ? t("tabAll", { count: jobs.counts.all })
+                  : t("tabLabels.all"),
+            },
+          ]}
+        />
+        {jobsQuery.isError ? (
+          <QueryError query={jobsQuery} />
+        ) : !jobsQuery.isLoading && !jobs?.items.length ? (
+          <p
+            role="status"
+            className="py-2 text-sm text-[var(--color-text-muted)]"
           >
-            <ul aria-label={t("workersTitle")} className="flex flex-col gap-1">
-              {summary.workers.map((worker) => (
+            {emptyJobs}
+          </p>
+        ) : compact && jobs?.items.length ? (
+          <>
+            {jobs.sortable && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="mb-2 border border-[var(--color-border)]"
+                onClick={() =>
+                  setDirection(direction === "desc" ? "asc" : "desc")
+                }
+              >
+                {t(direction === "desc" ? "sortWaitDesc" : "sortWaitAsc")}
+              </Button>
+            )}
+            <ul className="space-y-2" aria-label={t("jobsTitle")}>
+              {jobs.items.map((job) => (
                 <li
-                  key={worker.id}
-                  className="grid grid-cols-[minmax(0,1fr)_90px_minmax(80px,1fr)_56px] items-center gap-3 rounded-xl px-2.5 py-2 hover:bg-[var(--color-row-hover)]"
+                  key={job.id}
+                  className="rounded-lg border border-[var(--color-border)] p-2.5"
                 >
-                  <span className="min-w-0">
-                    <span className="block font-mono text-[12.5px] font-semibold">
-                      {worker.id}
-                    </span>
-                    <span className="block text-[11.5px] text-[var(--color-text-subtle)]">
-                      {worker.meta}
-                    </span>
-                  </span>
-                  <Badge
-                    variant={WORKER_VARIANT[worker.status]}
-                    className="justify-center"
-                  >
-                    {t(`workerStatus.${worker.status}`)}
-                  </Badge>
-                  <span className="flex items-center gap-2">
-                    <ProgressBar
-                      value={worker.load}
-                      height={6}
-                      label={t("workerLoadLabel", { id: worker.id })}
-                      className="flex-1"
-                      fill={
-                        worker.load > 85
-                          ? "linear-gradient(90deg, var(--color-admin-warn), var(--color-admin-negative))"
-                          : "linear-gradient(90deg, var(--color-admin-teal), var(--color-admin-cyan))"
-                      }
-                    />
-                    <span className="w-9 text-right font-mono text-xs text-[var(--color-text-muted)]">
-                      {worker.load}%
-                    </span>
-                  </span>
-                  <span className="text-right font-mono text-xs text-[var(--color-text-muted)]">
-                    {t("workerJobs", { count: worker.jobs })}
-                  </span>
+                  <dl className="grid grid-cols-2 gap-2">
+                    {columns.map((column) => (
+                      <div
+                        key={column.key}
+                        className={
+                          column.key === "submission"
+                            ? "col-span-2 min-w-0"
+                            : "min-w-0"
+                        }
+                      >
+                        <dt className="text-xs text-[var(--color-text-muted)]">
+                          {column.header}
+                        </dt>
+                        <dd className="mt-0.5 text-sm">{column.render(job)}</dd>
+                      </div>
+                    ))}
+                  </dl>
                 </li>
               ))}
             </ul>
-          </Card>
-        ) : null}
-
-        <Card
-          title={t("controlsTitle")}
-          action={
-            <Link href="/admin/system-log" className={LINK_CLASS}>
-              {t("historyLink")}
-            </Link>
-          }
-          className="min-w-0"
-        >
-          <div className="mb-3">
-            <div className="mb-1.5 flex items-baseline justify-between text-[13px]">
-              <span className="font-semibold">{t("latencyTitle")}</span>
-              <span className="font-mono text-xs text-[var(--color-text-muted)]">
-                {summary.latency.label}
-              </span>
-            </div>
-            <ProgressBar
-              value={latencyPercent}
-              height={6}
-              label={t("latencyTitle")}
-              fill={
-                latencyPercent > 70
-                  ? "var(--color-admin-warn)"
-                  : "var(--color-admin-teal)"
-              }
-            />
-          </div>
-          <div className="flex flex-col gap-2.5">
-            {controlRows.map((key) => (
-              <SettingRow
-                key={key}
-                label={t(`control.${key}.label`)}
-                description={t(`control.${key}.meta`, {
-                  threshold: settings.autoscaleThreshold,
-                })}
-              >
-                <Toggle
-                  checked={summary.controls[key]}
-                  disabled={control.isPending}
-                  onCheckedChange={(value) => requestChange(key, value)}
-                  label={t(`control.${key}.label`)}
-                />
-              </SettingRow>
-            ))}
-          </div>
-        </Card>
-      </div>
-
-      <Card
-        title={t("jobsTitle")}
-        description={t("jobsSubtitle")}
-        className="mb-4 min-w-0"
-        action={
-          <SegmentedTabs
-            label={t("jobTabsLabel")}
-            value={tab}
-            onValueChange={(next) => {
-              setTab(next);
-              setPageNumber(1);
-            }}
-            options={[
-              {
-                value: "waiting",
-                label: t("tabWaiting", { count: jobs?.counts.waiting ?? 0 }),
-              },
-              {
-                value: "failed",
-                label: t("tabFailed", { count: jobs?.counts.failed ?? 0 }),
-              },
-              {
-                value: "all",
-                label: t("tabAll", { count: jobs?.counts.all ?? 0 }),
-              },
-            ]}
+          </>
+        ) : (
+          <DataTable
+            caption={t("jobsTitle")}
+            columns={columns}
+            rows={jobs?.items ?? []}
+            rowKey={(job) => job.id}
+            status={jobsQuery.isLoading ? "loading" : "ready"}
+            emptyMessage={emptyJobs}
+            minWidth={520}
+            sort={
+              jobs?.sortable
+                ? {
+                    key: "wait",
+                    direction,
+                    onSortChange: (_key, next) => setDirection(next),
+                  }
+                : undefined
+            }
           />
-        }
-      >
-        {jobsQuery.isError ? <QueryError query={jobsQuery} /> : null}
-        <DataTable
-          caption={t("jobsTitle")}
-          columns={columns}
-          rows={jobs?.items ?? []}
-          rowKey={(job) => job.id}
-          status={
-            jobsQuery.isLoading
-              ? "loading"
-              : jobsQuery.isError
-                ? "error"
-                : "ready"
-          }
-          emptyMessage={t("emptyJobs")}
-          minWidth={520}
-          sort={
-            jobs?.sortable
-              ? {
-                  key: "wait",
-                  direction,
-                  onSortChange: (_key, next) => setDirection(next),
-                }
-              : undefined
-          }
-        />
-        {jobs && jobs.total > jobs.pageSize ? (
+        )}
+        {!jobsQuery.isError && jobs && jobs.total > jobs.pageSize ? (
           <Pagination
             page={jobs.page}
             pageSize={jobs.pageSize}
@@ -409,29 +413,139 @@ function QueueMonitorInner({
             nextLabel={t("pageNext")}
           />
         ) : null}
-      </Card>
+      </section>
 
-      <Card className="min-w-0 py-3">
-        <p className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[13px]">
-          <span className="font-semibold">{t("infraTitle")}</span>
-          <span className="text-[var(--color-text-muted)]">
-            {t("infraSummary", {
-              warn: summary.infra.warn,
-              error: summary.infra.error,
-            })}
-          </span>
-          <Link
-            href={
-              summary.infra.error > 0
-                ? "/admin/infra-events?level=error"
-                : "/admin/infra-events"
-            }
-            className={`${LINK_CLASS} ml-auto`}
-          >
-            {t("infraLink")}
+      <section
+        aria-label={t("infraTitle")}
+        className="flex flex-wrap items-baseline gap-x-3 gap-y-1 border-y border-[var(--color-border)] px-4 py-3 text-sm"
+      >
+        <span className="font-semibold">{t("infraTitle")}</span>
+        <span className="text-[var(--color-text-muted)]">
+          {infraQuery.isError
+            ? t("infraUnavailable")
+            : infra
+              ? t("infraSummary", { warn: infra.warn, error: infra.error })
+              : t("loading")}
+        </span>
+        <Link
+          href={
+            !infraQuery.isError && infra && infra.error > 0
+              ? "/admin/infra-events?level=error"
+              : "/admin/infra-events"
+          }
+          className={`${LINK_CLASS} ms-auto`}
+        >
+          {t(
+            !infraQuery.isError && infra && infra.error > 0
+              ? "infraErrorLink"
+              : "infraLink",
+          )}
+        </Link>
+      </section>
+
+      {summary && summary.workers.length > 0 ? (
+        <Card
+          title={t("workersTitle")}
+          description={t("workersSubtitle", {
+            count: summary.workerCount,
+            max: summary.maxWorkers,
+          })}
+          className="min-w-0"
+        >
+          <ul aria-label={t("workersTitle")} className="flex flex-col gap-1">
+            {summary.workers.map((worker) => (
+              <li
+                key={worker.id}
+                className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-2 rounded-xl px-2.5 py-2 hover:bg-[var(--color-row-hover)] @min-[850px]:grid-cols-[minmax(0,1fr)_90px_minmax(80px,1fr)_56px]"
+              >
+                <span className="min-w-0">
+                  <span className="block font-mono text-[12.5px] font-semibold">
+                    {worker.id}
+                  </span>
+                  <span className="block text-[11.5px] text-[var(--color-text-subtle)]">
+                    {worker.meta}
+                  </span>
+                </span>
+                <Badge
+                  variant={WORKER_VARIANT[worker.status]}
+                  className="justify-center"
+                >
+                  {t(`workerStatus.${worker.status}`)}
+                </Badge>
+                <span className="flex items-center gap-2">
+                  <ProgressBar
+                    value={worker.load}
+                    height={6}
+                    label={t("workerLoadLabel", { id: worker.id })}
+                    className="flex-1"
+                    fill={
+                      worker.load > 85
+                        ? "linear-gradient(90deg, var(--color-admin-warn), var(--color-admin-negative))"
+                        : "linear-gradient(90deg, var(--color-admin-teal), var(--color-admin-cyan))"
+                    }
+                  />
+                  <span className="w-9 text-right font-mono text-xs text-[var(--color-text-muted)]">
+                    {worker.load}%
+                  </span>
+                </span>
+                <span className="text-right font-mono text-xs text-[var(--color-text-muted)]">
+                  {t("workerJobs", { count: worker.jobs })}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </Card>
+      ) : null}
+
+      <details className="border-b border-[var(--color-border)]">
+        <summary className="cursor-pointer rounded-sm px-4 py-3 text-sm font-semibold">
+          {t("controlsTitle")}
+        </summary>
+        <div className="space-y-3 px-4 pb-4">
+          {summary?.grading?.consumers && (
+            <dl className="grid gap-3 @min-[620px]:grid-cols-[minmax(0,1fr)_minmax(0,3fr)]">
+              <GradingCard grading={summary.grading} details />
+            </dl>
+          )}
+          {summary && !summaryQuery.isError ? (
+            <div className="grid gap-2.5 @min-[675px]:grid-cols-2">
+              {controlRows.map((key) => (
+                <SettingRow
+                  key={key}
+                  label={t(`control.${key}.label`)}
+                  description={t(
+                    key === "autoscale" && !settings
+                      ? "control.autoscale.metaUnknown"
+                      : `control.${key}.meta`,
+                    {
+                      threshold: settings?.autoscaleThreshold ?? 0,
+                    },
+                  )}
+                >
+                  <Toggle
+                    checked={summary.controls[key]}
+                    disabled={control.isPending}
+                    onCheckedChange={(value) => requestChange(key, value)}
+                    label={t(`control.${key}.label`)}
+                  />
+                </SettingRow>
+              ))}
+            </div>
+          ) : (
+            <p className="text-sm text-[var(--color-text-muted)]">
+              {t(summaryQuery.isError ? "state.unavailable" : "loading")}
+            </p>
+          )}
+          {settingsQuery.isError && (
+            <p className="text-sm text-[var(--color-text-muted)]">
+              {t("settingsUnavailable")}
+            </p>
+          )}
+          <Link href="/admin/system-log" className={LINK_CLASS}>
+            {t("historyLink")}
           </Link>
-        </p>
-      </Card>
+        </div>
+      </details>
 
       <ConfirmDialog
         open={confirming !== null}
@@ -448,67 +562,71 @@ function QueueMonitorInner({
         {confirming ? t(`control.${confirming}.confirmBody`) : null}
       </ConfirmDialog>
 
-      <ParamsDialog
-        open={editingParams}
-        onClose={() => setEditingParams(false)}
-        title={t("params.title")}
-        values={{
-          autoscaleThreshold: String(settings.autoscaleThreshold),
-          jobsPerPage: String(settings.jobsPerPage),
-          errorRetentionHours: String(settings.errorRetentionHours),
-          latencyCapSeconds: String(settings.latencyCapSeconds),
-        }}
-        fields={[
-          {
-            type: "number",
-            key: "autoscaleThreshold",
-            label: t("params.autoscaleThreshold"),
-            hint: t("params.autoscaleThresholdHint"),
-            unit: t("params.unitJobs"),
-            min: 1,
-          },
-          {
-            type: "number",
-            key: "jobsPerPage",
-            label: t("params.jobsPerPage"),
-            unit: t("params.unitRows"),
-            min: 1,
-          },
-          {
-            type: "number",
-            key: "errorRetentionHours",
-            label: t("params.errorRetention"),
-            unit: t("params.unitHours"),
-            min: 1,
-          },
-          {
-            type: "number",
-            key: "latencyCapSeconds",
-            label: t("params.latencyCap"),
-            unit: t("params.unitSeconds"),
-            min: 1,
-          },
-        ]}
-        onSave={async (values) => {
-          try {
-            await saveSettings.mutateAsync({
-              autoscaleThreshold: Number(values.autoscaleThreshold),
-              jobsPerPage: Number(values.jobsPerPage),
-              errorRetentionHours: Number(values.errorRetentionHours),
-              latencyCapSeconds: Number(values.latencyCapSeconds),
-            });
-          } catch (error) {
-            toast.error(errorMessage(error));
-            throw error;
-          }
-        }}
-        labels={{
-          save: t("params.save"),
-          cancel: t("params.cancel"),
-          saved: t("params.saved"),
-          errorMin: (min) => t("params.errorMin", { min }),
-        }}
-      />
-    </div>
+      {settings && (
+        <ParamsDialog
+          open={editingParams}
+          onClose={() => setEditingParams(false)}
+          title={t("params.title")}
+          values={{
+            autoscaleThreshold: String(settings.autoscaleThreshold),
+            jobsPerPage: String(settings.jobsPerPage),
+            errorRetentionHours: String(settings.errorRetentionHours),
+            latencyCapSeconds: String(settings.latencyCapSeconds),
+          }}
+          fields={[
+            {
+              type: "number",
+              key: "autoscaleThreshold",
+              label: t("params.autoscaleThreshold"),
+              hint: t("params.autoscaleThresholdHint"),
+              unit: t("params.unitJobs"),
+              min: 1,
+            },
+            {
+              type: "number",
+              key: "jobsPerPage",
+              label: t("params.jobsPerPage"),
+              unit: t("params.unitRows"),
+              min: 1,
+            },
+            {
+              type: "number",
+              key: "errorRetentionHours",
+              label: t("params.errorRetention"),
+              hint: t("params.errorRetentionHint"),
+              unit: t("params.unitHours"),
+              min: 1,
+            },
+            {
+              type: "number",
+              key: "latencyCapSeconds",
+              label: t("params.latencyCap"),
+              hint: t("params.latencyCapHint"),
+              unit: t("params.unitSeconds"),
+              min: 1,
+            },
+          ]}
+          onSave={async (values) => {
+            try {
+              await saveSettings.mutateAsync({
+                autoscaleThreshold: Number(values.autoscaleThreshold),
+                jobsPerPage: Number(values.jobsPerPage),
+                errorRetentionHours: Number(values.errorRetentionHours),
+                latencyCapSeconds: Number(values.latencyCapSeconds),
+              });
+            } catch (error) {
+              toast.error(errorMessage(error));
+              throw error;
+            }
+          }}
+          labels={{
+            save: t("params.save"),
+            cancel: t("params.cancel"),
+            saved: t("params.saved"),
+            errorMin: (min) => t("params.errorMin", { min }),
+          }}
+        />
+      )}
+    </PageContainer>
   );
 }

@@ -1,9 +1,11 @@
 package com.algoprep.judge.infrastructure.persistence;
 
+import com.algoprep.judge.domain.model.queue.QueueMonitoring.Consumers;
 import com.algoprep.judge.domain.model.queue.QueueMonitoring.Counts;
 import com.algoprep.judge.domain.model.queue.QueueMonitoring.Facts;
 import com.algoprep.judge.domain.model.queue.QueueMonitoring.Job;
 import com.algoprep.judge.domain.model.queue.QueueMonitoring.JobSettings;
+import com.algoprep.judge.domain.model.queue.QueueMonitoring.LastScaling;
 import com.algoprep.judge.domain.ports.out.QueueMonitorRepository;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
@@ -22,6 +24,12 @@ class JdbcQueueMonitorRepository implements QueueMonitorRepository {
        AND EXTRACT(epoch FROM (CAST(:asOf AS timestamptz)-finished_at))
            <= CAST(:retention AS bigint)*3600)
       """;
+
+  /**
+   * A worker report older than this is treated as absent: the worker stopped or lost the database.
+   */
+  static final int REPORT_STALE_SECONDS = 60;
+
   private final ObjectProvider<JdbcClient> jdbc;
 
   JdbcQueueMonitorRepository(ObjectProvider<JdbcClient> jdbc) {
@@ -40,9 +48,16 @@ class JdbcQueueMonitorRepository implements QueueMonitorRepository {
                 AND started_grading_at <= clock.at))::bigint AS avg_wait
           FROM judge.submissions CROSS JOIN clock)
         SELECT clock.at,c.queue_paused,c.autoscale_enabled,c.autoscale_job_threshold,
-          c.latency_cap_seconds,stats.pending,stats.avg_wait
-        FROM judge.cluster_settings c CROSS JOIN clock CROSS JOIN stats WHERE c.id=1
+          c.latency_cap_seconds,stats.pending,stats.avg_wait,
+          w.consumers_target,w.consumers_active,w.reported_at,
+          w.last_scale_at,w.last_scale_from,w.last_scale_to,w.last_scale_reason,w.last_scale_pending
+        FROM judge.cluster_settings c CROSS JOIN clock CROSS JOIN stats
+        LEFT JOIN judge.worker_status w ON w.id=1
+          AND w.reported_at >= clock.at-make_interval(secs => :stale)
+          AND w.reported_at <= clock.at
+        WHERE c.id=1
         """)
+        .param("stale", REPORT_STALE_SECONDS)
         .query(
             (rs, n) ->
                 new Facts(
@@ -52,7 +67,8 @@ class JdbcQueueMonitorRepository implements QueueMonitorRepository {
                     rs.getInt("autoscale_job_threshold"),
                     rs.getLong("pending"),
                     rs.getObject("avg_wait", Long.class),
-                    rs.getInt("latency_cap_seconds")))
+                    rs.getInt("latency_cap_seconds"),
+                    consumers(rs)))
         .single();
   }
 
@@ -124,5 +140,26 @@ class JdbcQueueMonitorRepository implements QueueMonitorRepository {
                     rs.getString("status"),
                     rs.getObject("waiting_ms", Long.class)))
         .list();
+  }
+
+  private static Consumers consumers(java.sql.ResultSet rs) throws java.sql.SQLException {
+    if (rs.getObject("consumers_target") == null) {
+      return null;
+    }
+    var scaledAt = rs.getObject("last_scale_at", OffsetDateTime.class);
+    var last =
+        scaledAt == null
+            ? null
+            : new LastScaling(
+                scaledAt.toInstant(),
+                rs.getInt("last_scale_from"),
+                rs.getInt("last_scale_to"),
+                rs.getString("last_scale_reason"),
+                rs.getLong("last_scale_pending"));
+    return new Consumers(
+        rs.getInt("consumers_target"),
+        rs.getInt("consumers_active"),
+        rs.getObject("reported_at", OffsetDateTime.class).toInstant(),
+        last);
   }
 }

@@ -116,7 +116,9 @@ describe("AdminAiConfigView load (#14, #15)", () => {
   it("shows the live prompt read from the server", async () => {
     await open();
     expect(screen.getByText("claude-sonnet")).toBeInTheDocument();
-    expect(screen.getByText("1.600 token")).toBeInTheDocument();
+    expect(
+      screen.getByRole("spinbutton", { name: m.metaMaxTokens }),
+    ).toHaveValue(1600);
     expect(apiMock.get).toHaveBeenCalledWith(BASE);
   });
 
@@ -132,13 +134,17 @@ describe("AdminAiConfigView load (#14, #15)", () => {
                 id: "draft-review",
                 status: "DRAFT",
                 systemInstruction: "stored draft",
+                maxTokens: 2000,
               },
             ],
           }
         : { items: [] },
     );
     await open();
-    expect(screen.getByText(/1 thay đổi chưa phát hành/)).toBeInTheDocument();
+    expect(screen.getByText(/2 thay đổi chưa phát hành/)).toBeInTheDocument();
+    expect(
+      screen.getByRole("spinbutton", { name: m.metaMaxTokens }),
+    ).toHaveValue(2000);
   });
 
   it.each(["AIR-301", "AIR-V11", "AIR-503"])(
@@ -161,6 +167,7 @@ describe("AdminAiConfigView save draft (#16)", () => {
     expect(apiMock.put).toHaveBeenCalledWith(`${BASE}/SOLUTION_REVIEW/draft`, {
       systemInstruction: "Chi thi moi",
       modelId: "claude-sonnet",
+      maxTokens: 1600,
       responseGuards: guards,
     });
     await waitFor(() => expect(listReads()).toBeGreaterThan(before));
@@ -216,6 +223,7 @@ describe("AdminAiConfigView publish (#17)", () => {
           expectedActivePromptId: "active-SOLUTION_REVIEW",
           systemInstruction: "live SOLUTION_REVIEW",
           modelId: "claude-sonnet",
+          maxTokens: 1600,
           responseGuards: { ...guards, citeLines: false },
         },
       ],
@@ -229,6 +237,43 @@ describe("AdminAiConfigView publish (#17)", () => {
     fireEvent.click(screen.getByRole("button", { name: m.publish }));
     expect(lastToast()).toBe(m.noChanges);
     expect(apiMock.post).not.toHaveBeenCalled();
+  });
+
+  it("saves and publishes a token-only change and rejects an invalid value", async () => {
+    await open();
+    const tokens = screen.getByRole("spinbutton", { name: m.metaMaxTokens });
+    fireEvent.change(tokens, { target: { value: "32769" } });
+    fireEvent.click(screen.getByRole("button", { name: m.publish }));
+    expect(lastToast()).toBe(m.maxTokensInvalid);
+    expect(apiMock.post).not.toHaveBeenCalled();
+
+    fireEvent.change(tokens, { target: { value: "4600" } });
+    fireEvent.click(screen.getByRole("button", { name: m.editDialog.save }));
+    await waitFor(() =>
+      expect(apiMock.put).toHaveBeenCalledWith(
+        `${BASE}/SOLUTION_REVIEW/draft`,
+        expect.objectContaining({ maxTokens: 4600 }),
+      ),
+    );
+    apiMock.post.mockResolvedValueOnce({
+      ...listDto,
+      items: listDto.items.map((item) =>
+        item.featureCode === "SOLUTION_REVIEW"
+          ? { ...item, maxTokens: 4600 }
+          : item,
+      ),
+    });
+    await publishNow();
+    await waitFor(() => expect(lastToast()).toBe(m.publishDone));
+    expect(apiMock.post).toHaveBeenCalledWith(`${BASE}/publish`, {
+      changes: [
+        expect.objectContaining({
+          featureCode: "SOLUTION_REVIEW",
+          maxTokens: 4600,
+        }),
+      ],
+    });
+    expect(tokens).toHaveValue(4600);
   });
 
   it.each([

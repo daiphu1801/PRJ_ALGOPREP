@@ -1,9 +1,5 @@
 // PROTOTYPE — no DD yet. See 06-plan/PROTOTYPE_DEBT.md section 9.
 //
-// Layout follows 09-layoutBase/Admin - Soạn đề bài.dc.html: sticky header (:147-156), then a
-// 1fr / 300px grid — four tabs on the left (:158-311) and a sticky property/checklist column on
-// the right (:313-378).
-//
 // About PROTOTYPE_DEBT 2.6: that entry says six things still need removing from the mockup (the
 // "Điểm" column, per-row weights, the "Chấm điểm từng phần" block, `totalWeight`, the weight*
 // variables, and the "Tổng trọng số bằng 100" publish check). They are ALREADY GONE — grep finds no
@@ -15,7 +11,7 @@
 // that label meant something else is raised in the report rather than guessed at.
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, useSyncExternalStore } from "react";
 import {
   ArrowLeft,
   ArrowUp,
@@ -69,7 +65,9 @@ import {
   EmptyState,
   ErrorState,
   IconAction,
+  MarkdownPreview,
   NoticeTile,
+  PageContainer,
   PageHeader,
   SegmentedTabs,
   SelectField,
@@ -81,12 +79,22 @@ import {
   UnsavedChangesDialog,
   type DataTableColumn,
 } from "@/shared/ui";
-import type { BulkPairRow } from "../model/bulk-pairs";
-import { BulkUploadDialog } from "./bulk-upload-dialog";
+import { BulkUploadDialog, type BulkUploadRow } from "./bulk-upload-dialog";
 import { ExampleDialog, TestcaseDialog } from "./edit-dialogs";
+import { useRouter } from "next/navigation";
+import { ProblemKindCard, type ProblemKind } from "./problem-kind-card";
 import { SpecEditor } from "./spec-editor";
 
+// The five tabs of the form (the reference solution lives in the "content" tab).
 type TabKey = "content" | "examples" | "testcases" | "spec" | "ai";
+
+const COMPACT_TESTCASE_QUERY = "(max-width: 900px)";
+
+function subscribeToTestcaseLayout(onChange: () => void) {
+  const query = window.matchMedia?.(COMPACT_TESTCASE_QUERY);
+  query?.addEventListener("change", onChange);
+  return () => query?.removeEventListener("change", onChange);
+}
 
 // BD SHR0202 NO4-6: required positive integers. NO7 (submissions per hour) is optional and rendered
 // separately because an empty box means "system default", not zero.
@@ -220,7 +228,50 @@ function ProblemAuthoringForm({
   const [createdId, setCreatedId] = useState<string>();
   const id = problemId ?? createdId;
   const generate = useGenerateTestcases();
+  const router = useRouter();
+  // Last full run of the reference solution, kept on screen (a toast is gone in seconds). It is tied to the
+  // exact code and language it ran, so an edit makes it disappear instead of describing old code.
+  const [runNote, setRunNote] = useState<{
+    tone: "success" | "warn" | "negative";
+    text: string;
+    solution: string;
+    language: string;
+  } | null>(null);
   const [tab, setTab] = useState<TabKey>("content");
+  // The kind is not stored: the server derives it from the signature (declared name or parameters = function).
+  const [kind, setKind] = useState<ProblemKind>(
+    initial.spec.signature.functionName.trim() !== "" ||
+      initial.spec.signature.parameters.length > 0
+      ? "function"
+      : "stdio",
+  );
+  const [bodyMode, setBodyMode] = useState<"edit" | "preview">("edit");
+  const checklistRef = useRef<HTMLDivElement>(null);
+  const compactTestcases = useSyncExternalStore(
+    subscribeToTestcaseLayout,
+    () => window.matchMedia?.(COMPACT_TESTCASE_QUERY).matches ?? false,
+    () => false,
+  );
+
+  // Switching to a stdin program drops the signature, so the draft and what the server stores cannot disagree.
+  function changeKind(next: ProblemKind) {
+    setKind(next);
+    if (next === "stdio") {
+      patch({
+        solutionCheck: STALE_CHECK,
+        spec: {
+          ...draft.spec,
+          signature: {
+            functionName: "",
+            returnType: { kind: "INT" },
+            parameters: [],
+            nameOverrides: {},
+          },
+        },
+      });
+    }
+  }
+
   // Last persisted copy: "dirty" is "the draft no longer matches it". A duplicate has none yet. In real
   // mode the run result is not persisted, so it does not count as a change.
   const [saved, setSaved] = useState<ProblemDraft | null>(
@@ -352,14 +403,11 @@ function ProblemAuthoringForm({
   // EVT-15. Real mode needs a saved problem (the upload URLs are per problem id); mock mode reads the
   // files and appends the rows to the draft like a manual add.
   const bulkNeedsSave = !isMockMode() && !liveId;
-  async function bulkUpload(
-    pairs: BulkPairRow<File>[],
-    visibility: Testcase["visibility"],
-  ) {
+  async function bulkUpload(rows: BulkUploadRow[]) {
     if (liveId) {
       const done = await realBulkUpload(
         liveId,
-        pairs.map((pair) => ({
+        rows.map(({ pair, visibility }) => ({
           clientKey: pair.key,
           input: pair.input,
           expected: pair.expected,
@@ -369,10 +417,12 @@ function ProblemAuthoringForm({
       lock.current = done.updatedAt;
       commitTestcases((rows) => [...rows, ...done.added]);
       toast.success(t("bulk.done", { count: done.added.length }));
+      // New testcases make the last run stale: check them against the reference solution right away.
+      if (draft.solution.trim()) void runSolution();
       return;
     }
     const added: Testcase[] = [];
-    for (const pair of pairs) {
+    for (const { pair, visibility } of rows) {
       added.push({
         id: `tc-new-${++nextId.current}`,
         input: (await pair.input.text()).trim(),
@@ -439,6 +489,45 @@ function ProblemAuthoringForm({
     }));
     setExampleDialog(null);
     toast.success(t(editing ? "toast.exampleUpdated" : "toast.exampleAdded"));
+  }
+
+  // Worked examples usually repeat the public testcases (the learner reads the same data twice). Copy the public
+  // ones the examples do not have yet; the author only adds the explanation. A row whose content lives in object
+  // storage is skipped: its text is not on screen.
+  function examplesFromTestcases() {
+    const sources = approved.filter(
+      (row) => row.visibility === "public" && !row.largeSides?.length,
+    );
+    if (sources.length === 0) {
+      toast.warning(t("toast.examplesNoPublic"));
+      return;
+    }
+    const known = new Set(
+      draft.examples.map(
+        (e) => `${e.input.trimEnd()}\u0000${e.output.trimEnd()}`,
+      ),
+    );
+    const fresh = sources.filter(
+      (row) =>
+        !known.has(`${row.input.trimEnd()}\u0000${row.expected.trimEnd()}`),
+    );
+    if (fresh.length === 0) {
+      toast.info(t("toast.examplesNothingNew"));
+      return;
+    }
+    setDraft((previous) => ({
+      ...previous,
+      examples: [
+        ...previous.examples,
+        ...fresh.map((row) => ({
+          id: `ex-new-${++nextId.current}`,
+          input: row.input.trimEnd(),
+          output: row.expected.trimEnd(),
+          explanation: "",
+        })),
+      ],
+    }));
+    toast.success(t("toast.examplesFromTestcases", { count: fresh.length }));
   }
 
   // BD Sheet 6 area D item 6: a published problem keeps at least 2 examples (publish checklist).
@@ -571,6 +660,25 @@ function ProblemAuthoringForm({
         setDraft((previous) => ({ ...previous, status: "published" }));
       setSaveState("saved");
       toast.success(t(publishing ? "toast.published" : "toast.saved"));
+      // First save of a new problem or a copy: carry on at its own edit address, so the URL, a reload and the
+      // preview link all point at the saved problem (the save above wrote every section).
+      if (!problemId && result.createdId && !isMockMode()) {
+        router.replace(`${basePath}/${result.createdId}/edit`);
+      }
+      // A save that changed the reference solution (or its language) re-runs it once against the approved
+      // testcases, so the checklist says where the problem stands. Saving other fields never runs the sandbox.
+      const before = saved ?? initial;
+      if (
+        !publishing &&
+        server &&
+        id &&
+        snapshot.solution.trim() &&
+        approved.length > 0 &&
+        (snapshot.solution !== before.solution ||
+          snapshot.solutionLanguage !== before.solutionLanguage)
+      ) {
+        void runSolution();
+      }
       return true;
     } catch {
       setSaveState("error");
@@ -632,8 +740,20 @@ function ProblemAuthoringForm({
           },
           testcaseId,
         );
+        const ran = {
+          solution: draft.solution,
+          language: draft.solutionLanguage,
+        };
         if (run.compileError !== null) {
           toast.error(t("runCompileError"));
+          if (!testcaseId) {
+            setRunNote({
+              tone: "negative",
+              text: t("runCompileError"),
+              ...ran,
+            });
+            patch({ solutionCheck: STALE_CHECK });
+          }
         } else if (run.total === 0) {
           toast.warning(t("runBlocked.noTestcase"));
         } else {
@@ -647,25 +767,38 @@ function ProblemAuthoringForm({
               },
             }));
           if (run.allPass) {
-            toast.success(
-              t("runResultBody", { passed: run.passed, total: run.total }),
-            );
+            const text = t("runResultBody", {
+              passed: run.passed,
+              total: run.total,
+            });
+            toast.success(text);
+            if (!testcaseId) setRunNote({ tone: "success", text, ...ran });
           } else {
             const reason = run.firstFailure
               ? t(`runFailure.${run.firstFailure.failure}`)
               : "";
-            toast.warning(
-              t("runFailedAt", {
-                position: run.firstFailure?.position ?? 0,
-                reason,
-                passed: run.passed,
-                total: run.total,
-              }),
-            );
+            const text = t("runFailedAt", {
+              position: run.firstFailure?.position ?? 0,
+              reason,
+              passed: run.passed,
+              total: run.total,
+            });
+            toast.warning(text);
+            if (!testcaseId) setRunNote({ tone: "warn", text, ...ran });
           }
         }
       } catch (error) {
         toast.error(apiMessage(error));
+        // The server's own words (PRB-060 says what to fix); kept on screen after the toast is gone.
+        if (!testcaseId) {
+          setRunNote({
+            tone: "negative",
+            text: apiMessage(error),
+            solution: draft.solution,
+            language: draft.solutionLanguage,
+          });
+          patch({ solutionCheck: STALE_CHECK });
+        }
       } finally {
         setRunning(false);
       }
@@ -794,6 +927,12 @@ function ProblemAuthoringForm({
   const solutionPasses =
     draft.solutionCheck.ran &&
     draft.solutionCheck.passed === draft.solutionCheck.total;
+  const visibleRunNote =
+    runNote &&
+    runNote.solution === draft.solution &&
+    runNote.language === draft.solutionLanguage
+      ? runNote
+      : null;
 
   // F2-14 precondition: at least 2 author-written Sample rows AND the reference solution (F2-18)
   // passing them. AI adds to an existing set, it cannot bootstrap one from nothing.
@@ -826,7 +965,7 @@ function ProblemAuthoringForm({
   const checklist = [
     { key: "minTestcases", done: approved.length >= 8, tab: "testcases" },
     { key: "minPublic", done: publicTestcases >= 2, tab: "testcases" },
-    { key: "solutionPasses", done: solutionPasses, tab: "testcases" },
+    { key: "solutionPasses", done: solutionPasses, tab: "content" },
     { key: "minExamples", done: draft.examples.length >= 2, tab: "examples" },
     { key: "specDeclared", done: specDone, tab: "spec" },
   ] satisfies { key: string; done: boolean; tab: TabKey }[];
@@ -961,7 +1100,7 @@ function ProblemAuthoringForm({
     {
       key: "expected",
       header: t("columnExpected"),
-      width: "220px",
+      width: "150px",
       render: (row) => (
         <span className="block truncate font-mono text-[12.5px] text-[var(--color-text-muted)]">
           {row.largeSides?.includes("expected")
@@ -973,7 +1112,7 @@ function ProblemAuthoringForm({
     {
       key: "visibility",
       header: t("columnVisibility"),
-      width: "120px",
+      width: "100px",
       render: (row) => (
         <Badge variant={row.visibility === "public" ? "success" : "neutral"}>
           {t(`visibility.${row.visibility}`)}
@@ -984,16 +1123,19 @@ function ProblemAuthoringForm({
       key: "status",
       header: t("columnStatus"),
       width: "100px",
-      render: (row) =>
-        row.approved ? null : <Badge variant="warn">{t("statusDraft")}</Badge>,
+      render: (row) => (
+        <Badge variant={row.approved ? "success" : "warn"}>
+          {row.approved ? t("statusApproved") : t("statusDraft")}
+        </Badge>
+      ),
     },
     {
       key: "actions",
       header: <span className="sr-only">{t("columnActions")}</span>,
-      width: "220px",
+      width: "204px",
       align: "right",
       render: (row) => (
-        <div className="flex justify-end gap-1">
+        <div className="flex flex-wrap justify-end gap-1">
           <IconAction
             icon={ArrowUp}
             label={t("moveUp")}
@@ -1044,62 +1186,123 @@ function ProblemAuthoringForm({
     },
   ];
 
+  // flex-none: the box is as tall as the form, so the sticky header stays stuck for the whole (long) page.
   return (
-    <div>
-      <PageHeader
-        leading={
-          <IconAction icon={ArrowLeft} label={t("back")} href={basePath} />
-        }
-        title={draft.title}
-        description={t("subtitle", {
-          topic: problemTopicLabel(topicList, draft.topic),
-        })}
-        actions={
-          <>
-            {/* BD Q6/Q13: opens the last SAVED data in a new tab; a problem never saved has none. */}
-            {problemId ? (
-              <IconAction
-                icon={Eye}
-                label={t("previewAsLearner")}
-                href={`${basePath}/${problemId}/preview`}
-                external
-              />
-            ) : (
-              <IconAction icon={Eye} label={t("previewNeedsSave")} disabled />
-            )}
-            <Button
-              variant="primary"
-              size="sm"
-              disabled={
-                !dirty ||
-                saving ||
-                running ||
-                generate.isPending ||
-                testcaseBusy ||
-                readOnly
-              }
-              onClick={save}
+    <PageContainer variant="content" className="@container flex-none">
+      <div className="flex flex-col gap-3 pb-3 @min-[1000px]:sticky @min-[1000px]:top-0 @min-[1000px]:z-20">
+        <PageHeader
+          className="static mb-0 [&>div:nth-child(2)]:min-w-0 [&_h1]:whitespace-normal @max-[640px]:[&>div:last-child]:w-full @max-[640px]:[&>div:last-child]:justify-start"
+          leading={
+            <IconAction icon={ArrowLeft} label={t("back")} href={basePath} />
+          }
+          title={draft.title}
+          description={t("subtitle", {
+            topic: problemTopicLabel(topicList, draft.topic),
+          })}
+          actions={
+            <>
+              {/* BD Q6/Q13: opens the last SAVED data in a new tab; a problem never saved has none. */}
+              {problemId ? (
+                <Button
+                  asChild
+                  variant="ghost"
+                  size="sm"
+                  className="gap-1.5 border border-[var(--color-border)]"
+                >
+                  <a
+                    href={`${basePath}/${problemId}/preview`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <Eye aria-hidden="true" className="size-4" />
+                    {t("previewAsLearner")}
+                  </a>
+                </Button>
+              ) : (
+                <IconAction icon={Eye} label={t("previewNeedsSave")} disabled />
+              )}
+              <Button
+                variant="primary"
+                size="sm"
+                disabled={
+                  !dirty ||
+                  saving ||
+                  running ||
+                  generate.isPending ||
+                  testcaseBusy ||
+                  readOnly
+                }
+                onClick={save}
+              >
+                {t("save")}
+              </Button>
+              <Button
+                variant="cta"
+                size="sm"
+                disabled={
+                  saving ||
+                  running ||
+                  generate.isPending ||
+                  testcaseBusy ||
+                  readOnly
+                }
+                aria-disabled={blocking.length > 0 || undefined}
+                onClick={publish}
+              >
+                {t("publish")}
+              </Button>
+            </>
+          }
+        />
+
+        <fieldset
+          disabled={saving || running || generate.isPending || testcaseBusy}
+          className="glass-card flex min-w-0 flex-wrap items-center gap-x-4 gap-y-2 rounded-xl border border-[var(--color-border)] p-1.5"
+        >
+          <SegmentedTabs
+            label={t("tabsLabel")}
+            value={tab}
+            onValueChange={setTab}
+            options={[
+              { value: "content", label: t("tab.content") },
+              {
+                value: "examples",
+                label: t("tab.examples", { count: draft.examples.length }),
+              },
+              {
+                value: "testcases",
+                label: t("tab.testcases", { count: testcaseCount }),
+              },
+              { value: "spec", label: t("tab.spec") },
+              { value: "ai", label: t("tab.ai") },
+            ]}
+          />
+          {!readOnly && (
+            <p
+              role="status"
+              className="mr-2 px-1 text-xs text-[var(--color-text-muted)]"
             >
-              {t("save")}
-            </Button>
-            <Button
-              variant="cta"
-              size="sm"
-              disabled={
-                saving ||
-                running ||
-                generate.isPending ||
-                testcaseBusy ||
-                readOnly
-              }
-              aria-disabled={blocking.length > 0 || undefined}
-              onClick={publish}
-            >
-              {t("publish")}
-            </Button>
-          </>
-        }
-      />
+              {saving
+                ? t("saveHint.saving")
+                : saveState === "error"
+                  ? t("saveHint.error")
+                  : dirty
+                    ? t("saveHint.dirty")
+                    : id
+                      ? t("saveHint.saved")
+                      : t("saveHint.new")}
+            </p>
+          )}
+          <Button
+            variant="ghost"
+            size="sm"
+            className="ml-auto @min-[1000px]:hidden"
+            onClick={() => checklistRef.current?.focus()}
+          >
+            {t("checklistTitle")}
+          </Button>
+        </fieldset>
+      </div>
 
       {readOnly ? (
         <div className="mb-3.5">
@@ -1109,161 +1312,359 @@ function ProblemAuthoringForm({
 
       <fieldset
         disabled={saving || running || generate.isPending || testcaseBusy}
-        className="grid min-w-0 grid-cols-1 items-start gap-4 2xl:grid-cols-[minmax(0,1fr)_300px]"
+        className="min-w-0"
       >
-        <div className="flex min-w-0 flex-col gap-3.5">
-          <Card className="px-1.5 py-1.5">
-            <SegmentedTabs
-              label={t("tabsLabel")}
-              value={tab}
-              onValueChange={setTab}
-              className="border-0 bg-transparent p-0"
-              options={[
-                { value: "content", label: t("tab.content") },
-                {
-                  value: "examples",
-                  label: t("tab.examples", { count: draft.examples.length }),
-                },
-                {
-                  value: "testcases",
-                  label: t("tab.testcases", { count: testcaseCount }),
-                },
-                { value: "spec", label: t("tab.spec") },
-                { value: "ai", label: t("tab.ai") },
-              ]}
-            />
-          </Card>
-
+        <div className="grid min-w-0 grid-cols-1 items-start gap-4 @min-[1000px]:grid-cols-[minmax(0,1fr)_clamp(17rem,26cqw,24rem)]">
           <fieldset
             disabled={readOnly}
             className="flex min-w-0 flex-col gap-3.5"
           >
-            {tab === "content" ? (
-              <>
-                <Card
-                  title={t("statementTitle")}
-                  description={t("statementSubtitle")}
-                >
-                  <div className="flex flex-col gap-3">
-                    <TextField
-                      label={t("titleLabel")}
-                      value={draft.title}
-                      onChange={(event) => patch({ title: event.target.value })}
-                    />
+            <section
+              id="sec-content"
+              aria-label={t("tab.content")}
+              hidden={tab !== "content"}
+              className={
+                tab === "content" ? "flex min-w-0 flex-col gap-3.5" : "hidden"
+              }
+            >
+              <ProblemKindCard value={kind} onChange={changeKind} />
+
+              <Card
+                title={t("statementTitle")}
+                description={t("statementSubtitle")}
+              >
+                <div className="flex flex-col gap-3">
+                  <TextField
+                    label={t("titleLabel")}
+                    value={draft.title}
+                    onChange={(event) => patch({ title: event.target.value })}
+                  />
+                  <SegmentedTabs
+                    label={t("bodyLabel")}
+                    value={bodyMode}
+                    onValueChange={setBodyMode}
+                    className="w-fit flex-wrap"
+                    options={[
+                      { value: "edit", label: t("bodyMode.edit") },
+                      { value: "preview", label: t("bodyMode.preview") },
+                    ]}
+                  />
+                  {bodyMode === "edit" ? (
                     <TextArea
                       label={t("bodyLabel")}
-                      rows={12}
+                      rows={10}
                       value={draft.body}
                       onChange={(event) => patch({ body: event.target.value })}
-                      className="font-mono text-[12.5px] leading-relaxed"
+                      className="block resize-y font-mono text-[13px] leading-relaxed"
                     />
-                  </div>
-                </Card>
+                  ) : (
+                    <div className="min-h-52 min-w-0 overflow-x-auto rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-3">
+                      {draft.body.trim() ? (
+                        <MarkdownPreview>{draft.body}</MarkdownPreview>
+                      ) : (
+                        <p className="text-sm text-[var(--color-text-muted)]">
+                          {t("bodyMode.empty")}
+                        </p>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </Card>
 
-                <Card
-                  title={t("limitsTitle")}
-                  description={t("limitsSubtitle")}
-                >
-                  <div className="mb-4 grid gap-3 [grid-template-columns:repeat(auto-fit,minmax(150px,1fr))]">
-                    {LIMIT_KEYS.map((key) => (
-                      <TextField
-                        key={key}
-                        label={t(`limit.${key}`)}
-                        type="number"
-                        min={1}
-                        value={draft.limits[key]}
-                        onChange={(event) =>
-                          patch({
-                            limits: {
-                              ...draft.limits,
-                              [key]: Number(event.target.value),
-                            },
-                          })
-                        }
-                        className="font-mono"
-                      />
-                    ))}
+              <Card title={t("limitsTitle")} description={t("limitsSubtitle")}>
+                <div className="mb-4 grid gap-3 [grid-template-columns:repeat(auto-fit,minmax(150px,1fr))]">
+                  {LIMIT_KEYS.map((key) => (
                     <TextField
-                      label={t("limit.maxSubmissionsPerHour")}
+                      key={key}
+                      label={t(`limit.${key}`)}
                       type="number"
                       min={1}
-                      placeholder={t("limit.systemDefault")}
-                      value={draft.limits.maxSubmissionsPerHour ?? ""}
+                      value={draft.limits[key]}
                       onChange={(event) =>
                         patch({
                           limits: {
                             ...draft.limits,
-                            maxSubmissionsPerHour:
-                              event.target.value === ""
-                                ? null
-                                : Number(event.target.value),
+                            [key]: Number(event.target.value),
                           },
                         })
                       }
                       className="font-mono"
                     />
+                  ))}
+                  <TextField
+                    label={t("limit.maxSubmissionsPerHour")}
+                    type="number"
+                    min={1}
+                    placeholder={t("limit.systemDefault")}
+                    value={draft.limits.maxSubmissionsPerHour ?? ""}
+                    onChange={(event) =>
+                      patch({
+                        limits: {
+                          ...draft.limits,
+                          maxSubmissionsPerHour:
+                            event.target.value === ""
+                              ? null
+                              : Number(event.target.value),
+                        },
+                      })
+                    }
+                    className="font-mono"
+                  />
+                </div>
+                <TextArea
+                  label={t("constraintsLabel")}
+                  rows={4}
+                  value={draft.constraints}
+                  onChange={(event) =>
+                    patch({ constraints: event.target.value })
+                  }
+                  className="font-mono text-[12.5px]"
+                />
+              </Card>
+            </section>
+
+            <section
+              id="sec-spec"
+              aria-label={t("tab.spec")}
+              hidden={tab !== "spec"}
+              className={
+                tab === "spec" ? "flex min-w-0 flex-col gap-3.5" : "hidden"
+              }
+            >
+              <SpecEditor
+                spec={draft.spec}
+                onChange={(spec) =>
+                  patch({
+                    spec,
+                    ...(JSON.stringify(spec.signature) !==
+                    JSON.stringify(draft.spec.signature)
+                      ? { solutionCheck: STALE_CHECK }
+                      : {}),
+                  })
+                }
+                kind={kind}
+                showKind={false}
+                onKindChange={changeKind}
+              />
+            </section>
+
+            <section
+              id="sec-solution"
+              aria-label={t("tab.solution")}
+              hidden={tab !== "content"}
+              className={
+                tab === "content" ? "flex min-w-0 flex-col gap-3.5" : "hidden"
+              }
+            >
+              <Card
+                title={t("solutionTitle")}
+                description={t("solutionSubtitle")}
+                action={
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="border border-[var(--color-border)]"
+                    aria-busy={running || undefined}
+                    disabled={running}
+                    onClick={() => runSolution()}
+                  >
+                    {running ? t("running") : t("runSolution")}
+                  </Button>
+                }
+              >
+                {/* BD SHR0202 NO9: the reference solution's language, one of the three judged ones. */}
+                <SelectField
+                  label={t("solutionLanguageLabel")}
+                  value={draft.solutionLanguage}
+                  onChange={(event) =>
+                    patch({
+                      solutionLanguage: event.target.value,
+                      solutionCheck: STALE_CHECK,
+                    })
+                  }
+                  options={SOLUTION_LANGUAGES.map((language) => ({
+                    value: language,
+                    label: language,
+                  }))}
+                  wrapperClassName="mb-3 max-w-[220px]"
+                />
+                <TextArea
+                  label={t("solutionLabel", {
+                    language: draft.solutionLanguage,
+                  })}
+                  rows={14}
+                  value={draft.solution}
+                  onChange={(event) =>
+                    patch({
+                      solution: event.target.value,
+                      solutionCheck: STALE_CHECK,
+                    })
+                  }
+                  className="font-mono text-[12.5px] leading-relaxed"
+                />
+                {visibleRunNote ? (
+                  <NoticeTile
+                    tone={visibleRunNote.tone}
+                    title={t(`runNote.${visibleRunNote.tone}`)}
+                    className="mt-3"
+                  >
+                    {visibleRunNote.text}
+                  </NoticeTile>
+                ) : null}
+              </Card>
+            </section>
+
+            <section
+              id="sec-testcases"
+              aria-label={t("tab.testcases", { count: testcaseCount })}
+              hidden={tab !== "testcases"}
+              className={
+                tab === "testcases" ? "flex min-w-0 flex-col gap-3.5" : "hidden"
+              }
+            >
+              <Card
+                title={t("testcasesTitle")}
+                description={t("testcasesSubtitle", {
+                  total: testcaseCount,
+                  publicCount: testcasesHidden
+                    ? server.testcaseSummary.sample
+                    : publicTestcases,
+                })}
+                className="min-w-0"
+              >
+                <div className="mb-3 flex flex-wrap gap-2">
+                  <Button
+                    variant="primary"
+                    size="sm"
+                    onClick={() => setTestcaseDialog("new")}
+                  >
+                    {t("addTestcase")}
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="border border-[var(--color-border)]"
+                    disabled={bulkNeedsSave || readOnly}
+                    title={bulkNeedsSave ? t("bulk.saveFirst") : undefined}
+                    onClick={() => setBulkOpen(true)}
+                  >
+                    {t("testcase.btnBulkUpload")}
+                  </Button>
+                </div>
+                {server?.willCopy && !id ? (
+                  <div className="mb-3">
+                    <NoticeTile
+                      tone="info"
+                      title={t(
+                        server.willCopy.hasSpec
+                          ? "copyWillCopyWithSpec"
+                          : "copyWillCopy",
+                        { count: server.willCopy.testcaseCount },
+                      )}
+                    />
                   </div>
-                  <TextArea
-                    label={t("constraintsLabel")}
-                    rows={4}
-                    value={draft.constraints}
-                    onChange={(event) =>
-                      patch({ constraints: event.target.value })
-                    }
-                    className="font-mono text-[12.5px]"
+                ) : null}
+                {testcasesHidden ? (
+                  <div className="mb-3">
+                    <NoticeTile
+                      tone="info"
+                      title={t("testcasesHiddenNotice", {
+                        total: server.testcaseSummary.total,
+                      })}
+                    />
+                  </div>
+                ) : null}
+                {/* No "Điểm" column and no weight block — PROTOTYPE_DEBT 2.6. The partial score that
+                  survived (F4-13) is an automatic pass ratio, not an author-declared weight. */}
+                {!testcasesHidden &&
+                compactTestcases &&
+                draft.testcases.length > 0 ? (
+                  <ul className="space-y-2">
+                    {draft.testcases.map((row) => (
+                      <li
+                        key={row.id}
+                        className="grid grid-cols-2 gap-2 rounded-xl border border-[var(--color-border)] p-2.5"
+                      >
+                        {testcaseColumns.map((column) => {
+                          if (column.key === "index") {
+                            return (
+                              <div
+                                key={column.key}
+                                className="col-span-2 font-semibold"
+                              >
+                                {t("testcaseRow", {
+                                  number: draft.testcases.indexOf(row) + 1,
+                                })}
+                              </div>
+                            );
+                          }
+                          if (column.key === "actions") {
+                            return (
+                              <div
+                                key={column.key}
+                                className="col-span-2 border-t border-[var(--color-border)] pt-2"
+                              >
+                                {column.render(row)}
+                              </div>
+                            );
+                          }
+                          return (
+                            <div
+                              key={column.key}
+                              className="min-w-0 rounded-md bg-[var(--color-track)] p-2"
+                            >
+                              <div className="mb-1 text-xs text-[var(--color-text-muted)]">
+                                {column.header}
+                              </div>
+                              {column.render(row)}
+                            </div>
+                          );
+                        })}
+                      </li>
+                    ))}
+                  </ul>
+                ) : !testcasesHidden ? (
+                  <DataTable
+                    caption={t("testcasesTitle")}
+                    columns={testcaseColumns}
+                    rows={draft.testcases}
+                    rowKey={(row) => row.id}
+                    emptyMessage={t("emptyTestcases")}
+                    minWidth={720}
                   />
-                </Card>
+                ) : null}
+              </Card>
+            </section>
 
-                <Card
-                  title={t("solutionTitle")}
-                  description={t("solutionSubtitle")}
-                >
-                  {/* BD SHR0202 NO9: the reference solution's language, one of the three judged ones. */}
-                  <SelectField
-                    label={t("solutionLanguageLabel")}
-                    value={draft.solutionLanguage}
-                    onChange={(event) =>
-                      patch({
-                        solutionLanguage: event.target.value,
-                        solutionCheck: STALE_CHECK,
-                      })
-                    }
-                    options={SOLUTION_LANGUAGES.map((language) => ({
-                      value: language,
-                      label: language,
-                    }))}
-                    wrapperClassName="mb-3 max-w-[220px]"
-                  />
-                  <TextArea
-                    label={t("solutionLabel", {
-                      language: draft.solutionLanguage,
-                    })}
-                    rows={14}
-                    value={draft.solution}
-                    onChange={(event) =>
-                      patch({
-                        solution: event.target.value,
-                        solutionCheck: STALE_CHECK,
-                      })
-                    }
-                    className="font-mono text-[12.5px] leading-relaxed"
-                  />
-                </Card>
-              </>
-            ) : null}
-
-            {tab === "examples" ? (
+            <section
+              id="sec-examples"
+              aria-label={t("tab.examples", { count: draft.examples.length })}
+              hidden={tab !== "examples"}
+              className={
+                tab === "examples" ? "flex min-w-0 flex-col gap-3.5" : "hidden"
+              }
+            >
               <Card
                 title={t("examplesTitle")}
                 description={t("examplesSubtitle")}
                 action={
-                  <Button
-                    variant="primary"
-                    size="sm"
-                    onClick={() => setExampleDialog("new")}
-                  >
-                    {t("addExample")}
-                  </Button>
+                  <div className="flex flex-wrap gap-2">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="border border-[var(--color-border)]"
+                      onClick={examplesFromTestcases}
+                    >
+                      {t("examplesFromTestcases")}
+                    </Button>
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      onClick={() => setExampleDialog("new")}
+                    >
+                      {t("addExample")}
+                    </Button>
+                  </div>
                 }
               >
                 {draft.examples.length === 0 ? (
@@ -1323,105 +1724,16 @@ function ProblemAuthoringForm({
                   ))}
                 </div>
               </Card>
-            ) : null}
+            </section>
 
-            {tab === "testcases" ? (
-              <Card
-                title={t("testcasesTitle")}
-                description={t("testcasesSubtitle", {
-                  total: testcaseCount,
-                  publicCount: testcasesHidden
-                    ? server.testcaseSummary.sample
-                    : publicTestcases,
-                })}
-                className="min-w-0"
-                action={
-                  <div className="flex gap-2">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="border border-[var(--color-border)]"
-                      aria-disabled={
-                        approved.length === 0 ||
-                        !draft.solution.trim() ||
-                        undefined
-                      }
-                      aria-busy={running || undefined}
-                      disabled={running}
-                      onClick={() => runSolution()}
-                    >
-                      {running ? t("running") : t("runSolution")}
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="border border-[var(--color-border)]"
-                      disabled={bulkNeedsSave || readOnly}
-                      title={bulkNeedsSave ? t("bulk.saveFirst") : undefined}
-                      onClick={() => setBulkOpen(true)}
-                    >
-                      {t("testcase.btnBulkUpload")}
-                    </Button>
-                    <Button
-                      variant="primary"
-                      size="sm"
-                      onClick={() => setTestcaseDialog("new")}
-                    >
-                      {t("addTestcase")}
-                    </Button>
-                  </div>
-                }
-              >
-                {server?.willCopy && !id ? (
-                  <div className="mb-3">
-                    <NoticeTile
-                      tone="info"
-                      title={t(
-                        server.willCopy.hasSpec
-                          ? "copyWillCopyWithSpec"
-                          : "copyWillCopy",
-                        { count: server.willCopy.testcaseCount },
-                      )}
-                    />
-                  </div>
-                ) : null}
-                {testcasesHidden ? (
-                  <div className="mb-3">
-                    <NoticeTile
-                      tone="info"
-                      title={t("testcasesHiddenNotice", {
-                        total: server.testcaseSummary.total,
-                      })}
-                    />
-                  </div>
-                ) : null}
-                {/* F2-18: the run result is a toast; only the stale state stays on the page. */}
-                <div
-                  className={draft.solutionCheck.ran ? undefined : "mb-3"}
-                ></div>
-                {/* No "Điểm" column and no weight block — PROTOTYPE_DEBT 2.6. The partial score that
-                  survived (F4-13) is an automatic pass ratio, not an author-declared weight. */}
-                {!testcasesHidden ? (
-                  <DataTable
-                    caption={t("testcasesTitle")}
-                    columns={testcaseColumns}
-                    rows={draft.testcases}
-                    rowKey={(row) => row.id}
-                    emptyMessage={t("emptyTestcases")}
-                    minWidth={720}
-                  />
-                ) : null}
-              </Card>
-            ) : null}
-
-            {tab === "spec" ? (
-              <SpecEditor
-                spec={draft.spec}
-                onChange={(spec) => patch({ spec })}
-              />
-            ) : null}
-
-            {tab === "ai" ? (
+            <section
+              id="sec-ai"
+              aria-label={t("tab.ai")}
+              hidden={tab !== "ai"}
+              className={
+                tab === "ai" ? "flex min-w-0 flex-col gap-3.5" : "hidden"
+              }
+            >
               <div className="flex flex-col gap-3.5">
                 <Card
                   title={t("generateTitle")}
@@ -1545,182 +1857,208 @@ function ProblemAuthoringForm({
                   </div>
                 </Card>
               </div>
-            ) : null}
+            </section>
           </fieldset>
-        </div>
-
-        <div className="flex flex-col gap-3.5 2xl:sticky 2xl:top-[92px]">
-          <Card title={t("propertiesTitle")}>
-            <fieldset disabled={readOnly}>
-              <div className="flex flex-col gap-3.5">
-                <fieldset disabled={readOnly} className="flex flex-col gap-2">
-                  <legend className="mb-2 text-sm font-medium">
-                    {t("topicLabel")}
-                  </legend>
-                  {topicList.map((topic) => {
-                    const selectedTopics = [
-                      draft.topic,
-                      ...(draft.otherTopicIds ?? []),
-                    ].filter(Boolean);
-                    return (
-                      <label
-                        key={topic.key}
-                        className="flex items-center gap-2 text-sm"
-                      >
-                        <input
-                          type="checkbox"
-                          checked={selectedTopics.includes(topic.key)}
-                          onChange={(event) => {
-                            const next = event.target.checked
-                              ? [...new Set([...selectedTopics, topic.key])]
-                              : selectedTopics.filter(
-                                  (key) => key !== topic.key,
-                                );
-                            patch({
-                              topic: next[0] ?? "",
-                              otherTopicIds: next.slice(1),
-                            });
-                          }}
-                        />
-                        {topic.label}
-                      </label>
-                    );
-                  })}
-                </fieldset>
-                <div>
-                  <p className="mb-1.5 text-[11px] font-semibold tracking-[0.07em] text-[var(--color-text-subtle)] uppercase">
-                    {t("difficultyLabel")}
-                  </p>
-                  <SelectField
-                    label={t("difficultyLabel")}
-                    hideLabel
-                    value={draft.difficulty}
-                    onChange={(event) =>
-                      patch({ difficulty: event.target.value })
-                    }
-                    options={[
-                      // A level an admin deleted while this form was open stays visible, but cannot be re-picked.
-                      ...(levelList.some(
-                        (level) => level.key === draft.difficulty,
-                      )
-                        ? []
-                        : [
-                            {
-                              value: draft.difficulty,
-                              label: draft.difficulty,
-                              disabled: true,
-                            },
-                          ]),
-                      ...levelList.map((level) => ({
-                        value: level.key,
-                        label: level.label,
-                      })),
-                    ]}
-                  />
-                </div>
-                <div>
-                  <p className="mb-1.5 text-[11px] font-semibold tracking-[0.07em] text-[var(--color-text-subtle)] uppercase">
-                    {t("statusLabel")}
-                  </p>
-                  {/* Two states only — DEC-2026-0830-problem-lifecycle-two-states. */}
-                  <SegmentedTabs
-                    label={t("statusLabel")}
-                    value={draft.status}
-                    onValueChange={(value) => patch({ status: value })}
-                    className="w-full"
-                    options={[
-                      { value: "draft" as const, label: t("status.draft") },
-                      {
-                        value: "published" as const,
-                        label: t("status.published"),
-                      },
-                    ]}
-                  />
-                </div>
-                {/* BD SHR0202 props NO4: free tags, comma separated in the prototype. */}
-                <TextField
-                  label={t("tagsLabel")}
-                  placeholder={t("tagsPlaceholder")}
-                  value={draft.tags.join(", ")}
-                  onChange={(event) =>
-                    patch({
-                      tags: event.target.value
-                        .split(",")
-                        .map((tag) => tag.trim())
-                        .filter(
-                          (tag, index, all) =>
-                            // Keep the trailing empty entry while typing so "a, " can become "a, b".
-                            tag !== "" || index === all.length - 1,
-                        ),
-                    })
-                  }
-                />
-              </div>
-            </fieldset>
-          </Card>
-
-          {/* BD SHR0202 props NO6, 7, 10. NO8-9 have no column (Q5), so they are not shown. */}
-          <Card title={t("metricsTitle")}>
-            <dl className="flex flex-col gap-2 text-[13px]">
-              <div className="flex justify-between gap-2">
-                <dt className="text-[var(--color-text-muted)]">
-                  {t("metrics.submissions")}
-                </dt>
-                <dd className="font-mono">
-                  {stats ? stats.submissionCount.toLocaleString("vi-VN") : "-"}
-                </dd>
-              </div>
-              <div className="flex justify-between gap-2">
-                <dt className="text-[var(--color-text-muted)]">
-                  {t("metrics.acRate")}
-                </dt>
-                <dd className="font-mono">
-                  {stats?.acRate == null ? "-" : `${stats.acRate}%`}
-                </dd>
-              </div>
-              <div className="flex justify-between gap-2">
-                <dt className="text-[var(--color-text-muted)]">
-                  {t("metrics.lastEdited")}
-                </dt>
-                <dd>
-                  {savedAt
-                    ? new Date(savedAt).toLocaleString("vi-VN")
-                    : t("metrics.neverSaved")}
-                </dd>
-              </div>
-            </dl>
-          </Card>
-
-          <Card title={t("checklistTitle")}>
-            <ul className="flex flex-col gap-2">
-              {checklist.map((item) => (
-                <li
-                  key={item.key}
-                  className="flex items-start gap-2 text-[12.5px]"
-                >
-                  <Badge
-                    variant={item.done ? "success" : "warn"}
-                    className="shrink-0"
+          <div className="flex min-w-0 flex-col gap-3.5">
+            <Card title={t("propertiesTitle")}>
+              <fieldset disabled={readOnly}>
+                <div className="flex flex-col gap-3.5">
+                  <fieldset
+                    disabled={readOnly}
+                    className="grid min-w-0 grid-cols-2 gap-2"
                   >
-                    {item.done ? t("checkDone") : t("checkPending")}
-                  </Badge>
-                  {item.done ? (
-                    <span className="text-[var(--color-text-muted)]">
-                      {t(`check.${item.key}`)}
-                    </span>
-                  ) : (
-                    <button
-                      type="button"
-                      className="cursor-pointer text-left text-[var(--color-text)] underline decoration-dotted underline-offset-2"
-                      onClick={() => setTab(item.tab)}
+                    <legend className="mb-2 text-sm font-medium">
+                      {t("topicLabel")}
+                    </legend>
+                    {topicList.map((topic) => {
+                      const selectedTopics = [
+                        draft.topic,
+                        ...(draft.otherTopicIds ?? []),
+                      ].filter(Boolean);
+                      return (
+                        <label
+                          key={topic.key}
+                          className="flex min-w-0 cursor-pointer items-start gap-2 text-sm"
+                        >
+                          <input
+                            type="checkbox"
+                            className="mt-1 shrink-0 accent-[var(--color-primary)]"
+                            checked={selectedTopics.includes(topic.key)}
+                            onChange={(event) => {
+                              const next = event.target.checked
+                                ? [...new Set([...selectedTopics, topic.key])]
+                                : selectedTopics.filter(
+                                    (key) => key !== topic.key,
+                                  );
+                              patch({
+                                topic: next[0] ?? "",
+                                otherTopicIds: next.slice(1),
+                              });
+                            }}
+                          />
+                          {topic.label}
+                        </label>
+                      );
+                    })}
+                  </fieldset>
+                  <div>
+                    <p className="mb-1.5 text-[11px] font-semibold tracking-[0.07em] text-[var(--color-text-subtle)] uppercase">
+                      {t("difficultyLabel")}
+                    </p>
+                    <SelectField
+                      label={t("difficultyLabel")}
+                      hideLabel
+                      value={draft.difficulty}
+                      onChange={(event) =>
+                        patch({ difficulty: event.target.value })
+                      }
+                      options={[
+                        // A level an admin deleted while this form was open stays visible, but cannot be re-picked.
+                        ...(levelList.some(
+                          (level) => level.key === draft.difficulty,
+                        )
+                          ? []
+                          : [
+                              {
+                                value: draft.difficulty,
+                                label: draft.difficulty,
+                                disabled: true,
+                              },
+                            ]),
+                        ...levelList.map((level) => ({
+                          value: level.key,
+                          label: level.label,
+                        })),
+                      ]}
+                    />
+                  </div>
+                  <div>
+                    <p className="mb-1.5 text-[11px] font-semibold tracking-[0.07em] text-[var(--color-text-subtle)] uppercase">
+                      {t("statusLabel")}
+                    </p>
+                    {/* Two states only — DEC-2026-0830-problem-lifecycle-two-states. */}
+                    <SegmentedTabs
+                      label={t("statusLabel")}
+                      value={draft.status}
+                      onValueChange={(value) => patch({ status: value })}
+                      className="w-full"
+                      options={[
+                        { value: "draft" as const, label: t("status.draft") },
+                        {
+                          value: "published" as const,
+                          label: t("status.published"),
+                        },
+                      ]}
+                    />
+                  </div>
+                  {/* BD SHR0202 props NO4: free tags, comma separated in the prototype. */}
+                  <TextField
+                    label={t("tagsLabel")}
+                    placeholder={t("tagsPlaceholder")}
+                    value={draft.tags.join(", ")}
+                    onChange={(event) =>
+                      patch({
+                        tags: event.target.value
+                          .split(",")
+                          .map((tag) => tag.trim())
+                          .filter(
+                            (tag, index, all) =>
+                              // Keep the trailing empty entry while typing so "a, " can become "a, b".
+                              tag !== "" || index === all.length - 1,
+                          ),
+                      })
+                    }
+                  />
+                </div>
+              </fieldset>
+            </Card>
+
+            {/* BD SHR0202 props NO6, 7, 10. NO8-9 have no column (Q5), so they are not shown. */}
+            <Card title={t("metricsTitle")} className="order-last">
+              <dl className="flex flex-col gap-2 text-[13px]">
+                <div className="flex justify-between gap-2">
+                  <dt className="text-[var(--color-text-muted)]">
+                    {t("metrics.submissions")}
+                  </dt>
+                  <dd className="font-mono">
+                    {stats
+                      ? stats.submissionCount.toLocaleString("vi-VN")
+                      : "-"}
+                  </dd>
+                </div>
+                <div className="flex justify-between gap-2">
+                  <dt className="text-[var(--color-text-muted)]">
+                    {t("metrics.acRate")}
+                  </dt>
+                  <dd className="font-mono">
+                    {stats?.acRate == null ? "-" : `${stats.acRate}%`}
+                  </dd>
+                </div>
+                <div className="flex justify-between gap-2">
+                  <dt className="text-[var(--color-text-muted)]">
+                    {t("metrics.lastEdited")}
+                  </dt>
+                  <dd>
+                    {savedAt
+                      ? new Date(savedAt).toLocaleString("vi-VN")
+                      : t("metrics.neverSaved")}
+                  </dd>
+                </div>
+              </dl>
+            </Card>
+
+            <div
+              ref={checklistRef}
+              tabIndex={-1}
+              className="order-first rounded-2xl @min-[1000px]:order-none"
+            >
+              <Card
+                title={t("checklistTitle")}
+                description={t("checklistProgress", {
+                  done: checklist.length - blocking.length,
+                  total: checklist.length,
+                })}
+              >
+                <ul className="flex flex-col gap-2">
+                  {checklist.map((item) => (
+                    <li
+                      key={item.key}
+                      className="flex items-start gap-2 text-[12.5px]"
                     >
-                      {t(`check.${item.key}`)}
-                    </button>
-                  )}
-                </li>
-              ))}
-            </ul>
-          </Card>
+                      <Badge
+                        variant={item.done ? "success" : "warn"}
+                        className="shrink-0"
+                      >
+                        {item.done ? t("checkDone") : t("checkPending")}
+                      </Badge>
+                      {item.done ? (
+                        <span className="text-[var(--color-text-muted)]">
+                          {t(`check.${item.key}`)}
+                        </span>
+                      ) : (
+                        <button
+                          type="button"
+                          className="cursor-pointer text-left text-[var(--color-text)] underline decoration-dotted underline-offset-2"
+                          onClick={() => setTab(item.tab)}
+                        >
+                          {t(`check.${item.key}`)}
+                        </button>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+                {visibleRunNote ? (
+                  <NoticeTile
+                    tone={visibleRunNote.tone}
+                    title={t(`runNote.${visibleRunNote.tone}`)}
+                    className="mt-3"
+                  >
+                    {visibleRunNote.text}
+                  </NoticeTile>
+                ) : null}
+              </Card>
+            </div>
+          </div>
         </div>
       </fieldset>
 
@@ -1747,6 +2085,7 @@ function ProblemAuthoringForm({
       {bulkOpen ? (
         <BulkUploadDialog
           existingCount={testcaseCount}
+          existingPublic={publicTestcases}
           onClose={() => setBulkOpen(false)}
           onUpload={bulkUpload}
         />
@@ -1782,6 +2121,6 @@ function ProblemAuthoringForm({
       >
         {t("confirmDeleteExampleBody")}
       </ConfirmDialog>
-    </div>
+    </PageContainer>
   );
 }

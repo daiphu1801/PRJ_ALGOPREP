@@ -28,15 +28,27 @@ class SavePromptDraftCommandHandler implements SavePromptDraftUseCase {
 
   @Override
   public PromptTemplate save(SavePromptDraftCommand command) {
-    PromptContent content = command.content();
-    if (!models.allowed().contains(content.modelId())) {
+    PromptContent requested = command.content();
+    if (!models.allowed().contains(requested.modelId())) {
       throw new AiPromptRuleException(
           AiPromptRuleException.MODEL_NOT_ALLOWED, "Model is not on the allowed list");
     }
     templates.lock(command.feature());
-    return templates
-        .find(command.feature(), PromptStatus.DRAFT)
-        .map(draft -> templates.updateDraft(draft.id(), content))
-        .orElseGet(() -> templates.createDraft(command.feature(), content, command.actor()));
+    var existing = templates.find(command.feature(), PromptStatus.DRAFT);
+    PromptContent content = requested;
+    if (requested.maxTokens() == null) {
+      var previous = existing.or(() -> templates.find(command.feature(), PromptStatus.ACTIVE));
+      content =
+          new PromptContent(
+              requested.systemInstruction(),
+              requested.modelId(),
+              requested.guards(),
+              previous.map(t -> t.content().maxTokens()).orElse(null));
+    }
+    content.validateMaxTokens(command.feature(), models.maxOutputTokens(content.modelId()));
+    PromptContent validated = content;
+    return existing
+        .map(draft -> templates.updateDraft(draft.id(), validated))
+        .orElseGet(() -> templates.createDraft(command.feature(), validated, command.actor()));
   }
 }

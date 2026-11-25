@@ -48,11 +48,11 @@
 | Route (prototype Next.js) | `/instructor/classes/[classId]` |
 | Trục tài liệu | Màn hình (`02-bd/screens/`) |
 | Actor | A2 (`INSTRUCTOR`) |
-| Phiên bản | V0.14 |
+| Phiên bản | V0.16 |
 | Người tạo | Nhóm phát triển AlgoPrep |
 | Ngày tạo | 2026/10/11 |
 | Người cập nhật | Nhóm phát triển AlgoPrep |
-| Ngày cập nhật | 2026/11/18 |
+| Ngày cập nhật | 2026/11/23 |
 
 ---
 
@@ -74,6 +74,8 @@
 | V0.12 | Sheet 4 (4.6), 5 | Sửa 2026-11-07 (F1-7, nối FE). Danh sách học viên của lớp (F1 #26) nay kèm nhãn trạng thái, điểm TB, hoàn thành, lần nộp gần nhất khi máy chủ đọc được số liệu F4; khi không đọc được, danh sách vẫn trả đủ học viên nhưng không có bốn cột đó [SoT: Suy luận]. Lớp chưa giao bài hiện hoàn thành "-". Chưa duyệt hình. |
 | V0.13 | Sheet 4 (4.6), Câu hỏi mở | Ghi 2026-11-07 (kiểm trình duyệt thật, phát hiện F5, **owner chốt phương án A cùng ngày**). Khi có số liệu F4 bảng học viên hiện điểm TB, hoàn thành, hoạt động và không còn email, số điện thoại, ngày vào lớp (V0.11 ghi bảng hiện ba cột liên hệ này). **Đã xử lý:** bảng luôn hiện ba cột liên hệ (email, số điện thoại, vào lớp), số liệu F4 (trạng thái, điểm TB, hoàn thành, hoạt động gần nhất) nối tiếp khi máy chủ đọc được. Không còn câu hỏi mở. Ca `classes-real.spec.ts:113` xanh. |
 | V0.14 | Sheet 5 (danh sách học viên NO 2), 6, 7 (7.1, 7.2, 7.3) | Sửa 2026-11-18 (F1-35, `DEC-2026-1117-user-avatar-upload`, chưa duyệt hình). Cột "Học viên" của bảng nay hiện ảnh đại diện thật của học viên (hoặc chữ viết tắt khi chưa có ảnh hoặc ảnh lỗi), đọc từ `avatarVersion` của F1 #26. Đồng bộ số phiên bản ở Sheet 1 (đang ghi V0.11 trong khi lịch sử đã tới V0.13). | 2026/11/18 | Claude |
+| V0.15 | Hiện trạng bản dựng | Sửa 2026-11-22. **Chưa duyệt hình, RD không đổi, chỉ trình bày.** Gốc trang là `PageContainer variant="content"` và thẻ bảng `grow`, nên bảng dãn tới sát chân trang, padding do layout shared giữ (cùng cách Admin). Bỏ dòng tóm tắt lịch lặp ở đầu thẻ "Lịch học"; bảng lịch xếp hai cột, ghi chú trải hết chiều rộng; "Mở trong danh sách học viên" dùng `SeeAllLink`; khối "Học viên của lớp" dãn hết chiều cao còn lại. | 2026/11/22 | Claude |
+| V0.16 | Sheet 4 (4.6 Hiện trạng bản dựng) | Sửa 2026/11/23, **chưa duyệt hình, RD không đổi, chỉ trình bày**: bảng học viên của lớp (9 cột) bỏ độ rộng tối thiểu (`DataTable minWidth={0}`, trước là 720). Từ cửa sổ rộng 1200px trở lên bảng vừa khung; ở 1100px còn cuộn ngang khoảng 77px (chín cột không đủ chỗ). Chữ dài xuống dòng (tối đa hai dòng). Mã: `05-coding/frontend/src/views/teacher/class-detail/ui/class-detail-view.tsx:310`. Ảnh chụp: `06-plan/reports/261123-0030-giao-bai-man-rieng/img-cuon-ngang/` (`ins0205`) | 2026/11/23 | AI |
 
 ---
 
@@ -342,6 +344,7 @@ Bảng 4.6 ghi những gì bản dựng Next.js đang làm ở trang chi tiết 
 | Ảnh đại diện học viên (V0.14) | Cột "Học viên" hiện `UserAvatar` cỡ nhỏ trước tên, dữ liệu `avatarVersion` của từng dòng (F1 #26); không có ảnh hoặc ảnh lỗi thì chữ viết tắt. Chưa duyệt hình | [Nguồn: 05-coding/frontend/src/views/teacher/class-detail/ui/class-detail-view.tsx:170-175], [Nguồn: 05-coding/frontend/src/entities/class/api/real-class.ts:162,176] |
 | Nút Quay lại (Q2) | `IconAction` mũi tên với `href="/instructor/classes"`, về danh sách lớp kể cả khi vào ngay sau khi tạo lớp (`INS0201` chuyển sang trang này bằng `router.push`). Chưa duyệt hình | [Nguồn: 05-coding/frontend/src/views/teacher/class-detail/ui/class-detail-view.tsx:72-77], [Nguồn: 05-coding/frontend/src/views/teacher/class-management/ui/class-management-view.tsx:237] |
 | Mục nav sáng (Q3) | Không cần mã riêng: `/instructor/classes/{id}` khớp tiền tố mục "Lớp của tôi" và `instructorActiveHrefOverride` không xử lý route này. Liên kết tên học viên ở bảng không mang `from=`, nên trang chi tiết học viên tiếp tục sáng "Lớp của tôi". Chưa duyệt hình | [Nguồn: 05-coding/frontend/src/widgets/app-shell/ui/instructor-sidebar.tsx:52-64], [Nguồn: 05-coding/frontend/src/views/teacher/class-detail/ui/class-detail-view.tsx:105] |
+| Bảng học viên bỏ độ rộng tối thiểu (2026/11/23) | `DataTable minWidth={0}` (trước là 720). Chín cột: từ cửa sổ rộng 1200px trở lên bảng vừa khung; ở 1100px còn cuộn ngang khoảng 77px. Chữ dài xuống dòng (tối đa hai dòng). Chứng cứ: ảnh chụp `ins0205` trong `06-plan/reports/261123-0030-giao-bai-man-rieng/img-cuon-ngang/` | [Nguồn: 05-coding/frontend/src/views/teacher/class-detail/ui/class-detail-view.tsx:310] |
 
 **Khoảng trống còn mở** (chưa làm, không tính là đã xong):
 

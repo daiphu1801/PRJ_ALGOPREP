@@ -68,7 +68,7 @@ test("filters narrow the list and deleting asks first", async ({ page }) => {
   await expect(dialog).toContainText("Xoá bài Course Schedule IV?");
   await dialog.getByRole("button", { name: "Xoá" }).click();
 
-  await expect(page.getByText("1 / 21 bài")).toBeVisible();
+  await expect(page.getByText("1 / 20 bài")).toBeVisible();
 });
 
 for (const theme of ["light", "dark"] as const) {

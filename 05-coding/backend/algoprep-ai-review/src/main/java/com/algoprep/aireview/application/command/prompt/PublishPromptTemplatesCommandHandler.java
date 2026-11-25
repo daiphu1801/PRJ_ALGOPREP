@@ -84,11 +84,18 @@ class PublishPromptTemplatesCommandHandler implements PublishPromptTemplatesUseC
     }
     PromptTemplate draft = templates.find(feature, PromptStatus.DRAFT).orElse(null);
     PromptContent base = draft != null ? draft.content() : active.content();
+    Integer maxTokens = change.maxTokens() == null ? base.maxTokens() : change.maxTokens();
+    if (active.content().maxTokens() == null
+        && maxTokens != null
+        && maxTokens == CallOptions.maxTokensFor(feature)) {
+      maxTokens = null;
+    }
     PromptContent content =
         new PromptContent(
             pick(change.systemInstruction(), base.systemInstruction()),
             pick(change.modelId(), base.modelId()),
-            change.guards() != null ? change.guards() : base.guards());
+            change.guards() != null ? change.guards() : base.guards(),
+            maxTokens);
     // An inherited ACTIVE model is trusted even when the allowed list changed since (the seed uses
     // the alias 'default'); anything else must be on the list.
     if (!content.modelId().equals(active.content().modelId())
@@ -96,6 +103,7 @@ class PublishPromptTemplatesCommandHandler implements PublishPromptTemplatesUseC
       throw new AiPromptRuleException(
           AiPromptRuleException.MODEL_NOT_ALLOWED, "Model is not on the allowed list");
     }
+    content.validateMaxTokens(feature, models.maxOutputTokens(content.modelId()));
     return new Plan(change, active, draft, content);
   }
 
@@ -126,6 +134,7 @@ class PublishPromptTemplatesCommandHandler implements PublishPromptTemplatesUseC
     Map<String, Object> map = new LinkedHashMap<>();
     map.put("version", template.version());
     map.put("modelId", template.content().modelId());
+    map.put("maxTokens", template.content().effectiveMaxTokens(template.featureCode()));
     map.put("responseGuards", template.content().guards());
     return JSON.writeValueAsString(map);
   }

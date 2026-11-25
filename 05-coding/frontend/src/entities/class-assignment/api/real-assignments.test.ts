@@ -110,7 +110,9 @@ describe("realAssignmentSummary (#50)", () => {
 });
 
 describe("realListAssignable (#51)", () => {
-  it("maps the bank rows and sends the search and page", async () => {
+  const base = { classId: "c1", q: "", level: "all", topic: "all", page: 1 };
+
+  it("maps the bank rows with the assigned flag and sends search, filters and page", async () => {
     get.mockResolvedValue({
       items: [
         {
@@ -118,24 +120,49 @@ describe("realListAssignable (#51)", () => {
           code: "P-9",
           title: "Word Break",
           levelCode: "HARD",
-          topicNames: [],
+          topicNames: ["Quy hoạch động", "Đệ quy"],
+          assigned: true,
         },
       ],
       page,
     });
-    const result = await realListAssignable("c1", " word ", 2);
+    const result = await realListAssignable({
+      ...base,
+      q: " word ",
+      level: "HARD",
+      topic: "Quy hoạch động",
+      page: 2,
+    });
     expect(get).toHaveBeenCalledWith(`${B}/classes/c1/assignable-problems`, {
       q: "word",
+      levelCode: "HARD",
+      topic: "Quy hoạch động",
       page: 2,
     });
     expect(result.items).toEqual([
-      { id: "p9", title: "Word Break", topic: "", difficulty: "HARD" },
+      {
+        id: "p9",
+        code: "P-9",
+        title: "Word Break",
+        topic: "Quy hoạch động",
+        topics: ["Quy hoạch động", "Đệ quy"],
+        difficulty: "HARD",
+        assigned: true,
+      },
     ]);
+  });
+
+  it("leaves the filters out while they read 'all'", async () => {
+    get.mockResolvedValue({ items: [], page });
+    await realListAssignable(base);
+    expect(get).toHaveBeenCalledWith(`${B}/classes/c1/assignable-problems`, {
+      page: 1,
+    });
   });
 
   it("rethrows PRB-005", async () => {
     get.mockRejectedValue(new ApiError("PRB-005", 403));
-    await expect(realListAssignable("c1", "", 1)).rejects.toMatchObject({
+    await expect(realListAssignable(base)).rejects.toMatchObject({
       code: "PRB-005",
     });
   });

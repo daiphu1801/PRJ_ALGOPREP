@@ -24,6 +24,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 /**
@@ -33,6 +35,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 class RunReferenceSolutionQueryHandler implements RunReferenceSolutionUseCase {
+  private static final Logger LOG = LoggerFactory.getLogger(RunReferenceSolutionQueryHandler.class);
   static final int MAX_SOURCE_BYTES = 65_536;
   private static final Set<String> LANGUAGES = Set.of("JAVA", "CPP", "PYTHON");
 
@@ -89,11 +92,21 @@ class RunReferenceSolutionQueryHandler implements RunReferenceSolutionUseCase {
         throw new IllegalStateException("Sandbox answered a different number of cases");
       }
       return result;
-    } catch (ServiceUnavailableException storage) {
+    } catch (ServiceUnavailableException | DomainRuleViolationException known) {
+      // Storage outage (PRB-052) or a data problem the author can fix (PRB-060): keep the code.
       quota.refund(actor, requestId);
-      throw storage;
+      throw known;
     } catch (RuntimeException sandbox) {
       quota.refund(actor, requestId);
+      // The client only sees PRB-050; the cause goes to the log (ids and counts only, never source
+      // or testcase data).
+      LOG.error(
+          "Reference solution run failed: problem={}, language={}, functionWrapper={}, cases={}",
+          problem.id(),
+          code.language(),
+          problem.functionWrapperSupported(),
+          cases.size(),
+          sandbox);
       throw new ServiceUnavailableException("PRB-050", "Sample solution run unavailable", null);
     }
   }

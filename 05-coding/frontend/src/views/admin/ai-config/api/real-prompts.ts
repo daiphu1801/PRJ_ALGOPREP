@@ -4,7 +4,7 @@
 // `useApiErrorMessage`; nothing here turns an error into an outcome.
 //
 // Not served by the backend, so not shown in real mode: the history author (no field in #15) and
-// the token cap per version (one read-only `maxTokens` per list, shown as the prompt's limit).
+// the output token cap stored per prompt version.
 import { api, ApiError } from "@/shared/api";
 import { formatDateVN } from "@/shared/lib";
 import { describeChanges } from "../model/changes";
@@ -64,11 +64,6 @@ function isGuarded(feature: AiFeatureKey): feature is GuardedFeature {
   return (GUARDED_FEATURES as AiFeatureKey[]).includes(feature);
 }
 
-/** 1600 becomes "1.600 token", the way the screen has always printed the cap. */
-function formatTokens(value: number): string {
-  return `${new Intl.NumberFormat("vi-VN").format(value)} token`;
-}
-
 function toGuardSet(dto: GuardsDto): GuardSet {
   return {
     noFullSolution: dto.noFullSolution,
@@ -94,6 +89,7 @@ function toDraft(dto: ItemDto, feature: AiFeatureKey): PromptDraft {
   return {
     systemInstruction: dto.systemInstruction,
     modelId: dto.modelId,
+    maxTokens: dto.maxTokens,
     guards:
       isGuarded(feature) && dto.responseGuards
         ? toGuardSet(dto.responseGuards)
@@ -143,7 +139,7 @@ export function toPage(
       status: "live" as const,
       modelId: active.modelId,
       systemInstruction: active.systemInstruction,
-      maxTokens: formatTokens(active.maxTokens),
+      maxTokens: active.maxTokens,
       updatedAt: formatDateVN(active.publishedAt ?? active.createdAt),
     };
   });
@@ -179,6 +175,7 @@ export type SaveDraftInput = {
   feature: AiFeatureKey;
   systemInstruction: string;
   modelId: string;
+  maxTokens: number;
   /** Null for testcase generation (the server rejects guards there: AIR-V13). */
   guards: GuardSet | null;
 };
@@ -190,6 +187,7 @@ export async function realSavePromptDraft(
   await api.put(`${BASE}/${FEATURE_CODE[input.feature]}/draft`, {
     systemInstruction: input.systemInstruction,
     modelId: input.modelId,
+    maxTokens: input.maxTokens,
     responseGuards:
       isGuarded(input.feature) && input.guards
         ? toGuardsDto(input.guards)
@@ -201,7 +199,7 @@ export type PublishInput = { saved: AiConfigPage; draft: AiConfigPage };
 
 /**
  * #17: one atomic call for every tab with a pending change. Each change carries the full values
- * (instruction, model, guards) so a stored server DRAFT can never leak into a tab the admin reverted;
+ * (instruction, model, output cap, guards) so a stored server DRAFT cannot leak into a reverted tab;
  * `expectedActivePromptId` is the id loaded with the page (AIR-201 on a stale one).
  */
 export async function realPublishPrompts(
@@ -216,6 +214,7 @@ export async function realPublishPrompts(
       expectedActivePromptId: input.saved.activeIds[change.feature],
       systemInstruction: prompt.systemInstruction,
       modelId: prompt.modelId,
+      maxTokens: Number(prompt.maxTokens),
       responseGuards: isGuarded(change.feature)
         ? toGuardsDto(input.draft.guards[change.feature])
         : null,

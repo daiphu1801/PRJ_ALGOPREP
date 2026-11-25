@@ -1,5 +1,7 @@
 # DD API — Module `judge-orchestration` (F4)
 
+**Cập nhật 2026-11-22 — `ADM0401` luồng chấm (đã dựng):** snapshot quản trị (mục 16, endpoint #13) thêm `finishedLastMinute`, `estimatedClearSeconds` và `consumers { target, active, reportedAt, lastScaling }`; giữ nguyên mọi trường cũ, kể cả `workerAutoscaleMax`. `consumers` đọc bảng `judge.worker_status` do worker ghi (BD `02-bd/database/F4_judge-orchestration.md` mục 1.11), dòng cũ hơn 60 giây trả `null`. Lô STOMP `/topic/admin/queue` mang cùng hình dạng. Không thêm endpoint, không đổi quyền, không thêm mã lỗi. Theo `DEC-2026-1122-f4-queue-consumers-and-throughput-on-adm0401`.
+
 **Cập nhật 2026-11-16 — F4-14 (đã có mã backend, chưa nối FE):** mã tại `SubmissionReadProjection.java:143` (`queue`) và `:157` (`estimate`), truy vấn tại `JdbcSubmissionReadRepository.java:101` và `:115` (lọc `updated_at`, theo ghi chú mục 9.4), DTO `SubmissionReads.java:105`. Hợp đồng bên dưới giữ nguyên. Ban đầu (2026-11-15, dự kiến): endpoint #6 (`GET /submissions/{submissionId}/progress`) có thêm đối tượng tuỳ chọn `queue` (số bài đang chờ phía trước và thời gian chờ ước tính), chỉ khác `null` khi `status = PENDING` (mục 9.2, 9.4, 9.5). Không thêm endpoint, không thêm bản tin STOMP, không đổi quyền. Theo quyết định của chủ dự án 2026-11-15, yêu cầu `01-rd/req/F4_judge-orchestration.md` F4-14, BD `02-bd/architecture/F4_judge-orchestration.md` mục 8a, quy tắc `03-dd/logic/F4_judge-orchestration.md` BR-JD-17.
 
 **Cập nhật2026-11-12 — ACCEPT-02:** trần `workerAutoscaleMax` trong queue snapshot đọc `judge.autoscale.max-workers` deployment, mặc định8, phải dương; runtime dùng cùng giá trị và guard pool >= trần+10. Hikari chờ kết nối2000ms; lỗi lấy connection/mở transaction của submission detail/progress trả503 JDG-506 cố định, không SQL/cause. Theo `DEC-2026-1112-f4-worker-scaling-and-db-wait`; không đổi route/response shape hoặc quyền hiện hành.
@@ -265,7 +267,7 @@ Mỗi 5 giây máy chủ đẩy một lô (`ADM0401` Q1 dòng 687), chỉ khi c�
 | :--- | :--- | :--- |
 | `type` | string | `QUEUE_BATCH` |
 | `generatedAt` | ISO-8601 | |
-| `snapshot` | object | cùng hình dạng phản hồi endpoint #13 |
+| `snapshot` | object | cùng hình dạng phản hồi endpoint #13, gồm cả `finishedLastMinute`, `estimatedClearSeconds` và `consumers` (mục 16.2, thêm 2026-11-22) |
 | `jobCounts` | object | `{ waiting, failed, all }`, cùng hình dạng `QueueJobCountsDto` |
 | `infraSummary` | object | `{ warnCount, errorCount }` |
 
@@ -1028,6 +1030,8 @@ Xác thực JWT; quyền `JUDGE_QUEUE_MONITOR:READ` (`02-bd/security/F4_judge-or
 
 ### 16.2 Response 200 (`QueueSnapshotDto`)
 
+Bảng 16.2 liệt kê trường của phản hồi; các trường từ `finishedLastMinute` trở xuống là mới, cùng `workerAutoscaleMax` (trường cũ, nay thêm một cách dùng) phục vụ khối "Luồng chấm" của `ADM0401`; mọi trường cũ giữ nguyên.
+
 | Trường | Kiểu | Ghi chú |
 | :--- | :--- | :--- |
 | `generatedAt` | ISO-8601 | |
@@ -1037,7 +1041,54 @@ Xác thực JWT; quyền `JUDGE_QUEUE_MONITOR:READ` (`02-bd/security/F4_judge-or
 | `autoscaleJobThreshold` | int | cho dòng mô tả của công tắc |
 | `avgWaitMillis` | int hoặc null | trung bình `started_grading_at - submitted_at` của job đã bắt đầu chấm trong **một giờ gần nhất**; null khi không có job nào (`ADM0401` Sheet 5 khu vực E NO 4 dòng 325) |
 | `latencyCapSeconds` | int | mẫu số thanh độ trễ |
-| `workerAutoscaleMax` | int | Trần cấu hình tự động mở rộng từ `application.yml`; chỉ dùng trong chú giải công tắc, không hiển thị như quy mô worker hiện tại |
+| `workerAutoscaleMax` | int | Trần cấu hình tự động mở rộng từ `application.yml` (`judge.autoscale.max-workers`). Từ 2026-11-22 màn dùng làm mẫu số "đang chạy / tối đa" của khối Luồng chấm; vẫn không phải quy mô worker hiện tại |
+| `finishedLastMinute` | int | `>= 0`, không bao giờ `null`. Số bài nộp vào một trong sáu trạng thái cuối trong 60 giây gần nhất. Dùng lại `SubmissionReadRepository.finishedLastMinute()` của F4-14 (mục 9), không thêm SQL. Màn đọc là lượt mỗi phút (thêm 2026-11-22) |
+| `estimatedClearSeconds` | int hoặc null | `SubmissionReadProjection.estimate(pendingCount, finishedLastMinute)` = `ceil(pendingCount / (finishedLastMinute / 60))`, tối đa 3600. `null` khi `finishedLastMinute < 3` hoặc `pendingCount = 0`. Đang tạm dừng thì `finishedLastMinute` về 0 nên cũng `null`. Công thức giữ nguyên `DEC-2026-1115-f4-queue-wait-in-progress-snapshot` (thêm 2026-11-22) |
+| `consumers` | object hoặc null | Số luồng chấm bài do worker báo. `null` khi bảng `worker_status` chưa có dòng hoặc `reportedAt` cũ hơn 60 giây tính theo giờ DB; khi `null` client không dựng số nào (thêm 2026-11-22) |
+| `consumers.target` | int | `>= 1`; số consumer mục tiêu, từ `consumers_target` |
+| `consumers.active` | int | `>= 0`; số consumer đang chạy lúc báo, từ `consumers_active`; có thể khác `target` khi consumer thừa còn chờ bài đang chấm xong |
+| `consumers.reportedAt` | ISO-8601 | Giờ DB lúc worker báo (`reported_at`) |
+| `consumers.lastScaling` | object hoặc null | Lần đổi mục tiêu gần nhất; `null` khi worker chưa từng đổi (nhóm `last_scale_*` đều NULL) |
+| `consumers.lastScaling.at` | ISO-8601 | Giờ DB lúc đổi (`last_scale_at`) |
+| `consumers.lastScaling.from`, `.to` | int | Mục tiêu trước và sau, `>= 1`, khác nhau; `to > from` là tăng, `to < from` là giảm |
+| `consumers.lastScaling.reason` | enum | `BACKLOG` (hàng đợi vượt ngưỡng), `IDLE` (hàng đợi rỗng bốn lượt liên tiếp), `DISABLED` (tắt tự động mở rộng) |
+| `consumers.lastScaling.pendingCount` | int | `>= 0`; số job `PENDING` lúc đổi (`last_scale_pending`) |
+
+Bảng 16.2: Trường của `QueueSnapshotDto` (các hàng từ `finishedLastMinute` trở xuống thêm 2026-11-22).
+
+Ví dụ phản hồi khi worker đang báo, đã từng đổi số luồng, hàng đợi đang dồn (giá trị minh hoạ):
+
+```json
+{
+  "generatedAt": "2026-11-22T10:30:05Z",
+  "status": "BACKLOGGED",
+  "pendingCount": 24,
+  "queueConsumptionPaused": false,
+  "autoscaleEnabled": true,
+  "autoscaleJobThreshold": 20,
+  "avgWaitMillis": 4200,
+  "latencyCapSeconds": 10,
+  "workerAutoscaleMax": 8,
+  "finishedLastMinute": 96,
+  "estimatedClearSeconds": 15,
+  "consumers": {
+    "target": 3,
+    "active": 3,
+    "reportedAt": "2026-11-22T10:30:03Z",
+    "lastScaling": {
+      "at": "2026-11-22T10:29:48Z",
+      "from": 2,
+      "to": 3,
+      "reason": "BACKLOG",
+      "pendingCount": 31
+    }
+  }
+}
+```
+
+Ví dụ khi worker im lặng (không có báo cáo trong 60 giây): các trường còn lại như trên nhưng `"consumers": null`; `finishedLastMinute` và `estimatedClearSeconds` vẫn có giá trị vì tính từ `judge.submissions`.
+
+**Quy tắc.** (1) Không đổi tên, kiểu hay ý nghĩa trường cũ; client cũ bỏ qua trường mới. (2) `consumers` chỉ phản ánh worker được bầu (một tiến trình, JOB-JD-05); nó **không** là danh sách worker và không có tải, uptime hay vCPU. (3) Ngưỡng cũ 60 giây là hằng số trong mã, không phải tham số của `cluster_settings` và không có ô nhập. (4) Lỗi đọc `worker_status` (ví dụ bảng chưa tạo, lỗi SQL) **không** làm hỏng snapshot: `consumers = null`, ghi log cảnh báo, các trường khác giữ nguyên `[SoT: Suy luận]`; lỗi đọc `submissions` vẫn theo hành vi chung của endpoint. (5) Không dùng mã lỗi mới: các mã hiện có của mục 16.3 là đủ.
 
 ### 16.3 Lỗi
 
@@ -1045,7 +1096,7 @@ Xác thực JWT; quyền `JUDGE_QUEUE_MONITOR:READ` (`02-bd/security/F4_judge-or
 
 ### 16.4 Luồng xử lý và dữ liệu
 
-BR-JD-15. Đọc `cluster_settings` (một dòng), đếm `submissions` theo `status`, tính độ trễ từ các mốc đã lưu; không cần gọi Prometheus cho snapshot. Bảng: `judge.cluster_settings` (R), `judge.submissions` (R, chỉ mục `(status, updated_at)`). Go-judge chỉ công bố metric tổng hợp, không có mã/trạng thái/tải từng worker theo [tài liệu API chính thức](https://docs.goj.ac/api); owner 2026-10-25 đã bỏ khối worker chi tiết.
+BR-JD-15. Đọc `cluster_settings` (một dòng), đếm `submissions` theo `status`, tính độ trễ từ các mốc đã lưu, đếm `finishedLastMinute` rồi tính `estimatedClearSeconds`, đọc dòng `worker_status` để dựng `consumers`; snapshot **không gọi Prometheus** và không phụ thuộc máy chủ đo đạc. Bảng: `judge.cluster_settings` (R), `judge.submissions` (R, chỉ mục `(status, updated_at)`), `judge.worker_status` (R, từ 2026-11-22). Bên ghi `worker_status`: JOB-JD-05 (`03-dd/jobs/F4_judge-orchestration.md`), không phải API này. Go-judge chỉ công bố metric tổng hợp, không có mã/trạng thái/tải từng worker theo [tài liệu API chính thức](https://docs.goj.ac/api); owner 2026-10-25 đã bỏ khối worker chi tiết; số luồng chấm của khối Luồng chấm là số consumer của chính F4 (không phải metric go-judge).
 
 ### 16.5 Test viewpoints
 
@@ -1054,8 +1105,17 @@ BR-JD-15. Đọc `cluster_settings` (một dòng), đếm `submissions` theo `st
 | T-QS-01 | Normal | Hàng đợi trống: `NORMAL`, `avgWaitMillis=null` |
 | T-QS-02 | Normal | 25 job `PENDING`, ngưỡng 20: `BACKLOGGED` |
 | T-QS-03 | Boundary | `queue_paused=true` và 25 job: `PAUSED` thắng `BACKLOGGED` |
-| T-QS-04 | Boundary | Không có Prometheus: snapshot vẫn đủ `status`, đếm job, độ trễ và cấu hình; không có trường danh sách worker |
+| T-QS-04 | Boundary | Không có Prometheus: snapshot vẫn đủ `status`, đếm job, độ trễ, cấu hình và `consumers` (đọc từ bảng); không có trường danh sách worker |
 | T-QS-05 | Security | Tài khoản không có `JUDGE_QUEUE_MONITOR:READ`: `JDG-301` |
+| T-QS-06 | Normal | `worker_status` có dòng `reported_at` cách 10 giây, mục tiêu 3, đang chạy 3, đã đổi 2 lên 3 vì `BACKLOG`: `consumers` có đủ trường, `lastScaling.from = 2`, `to = 3`, `reason = BACKLOG` |
+| T-QS-07 | Boundary | `reported_at` cách đúng 59 giây: `consumers` có; cách 61 giây: `consumers = null`; bảng chưa có dòng: `consumers = null`; trường khác của snapshot vẫn đủ |
+| T-QS-08 | Normal | Worker chưa từng đổi mục tiêu (nhóm `last_scale_*` NULL): `consumers` khác `null`, `lastScaling = null` |
+| T-QS-09 | Normal | `finishedLastMinute = 120`, `pendingCount = 24`: `estimatedClearSeconds = 12`; dùng cùng công thức `estimate` của F4-14 |
+| T-QS-10 | Boundary | Hai lượt chấm xong trong phút qua: `estimatedClearSeconds = null`; đúng ba lượt: có giá trị; 5000 job chờ và 3 lượt mỗi phút: không vượt 3600 |
+| T-QS-11 | Boundary | `pendingCount = 0`: `estimatedClearSeconds = null`; `finishedLastMinute` vẫn là số thật, không `null` |
+| T-QS-12 | Boundary | Đang tạm dừng (`queue_paused = true`) và phút qua không có lượt chấm xong: `status = PAUSED`, `finishedLastMinute = 0`, `estimatedClearSeconds = null` |
+| T-QS-13 | Abnormal | Lỗi đọc cơ sở dữ liệu khi lấy snapshot (kể cả phần `worker_status`, cùng một câu SQL trong một transaction chỉ-đọc): cả snapshot lỗi như mọi lần đọc khác của màn (fail-closed), không trả `consumers` rỗng giả; không có `JDG-5xx` mới. Lưu ý: dòng `worker_status` thiếu hoặc cũ là trường hợp bình thường (`consumers = null`), không phải lỗi |
+| T-QS-14 | Normal | Lô STOMP `QUEUE_BATCH`: `snapshot` mang ba trường mới giống phản hồi REST |
 
 ## 17. GET /admin/queue/jobs
 

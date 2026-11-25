@@ -66,6 +66,8 @@ const PAGE_SIZES = [12, 24, 48] as const;
 
 // The server already cuts the class block at the 3 most recently assigned classes (owner 2026-10-18).
 const SEARCH_MAX_LENGTH = 100;
+// Per class, so the side column stays about as tall as the table (owner 2026-11-23); the rest sit behind "Xem tất cả".
+const ASSIGNMENT_PER_CLASS = 3;
 
 type StatusFilter = SolveState | "all";
 type SortKey = "difficulty" | "acRate";
@@ -387,7 +389,7 @@ export function ProblemListView() {
       <div
         className={
           showSide
-            ? "grid grid-cols-1 gap-4 lg:[grid-template-columns:minmax(0,1fr)_268px]"
+            ? "grid grid-cols-1 items-start gap-4 lg:[grid-template-columns:minmax(0,1fr)_268px]"
             : "grid grid-cols-1 gap-4"
         }
       >
@@ -558,37 +560,49 @@ export function ProblemListView() {
                         {group.className}
                       </p>
                       <ul className="flex flex-col gap-2">
-                        {group.items.map((item) => (
-                          <li key={`${item.problemId}-${item.assignedAt}`}>
-                            <Link
-                              href={`/problems/${item.problemId}`}
-                              className="block rounded-lg border border-[var(--color-border)] px-2.5 py-2 hover:bg-[var(--color-row-hover)]"
-                            >
-                              <div className="flex items-center justify-between gap-2">
-                                <span className="truncate text-[12.5px] font-semibold">
-                                  {item.title}
-                                </span>
-                                {item.solveState ? (
-                                  <Badge
-                                    variant={
-                                      SOLVE_STATE_VARIANT[item.solveState]
-                                    }
-                                  >
-                                    {t(`state.${item.solveState}`)}
-                                  </Badge>
-                                ) : null}
-                              </div>
-                              <p className="text-[11.5px] text-[var(--color-text-muted)]">
-                                {t("assignment.meta", {
-                                  date: formatDateVN(item.assignedAt, {
-                                    locale,
-                                  }),
-                                })}
-                              </p>
-                            </Link>
-                          </li>
-                        ))}
+                        {group.items
+                          .slice(0, ASSIGNMENT_PER_CLASS)
+                          .map((item) => (
+                            <li key={`${item.problemId}-${item.assignedAt}`}>
+                              <Link
+                                href={`/problems/${item.problemId}`}
+                                className="block rounded-lg border border-[var(--color-border)] px-2.5 py-2 hover:bg-[var(--color-row-hover)]"
+                              >
+                                <div className="flex items-center justify-between gap-2">
+                                  <span className="truncate text-[12.5px] font-semibold">
+                                    {item.title}
+                                  </span>
+                                  {item.solveState ? (
+                                    <Badge
+                                      variant={
+                                        SOLVE_STATE_VARIANT[item.solveState]
+                                      }
+                                    >
+                                      {t(`state.${item.solveState}`)}
+                                    </Badge>
+                                  ) : null}
+                                </div>
+                                <p className="text-[11.5px] text-[var(--color-text-muted)]">
+                                  {t("assignment.meta", {
+                                    date: formatDateVN(item.assignedAt, {
+                                      locale,
+                                    }),
+                                  })}
+                                </p>
+                              </Link>
+                            </li>
+                          ))}
                       </ul>
+                      {group.items.length > ASSIGNMENT_PER_CLASS ? (
+                        <Link
+                          href={`/classes/${group.classId}`}
+                          className="mt-1.5 inline-block text-[12px] font-semibold text-[var(--color-primary)] hover:underline"
+                        >
+                          {t("assignment.viewAll", {
+                            count: group.items.length,
+                          })}
+                        </Link>
+                      ) : null}
                     </div>
                   ))
                 )}

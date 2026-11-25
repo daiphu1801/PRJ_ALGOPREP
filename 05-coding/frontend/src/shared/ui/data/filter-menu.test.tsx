@@ -61,4 +61,28 @@ describe("FilterMenu", () => {
     fireEvent.pointerDown(document.body);
     expect(screen.queryByRole("listbox")).toBeNull();
   });
+
+  it("lines the panel up with the left edge by default and the right edge with align=end", () => {
+    const { rerender } = render(
+      <FilterMenu
+        label="By level"
+        options={options}
+        value="all"
+        onValueChange={vi.fn()}
+      />,
+    );
+    fireEvent.click(screen.getByRole("button", { name: /^By level/ }));
+    expect(screen.getByRole("listbox")).toHaveClass("left-0");
+    rerender(
+      <FilterMenu
+        align="end"
+        label="By level"
+        options={options}
+        value="all"
+        onValueChange={vi.fn()}
+      />,
+    );
+    expect(screen.getByRole("listbox")).toHaveClass("right-0");
+    expect(screen.getByRole("listbox")).not.toHaveClass("left-0");
+  });
 });

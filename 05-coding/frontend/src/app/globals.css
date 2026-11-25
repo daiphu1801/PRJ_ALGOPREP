@@ -696,39 +696,89 @@ button:not(:disabled):active,
   background: color-mix(in srgb, var(--color-surface) 88%, transparent);
 }
 
+/* Keep the shell chrome in the viewport while longer pages scroll independently. */
+@media (width < 1024px), (height < 360px) {
+  /* Settings scrolls with the document here, so its sticky save bar must use that scrollport. */
+  .instructor-shell > main:has([data-settings-view]) {
+    overflow: visible;
+  }
+
+  /* The role filter follows document scrolling when the admin shell is not viewport-bound. */
+  .admin-shell > main:has(.permission-matrix-page) {
+    overflow: visible;
+  }
+}
+
+/*
+ * Admin and Instructor keep the chrome in the viewport and scroll their content in an inner box. The Student area does
+ * not (owner 2026-11-23): its pages use the browser's own scroll and the footer simply follows the content, so the
+ * rules below skip `.student-shell`. Its full-screen views (Workspace, running Mock Interview) are bound to the
+ * viewport again by the `[data-fullscreen-view]` block further down.
+ */
+@media (min-width: 1024px) and (min-height: 360px) {
+  .app-shell-viewport:not(.student-shell) {
+    height: calc(100 * var(--dvh1));
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .app-shell-viewport:not(.student-shell) > main {
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .app-shell-viewport:not(.student-shell) > :is(header, .student-footer-wrap),
+  .app-shell-viewport:not(.student-shell)
+    > main
+    > div
+    > :not([data-page-viewport]) {
+    flex-shrink: 0;
+  }
+
+  .app-shell-viewport:not(.student-shell)
+    [data-page-viewport]:not(:has([data-fullscreen-view])) {
+    overflow-y: auto;
+  }
+
+  .app-shell-viewport:not(.student-shell)
+    [data-page-viewport]:not(:has([data-fullscreen-view]))
+    > * {
+    flex-shrink: 0;
+  }
+}
+
 /*
  * Full-screen workspace (LeetCode-style). A view opts in by rendering any element with
- * `data-fullscreen-view`; the shell then fills the viewport: footer and the max-width cap go away and the
+ * `data-fullscreen-view`; the shell then fills the viewport: the footer is hidden and the
  * remaining height is handed down by flex, so no view needs to know the header height. Desktop only: below
  * `lg` the panes stack and the page scrolls normally.
  */
 @media (min-width: 1024px) {
   .student-shell:has([data-fullscreen-view]) {
-    height: 100dvh;
+    height: calc(100 * var(--dvh1));
     overflow: hidden;
+  }
+
+  .student-shell:has([data-fullscreen-view]) > header {
+    flex-shrink: 0;
   }
 
   .student-shell:has([data-fullscreen-view]) > main {
     display: flex;
     min-height: 0;
     flex-direction: column;
+    overflow: hidden;
   }
 
   .student-shell:has([data-fullscreen-view]) .student-main-inner {
     display: flex;
     min-height: 0;
-    max-width: none !important; /* beats PageContainer's inline max-width */
     flex: 1;
     flex-direction: column;
-    padding-bottom: 0.75rem;
   }
 
   .student-shell:has([data-fullscreen-view]) .student-footer-wrap {
     display: none;
-  }
-
-  .student-shell:has([data-fullscreen-view]) .student-header-bar {
-    max-width: none;
   }
 }
 
@@ -868,5 +918,41 @@ button:not(:disabled):active,
 @media (prefers-reduced-motion: reduce) {
   .bulk-pop-in {
     animation: none;
+  }
+}
+
+/*
+ * One global scale for large viewports: CSS `zoom` on <html> scales everything as one unit (rem text, the
+ * 437 px-sized font utilities, borders, icons, charts), so no component needs per-size overrides.
+ * Viewport units are NOT scaled by zoom (100dvh would render zoom-times too tall), so heights use
+ * `calc(N * var(--dvh1))` / `var(--vh1)` instead of `Ndvh` / `Nvh`. Media queries still read the real
+ * viewport, so breakpoints (lg, xl) keep following the actual window. Effective layout width is ~1280px at
+ * every tier; the height guard stops short windows from being scaled past what fits.
+ */
+:root {
+  --zoom: 1;
+  --dvh1: calc(1dvh / var(--zoom));
+  --vh1: calc(1vh / var(--zoom));
+}
+
+html {
+  zoom: var(--zoom);
+}
+
+@media (min-width: 1920px) and (min-height: 900px) {
+  :root {
+    --zoom: 1.5;
+  }
+}
+
+@media (min-width: 2560px) and (min-height: 1200px) {
+  :root {
+    --zoom: 2;
+  }
+}
+
+@media (min-width: 3840px) and (min-height: 1800px) {
+  :root {
+    --zoom: 3;
   }
 }

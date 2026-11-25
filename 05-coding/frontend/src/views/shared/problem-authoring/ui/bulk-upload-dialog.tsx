@@ -24,26 +24,46 @@ import {
   type BulkPairRow,
 } from "../model/bulk-pairs";
 
+/** One pair with the visibility the author settled on for it. */
+export type BulkUploadRow = {
+  pair: BulkPairRow<File>;
+  visibility: TestcaseVisibility;
+};
+
 type Props = {
   /** Testcases the problem already has: the 500 cap counts them. */
   existingCount: number;
+  /** Public (Sample) testcases already there: the first uploads fill the gap up to the publish minimum. */
+  existingPublic: number;
   onClose: () => void;
-  onUpload: (
-    pairs: BulkPairRow<File>[],
-    visibility: TestcaseVisibility,
-  ) => Promise<void>;
+  onUpload: (rows: BulkUploadRow[]) => Promise<void>;
 };
+
+// Publish checklist: at least 2 public testcases. The first pairs default to public until the problem has them.
+const PUBLIC_TARGET = 2;
 
 // Most faults a server answer toasts one by one; the rest would only push the first ones off screen.
 const MAX_ITEM_TOASTS = 3;
 
-export function BulkUploadDialog({ existingCount, onClose, onUpload }: Props) {
+export function BulkUploadDialog({
+  existingCount,
+  existingPublic,
+  onClose,
+  onUpload,
+}: Props) {
   const t = useT("problemAuthoring");
   const apiMessage = useApiErrorMessage();
   const [files, setFiles] = useState<File[]>([]);
-  const [visibility, setVisibility] = useState<TestcaseVisibility>("hidden");
+  // What the author changed by hand; every other row follows the default rule.
+  const [overrides, setOverrides] = useState<
+    Record<string, TestcaseVisibility>
+  >({});
   const [busy, setBusy] = useState(false);
   const { pairs, issues } = pairTestcaseFiles(files, existingCount);
+  const defaultPublic = Math.max(0, PUBLIC_TARGET - existingPublic);
+  const visibilityOf = (pair: BulkPairRow<File>): TestcaseVisibility =>
+    overrides[pair.key] ??
+    (pairs.indexOf(pair) < defaultPublic ? "public" : "hidden");
   const canUpload = pairs.length > 0 && issues.length === 0 && !busy;
 
   function describe(issue: BulkIssue): string {
@@ -71,7 +91,9 @@ export function BulkUploadDialog({ existingCount, onClose, onUpload }: Props) {
   async function submit() {
     setBusy(true);
     try {
-      await onUpload(pairs, visibility);
+      await onUpload(
+        pairs.map((pair) => ({ pair, visibility: visibilityOf(pair) })),
+      );
       onClose();
     } catch (error) {
       const items =
@@ -124,7 +146,10 @@ export function BulkUploadDialog({ existingCount, onClose, onUpload }: Props) {
             accept=".in,.out"
             multiple
             inputTestId="bulk-input"
-            onFiles={setFiles}
+            onFiles={(next) => {
+              setFiles(next);
+              setOverrides({});
+            }}
           >
             {files.length > 0 ? t("bulk.chooseAgain") : t("bulk.choose")}
           </FilePickerButton>
@@ -137,19 +162,11 @@ export function BulkUploadDialog({ existingCount, onClose, onUpload }: Props) {
       }
     >
       <p>{t("bulk.hint", { max: BULK_LIMITS.maxPairs })}</p>
-      <div className="mt-3 max-w-xs">
-        <SelectField
-          label={t("columnVisibility")}
-          value={visibility}
-          onChange={(event) =>
-            setVisibility(event.target.value as TestcaseVisibility)
-          }
-          options={[
-            { value: "public", label: t("visibility.public") },
-            { value: "hidden", label: t("visibility.hidden") },
-          ]}
-        />
-      </div>
+      {defaultPublic > 0 ? (
+        <p className="mt-2 text-[12.5px] text-[var(--color-text-muted)]">
+          {t("bulk.visibilityDefault", { count: defaultPublic })}
+        </p>
+      ) : null}
       {files.length > 0 ? (
         <div className="mt-3 flex flex-col gap-3">
           {issues.length > 0 ? (
@@ -185,6 +202,28 @@ export function BulkUploadDialog({ existingCount, onClose, onUpload }: Props) {
                 header: t("columnExpected"),
                 align: "right",
                 render: (row) => formatBytes(row.expected.size),
+              },
+              {
+                key: "visibility",
+                header: t("columnVisibility"),
+                width: "160px",
+                render: (row) => (
+                  <SelectField
+                    label={t("bulk.visibilityOf", { file: row.base })}
+                    hideLabel
+                    value={visibilityOf(row)}
+                    onChange={(event) =>
+                      setOverrides((previous) => ({
+                        ...previous,
+                        [row.key]: event.target.value as TestcaseVisibility,
+                      }))
+                    }
+                    options={[
+                      { value: "public", label: t("visibility.public") },
+                      { value: "hidden", label: t("visibility.hidden") },
+                    ]}
+                  />
+                ),
               },
             ]}
           />

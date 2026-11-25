@@ -90,7 +90,7 @@ class PromptTemplateController {
         t.content().modelId(),
         g == null ? null : new Guards(g.citeLines(), g.answerInVietnamese(), g.noFullSolution()),
         t.responseSchemaVersion(),
-        com.algoprep.aireview.domain.model.CallOptions.maxTokensFor(t.featureCode()),
+        t.content().effectiveMaxTokens(t.featureCode()),
         t.publishedAt(),
         t.createdAt());
   }
@@ -133,7 +133,12 @@ class PromptTemplateController {
     ResponseGuards guards = PromptRequests.guards(feature, body.get("responseGuards"), false);
     String model = PromptRequests.modelId(body.get("modelId"));
     // A missing or non-text model can never be on the allowed list, so it fails as AIR-202.
-    PromptContent content = new PromptContent(instruction, model == null ? "" : model, guards);
+    PromptContent content =
+        new PromptContent(
+            instruction,
+            model == null ? "" : model,
+            guards,
+            PromptRequests.maxTokens(body.get("maxTokens")));
     PromptTemplate saved =
         save.save(
             new SavePromptDraftCommand(

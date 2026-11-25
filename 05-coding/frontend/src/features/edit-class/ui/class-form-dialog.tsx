@@ -144,7 +144,7 @@ export function ClassFormDialog({
         </>
       }
     >
-      <div className="flex max-h-[70vh] flex-col gap-3 overflow-y-auto p-1 -m-1">
+      <div className="flex max-h-[calc(70*var(--vh1))] flex-col gap-3 overflow-y-auto p-1 -m-1">
         <TextField
           label={t("popup.classNameLabel")}
           value={name}

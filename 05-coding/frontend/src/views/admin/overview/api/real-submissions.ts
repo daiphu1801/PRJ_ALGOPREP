@@ -136,12 +136,10 @@ export async function realDifficultyBreakdown(): Promise<DifficultyBreakdown> {
 
 export async function realSubmissionsByDay(): Promise<SubmissionsByDay> {
   const dto = await api.get<DaysDto>(`${BASE}/submissions/by-day`);
-  const peak = Math.max(0, ...dto.columns.map((c) => c.count));
   return {
-    // The dot grid has ten rows: each column is scaled to the busiest day of the week.
     columns: dto.columns.map((c) => ({
       label: dayLabel(c.day),
-      intensity: peak === 0 ? 0 : Math.round((c.count / peak) * 10),
+      count: c.count,
     })),
     weekTotal: dto.weekTotal,
     dailyAverage: dto.dailyAverage,

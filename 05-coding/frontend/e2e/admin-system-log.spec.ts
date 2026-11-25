@@ -32,7 +32,9 @@ test("system log shows only human admin actions, with no rejudge leftovers", asy
   await expect(page.getByText(/RJ-0139/)).toHaveCount(0);
 });
 
-test("category filter and search combine with AND", async ({ page }) => {
+test("pagination resets when category and search filters change", async ({
+  page,
+}) => {
   await page.goto("/admin/system-log");
 
   // Scoped to the event list: the category chart on the right is also a <ul>.
@@ -41,10 +43,18 @@ test("category filter and search combine with AND", async ({ page }) => {
     .getByRole("listitem");
   // The mock serves a first page of 50 (the ten sample rows and their synthetic repeats).
   await expect(list).toHaveCount(50);
+  await page.getByRole("button", { name: "Trang sau" }).click();
+  await expect(
+    page.getByRole("navigation", { name: "Trang 2 · 50 sự kiện" }),
+  ).toBeVisible();
+  await expect(list).toHaveCount(50);
 
   await pickFilter(page, "Lọc theo phân loại", "Xác thực");
   // The mock filters like the server: a full first page of the matching rows.
   await expect(list).toHaveCount(50);
+  await expect(
+    page.getByRole("button", { name: "Trang trước" }),
+  ).toBeDisabled();
   await expect(
     list.filter({ hasText: "Khóa tài khoản hmtri" }).first(),
   ).toBeVisible();

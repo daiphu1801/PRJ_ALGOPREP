@@ -140,7 +140,8 @@ class ClassAssignmentQueryHandlerTest {
     owns();
     assertThatThrownBy(() -> handler.assignable(instructor, UUID.randomUUID(), Map.of()))
         .isInstanceOf(PermissionDeniedException.class);
-    var found = new Assignable(UUID.randomUUID(), "C", "T", "easy", "Easy", List.of("Arrays"));
+    var found =
+        new Assignable(UUID.randomUUID(), "C", "T", "easy", "Easy", List.of("Arrays"), true);
     when(assignments.assignable(
             any(),
             any(),

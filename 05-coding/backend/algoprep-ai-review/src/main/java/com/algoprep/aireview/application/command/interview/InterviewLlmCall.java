@@ -120,7 +120,7 @@ class InterviewLlmCall {
               prompt.data(),
               new CallOptions(
                   template.modelId(),
-                  CallOptions.DEFAULT_MAX_TOKENS,
+                  template.maxTokens(),
                   Duration.ofSeconds(firstTokenSec),
                   TURN_TOTAL_TIMEOUT))
           .takeUntilOther(Mono.fromFuture(live.gone().thenApply(none -> Boolean.TRUE)))
@@ -178,7 +178,7 @@ class InterviewLlmCall {
                   prompt.data(),
                   new CallOptions(
                       template.modelId(),
-                      CallOptions.DEFAULT_MAX_TOKENS,
+                      template.maxTokens(),
                       Duration.ofSeconds(firstTokenSec),
                       Duration.ofSeconds(callTotalSec)))
               .collectList()

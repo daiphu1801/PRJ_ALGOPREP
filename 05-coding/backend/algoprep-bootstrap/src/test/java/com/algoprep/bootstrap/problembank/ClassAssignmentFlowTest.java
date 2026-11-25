@@ -286,20 +286,45 @@ class ClassAssignmentFlowTest {
   }
 
   @Test
-  void assignableProblemsExcludeAssignedAndWithdrawnOnesAndListARemovedOneAgain() throws Exception {
+  void assignableProblemsListAssignedOnesFlaggedAndHideUnpublishedOnes() throws Exception {
     var free = problem("FREE", "PUBLISHED", false);
     var taken = problem("TAKEN", "PUBLISHED", false);
     var back = problem("BACK", "PUBLISHED", false);
     problem("DRAFT", "UNPUBLISHED", false);
     give(taken, classA, "2026-03-01T00:00:00Z", null);
     give(back, classA, "2026-03-01T00:00:00Z", "2026-03-02T00:00:00Z");
+    var topicName = jdbc.queryForObject("SELECT name FROM problem.topics LIMIT 1", String.class);
+    jdbc.update(
+        "INSERT INTO problem.problem_topics(problem_id, topic_id) SELECT ?, id FROM problem.topics WHERE name = ?",
+        free,
+        topicName);
+    var levelCode =
+        jdbc.queryForObject(
+            "SELECT code FROM problem.problem_levels WHERE id = ?::uuid", String.class, levelEasy);
+    var url = BASE + "/classes/" + classA + "/assignable-problems";
 
-    var json = body(get(BASE + "/classes/" + classA + "/assignable-problems", teacher));
+    var json = body(get(url, teacher));
 
-    var codes = new ArrayList<String>();
-    json.path("items").forEach(i -> codes.add(i.path("code").asString()));
-    assertThat(codes).containsExactly("BACK", "FREE");
-    assertThat(free).isNotNull();
+    var assigned = new HashMap<String, Boolean>();
+    json.path("items")
+        .forEach(i -> assigned.put(i.path("code").asString(), i.path("assigned").asBoolean()));
+    assertThat(assigned)
+        .containsOnlyKeys("BACK", "FREE", "TAKEN")
+        .containsEntry("TAKEN", true)
+        .containsEntry("BACK", false)
+        .containsEntry("FREE", false);
+    assertThat(json.path("page").path("totalItems").asLong()).isEqualTo(3);
+
+    var byLevel = body(get(url + "?levelCode=" + levelCode, teacher));
+    assertThat(byLevel.path("items")).hasSize(3);
+    assertThat(body(get(url + "?levelCode=NO_SUCH_LEVEL", teacher)).path("items")).isEmpty();
+
+    var byTopic = body(get(url + "?topic=" + topicName.replace(" ", "%20"), teacher));
+    assertThat(byTopic.path("items")).hasSize(1);
+    assertThat(byTopic.path("items").get(0).path("code").asString()).isEqualTo("FREE");
+    assertThat(byTopic.path("page").path("totalItems").asLong()).isEqualTo(1);
+    assertThat(body(get(url + "?topic=No%20such%20topic", teacher)).path("items")).isEmpty();
+    assertThat(body(get(url + "?topic=&levelCode=", teacher)).path("items")).hasSize(3);
     assertThat(get(BASE + "/classes/" + rivalClass + "/assignable-problems", teacher).getStatus())
         .isEqualTo(403);
   }

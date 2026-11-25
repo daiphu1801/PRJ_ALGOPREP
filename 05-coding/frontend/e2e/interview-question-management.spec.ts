@@ -54,7 +54,7 @@ test("filters and paging narrow the table", async ({ page }) => {
 
   await page.getByRole("button", { name: "Xoá câu hỏi IQ-052" }).click();
   await page.getByRole("dialog").getByRole("button", { name: "Xoá" }).click();
-  await expect(page.getByText("1 / 9 câu hỏi")).toBeVisible();
+  await expect(page.getByText("1 / 8 câu hỏi")).toBeVisible();
 });
 
 test("admin adds a difficulty level and it shows up in the filter", async ({

@@ -1,9 +1,10 @@
 // PROTOTYPE — no DD yet. See 06-plan/PROTOTYPE_DEBT.md
 "use client";
 
+import { Download, FolderDown } from "lucide-react";
 import { ApiError } from "@/shared/api";
 import { useApiErrorMessage, useT } from "@/shared/i18n";
-import { Card } from "@/shared/ui";
+import { Button, Card } from "@/shared/ui";
 import { toast } from "@/shared/lib/toast-store";
 import { useExportData, type ExportResult } from "@/features/export-my-data";
 
@@ -33,7 +34,14 @@ export function DataExportCard() {
   }
 
   return (
-    <Card title={t("dataExport.title")}>
+    <Card
+      title={
+        <span className="flex items-center gap-2">
+          <FolderDown size={18} aria-hidden="true" />
+          {t("dataExport.title")}
+        </span>
+      }
+    >
       <div className="flex flex-col gap-2">
         <ExportButton
           label={t("dataExport.exportSubmissions")}
@@ -64,16 +72,19 @@ function ExportButton({
   disabled: boolean;
 }) {
   return (
-    <button
+    <Button
       type="button"
+      variant="ghost"
       onClick={onClick}
       disabled={disabled}
-      className="flex h-9 items-center justify-between rounded-lg border border-[var(--color-border)] px-3 text-sm font-semibold text-[var(--color-text)] hover:bg-[var(--color-surface-hover)] disabled:opacity-50"
+      aria-busy={disabled || undefined}
+      className="h-auto min-h-11 justify-start gap-2 rounded-lg border border-[var(--color-border)] px-3 py-2 text-left whitespace-normal"
     >
-      <span>{label}</span>
-      <span className="font-mono text-xs text-[var(--color-text-subtle)]">
+      <Download size={16} aria-hidden="true" className="shrink-0" />
+      <span className="min-w-0 flex-1">{label}</span>
+      <span className="shrink-0 font-mono text-xs text-[var(--color-text-subtle)]">
         {format}
       </span>
-    </button>
+    </Button>
   );
 }

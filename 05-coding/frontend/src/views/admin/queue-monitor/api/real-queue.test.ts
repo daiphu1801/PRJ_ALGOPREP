@@ -78,6 +78,98 @@ it("maps the server snapshot to the shape the screen renders, with no workers", 
   });
   expect(summary.generatedAt).toBe(Date.parse("2026-11-14T10:00:00Z"));
 });
+const baseSnapshot = {
+  generatedAt: "2026-11-22T11:25:00Z",
+  status: "BACKLOGGED" as const,
+  pendingCount: 22,
+  queueConsumptionPaused: false,
+  autoscaleEnabled: true,
+  autoscaleJobThreshold: 20,
+  avgWaitMillis: 27000,
+  latencyCapSeconds: 10,
+  workerAutoscaleMax: 8,
+};
+const grading = (snapshot: Parameters<typeof toQueueSummary>[0]["snapshot"]) =>
+  toQueueSummary({
+    snapshot,
+    settings: {
+      autoscaleJobThreshold: 20,
+      jobsPerPage: 20,
+      errorRetentionHours: 24,
+      latencyCapSeconds: 10,
+      updatedAt: "",
+    },
+    infra: { warnCount: 0, errorCount: 0 },
+  }).grading;
+it("maps the reported consumers, the cap and the last scaling event into the grading block", () => {
+  expect(
+    grading({
+      ...baseSnapshot,
+      finishedLastMinute: 31,
+      estimatedClearSeconds: 42,
+      consumers: {
+        target: 5,
+        active: 4,
+        reportedAt: "2026-11-22T11:24:58Z",
+        lastScaling: {
+          at: "2026-11-22T11:24:28Z",
+          from: 4,
+          to: 5,
+          reason: "BACKLOG",
+          pendingCount: 22,
+        },
+      },
+    }),
+  ).toEqual({
+    consumers: {
+      target: 5,
+      active: 4,
+      max: 8,
+      lastScaling: {
+        at: Date.parse("2026-11-22T11:24:28Z"),
+        from: 4,
+        to: 5,
+        reason: "BACKLOG",
+        pendingCount: 22,
+      },
+    },
+    finishedLastMinute: 31,
+    estimatedClearSeconds: 42,
+  });
+});
+it("keeps consumers null when the worker has not reported, and never invents numbers", () => {
+  expect(
+    grading({
+      ...baseSnapshot,
+      finishedLastMinute: 12,
+      estimatedClearSeconds: null,
+      consumers: null,
+    }),
+  ).toEqual({
+    consumers: null,
+    finishedLastMinute: 12,
+    estimatedClearSeconds: null,
+  });
+  // An older server without the new fields yields zero throughput and no estimate, not undefined.
+  expect(grading(baseSnapshot)).toEqual({
+    consumers: null,
+    finishedLastMinute: 0,
+    estimatedClearSeconds: null,
+  });
+});
+it("passes a worker that never scaled as consumers with no last scaling", () => {
+  expect(
+    grading({
+      ...baseSnapshot,
+      consumers: {
+        target: 1,
+        active: 1,
+        reportedAt: "2026-11-22T11:24:58Z",
+        lastScaling: null,
+      },
+    })?.consumers,
+  ).toEqual({ target: 1, active: 1, max: 8, lastScaling: null });
+});
 it("maps server jobs: PENDING is waiting, SYSTEM_ERROR is a sandbox error, a missing wait is a dash", () => {
   const page = toJobsPage({
     items: [

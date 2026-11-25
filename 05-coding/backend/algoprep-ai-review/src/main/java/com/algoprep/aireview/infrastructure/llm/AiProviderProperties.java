@@ -1,6 +1,7 @@
 package com.algoprep.aireview.infrastructure.llm;
 
 import java.util.List;
+import java.util.Map;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -12,9 +13,15 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public record AiProviderProperties(
     String apiKey, String baseUrl, String defaultModel, Models models) {
   /** {@code ai.models.allowed} of DD F5 logic Bang 2. */
-  public record Models(List<String> allowed) {
+  public record Models(List<String> allowed, Map<String, Integer> maxOutputTokens) {
+    public Models(List<String> allowed) {
+      this(allowed, Map.of());
+    }
+
+    @org.springframework.boot.context.properties.bind.ConstructorBinding
     public Models {
       allowed = allowed == null ? List.of() : List.copyOf(allowed);
+      maxOutputTokens = maxOutputTokens == null ? Map.of() : Map.copyOf(maxOutputTokens);
     }
   }
 

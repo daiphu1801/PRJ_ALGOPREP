@@ -1,5 +1,6 @@
 package com.algoprep.aireview.infrastructure.persistence;
 
+import com.algoprep.aireview.domain.model.CallOptions;
 import com.algoprep.aireview.domain.model.FeatureCode;
 import com.algoprep.aireview.domain.model.ResponseGuards;
 import com.algoprep.aireview.domain.model.prompt.PromptSnapshot;
@@ -25,7 +26,7 @@ class JdbcAiPromptSnapshotRepository implements AiPromptSnapshotRepository {
   public Optional<PromptSnapshot> readActive(FeatureCode featureCode) {
     return jdbc.getObject()
         .sql(
-            "SELECT id, system_instruction, response_schema_version, model_id,"
+            "SELECT id, system_instruction, response_schema_version, model_id, max_tokens,"
                 + " response_guards::text AS guards"
                 + " FROM ai.prompt_templates WHERE feature_code = :feature AND status = 'ACTIVE'")
         .param("feature", featureCode.name())
@@ -37,7 +38,10 @@ class JdbcAiPromptSnapshotRepository implements AiPromptSnapshotRepository {
                     rs.getString("system_instruction"),
                     guards(rs.getString("guards")),
                     rs.getString("model_id"),
-                    rs.getString("response_schema_version")))
+                    rs.getString("response_schema_version"),
+                    rs.getObject("max_tokens", Integer.class) == null
+                        ? CallOptions.maxTokensFor(featureCode)
+                        : rs.getInt("max_tokens")))
         .optional();
   }
 

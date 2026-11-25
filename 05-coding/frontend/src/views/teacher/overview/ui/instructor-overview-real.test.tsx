@@ -67,6 +67,9 @@ describe("InstructorOverviewView with the real API", () => {
       if (path === "/judge/instructor/submissions") {
         return { page: 1, pageSize: 20, totalCount: 0, items: [] };
       }
+      if (path === "/identity/instructor/dashboard/recent-activity") {
+        return { items: [] };
+      }
       return Promise.reject(new Error("not implemented"));
     });
   });
@@ -103,12 +106,22 @@ describe("InstructorOverviewView with the real API", () => {
   });
 
   it("keeps the rest of the screen when the feed call fails", async () => {
+    const base = apiMock.get.getMockImplementation()!;
+    apiMock.get.mockImplementation(async (path: string) =>
+      path === "/identity/instructor/dashboard/recent-activity"
+        ? Promise.reject(new Error("down"))
+        : base(path),
+    );
     render(withTestProviders(<InstructorOverviewView />));
 
     expect(
       (await screen.findAllByText(/Lập trình Java K21/)).length,
     ).toBeGreaterThan(0);
     expect(screen.getByText(m.activity.title)).toBeInTheDocument();
+    // Only the feed block shows the retry state; the other blocks stay readable.
+    expect(
+      await screen.findByText(viMessages.common.error),
+    ).toBeInTheDocument();
   });
 
   it("draws the absent gauge and completion bars from #56", async () => {

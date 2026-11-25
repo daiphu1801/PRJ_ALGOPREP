@@ -2,7 +2,7 @@
 // layer is faked. What matters: the profile and status are the server's, the table lists the problems
 // still given to the class with THIS student's best result, and a student who is not in the class
 // reads as "not found".
-import { render, screen, within } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import viMessages from "../../../../../messages/vi.json";
 import { ApiError } from "@/shared/api";
@@ -176,5 +176,48 @@ describe("ClassStudentDetailView with the real API", () => {
     });
     expect(within(table).getAllByText("-").length).toBeGreaterThanOrEqual(3);
     expect(within(table).queryByText("Bài trang 1")).not.toBeInTheDocument();
+  });
+
+  it("pages the submission history by the server page, 20 rows each", async () => {
+    serve(async () => PROFILE);
+    const base = apiMock.get.getMockImplementation()!;
+    const row = (n: number) => ({
+      submissionId: `sub-${n}`,
+      problemTitle: `Bài lịch sử ${n}`,
+      language: "PYTHON",
+      status: "ACCEPTED",
+      scoreRatio: 1,
+      submittedAt: "2026-11-01T03:00:00Z",
+    });
+    apiMock.get.mockImplementation(async (path: string, params?: unknown) => {
+      if (path === "/judge/instructor/classes/c1/students/s1/submissions") {
+        const page = (params as { page?: number } | undefined)?.page ?? 1;
+        return {
+          page,
+          pageSize: 20,
+          totalCount: 25,
+          items: page === 1 ? [row(1)] : [row(21)],
+        };
+      }
+      return base(path);
+    });
+    render(
+      withTestProviders(<ClassStudentDetailView classId="c1" studentId="s1" />),
+    );
+
+    expect(await screen.findByText("Bài lịch sử 1")).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        m.submissionHistory.pageSummary
+          .replace("{page}", "1")
+          .replace("{total}", "2"),
+      ),
+    ).toBeInTheDocument();
+
+    fireEvent.click(
+      screen.getByRole("button", { name: m.submissionHistory.next }),
+    );
+    expect(await screen.findByText("Bài lịch sử 21")).toBeInTheDocument();
+    expect(screen.queryByText("Bài lịch sử 1")).not.toBeInTheDocument();
   });
 });

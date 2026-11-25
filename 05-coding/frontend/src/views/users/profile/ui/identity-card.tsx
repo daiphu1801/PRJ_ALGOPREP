@@ -13,31 +13,24 @@ export function IdentityCard({
 }) {
   if (!profile) {
     return (
-      <section className="glass-card flex items-center gap-4 border border-[var(--color-border)] px-6 py-5">
-        <Skeleton className="h-[68px] w-[68px] rounded-full" />
-        <div className="flex flex-col gap-2">
-          <Skeleton className="h-6 w-40" />
-          <Skeleton className="h-4 w-56" />
+      <section className="glass-card flex items-center gap-4 border border-[var(--color-border)] px-4 py-5 sm:px-6">
+        <Skeleton className="size-[68px] shrink-0 rounded-full" />
+        <div className="flex min-w-0 flex-col gap-2">
+          <Skeleton className="h-6 w-40 max-w-full" />
+          <Skeleton className="h-4 w-56 max-w-full" />
         </div>
       </section>
     );
   }
 
   return (
-    <section className="glass-card flex flex-wrap items-center gap-4 border border-[var(--color-border)] px-6 py-5">
+    <section className="glass-card border border-[var(--color-border)] px-4 py-5 sm:px-6">
       <AvatarEditor
         userId={profile.userId}
         name={profile.displayName}
+        email={profile.email}
         avatarVersion={profile.avatarVersion}
       />
-      <div className="min-w-0">
-        <p className="text-xl font-bold tracking-tight">
-          {profile.displayName}
-        </p>
-        <p className="mt-0.5 font-mono text-sm text-[var(--color-text-subtle)]">
-          {profile.email}
-        </p>
-      </div>
     </section>
   );
 }

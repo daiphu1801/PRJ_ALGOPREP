@@ -41,13 +41,11 @@ export function ProblemPreviewView({ problemId }: Props) {
   if (isNotFound(query.error)) return <EmptyState>{t("notFound")}</EmptyState>;
   if (query.isError) return <ErrorState>{t("loadFailed")}</ErrorState>;
   if (!query.data)
-    return (
-      <Skeleton className="mx-auto h-[320px] max-w-3xl" aria-busy="true" />
-    );
+    return <Skeleton className="h-[320px] w-full" aria-busy="true" />;
   const { draft, savedAt } = query.data;
 
   return (
-    <div className="mx-auto flex max-w-3xl flex-col gap-3.5">
+    <div className="flex w-full flex-col gap-3.5">
       <NoticeTile tone="info" title={ta("previewAsLearner")}>
         {savedAt
           ? t("savedAt", { time: new Date(savedAt).toLocaleString() })

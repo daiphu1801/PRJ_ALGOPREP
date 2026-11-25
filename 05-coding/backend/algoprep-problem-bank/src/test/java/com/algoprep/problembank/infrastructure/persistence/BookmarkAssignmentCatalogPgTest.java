@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.algoprep.common.exception.ResourceConflictException;
+import com.algoprep.problembank.domain.model.assignment.ClassAssignmentModels.AssignableFilter;
 import com.algoprep.problembank.domain.model.catalog.CatalogItem;
 import com.algoprep.problembank.domain.model.catalog.CatalogKind;
 import java.time.Instant;
@@ -176,14 +177,24 @@ class BookmarkAssignmentCatalogPgTest extends PostgresTestBase {
     assignment(p1, CLASS_A, false);
     assignment(p2, CLASS_A, true);
 
-    var page = assignments.assignable(CLASS_A, null, 9, 3);
-    var search = assignments.assignable(CLASS_A, "bulk-1", 1, 10);
+    var page = assignments.assignable(CLASS_A, new AssignableFilter(null, null, null), 9, 3);
+    var search = assignments.assignable(CLASS_A, new AssignableFilter("bulk-1", null, null), 1, 10);
 
-    assertThat(page.totalItems()).isEqualTo(6);
-    assertThat(page.page()).isEqualTo(2);
-    assertThat(page.items()).hasSize(3);
+    assertThat(page.totalItems()).isEqualTo(7);
+    assertThat(page.page()).isEqualTo(3);
+    assertThat(page.items()).hasSize(1);
     assertThat(search.totalItems()).isEqualTo(5);
-    assertThat(assignments.assignable(CLASS_B, null, 1, 50).totalItems()).isEqualTo(7);
+    var all = assignments.assignable(CLASS_A, new AssignableFilter(null, null, null), 1, 50);
+    assertThat(all.items())
+        .filteredOn(a -> a.assigned())
+        .extracting(a -> a.problemId())
+        .contains(p1);
+    assertThat(all.items()).filteredOn(a -> a.problemId().equals(p2)).allMatch(a -> !a.assigned());
+    assertThat(
+            assignments
+                .assignable(CLASS_B, new AssignableFilter(null, null, null), 1, 50)
+                .totalItems())
+        .isEqualTo(7);
     assertThat(assignments.problemState(p1).orElseThrow().published()).isTrue();
     assertThat(assignments.problemState(id(999))).isEmpty();
   }

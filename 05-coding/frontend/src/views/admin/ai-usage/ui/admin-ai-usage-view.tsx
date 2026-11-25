@@ -1,6 +1,5 @@
-// BD ADM0302 (admin_ai_usage). Layout follows 09-layoutBase/Admin - Token AI.dc.html: header with a
-// range switch (the mockup's export CTA was dropped 2026-10-10, no F-code behind it), a 1.6fr /
-// minmax(300px,1fr) grid holding the daily chart and the budget/alert column, then two ranked tables.
+// BD ADM0302 (admin_ai_usage). The chart, monthly budget, alerts and rankings
+// reflow based on the space available inside the shared admin shell.
 //
 // Data: F5 #18 (budget bar, feature shares), #27 (daily chart), #28 and #29 (alerts), #30 and #31
 // (rankings), see api/. Every block has its own query, so one failing block shows its own error with a
@@ -36,6 +35,7 @@ import { ApiError } from "@/shared/api";
 import { useApiErrorMessage, useT } from "@/shared/i18n";
 import { BlockError } from "./block-error";
 import { toast } from "@/shared/lib/toast-store";
+import { useMediaQuery } from "@/shared/lib/use-media-query";
 import {
   Badge,
   Button,
@@ -93,12 +93,14 @@ export function AdminAiUsageView() {
   const [range, setRange] = useState<UsageRange>("14d");
 
   return (
-    <div>
+    <div className="@container w-full min-w-0">
       <PageHeader
         title={t("title")}
         description={t("subtitle")}
+        className="[&_h1]:whitespace-normal [&_p]:whitespace-normal"
         actions={
           <SegmentedTabs
+            className="flex-wrap overflow-visible [&>button]:min-h-9"
             label={t("rangeLabel")}
             value={range}
             onValueChange={setRange}
@@ -111,7 +113,7 @@ export function AdminAiUsageView() {
         }
       />
 
-      <div className="mb-4 grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1.6fr)_minmax(300px,1fr)]">
+      <div className="mb-4 grid min-w-0 gap-4 @min-[780px]:grid-cols-[minmax(0,1.65fr)_minmax(0,1fr)]">
         <DailyChartCard range={range} />
         <div className="flex min-w-0 flex-col gap-4">
           <BudgetCard />
@@ -119,7 +121,7 @@ export function AdminAiUsageView() {
         </div>
       </div>
 
-      <div className="grid gap-4 [grid-template-columns:repeat(auto-fit,minmax(380px,1fr))]">
+      <div className="grid min-w-0 gap-4 [grid-template-columns:repeat(auto-fit,minmax(min(100%,29rem),1fr))]">
         <TopUsersCard />
         <TopProblemsCard />
       </div>
@@ -155,6 +157,7 @@ function DailyChartCard({ range }: { range: UsageRange }) {
         <BlockSkeleton />
       ) : (
         <StackedBarChart
+          responsiveAxis
           series={AI_FEATURES.map((feature) => ({
             key: feature,
             label: t(`feature.${feature}`),
@@ -343,11 +346,80 @@ function AlertsCard() {
   );
 }
 
+type RankingColumns<T> = [
+  rank: DataTableColumn<T>,
+  name: DataTableColumn<T>,
+  ...metrics: DataTableColumn<T>[],
+];
+
+function UsageRanking<T>({
+  caption,
+  columns,
+  rows,
+  rowKey,
+  emptyMessage,
+}: {
+  caption: string;
+  columns: RankingColumns<T>;
+  rows: T[];
+  rowKey: (row: T) => string;
+  emptyMessage: string;
+}) {
+  const compact = useMediaQuery("(max-width: 640px)");
+
+  if (!compact) {
+    return (
+      <DataTable
+        caption={caption}
+        columns={columns}
+        rows={rows}
+        rowKey={rowKey}
+        emptyMessage={emptyMessage}
+        minWidth={420}
+      />
+    );
+  }
+
+  if (!rows.length) {
+    return (
+      <p className="text-sm text-[var(--color-text-muted)]">{emptyMessage}</p>
+    );
+  }
+
+  const [, name, ...metrics] = columns;
+
+  return (
+    <ol
+      aria-label={caption}
+      className="flex list-decimal flex-col gap-2 pl-5 marker:text-xs marker:text-[var(--color-text-muted)]"
+    >
+      {rows.map((row) => (
+        <li
+          key={rowKey(row)}
+          className="rounded-xl border border-[var(--color-border)] px-3 py-2.5"
+        >
+          <div className="min-w-0 break-words [&_.truncate]:whitespace-normal [&_.truncate]:break-words">
+            {name.render(row)}
+          </div>
+          <dl className="mt-2 flex flex-wrap gap-x-4 gap-y-1.5 text-xs">
+            {metrics.map(({ key, header, render }) => (
+              <div key={key}>
+                <dt className="text-[var(--color-text-muted)]">{header}</dt>
+                <dd>{render(row)}</dd>
+              </div>
+            ))}
+          </dl>
+        </li>
+      ))}
+    </ol>
+  );
+}
+
 function TopUsersCard() {
   const t = useT("adminAiUsage");
   const query = useAiTopUsers();
 
-  const columns: DataTableColumn<TopUser & { rank: number }>[] = [
+  const columns: RankingColumns<TopUser & { rank: number }> = [
     {
       key: "rank",
       header: "#",
@@ -413,13 +485,12 @@ function TopUsersCard() {
       ) : !query.data ? (
         <BlockSkeleton />
       ) : (
-        <DataTable
+        <UsageRanking
           caption={t("topUsersTitle")}
           columns={columns}
           rows={query.data.map((user, index) => ({ ...user, rank: index + 1 }))}
           rowKey={(user) => user.userId}
           emptyMessage={t("emptyUsers")}
-          minWidth={420}
         />
       )}
     </Card>
@@ -431,7 +502,7 @@ function TopProblemsCard() {
   const levelList = useProblemLevels();
   const query = useAiTopProblems();
 
-  const columns: DataTableColumn<TopProblem & { rank: number }>[] = [
+  const columns: RankingColumns<TopProblem & { rank: number }> = [
     {
       key: "rank",
       header: "#",
@@ -450,7 +521,7 @@ function TopProblemsCard() {
           <span className="block truncate font-semibold">
             {problem.title ?? "-"}
           </span>
-          <span className="mt-0.5 flex items-center gap-2 text-[11.5px] text-[var(--color-text-subtle)]">
+          <span className="mt-0.5 flex flex-wrap items-center gap-2 text-[11.5px] text-[var(--color-text-subtle)]">
             {problem.levelCode ? (
               <Badge variant={problemLevelTone(levelList, problem.levelCode)}>
                 {problem.levelName ??
@@ -506,7 +577,7 @@ function TopProblemsCard() {
       ) : !query.data ? (
         <BlockSkeleton />
       ) : (
-        <DataTable
+        <UsageRanking
           caption={t("topProblemsTitle")}
           columns={columns}
           rows={query.data.map((problem, index) => ({
@@ -515,7 +586,6 @@ function TopProblemsCard() {
           }))}
           rowKey={(problem) => problem.problemId}
           emptyMessage={t("emptyProblems")}
-          minWidth={420}
         />
       )}
     </Card>

@@ -20,6 +20,7 @@ import {
   realListAssignments,
   realRemoveAssignment,
   realTopAssignedProblems,
+  type AssignableParams,
   type AssignmentParams,
 } from "./real-assignments";
 import type {
@@ -29,7 +30,7 @@ import type {
   TopAssignedProblem,
 } from "../model/types";
 
-export type { AssignmentParams };
+export type { AssignableParams, AssignmentParams };
 
 const PAGE_SIZE = 20;
 
@@ -155,26 +156,26 @@ export function useRemoveAssignment() {
   });
 }
 
-/** `ListAssignableProblems` (#51). */
-export const useAssignableProblems = (
-  classId: string,
-  q: string,
-  page: number,
-) =>
+/** `ListAssignableProblems` (#51): search, level and topic filters are applied by the server. */
+export const useAssignableProblems = (params: AssignableParams) =>
   useQuery({
-    queryKey: ["class-assignments", "assignable", classId, q, page],
+    queryKey: ["class-assignments", "assignable", params],
     queryFn: () =>
       withMockData<{ items: AssignableProblem[]; page: PageMeta }>(
         async () =>
           paged(
-            (await listAssignableProblems(classId)).filter((row) =>
-              matches(row.title, q),
+            (await listAssignableProblems(params.classId)).filter(
+              (row) =>
+                matches(row.title, params.q) &&
+                (params.level === "all" || row.difficulty === params.level) &&
+                (params.topic === "all" ||
+                  (row.topics ?? [row.topic]).includes(params.topic)),
             ),
-            page,
+            params.page,
           ),
-        () => realListAssignable(classId, q, page),
+        () => realListAssignable(params),
       ),
-    enabled: classId !== "",
+    enabled: params.classId !== "",
     placeholderData: keepPreviousData,
     ...QUERY_OPTIONS,
   });

@@ -220,9 +220,8 @@ describe("AdminUserManagementView per-account actions", () => {
     fireEvent.click(
       screen.getByRole("button", { name: `actionChangeRoleFor:${ACTIVE_ROW}` }),
     );
-    fireEvent.change(screen.getByLabelText("roleDialog.label"), {
-      target: { value: "instructor" },
-    });
+    fireEvent.click(screen.getByRole("button", { name: /^roleDialog\.label/ }));
+    fireEvent.click(screen.getByRole("option", { name: "role.instructor" }));
     clickButton("roleDialog.submit");
     await waitFor(() =>
       expect(toasts.result.current.at(-1)?.message).toBe(

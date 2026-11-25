@@ -17,7 +17,9 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { ReactElement } from "react";
 import { ProblemAuthoringView } from "./problem-authoring-view";
 
-vi.mock("next/navigation", () => ({ useRouter: () => ({ push: vi.fn() }) }));
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({ push: vi.fn(), replace: vi.fn() }),
+}));
 
 vi.mock("@/shared/i18n", () => ({
   useT: () => (key: string, params?: Record<string, unknown>) =>
@@ -82,6 +84,7 @@ describe("ProblemAuthoringView testcase tab", () => {
       message: "toast.testcaseAdded",
     });
 
+    fireEvent.click(screen.getByRole("button", { name: "tab.content" }));
     fireEvent.click(screen.getByRole("button", { name: "runSolution" }));
     expect(solutionItem()).toHaveTextContent("checkDone");
     expect(toasts.result.current.at(-1)).toMatchObject({ tone: "success" });
@@ -164,7 +167,11 @@ describe("ProblemAuthoringView save and publish", () => {
     fireEvent.click(screen.getByRole("button", { name: /tab\.examples/ }));
 
     // The mock draft is published with exactly 2 examples (BD Sheet 6 area D item 6).
-    fireEvent.click(screen.getAllByRole("button", { name: "delete" })[0]!);
+    // One page: the testcase rows have delete buttons too, so look inside the examples section.
+    const examples = screen.getByRole("region", { name: /^tab.examples/ });
+    fireEvent.click(
+      within(examples).getAllByRole("button", { name: "delete" })[0]!,
+    );
     expect(toasts.result.current.at(-1)).toMatchObject({
       tone: "warning",
       message: "examplesFloorWarning",

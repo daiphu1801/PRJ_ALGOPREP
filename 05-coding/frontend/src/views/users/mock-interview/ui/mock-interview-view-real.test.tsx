@@ -535,3 +535,92 @@ describe("reload", () => {
     expect(await screen.findByText("Solid session")).toBeInTheDocument();
   });
 });
+
+describe("waiting screens", () => {
+  it("opening: draws the room at once with a clock and honest steps, then lands on the first question", async () => {
+    let finish: (value: object) => void = () => {};
+    apiMock.post.mockReturnValueOnce(
+      new Promise((resolve) => {
+        finish = resolve;
+      }),
+    );
+    render(withTestProviders(<MockInterviewView />));
+    fireEvent.click(screen.getByRole("button", { name: m.tab.custom }));
+    fireEvent.click(await screen.findByRole("button", { name: "Database" }));
+    fireEvent.click(screen.getByRole("button", { name: m.startCta }));
+
+    // No percentage bar: three steps that say what is true, a skeleton where the question will be, a real clock.
+    expect(await screen.findByText(m.opening.stepSent)).toBeInTheDocument();
+    expect(screen.getByText(m.opening.stepWriting)).toBeInTheDocument();
+    expect(screen.getByText(m.opening.stepEnter)).toBeInTheDocument();
+    expect(screen.getByText(m.opening.composing)).toBeInTheDocument();
+    expect(screen.getAllByText(/^00:0\d$/).length).toBeGreaterThan(0);
+    expect(screen.queryByRole("progressbar")).toBeNull();
+    expect(screen.queryByRole("button", { name: m.startCta })).toBeNull();
+
+    finish({
+      ...sessionDto,
+      openingMessage: turn(0, "AI", "Opening question"),
+    });
+    expect(await screen.findByText("Opening question")).toBeInTheDocument();
+    expect(screen.queryByText(m.opening.stepWriting)).toBeNull();
+  });
+
+  it("opening: a failed start puts the entry screen back with its choice", async () => {
+    apiMock.post.mockRejectedValueOnce(new ApiError("AIR-501", 503));
+    render(withTestProviders(<MockInterviewView />));
+    fireEvent.click(screen.getByRole("button", { name: m.tab.custom }));
+    fireEvent.click(await screen.findByRole("button", { name: "Database" }));
+    fireEvent.click(screen.getByRole("button", { name: m.startCta }));
+    await waitFor(() => expect(lastToast()).toBe(errors["AIR-501"]));
+    expect(screen.queryByText(m.opening.stepWriting)).toBeNull();
+    expect(screen.getByRole("button", { name: "Database" })).toHaveAttribute(
+      "aria-pressed",
+      "true",
+    );
+  });
+
+  it("scoring: shows what is being graded with a clock, then the scorecard with bands and paragraphs", async () => {
+    await startRunning();
+    fetchMock.mockResolvedValueOnce(stream([accepted, completed()]));
+    answer("x");
+    await screen.findByText("Next question?");
+    let finish: (value: object) => void = () => {};
+    apiMock.post.mockReturnValueOnce(
+      new Promise((resolve) => {
+        finish = resolve;
+      }),
+    );
+    fireEvent.click(screen.getByRole("button", { name: m.stopEarlyCta }));
+    fireEvent.click(
+      await screen.findByRole("button", { name: m.earlyExitConfirm }),
+    );
+    expect(await screen.findByText(m.scoring.title)).toBeInTheDocument();
+    expect(screen.getByText(m.scoring.body)).toBeInTheDocument();
+
+    finish({
+      ...resultDto,
+      feedbackSummary:
+        "Cau mot ro rang. Cau hai co dong 5. Cau ba noi ve do phuc tap. Cau bon ket luan.",
+    });
+    expect(await screen.findByText(m.result.summaryTitle)).toBeInTheDocument();
+    // Four sentences become two short paragraphs, never one wall of text.
+    expect(
+      screen.getByText("Cau mot ro rang. Cau hai co dong 5."),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("Cau ba noi ve do phuc tap. Cau bon ket luan."),
+    ).toBeInTheDocument();
+    // Legend of the three bands, and a band tag on the overall score and on every criterion card (7.5, 8, 7, 7, 8).
+    expect(screen.getByText(m.legend.title)).toBeInTheDocument();
+    expect(
+      screen.getAllByText(m.scoreLevel.fair).length,
+    ).toBeGreaterThanOrEqual(3);
+    expect(
+      screen.getAllByText(m.scoreLevel.good).length,
+    ).toBeGreaterThanOrEqual(2);
+    expect(
+      screen.getByRole("img", { name: m.result.radarLabel }),
+    ).toBeInTheDocument();
+  });
+});

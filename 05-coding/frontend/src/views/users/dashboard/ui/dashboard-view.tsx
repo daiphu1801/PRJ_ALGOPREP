@@ -26,26 +26,23 @@ import { useState } from "react";
 import type { ProgressRange } from "@/entities/progress";
 import { useT } from "@/shared/i18n";
 import { SegmentedTabs } from "@/shared/ui";
-import { ActivityBlock } from "./blocks/activity-block";
 import { DailySubmissionsBlock } from "./blocks/daily-submissions-block";
 import { DifficultyCard } from "./blocks/difficulty-card";
-import { FocusCard } from "./blocks/focus-card";
 import { GreetingBlock } from "./blocks/greeting-block";
 import { InterviewTopicsTable } from "./blocks/interview-topics-table";
 import { RecentInterviewsBlock } from "./blocks/recent-interviews-block";
 import { RecentReviewsBlock } from "./blocks/recent-reviews-block";
-import { SkillRadarBlock } from "./blocks/skill-radar-block";
 import { StatCardsRow } from "./blocks/stat-cards-row";
 import { SuggestedProblemsBlock } from "./blocks/suggested-problems-block";
 import { TopicsTable } from "./blocks/topics-table";
 
-/** Both halves of the merged screen use the same 1.55fr/1fr split the two prototypes shared. */
-const TWO_COLUMN =
-  "grid grid-cols-1 items-start gap-3.5 lg:grid-cols-[1.55fr_1fr]";
-
-/** Chart row: both blocks are the same height, otherwise the shorter card ends above its neighbour. */
-const TWO_COLUMN_EVEN =
-  "grid grid-cols-1 items-stretch gap-3.5 lg:grid-cols-[1.55fr_1fr]";
+/**
+ * Two columns of about the same height, not rows of paired cards: the blocks have very different heights (165 to
+ * 400px), and pairing them left a blank stretch under the shorter one (owner 2026-11-23). The LAST card of each column
+ * grows, so both columns end on the same line; on a narrow screen they simply stack.
+ */
+const COLUMNS = "grid grid-cols-1 items-stretch gap-3.5 lg:grid-cols-2";
+const COLUMN = "flex min-w-0 flex-col gap-3.5 [&>:last-child]:grow";
 
 const RANGE_LABEL_KEY = {
   "7d": "range7d",
@@ -58,10 +55,10 @@ export function DashboardView() {
   const [range, setRange] = useState<ProgressRange>("30d");
 
   return (
-    <div className="py-6">
+    <div>
       <h1 className="sr-only">{t("title")}</h1>
 
-      <div className="mb-5 flex flex-wrap items-end justify-between gap-4">
+      <div className="mb-3 flex flex-wrap items-end justify-between gap-4">
         <GreetingBlock />
         <SegmentedTabs
           label={t("rangeLabel")}
@@ -82,36 +79,23 @@ export function DashboardView() {
 
       <StatCardsRow />
 
-      <div className={`${TWO_COLUMN_EVEN} mb-3.5`}>
-        <DailySubmissionsBlock range={range} />
-        <SkillRadarBlock />
-      </div>
-
-      <div className="mb-3.5">
-        <ActivityBlock />
-      </div>
-
-      {/* The merged my_progress half: the full topic table replaces the dashboard prototype's
-          shortened progress bars, which said strictly less than the table does. */}
-      <div className={`${TWO_COLUMN} mb-3.5`}>
-        <TopicsTable range={range} />
-        <div className="flex flex-col gap-3.5">
+      {/* Trimmed 2026-11-23 (DEC-2026-1123-student-dashboard-trim): the radar and "Nên ưu tiên" repeated what the
+          topic table and the greeting already say (and could name a different weakest topic), and the 12-month
+          heatmap repeated the daily chart. What is left, each shown once, in two balanced columns. */}
+      <div className={`${COLUMNS} mb-3.5`}>
+        <div className={COLUMN}>
+          <DailySubmissionsBlock range={range} />
+          <TopicsTable range={range} />
+          <SuggestedProblemsBlock />
+        </div>
+        <div className={COLUMN}>
           <DifficultyCard />
-          <FocusCard range={range} />
-        </div>
-      </div>
-
-      <div className="mb-3.5">
-        <InterviewTopicsTable />
-      </div>
-
-      <div className={TWO_COLUMN}>
-        <SuggestedProblemsBlock />
-        <div className="flex flex-col gap-3.5">
+          <InterviewTopicsTable />
           <RecentInterviewsBlock range={range} />
-          <RecentReviewsBlock />
         </div>
       </div>
+
+      <RecentReviewsBlock />
     </div>
   );
 }

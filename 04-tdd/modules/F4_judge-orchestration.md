@@ -2,6 +2,8 @@
 
 **Cập nhật 2026-11-15 — F4-14 (dự kiến, chưa có test):** thêm AC-78, AC-79, AC-80 cho thông tin hàng đợi (số bài phía trước, thời gian chờ ước tính) khi bài nộp còn `PENDING`. Chưa có mã và chưa có test case; trạng thái trong Bảng 1 là "chưa có test".
 
+**Cập nhật 2026-11-22 — ADM0401 Luồng chấm (`DEC-2026-1122-f4-queue-consumers-and-throughput-on-adm0401`):** thêm AC-81 đến AC-84 cho việc worker báo số luồng chấm, độ cũ của báo cáo, tốc độ chấm kèm ước lượng hết hàng đợi và việc báo cáo không được cản worker mở rộng. Backend đã có test (cột "Test case" của Bảng 1), chạy tập trung và `mvn verify` module judge đạt; phần giao diện nằm ở `04-tdd/screens/admin/ADM0401_queue_monitor.md` (QM-AC-04 đến QM-AC-07).
+
 **Cập nhật 2026-11-16 — F4-14 đã dựng:** backend đạt (cột trạng thái Bảng 1) và FE đã nối; cả hai đã kiểm trong trình duyệt thật với máy chủ thật, báo cáo `06-plan/reports/261116-0100-f4-14-browser-check/report.md` (ảnh chụp bằng script Playwright, không phải `pnpm e2e`). Khu giảng viên chỉ kiểm gián tiếp (token giảng viên gọi `progress` trả `403 JDG-301`; giảng viên tổng hợp chưa phụ trách lớp nào).
 
 **Checkpoint D02m 2026-11-03:** WorkerPersistenceHandlersTest11 + SubmissionFinalizationPolicyTest13,
@@ -741,6 +743,42 @@ lệnh, timestamp, exit code và cleanup evidence; không cộng test ở lần 
 | **Kết quả mong đợi** | Học viên 2 nhận đúng thông báo "không tìm thấy" như với một bài nộp không tồn tại, không thấy gì về A. Học viên 1 chỉ thấy một con số tổng số bài phía trước, không thấy ai nộp, bài nào hay mã nguồn nào. Khi việc tính lỗi, học viên 1 vẫn thấy trạng thái và tiến độ của A bình thường, chỉ thiếu dòng thông tin chờ; không có thông báo lỗi |
 | **Nguồn** | [SoT: 03-dd/api/F4_judge-orchestration.md] mục 9.4 (suy giảm êm), T-PG-11, T-PG-12; [SoT: 03-dd/logic/F4_judge-orchestration.md] BR-JD-17 |
 
+### AC-81 — Quản trị viên thấy số luồng chấm đang chạy và lần đổi gần nhất do worker báo
+
+| Mục | Nội dung |
+| :--- | :--- |
+| **Tiền đề** | Worker chấm bài đang chạy, tự động mở rộng bật, ngưỡng 20; hàng đợi có 22 bài chờ nên worker vừa tăng từ 4 lên 5 luồng |
+| **Thao tác** | Quản trị viên (hoặc tài khoản có quyền xem hàng đợi) đọc snapshot hàng đợi |
+| **Kết quả mong đợi** | Snapshot có số luồng mục tiêu 5, số luồng đang chạy, giờ worker báo và lần đổi gần nhất: từ 4 lên 5, lý do "hàng đợi dồn", 22 bài chờ lúc đổi. Khi worker chưa từng đổi, vẫn có số luồng nhưng lần đổi gần nhất để trống. Khi hàng đợi rỗng đủ lâu và worker giảm, lần đổi gần nhất chuyển sang "giảm" với lý do "hàng đợi rỗng"; khi quản trị viên tắt tự động mở rộng và worker về 1 luồng, lý do là "đã tắt tự động mở rộng". API không bị nhiều tiến trình khác nhau làm sai: worker và API có thể chạy ở hai tiến trình |
+| **Nguồn** | [SoT: 03-dd/api/F4_judge-orchestration.md] mục 16.2, T-QS-06, T-QS-08; [SoT: 03-dd/jobs/F4_judge-orchestration.md] bước báo trạng thái sau mỗi lần đánh giá |
+
+### AC-82 — Báo cáo của worker quá cũ hoặc chưa có thì không hiện số luồng cũ
+
+| Mục | Nội dung |
+| :--- | :--- |
+| **Tiền đề** | Worker chấm bài đã dừng, hoặc chưa từng chạy, nên bảng trạng thái không có dòng, hoặc dòng đã báo cách đây hơn 60 giây |
+| **Thao tác** | Quản trị viên đọc snapshot hàng đợi |
+| **Kết quả mong đợi** | Snapshot không có số luồng chấm (không phải số cũ, cũng không phải số 0 giả); mọi phần khác của snapshot (trạng thái, số bài chờ, độ trễ, cấu hình) vẫn đầy đủ. Dòng báo cách 59 giây vẫn được hiện, cách 61 giây thì không. Lỗi cơ sở dữ liệu thật thì cả snapshot lỗi như mọi lần đọc khác |
+| **Nguồn** | [SoT: 03-dd/api/F4_judge-orchestration.md] mục 16.2, T-QS-07, T-QS-13 |
+
+### AC-83 — Tốc độ chấm và ước lượng hết hàng đợi dùng đúng công thức của thời gian chờ học viên
+
+| Mục | Nội dung |
+| :--- | :--- |
+| **Tiền đề** | Phút vừa qua có 30 bài nộp chấm xong và hàng đợi có 10 bài chờ; ở tình huống khác chỉ có 2 bài chấm xong, hoặc hàng đợi rỗng |
+| **Thao tác** | Quản trị viên đọc snapshot hàng đợi |
+| **Kết quả mong đợi** | Tốc độ chấm là 30 bài mỗi phút và ước lượng hết hàng đợi là 20 giây (làm tròn lên, tối đa 3600 giây). Dưới 3 bài chấm xong trong phút qua thì không có ước lượng nhưng vẫn có tốc độ chấm thật; hàng đợi rỗng thì không có ước lượng. Cùng một công thức với thời gian chờ học viên thấy khi nộp bài, nên hai con số không mâu thuẫn |
+| **Nguồn** | [SoT: 03-dd/api/F4_judge-orchestration.md] mục 16.2, T-QS-09 đến T-QS-12; `DEC-2026-1115-f4-queue-wait-in-progress-snapshot` |
+
+### AC-84 — Việc báo cáo của worker không bao giờ cản việc tự động mở rộng
+
+| Mục | Nội dung |
+| :--- | :--- |
+| **Tiền đề** | Worker đang là người dẫn đầu và hàng đợi dồn trên ngưỡng; việc ghi trạng thái vào cơ sở dữ liệu gặp lỗi |
+| **Thao tác** | Worker thực hiện các lần đánh giá liên tiếp |
+| **Kết quả mong đợi** | Worker vẫn tăng số luồng ở lần đánh giá kế tiếp như bình thường và vẫn được coi là khoẻ; lỗi báo cáo chỉ để lại một dòng cảnh báo. Worker không phải là người dẫn đầu thì không ghi gì. Báo cáo có lý do lạ hoặc một nửa thông tin về lần đổi thì cơ sở dữ liệu từ chối |
+| **Nguồn** | [SoT: 03-dd/jobs/F4_judge-orchestration.md] bước báo trạng thái; [SoT: 03-dd/api/F4_judge-orchestration.md] mục 16.4 |
+
 ## 3. Truy vết
 
 **Bảng 1: Truy vết tiêu chí tới endpoint hoặc luồng (cột "Test case" điền khi có)**
@@ -827,6 +865,10 @@ lệnh, timestamp, exit code và cleanup evidence; không cộng test ở lần 
 | AC-78 | `GET /submissions/{submissionId}/progress` (#6), trường `queue`; BR-JD-17 |  | `SubmissionReadHandlersTest` (T-PG-05, T-PG-06), `JdbcReadModelsPgTest.pendingAheadOrdersBySubmittedAtThenIdAndCountsOnlyPending` (T-PG-05, T-PG-09), `ProgressQueueJsonTest` | Đạt (2026-11-16, `mvn verify -pl algoprep-judge -am`: 577 test, 0 lỗi); kiểm trình duyệt thật 2026-11-16 (`06-plan/reports/261116-0100-f4-14-browser-check/report.md`) |
 | AC-79 | #6, trường `queue`; BR-JD-17 (biên), JOB-JD-05 (tạm dừng) |  | `SubmissionReadHandlersTest.estimateNeedsThreeSamplesRoundsUpAndCapsAtOneHour`, `pausedQueueGivesAheadWithoutEstimate` (T-PG-07, T-PG-08, T-PG-13), `JdbcReadModelsPgTest.finishedLastMinuteCountsTerminalRowsInsideTheWindowOnly` | Đạt (2026-11-16, `mvn verify -pl algoprep-judge -am`: 577 test, 0 lỗi); kiểm trình duyệt thật 2026-11-16 (`06-plan/reports/261116-0100-f4-14-browser-check/report.md`) |
 | AC-80 | #6, trường `queue`; BR-JD-17 (suy giảm êm, quyền riêng tư) | `JDG-110` | `SubmissionReadHandlersTest` (T-PG-10, T-PG-11, T-PG-12), `ProgressQueueJsonTest` (queue null khi không PENDING) | Đạt (2026-11-16, `mvn verify -pl algoprep-judge -am`: 577 test, 0 lỗi); kiểm trình duyệt thật 2026-11-16 (`06-plan/reports/261116-0100-f4-14-browser-check/report.md`) |
+| AC-81 | `GET /admin/queue/snapshot` (#16), trường `consumers`; JOB-JD-05 (báo trạng thái) |  | `WorkerStatusReportTest` (tăng, giảm, tắt tự động), `JdbcReadModelsPgTest.workerReportKeepsOneRowAndTheLastScalingUntilTheNextChange`, `QueueMonitorFlowTest.snapshotShowsTheReportedConsumersAndTheLastScalingEventUntilTheReportGoesStale`, `GetQueueMonitorQueryHandlerTest.workerConsumersAndTheLastScalingEventPassThroughUnchanged` | Đạt (test backend tập trung); chưa chạy `mvn verify` cả reactor |
+| AC-82 | #16, trường `consumers` (báo cáo cũ, T-QS-07, T-QS-13) |  | `JdbcReadModelsPgTest.aWorkerReportOlderThanSixtySecondsIsStaleAndHidden`, `QueueMonitorFlowTest.snapshotShowsTheReportedConsumers...` | Đạt (test backend tập trung); chưa chạy `mvn verify` cả reactor |
+| AC-83 | #16, trường `finishedLastMinute`, `estimatedClearSeconds` |  | `GetQueueMonitorQueryHandlerTest.drainEstimateReusesTheLearnerFormulaAndStaysNullWithoutEnoughSamples`, `anEmptyQueueHasNoDrainEstimate`, `QueueMonitorFlowTest.emptySnapshotAndJobsUseRealSettingsWithoutMetricsOrFakeWorkers` | Đạt (test backend tập trung); chưa chạy `mvn verify` cả reactor |
+| AC-84 | JOB-JD-05 (báo trạng thái), `judge.worker_status` |  | `WorkerStatusReportTest.aFailedReportIsLoggedAndNeverStopsScalingOrMarksTheWorkerUnhealthy`, `aWorkerThatIsNotTheLeaderReportsNothing`, `JdbcReadModelsPgTest.workerStatusRejectsAnUnknownReasonAndAPartialScalingEvent` | Đạt (test backend tập trung); chưa chạy `mvn verify` cả reactor |
 
 Mỗi endpoint trong `03-dd/api/F4_judge-orchestration.md` (24 REST, 2 kênh STOMP, 4 cổng trong tiến trình, 2 sự kiện) có ít nhất một tiêu chí: #1 AC-14; #2 AC-10 đến AC-13; #3 AC-01 đến AC-09; #4 AC-36; #5 AC-30 đến AC-35, AC-71; #6 AC-27, AC-28, AC-78 đến AC-80; #7 AC-37; #8 AC-38; #9 AC-39, AC-40; #10 AC-41 đến AC-44; #11 AC-45; #12 AC-46; #13 AC-48; #14 AC-49; #15 AC-56; #16 AC-50, AC-51; #17 AC-52; #18, #19 AC-53; #20 AC-55; #21 AC-57; #22 AC-58 đến AC-62; W1 AC-25 đến AC-29; W2 (kênh quản trị) AC-48; P1 AC-47; P2 AC-67; P3 AC-66; P4 AC-70; #23 AC-69; #24 AC-72; hai sự kiện AC-63 đến AC-65.
 

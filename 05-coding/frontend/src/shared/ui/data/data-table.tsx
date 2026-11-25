@@ -65,6 +65,11 @@ type DataTableSelection<T> = {
   selectAllLabel: string;
   /** Accessible label for one row's checkbox, e.g. `Chọn ${user.name}`. */
   rowLabel: (row: T) => string;
+  /**
+   * A row that cannot be picked (for example a problem the class already has): dimmed, checkbox off, ignored by
+   * "select all" and by the row click. Optional, so every other table keeps its behaviour.
+   */
+  isRowDisabled?: (row: T) => boolean;
 };
 
 type DataTableProps<T> = {
@@ -111,12 +116,15 @@ export function DataTable<T>({
   }
 
   const columnCount = columns.length + (selection ? 1 : 0);
+  const pickable = selection?.isRowDisabled
+    ? rows.filter((row) => !selection.isRowDisabled!(row))
+    : rows;
   const allSelected =
-    rows.length > 0 &&
-    rows.every((row) => selection?.selectedKeys.has(rowKey(row)));
+    pickable.length > 0 &&
+    pickable.every((row) => selection?.selectedKeys.has(rowKey(row)));
   const someSelected =
     !allSelected &&
-    rows.some((row) => selection?.selectedKeys.has(rowKey(row)));
+    pickable.some((row) => selection?.selectedKeys.has(rowKey(row)));
 
   return (
     <div className={cn("w-full overflow-x-auto", className)}>
@@ -142,6 +150,7 @@ export function DataTable<T>({
                   type="checkbox"
                   className={CHECKBOX_CLASS}
                   checked={allSelected}
+                  disabled={pickable.length === 0}
                   ref={(node) => {
                     // Mixed selection has no HTML attribute — it is a DOM property only.
                     if (node) node.indeterminate = someSelected;
@@ -229,6 +238,7 @@ export function DataTable<T>({
             rows.map((row) => {
               const key = rowKey(row);
               const selected = selection?.selectedKeys.has(key) ?? false;
+              const disabled = selection?.isRowDisabled?.(row) ?? false;
               return (
                 <tr
                   key={key}
@@ -237,7 +247,7 @@ export function DataTable<T>({
                   // on links, buttons and fields inside the row keep their own meaning, and so does
                   // dragging to select text.
                   onClick={
-                    selection
+                    selection && !disabled
                       ? (event) => {
                           if (
                             (event.target as HTMLElement).closest(ROW_CONTROLS)
@@ -254,9 +264,11 @@ export function DataTable<T>({
                     // the pointer and the state are both visible; plain rows keep the neutral hover.
                     // The tint is painted on the cells, not the <tr>: a row background cannot be
                     // rounded, a cell background can, so the first and last cell round the band's ends.
-                    selection
-                      ? "cursor-pointer [&:hover>td]:bg-[color-mix(in_srgb,var(--color-admin-teal)_9%,transparent)] [&>td:first-child]:rounded-l-xl [&>td:last-child]:rounded-r-xl"
-                      : "hover:bg-[var(--color-row-hover)]",
+                    disabled
+                      ? "opacity-55"
+                      : selection
+                        ? "cursor-pointer [&:hover>td]:bg-[color-mix(in_srgb,var(--color-admin-teal)_9%,transparent)] [&>td:first-child]:rounded-l-xl [&>td:last-child]:rounded-r-xl"
+                        : "hover:bg-[var(--color-row-hover)]",
                     selected &&
                       "[&>td]:bg-[color-mix(in_srgb,var(--color-admin-teal)_16%,transparent)] [&:hover>td]:bg-[color-mix(in_srgb,var(--color-admin-teal)_21%,transparent)]",
                   )}
@@ -267,6 +279,7 @@ export function DataTable<T>({
                         type="checkbox"
                         className={CHECKBOX_CLASS}
                         checked={selected}
+                        disabled={disabled}
                         onChange={() => selection.onToggleRow(key)}
                         aria-label={selection.rowLabel(row)}
                       />

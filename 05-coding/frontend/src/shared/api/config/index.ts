@@ -1,2 +1,2 @@
 export { env } from "./env";
-export { SHELL_MAX_WIDTH_PX, type ShellArea } from "./layout";
+export { SHELL_PADDING_X, SHELL_PADDING_Y } from "./layout";

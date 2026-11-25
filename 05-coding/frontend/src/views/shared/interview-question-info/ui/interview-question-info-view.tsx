@@ -7,8 +7,10 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { useRef, useState } from "react";
+import { ArrowLeft, Eye } from "lucide-react";
 import {
+  InterviewQuestionPreview,
   useAdminQuestion,
   levelTone,
   useInterviewLevels,
@@ -24,9 +26,14 @@ import {
   IconAction,
   MarkdownPreview,
   NoticeTile,
+  PageContainer,
   PageHeader,
+  ProgressBar,
   QueryBoundary,
+  SegmentedTabs,
 } from "@/shared/ui";
+
+type Section = "question" | "followUps" | "rubric";
 
 type Props = {
   /** Route param: a question code such as "IQ-014". */
@@ -58,6 +65,9 @@ function InterviewQuestionInfo({
   const ta = useT("interviewQuestionAuthoring");
   const topicList = useInterviewTopics();
   const levelList = useInterviewLevels();
+  const [section, setSection] = useState<Section>("question");
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const sectionStart = useRef<HTMLDivElement>(null);
 
   if (!question) {
     return (
@@ -88,8 +98,9 @@ function InterviewQuestionInfo({
   );
 
   return (
-    <div>
+    <PageContainer variant="content" className="@container">
       <PageHeader
+        className="static [&>div:nth-child(2)]:min-w-0 @max-[640px]:[&>div:last-child]:w-full @max-[640px]:[&>div:last-child]:justify-start"
         leading={
           <IconAction icon={ArrowLeft} label={t("back")} href={basePath} />
         }
@@ -102,8 +113,10 @@ function InterviewQuestionInfo({
             <Button
               variant="ghost"
               size="sm"
-              className="border border-[var(--color-border)]"
+              className="gap-1.5 border border-[var(--color-border)]"
+              onClick={() => setPreviewOpen(true)}
             >
+              <Eye aria-hidden="true" className="size-4" />
               {ta("previewAsLearner")}
             </Button>
             <Button asChild variant="cta" size="sm">
@@ -113,125 +126,199 @@ function InterviewQuestionInfo({
         }
       />
 
-      <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_320px]">
-        <div className="flex min-w-0 flex-col gap-4">
-          <Card title={ta("group1Title")}>
-            <MarkdownPreview size="lg">{question.title}</MarkdownPreview>
-            {question.contentMarkdown ? (
-              <div className="mt-3">
-                <MarkdownPreview>{question.contentMarkdown}</MarkdownPreview>
-              </div>
-            ) : null}
-          </Card>
-
-          <Card title={ta("group2Title")}>
-            {question.followUps.length === 0 ? (
-              <p className="text-[14px] text-[var(--color-text-muted)]">
-                {t("followUpsEmpty")}
-              </p>
-            ) : (
-              <ol className="flex list-decimal flex-col gap-2.5 pl-5 text-[15px] leading-7">
-                {question.followUps.map((followUp, index) => (
-                  <li key={index}>{followUp}</li>
-                ))}
-              </ol>
-            )}
-          </Card>
-
-          <Card
-            title={ta("group3Title")}
-            action={
-              question.rubric.length > 0 ? (
-                <span className="font-mono text-[12.5px] text-[var(--color-text-muted)]">
-                  {ta("rubricTotal", { total: rubricTotal })}
-                </span>
-              ) : undefined
-            }
-          >
-            {question.rubric.length === 0 ? (
-              <NoticeTile tone="info" title={ta("rubricEmptyTitle")}>
-                {ta("rubricEmptyBody")}
-              </NoticeTile>
-            ) : (
-              <ul className="flex flex-col gap-2">
-                {question.rubric.map((criterion, index) => (
-                  <li
-                    key={index}
-                    className="glass-surface flex items-center justify-between gap-3 rounded-2xl border border-[var(--color-border)] px-3.5 py-2.5 text-[14px]"
-                  >
-                    <span>{criterion.criterionCode}</span>
-                    <span className="font-mono text-[var(--color-text-muted)]">
-                      {criterion.weightPercent}%
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </Card>
+      <div ref={sectionStart} className="flex flex-1 flex-col gap-3">
+        <div className="sticky top-0 z-20 w-[480px] max-w-full rounded-xl bg-[var(--color-background)]">
+          <SegmentedTabs
+            label={t("sectionsLabel")}
+            value={section}
+            onValueChange={(next) => {
+              setSection(next);
+              const start = sectionStart.current;
+              const viewport = start?.closest("[data-page-viewport]");
+              if (
+                start &&
+                start.getBoundingClientRect().top <
+                  Math.max(0, viewport?.getBoundingClientRect().top ?? 0)
+              ) {
+                start.scrollIntoView({ block: "start" });
+              }
+            }}
+            options={[
+              { value: "question", label: ta("group1Title") },
+              {
+                value: "followUps",
+                label: t("followUpsTab", { count: question.followUps.length }),
+              },
+              {
+                value: "rubric",
+                label: t("rubricTab", { count: question.rubric.length }),
+              },
+            ]}
+            className="w-full flex-wrap [&>button]:grow"
+          />
         </div>
+        <div className="grid flex-1 items-start gap-4 @min-[900px]:grid-cols-[minmax(0,1fr)_clamp(16rem,25cqw,24rem)]">
+          <div className="flex min-w-0 flex-col gap-4">
+            {section === "question" && (
+              <Card title={ta("group1Title")}>
+                <MarkdownPreview
+                  size="lg"
+                  className="font-semibold wrap-anywhere"
+                >
+                  {question.title}
+                </MarkdownPreview>
+                {question.contentMarkdown ? (
+                  <div className="mt-3">
+                    <MarkdownPreview>
+                      {question.contentMarkdown}
+                    </MarkdownPreview>
+                  </div>
+                ) : null}
+              </Card>
+            )}
 
-        <div className="flex min-w-0 flex-col gap-4 lg:sticky lg:top-[90px]">
-          <Card title={ta("classifyTitle")}>
-            <dl className="flex flex-col gap-3 text-[13px]">
-              <div className="flex items-center justify-between gap-2">
-                <dt className="text-[var(--color-text-subtle)]">
-                  {ta("topicLabel")}
-                </dt>
-                <dd>{topic?.label ?? "-"}</dd>
-              </div>
-              <div className="flex items-center justify-between gap-2">
-                <dt className="text-[var(--color-text-subtle)]">
-                  {ta("levelLabel")}
-                </dt>
-                <dd>
-                  <Badge
-                    variant={
-                      level ? levelTone(levelList, level.key) : "neutral"
-                    }
-                  >
-                    {level?.label ?? "-"}
-                  </Badge>
-                </dd>
-              </div>
-            </dl>
-          </Card>
+            {section === "followUps" && (
+              <Card title={ta("group2Title")}>
+                {question.followUps.length === 0 ? (
+                  <p className="text-[14px] text-[var(--color-text-muted)]">
+                    {t("followUpsEmpty")}
+                  </p>
+                ) : (
+                  <ol className="list-decimal space-y-2 pl-5 text-sm leading-relaxed marker:font-semibold">
+                    {question.followUps.map((followUp, index) => (
+                      <li
+                        key={index}
+                        className="rounded-lg bg-[var(--color-track)] px-3 py-2.5 wrap-anywhere"
+                      >
+                        {followUp}
+                      </li>
+                    ))}
+                  </ol>
+                )}
+              </Card>
+            )}
 
-          <Card title={t("usageTitle")}>
-            <dl className="flex flex-col gap-3 text-[13px]">
-              <div className="flex items-center justify-between gap-2">
-                <dt className="text-[var(--color-text-subtle)]">
-                  {t("usageCount")}
-                </dt>
-                <dd className="font-mono">{question.usageCount}</dd>
-              </div>
-              <div className="flex items-center justify-between gap-2">
-                <dt className="text-[var(--color-text-subtle)]">
-                  {t("averageScore")}
-                </dt>
-                <dd className="font-mono">
-                  {question.averageScorePercent === null
-                    ? "-"
-                    : `${Math.round(question.averageScorePercent)}%`}
-                </dd>
-              </div>
-              <div className="flex items-center justify-between gap-2">
-                <dt className="text-[var(--color-text-subtle)]">
-                  {t("practiceMode")}
-                </dt>
-                <dd>
-                  <Badge
-                    variant={question.practiceAvailable ? "success" : "neutral"}
-                  >
-                    {question.practiceAvailable
-                      ? t("practiceOn")
-                      : t("practiceOff")}
-                  </Badge>
-                </dd>
-              </div>
-            </dl>
-          </Card>
+            {section === "rubric" && (
+              <Card
+                title={ta("group3Title")}
+                action={
+                  question.rubric.length > 0 ? (
+                    <span className="font-mono text-[12.5px] text-[var(--color-text-muted)]">
+                      {ta("rubricTotal", { total: rubricTotal })}
+                    </span>
+                  ) : undefined
+                }
+              >
+                {question.rubric.length === 0 ? (
+                  <NoticeTile tone="info" title={ta("rubricEmptyTitle")}>
+                    {ta("rubricEmptyBody")}
+                  </NoticeTile>
+                ) : (
+                  <ul className="flex flex-col gap-2">
+                    {question.rubric.map((criterion, index) => (
+                      <li
+                        key={index}
+                        className="glass-surface space-y-2 rounded-xl border border-[var(--color-border)] px-3.5 py-2.5 text-sm"
+                      >
+                        <div className="flex items-start justify-between gap-3">
+                          <span className="font-medium wrap-anywhere">
+                            {criterion.criterionCode}
+                          </span>
+                          <span className="font-mono text-[var(--color-text-muted)]">
+                            {criterion.weightPercent}%
+                          </span>
+                        </div>
+                        <ProgressBar
+                          value={criterion.weightPercent}
+                          height={5}
+                          label={criterion.criterionCode}
+                        />
+                        {criterion.description && (
+                          <p className="text-sm whitespace-pre-wrap wrap-anywhere text-[var(--color-text-muted)]">
+                            {criterion.description}
+                          </p>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </Card>
+            )}
+          </div>
+
+          <div className="flex min-w-0 flex-col gap-4 @min-[900px]:sticky @min-[900px]:top-0">
+            <Card title={ta("classifyTitle")}>
+              <dl className="flex flex-col gap-3 text-[13px]">
+                <div className="flex items-center justify-between gap-2">
+                  <dt className="text-[var(--color-text-subtle)]">
+                    {ta("topicLabel")}
+                  </dt>
+                  <dd>{topic?.label ?? "-"}</dd>
+                </div>
+                <div className="flex items-center justify-between gap-2">
+                  <dt className="text-[var(--color-text-subtle)]">
+                    {ta("levelLabel")}
+                  </dt>
+                  <dd>
+                    <Badge
+                      variant={
+                        level ? levelTone(levelList, level.key) : "neutral"
+                      }
+                    >
+                      {level?.label ?? "-"}
+                    </Badge>
+                  </dd>
+                </div>
+              </dl>
+            </Card>
+
+            <Card title={t("usageTitle")}>
+              <dl className="flex flex-col gap-3 text-[13px]">
+                <div className="flex items-center justify-between gap-2">
+                  <dt className="text-[var(--color-text-subtle)]">
+                    {t("usageCount")}
+                  </dt>
+                  <dd className="font-mono">{question.usageCount}</dd>
+                </div>
+                <div className="flex items-center justify-between gap-2">
+                  <dt className="text-[var(--color-text-subtle)]">
+                    {t("averageScore")}
+                  </dt>
+                  <dd className="font-mono">
+                    {question.averageScorePercent === null
+                      ? "-"
+                      : `${Math.round(question.averageScorePercent)}%`}
+                  </dd>
+                </div>
+                <div className="flex items-center justify-between gap-2">
+                  <dt className="text-[var(--color-text-subtle)]">
+                    {t("practiceMode")}
+                  </dt>
+                  <dd>
+                    <Badge
+                      variant={
+                        question.practiceAvailable ? "success" : "neutral"
+                      }
+                    >
+                      {question.practiceAvailable
+                        ? t("practiceOn")
+                        : t("practiceOff")}
+                    </Badge>
+                  </dd>
+                </div>
+              </dl>
+            </Card>
+          </div>
         </div>
       </div>
-    </div>
+      {previewOpen && (
+        <InterviewQuestionPreview
+          title={question.title}
+          content={question.contentMarkdown}
+          followUps={question.followUps}
+          onClose={() => setPreviewOpen(false)}
+        />
+      )}
+    </PageContainer>
   );
 }

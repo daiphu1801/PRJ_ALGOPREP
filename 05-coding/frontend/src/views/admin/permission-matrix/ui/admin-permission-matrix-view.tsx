@@ -35,6 +35,7 @@ import {
   type Role,
 } from "../api";
 import { useApiErrorMessage, useT } from "@/shared/i18n";
+import { useMediaQuery } from "@/shared/lib/use-media-query";
 import { toast, toastFirstError } from "@/shared/lib/toast-store";
 import {
   ROLE_NAME_MAX,
@@ -47,13 +48,14 @@ import {
   ConfirmDialog,
   DataTable,
   NoticeTile,
+  PageContainer,
   PageHeader,
   QueryBoundary,
-  SegmentedTabs,
   SelectField,
   TextField,
   type DataTableColumn,
 } from "@/shared/ui";
+import { PermissionRoleFilter } from "./permission-role-filter";
 
 export function AdminPermissionMatrixView() {
   return (
@@ -65,6 +67,7 @@ export function AdminPermissionMatrixView() {
 
 function PermissionMatrixInner({ initial }: { initial: PermissionMatrixPage }) {
   const t = useT("adminPermissionMatrix");
+  const compact = useMediaQuery("(max-width: 880px)");
   const apiMessage = useApiErrorMessage();
   const actions = usePermissionActions();
   const [page, setPage] = useState(initial);
@@ -217,7 +220,10 @@ function PermissionMatrixInner({ initial }: { initial: PermissionMatrixPage }) {
     toast.success(t("deleteRoleDone", { role: role.label }));
   }
 
-  const columns: DataTableColumn<FunctionKey>[] = [
+  const columns: [
+    DataTableColumn<FunctionKey>,
+    ...DataTableColumn<FunctionKey>[],
+  ] = [
     {
       key: "function",
       header: t("columnFunction"),
@@ -263,29 +269,31 @@ function PermissionMatrixInner({ initial }: { initial: PermissionMatrixPage }) {
       },
     })),
   ];
+  const [functionColumn, ...actionColumns] = columns;
 
   return (
-    <div>
-      <PageHeader title={t("title")} description={t("subtitle")} />
+    <PageContainer
+      variant="content"
+      className="permission-matrix-page @container min-h-min"
+    >
+      <PageHeader
+        title={t("title")}
+        description={t("subtitle")}
+        className="static [&_h1]:whitespace-normal [&_p]:whitespace-normal"
+      />
 
       <NoticeTile tone="info" title={t("scopeNoticeTitle")} className="mb-4">
         {t("scopeNoticeBody")}
       </NoticeTile>
 
-      <Card className="min-w-0 px-[18px] py-4">
-        <div className="mb-4 flex flex-wrap items-center gap-2">
-          <SegmentedTabs
-            label={t("roleSwitcherLabel")}
-            value={activeRoleKey}
-            onValueChange={setActiveRoleKey}
-            options={page.roles.map((role) => ({
-              value: role.key,
-              label: role.label,
-            }))}
-          />
-
-          {addingRole ? (
-            <span className="flex items-center gap-2">
+      <PermissionRoleFilter
+        roles={page.roles}
+        value={activeRole.key}
+        onValueChange={setActiveRoleKey}
+        onAddRole={() => setAddingRole(true)}
+        addRoleFields={
+          addingRole ? (
+            <div className="flex min-w-0 flex-wrap items-center gap-2">
               <TextField
                 label={t("newRoleLabel")}
                 hideLabel
@@ -294,8 +302,8 @@ function PermissionMatrixInner({ initial }: { initial: PermissionMatrixPage }) {
                 onChange={(event) => setNewRoleName(event.target.value)}
                 maxLength={ROLE_NAME_MAX + 10}
                 invalid={nameTouched && Boolean(nameError)}
-                wrapperClassName="w-[170px]"
-                className="h-8"
+                wrapperClassName="w-full min-w-0 @min-[480px]:w-[170px]"
+                className="h-9"
               />
               <SelectField
                 label={t("newRoleCategoryLabel")}
@@ -310,8 +318,8 @@ function PermissionMatrixInner({ initial }: { initial: PermissionMatrixPage }) {
                     label: t(`baseCategory.${value}`),
                   }),
                 )}
-                wrapperClassName="w-[190px]"
-                className="h-8"
+                wrapperClassName="w-full min-w-0 @min-[480px]:w-[190px]"
+                className="h-9"
               />
               <Button
                 variant="cta"
@@ -333,19 +341,11 @@ function PermissionMatrixInner({ initial }: { initial: PermissionMatrixPage }) {
               >
                 {t("cancel")}
               </Button>
-            </span>
-          ) : (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setAddingRole(true)}
-              className="border border-dashed border-[var(--color-border)]"
-            >
-              {t("addRole")}
-            </Button>
-          )}
-
-          {activeRole.system ? (
+            </div>
+          ) : null
+        }
+        roleAction={
+          activeRole.system ? (
             <span className="ml-auto text-xs text-[var(--color-text-subtle)]">
               {t("systemRoleNote")}
             </span>
@@ -370,9 +370,10 @@ function PermissionMatrixInner({ initial }: { initial: PermissionMatrixPage }) {
             >
               {t("deleteRole")}
             </Button>
-          )}
-        </div>
-
+          )
+        }
+      />
+      <Card className="min-w-0 grow px-[18px] py-4">
         {readOnly ? (
           <NoticeTile
             tone="info"
@@ -383,14 +384,43 @@ function PermissionMatrixInner({ initial }: { initial: PermissionMatrixPage }) {
           </NoticeTile>
         ) : null}
 
-        <DataTable
-          caption={t("tableCaption", { role: activeRole.label })}
-          columns={columns}
-          rows={FUNCTION_KEYS}
-          rowKey={(functionKey) => functionKey}
-          emptyMessage={t("emptyFunctions")}
-          minWidth={640}
-        />
+        {compact ? (
+          <ul
+            aria-label={t("tableCaption", { role: activeRole.label })}
+            className="grid gap-2.5 @min-[520px]:grid-cols-2"
+          >
+            {FUNCTION_KEYS.map((functionKey) => (
+              <li
+                key={functionKey}
+                className="glass-surface min-w-0 rounded-xl border border-[var(--color-border)] p-3"
+              >
+                <div className="[overflow-wrap:anywhere]">
+                  {functionColumn.render(functionKey)}
+                </div>
+                <div className="mt-2 grid grid-cols-4 gap-1 border-t border-[var(--color-border)] pt-2">
+                  {actionColumns.map(({ key, header, render }) => (
+                    <label
+                      key={key}
+                      className="flex min-h-11 min-w-0 cursor-pointer flex-col items-center justify-center gap-1.5 rounded-md text-center text-xs text-[var(--color-text-muted)] hover:bg-[var(--color-row-hover)] has-[:disabled]:cursor-not-allowed"
+                    >
+                      {render(functionKey)}
+                      {header}
+                    </label>
+                  ))}
+                </div>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <DataTable
+            caption={t("tableCaption", { role: activeRole.label })}
+            columns={columns}
+            rows={FUNCTION_KEYS}
+            rowKey={(functionKey) => functionKey}
+            emptyMessage={t("emptyFunctions")}
+            minWidth={640}
+          />
+        )}
       </Card>
 
       <ConfirmDialog
@@ -420,6 +450,6 @@ function PermissionMatrixInner({ initial }: { initial: PermissionMatrixPage }) {
       >
         {t("confirmDeleteBody")}
       </ConfirmDialog>
-    </div>
+    </PageContainer>
   );
 }

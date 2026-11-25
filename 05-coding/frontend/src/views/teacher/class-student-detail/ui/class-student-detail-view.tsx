@@ -26,13 +26,11 @@ import {
 } from "lucide-react";
 import { useClassAssignedProblems } from "@/entities/class-assignment";
 import {
-  matchesResultFilter,
   SUBMISSION_LANGUAGE_LABEL,
   SUBMISSION_STATUS_VARIANT,
   useInstructorReadableSubmissions,
   useStudentClassSubmissionHistory,
   type SubmissionDetail,
-  type SubmissionResultFilter,
 } from "@/entities/submission";
 import {
   STUDENT_STATUS_VARIANT,
@@ -49,9 +47,10 @@ import {
   Card,
   ConfirmDialog,
   DataTable,
-  FilterMenu,
   IconAction,
+  PageContainer,
   PageHeader,
+  Pagination,
   QueryError,
   type DataTableColumn,
 } from "@/shared/ui";
@@ -110,6 +109,9 @@ function buildSubmissionHistory(readable: SubmissionDetail[]) {
   });
 }
 
+// 20 rows per page, the size of the server page (03-dd/api/F4_judge-orchestration.md mục 15).
+const HISTORY_PAGE_SIZE = 20;
+
 export function ClassStudentDetailView({
   classId,
   studentId,
@@ -125,9 +127,7 @@ export function ClassStudentDetailView({
   const router = useRouter();
   const [confirmingRemove, setConfirmingRemove] = useState(false);
   const tVerdict = useT("submissionResult");
-  const tCommon = useT("common");
-  const [historyFilter, setHistoryFilter] =
-    useState<SubmissionResultFilter>("all");
+  const [historyPage, setHistoryPage] = useState(1);
 
   const className =
     classesQuery.data?.find((c) => c.id === classId)?.name ?? classId;
@@ -166,21 +166,28 @@ export function ClassStudentDetailView({
   }, [classAssignments]);
 
   const readableQuery = useInstructorReadableSubmissions(isMockMode());
-  const realHistory = useStudentClassSubmissionHistory(classId, studentId);
+  const realHistory = useStudentClassSubmissionHistory(
+    classId,
+    studentId,
+    historyPage,
+  );
+  // Mock: the whole list lives in memory and is cut into pages here. Real: the server already sent one page.
+  const mockHistory = useMemo(
+    () => buildSubmissionHistory(readableQuery.data ?? []),
+    [readableQuery.data],
+  );
+  const historyTotal = isMockMode()
+    ? mockHistory.length
+    : (realHistory.data?.totalCount ?? 0);
   const submissionHistory = useMemo(
     () =>
       isMockMode()
-        ? buildSubmissionHistory(readableQuery.data ?? [])
-        : (realHistory.data?.pages.flatMap((page) => page.items) ?? []),
-    [readableQuery.data, realHistory.data],
-  );
-
-  const visibleHistory = useMemo(
-    () =>
-      submissionHistory.filter((row) =>
-        matchesResultFilter(row.status, historyFilter),
-      ),
-    [submissionHistory, historyFilter],
+        ? mockHistory.slice(
+            (historyPage - 1) * HISTORY_PAGE_SIZE,
+            historyPage * HISTORY_PAGE_SIZE,
+          )
+        : (realHistory.data?.items ?? []),
+    [mockHistory, historyPage, realHistory.data],
   );
 
   const student = studentQuery.data;
@@ -306,7 +313,7 @@ export function ClassStudentDetailView({
   }
 
   return (
-    <div>
+    <PageContainer variant="content" className="@container">
       <PageHeader
         leading={
           <IconAction
@@ -432,48 +439,37 @@ export function ClassStudentDetailView({
         />
       </Card>
 
-      <Card title={t("submissionHistory.title")}>
+      <Card className="flex grow flex-col" title={t("submissionHistory.title")}>
         {!isMockMode() && realHistory.isError ? (
           <QueryError query={realHistory} />
         ) : null}
         <div className="mb-3.5 flex flex-wrap items-center gap-2.5">
-          <FilterMenu
-            label={t("submissionHistory.filter.label")}
-            value={historyFilter}
-            onValueChange={(value) =>
-              setHistoryFilter(value as SubmissionResultFilter)
-            }
-            options={[
-              { value: "all", label: t("submissionHistory.filter.all") },
-              {
-                value: "accepted",
-                label: t("submissionHistory.filter.accepted"),
-              },
-              { value: "failed", label: t("submissionHistory.filter.failed") },
-            ]}
-          />
           <span className="ml-auto text-[12.5px] text-[var(--color-text-muted)]">
-            {t("submissionHistory.resultCount", {
-              count: visibleHistory.length,
-            })}
+            {t("submissionHistory.resultCount", { count: historyTotal })}
           </span>
         </div>
         <DataTable
           caption={t("submissionHistory.title")}
           columns={historyColumns}
-          rows={visibleHistory}
+          rows={submissionHistory}
           rowKey={(row) => row.id}
           emptyMessage={t("empty")}
           minWidth={760}
         />
-        {!isMockMode() && realHistory.hasNextPage ? (
-          <Button
-            disabled={realHistory.isFetchingNextPage}
-            onClick={() => void realHistory.fetchNextPage()}
-          >
-            {tCommon("loadMore")}
-          </Button>
-        ) : null}
+        <Pagination
+          className="mt-auto"
+          hideWhenSinglePage
+          page={historyPage}
+          pageSize={HISTORY_PAGE_SIZE}
+          total={historyTotal}
+          onPageChange={setHistoryPage}
+          summary={t("submissionHistory.pageSummary", {
+            page: historyPage,
+            total: Math.max(1, Math.ceil(historyTotal / HISTORY_PAGE_SIZE)),
+          })}
+          previousLabel={t("submissionHistory.previous")}
+          nextLabel={t("submissionHistory.next")}
+        />
       </Card>
 
       <ConfirmDialog
@@ -501,6 +497,6 @@ export function ClassStudentDetailView({
       >
         {t("popup.removeBody")}
       </ConfirmDialog>
-    </div>
+    </PageContainer>
   );
 }

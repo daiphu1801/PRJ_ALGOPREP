@@ -1,6 +1,7 @@
 package com.algoprep.problembank.domain.ports.out;
 
 import com.algoprep.problembank.domain.model.assignment.ClassAssignmentModels.ActiveRow;
+import com.algoprep.problembank.domain.model.assignment.ClassAssignmentModels.AssignableFilter;
 import com.algoprep.problembank.domain.model.assignment.ClassAssignmentModels.AssignablePage;
 import com.algoprep.problembank.domain.model.assignment.ClassAssignmentModels.ProblemState;
 import java.time.Instant;
@@ -17,8 +18,11 @@ public interface ClassAssignmentRepository {
    */
   List<ActiveRow> active(Set<UUID> classIds, String q);
 
-  /** Published problems not actively assigned to the class; one removed earlier is listed again. */
-  AssignablePage assignable(UUID classId, String q, int page, int pageSize);
+  /**
+   * Published problems with an {@code assigned} flag for the class; optional exact level code and
+   * topic name filters (null = no filter).
+   */
+  AssignablePage assignable(UUID classId, AssignableFilter filter, int page, int pageSize);
 
   Optional<ProblemState> problemState(UUID problemId);
 

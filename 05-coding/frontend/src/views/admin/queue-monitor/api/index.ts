@@ -15,8 +15,10 @@ export {
 export {
   QUEUE_KEY,
   useQueueControl,
+  useQueueInfra,
   useQueueJobs,
   useQueueLive,
+  useQueueSettings,
   useQueueSummary,
   useSaveQueueSettings,
 } from "./queries";

@@ -6,7 +6,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 
+import com.algoprep.aireview.domain.model.FeatureCode;
 import com.algoprep.aireview.domain.model.SubmissionSnapshot;
+import com.algoprep.aireview.domain.ports.out.AiPromptSnapshotRepository;
 import com.algoprep.identity.application.ports.out.AccessTokenPort;
 import com.algoprep.identity.domain.model.BaseCategory;
 import com.jayway.jsonpath.JsonPath;
@@ -47,7 +49,8 @@ import org.testcontainers.utility.MountableFile;
 @SpringBootTest(
     properties = {
       "spring.autoconfigure.exclude=org.springframework.boot.amqp.autoconfigure.RabbitAutoConfiguration",
-      "algoprep.ai.models.allowed=model-a,model-b"
+      "algoprep.ai.models.allowed=model-a,model-b",
+      "algoprep.ai.models.max-output-tokens[model-b]=6000"
     })
 @ActiveProfiles("test")
 @Testcontainers
@@ -95,6 +98,7 @@ class PromptTemplateFlowTest {
   @Autowired WebApplicationContext context;
   @Autowired AccessTokenPort tokens;
   @Autowired JdbcTemplate jdbc;
+  @Autowired AiPromptSnapshotRepository promptSnapshots;
   @Autowired StringRedisTemplate redis;
   @Autowired SolutionReviewFlowTest.ScriptedLlm llm;
   @Autowired SolutionReviewFlowTest.ScriptedSubmissions submissions;
@@ -342,6 +346,34 @@ class PromptTemplateFlowTest {
   }
 
   // Publish -----------------------------------------------------------------------------------
+
+  @Test
+  void draftTokenCapTakesEffectOnlyAfterPublishAndIsValidatedAgainstModel() throws Exception {
+    String feature = "SOLUTION_REVIEW";
+    String body = draftBody("New instruction", "model-b", GUARDS);
+    String draftWithCap = body.substring(0, body.length() - 1) + ",\"maxTokens\":5500}";
+    var saved = draft(feature, draftWithCap, admin);
+    assertThat(saved.getStatus()).as(saved.getContentAsString()).isEqualTo(200);
+    assertThat((Integer) JsonPath.read(saved.getContentAsString(), "$.maxTokens")).isEqualTo(5500);
+    assertThat(promptSnapshots.readActive(FeatureCode.SOLUTION_REVIEW).orElseThrow().maxTokens())
+        .isEqualTo(4096);
+
+    expect(
+        publish(publishBody(change(feature, SEED[0], ",\"maxTokens\":6001")), admin),
+        400,
+        "AIR-V40");
+    var inherited = draft(feature, body, admin);
+    assertThat(inherited.getStatus()).as(inherited.getContentAsString()).isEqualTo(200);
+    assertThat((Integer) JsonPath.read(inherited.getContentAsString(), "$.maxTokens"))
+        .isEqualTo(5500);
+    var published = publish(publishBody(change(feature, SEED[0], "")), admin);
+    assertThat(published.getStatus()).as(published.getContentAsString()).isEqualTo(200);
+    assertThat(promptSnapshots.readActive(FeatureCode.SOLUTION_REVIEW).orElseThrow().maxTokens())
+        .isEqualTo(5500);
+    assertThat(promptSnapshots.readActive(FeatureCode.GENERATE_TESTCASE).orElseThrow().maxTokens())
+        .isEqualTo(8192);
+    assertThat(audits()).isEqualTo(1);
+  }
 
   @Test
   void publishingADraftPromotesItArchivesTheOldRowAndWritesOneAuditRow() throws Exception {

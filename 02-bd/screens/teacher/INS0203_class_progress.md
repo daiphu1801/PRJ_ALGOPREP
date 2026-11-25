@@ -51,11 +51,11 @@
 | Tên vật lý (slug) | `class_progress` |
 | Trục tài liệu | Màn hình (`02-bd/screens/`) |
 | Actor | A2 (`INSTRUCTOR`) |
-| Phiên bản | V0.14 |
+| Phiên bản | V0.16 |
 | Người tạo | Nhóm phát triển AlgoPrep |
 | Ngày tạo | 2026/09/21 |
 | Người cập nhật | Nhóm phát triển AlgoPrep |
-| Ngày cập nhật | 2026/11/18 |
+| Ngày cập nhật | 2026/11/23 |
 
 ---
 
@@ -77,6 +77,8 @@
 | V0.12 | Đầu tài liệu, Sheet 3, 4.1, 4.5, 5 (Khu B, C), Câu hỏi mở (Q4) | Owner chốt 2026-11-07: biểu đồ điểm TB (#57, widget `class-score-trend-chart`) và khối "Cần chú ý" (#58, widget `class-attention-list`) **giữ bỏ**, đúng như mã [Nguồn: 05-coding/frontend/src/views/teacher/class-progress/ui/class-progress-view.tsx:12-16]. Khối "Cần chú ý" bỏ vì chỉ nhắc lại cột "Trạng thái" và thêm cuộn; biểu đồ: lý do cũ (màn Tổng quan giảng viên vẽ cùng chuỗi) không còn đúng, nay bỏ theo ponytail bậc 3 và bậc 4. Nội dung cũ của hai khối giữ làm lịch sử, đánh dấu "Đã bỏ"; endpoint #57, #58, #29 còn là hợp đồng ở DD api nhưng không màn nào đọc. Đóng Q4 vì không còn đối tượng. Không đổi bảng học viên. Chưa duyệt hình | 2026/11/07 | AI |
 | V0.13 | Sheet 4, 5 | Sửa 2026-11-07 (owner chốt sau kiểm trình duyệt). Bộ đếm "{shown} / {total}" đổi nhãn từ "học viên" thành "dòng" (mỗi dòng là một học viên trong một lớp; người ở hai lớp có hai dòng). Giữ cách đếm. Báo cáo `06-plan/reports/261107-2100-f1-f2-kiem-trinh-duyet/report.md`. |
 | V0.14 | Sheet 4 (4.6), 5 (Khu vực danh sách NO 5), 6, 7 (7.1 NO 18, 7.2 NO 6, 7.3 NO 7) | Sửa 2026-11-18 (F1-35, `DEC-2026-1117-user-avatar-upload`, chưa duyệt hình). Cột "Học viên" của bảng nay hiện ảnh đại diện thật (hoặc chữ viết tắt khi chưa có ảnh hoặc ảnh lỗi), đọc `avatarVersion` của F1 #59; bỏ ghi chú "ảnh đại diện thật chưa có nguồn". Khối "Cần chú ý" (#58) vẫn không dựng. | 2026/11/18 | Claude |
+| V0.15 | Hiện trạng bản dựng | Sửa 2026-11-22. **Chưa duyệt hình, RD không đổi, chỉ trình bày.** Gốc trang là `PageContainer variant="content"` và thẻ bảng `grow`, nên bảng dãn tới sát chân trang, padding do layout shared giữ (cùng cách Admin). Thanh phân trang ẩn khi chỉ có một trang (`Pagination hideWhenSinglePage`), thanh đặt sát đáy thẻ khi có nhiều trang. | 2026/11/22 | Claude |
+| V0.16 | Sheet 4 (4.4, 4.6 Hiện trạng bản dựng) | Sửa 2026/11/23, **chưa duyệt hình, RD không đổi, chỉ trình bày**: bảng danh sách học viên bỏ cuộn ngang (`DataTable minWidth={0}`, trước là 860). Ở cửa sổ rộng 1100px bảng không còn cuộn ngang; chữ dài xuống dòng (tối đa hai dòng). Dòng prototype `min-width: 860px` ở bảng 4.4 chỉ là bằng chứng của `.dc.html`. Mã: `05-coding/frontend/src/views/teacher/class-progress/ui/class-progress-view.tsx:271`. Ảnh chụp: `06-plan/reports/261123-0030-giao-bai-man-rieng/img-cuon-ngang/` (`ins0203`) | 2026/11/23 | AI |
 
 ---
 
@@ -254,7 +256,7 @@ design system cuối cùng.
 | Cột trái — biểu đồ "Điểm trung bình theo lớp" | `:123-134`, dữ liệu `:278-279` | Tiêu đề (`:124`), dòng phụ "6 tuần gần nhất" (`:125`), `<svg viewBox="0 0 500 140">` vẽ 2 đường mock (`:126-129`), chú giải tên lớp kèm chấm màu (`:130-133`). BD chốt **một đường** nên prototype lệch BD ở điểm này, chưa sửa (`DEC-2026-1014-instructor-batch2-weekly-rules`) |
 | Cột phải — khối "Cần chú ý" | `:136-150`, dữ liệu `:281-286` | Tiêu đề (`:137`), danh sách mục: tên học viên (`:142`), dòng lý do (`:143`), nhãn trạng thái bên phải (`:145`). Prototype dựng 4 mục |
 | Khối "Danh sách học viên" — hàng lọc | `:154-165`, dữ liệu `:288-293,320` | Ô tìm kiếm "Tìm học viên" (`:155-158`), cụm tab lọc lớp (`:159-163`), dòng đếm kết quả `{N} / 82 học viên` (`:164`) |
-| Khối "Danh sách học viên" — bảng | `:167-187`, dữ liệu `:226-234` | Lưới 7 cột `minmax(160px,1.3fr) 130px 90px 100px 90px 120px 110px`, `min-width: 860px`, cuộn ngang khi hẹp. Cột: Học viên, Lớp, Điểm TB, Hoàn thành, Chuỗi ngày, Xu hướng, Hoạt động (`:169`) |
+| Khối "Danh sách học viên" — bảng | `:167-187`, dữ liệu `:226-234` | Lưới 7 cột `minmax(160px,1.3fr) 130px 90px 100px 90px 120px 110px`, `min-width: 860px`, cuộn ngang khi hẹp (**chỉ là prototype `.dc.html`**; bản dựng Next.js không còn cuộn ngang từ 2026/11/23, xem Bảng 4.6). Cột: Học viên, Lớp, Điểm TB, Hoàn thành, Chuỗi ngày, Xu hướng, Hoạt động (`:169`) |
 | Phân trang | không có | Prototype không dựng; BD thiết kế bổ sung theo F1-28 [Nguồn: 01-rd/req/F1_identity.md:134-136] |
 | Chân trang | không có | Cả 5 prototype khu Giảng viên đều không có `<footer>` [Nguồn: 02-bd/screens/teacher/_shell.md:31] |
 
@@ -305,6 +307,7 @@ Bảng 4.6 ghi những gì bản dựng Next.js đang làm cho bảng học viê
 | Ảnh đại diện học viên (V0.14) | Cột "Học viên" của bảng hiện `UserAvatar` cỡ nhỏ trước tên theo `avatarVersion` của từng dòng (F1 #59); không có ảnh hoặc ảnh lỗi thì chữ viết tắt. Khối "Cần chú ý" không dựng nên không có ảnh ở đó. Chưa duyệt hình | [Nguồn: 05-coding/frontend/src/views/teacher/class-progress/ui/class-progress-view.tsx:136-141], [Nguồn: 05-coding/frontend/src/entities/class/api/real-class-metrics.ts:81,99] |
 | Phân trang bảng học viên (V0.7) | `PAGE_SIZE = 20` cố định, `Pagination` không có ô chọn cỡ trang. Kiểm bằng e2e `instructor-shell.spec.ts`: 12 dòng, "Trang 1 / 1", không có ô chọn cỡ trang (chưa đọc lại tệp e2e trong đợt này, theo kết quả chạy do người giao việc báo). Chưa duyệt hình | [Nguồn: 05-coding/frontend/src/views/teacher/class-progress/ui/class-progress-view.tsx:49,122-123,267-274] |
 | Liên kết tên học viên | Dẫn tới `/instructor/classes/{classId}/students/{studentId}?from=students` để thanh điều hướng sáng mục "Danh sách học viên" ở màn chi tiết (xem `_shell.md`). Chưa duyệt hình | [Nguồn: 05-coding/frontend/src/views/teacher/class-progress/ui/class-progress-view.tsx:134] |
+| Bảng học viên không cuộn ngang (2026/11/23) | `DataTable minWidth={0}` (trước là 860): ở cửa sổ rộng 1100px bảng vừa khung, không có thanh cuộn ngang; chữ dài xuống dòng (tối đa hai dòng). Chứng cứ: ảnh chụp `ins0203` trong `06-plan/reports/261123-0030-giao-bai-man-rieng/img-cuon-ngang/` | [Nguồn: 05-coding/frontend/src/views/teacher/class-progress/ui/class-progress-view.tsx:271] |
 
 **Khoảng trống còn mở** (chưa làm, không tính là đã xong):
 

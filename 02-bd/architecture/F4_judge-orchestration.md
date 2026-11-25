@@ -130,7 +130,7 @@ Quy tắc áp dụng:
 | Sweep timeout | F4-07 | Ngưỡng 5 phút (`DEC-2026-0831-outside-screens-closures`) |
 | Đẩy trạng thái thời gian thực | F4-08 | WebSocket/STOMP, kênh riêng theo `submissionId` |
 | ~~Chấm lại~~ | ~~F4-09a→e~~ | **Đã loại bỏ khỏi phạm vi** (`DEC-2026-0828-remove-rejudge-scope`) — không thiết kế lại ở đây |
-| Giám sát + điều khiển cụm | F4-10 | Bao gồm pause/resume tiêu thụ hàng đợi, bật/tắt autoscale worker (`DEC-2026-0831-judge-orchestration-ops-details`); sweep bỏ qua `PENDING` lúc đang tạm dừng (mục 5.3). **Cập nhật owner 2026-10-25:** bỏ bảng worker chi tiết vì go-judge không xuất các metric từng worker; snapshot chỉ lấy số liệu job/độ trễ từ DB và cấu hình F4 (`DEC-2026-1025-dd-drop-worker-detail`) |
+| Giám sát + điều khiển cụm | F4-10 | Bao gồm pause/resume tiêu thụ hàng đợi, bật/tắt autoscale worker (`DEC-2026-0831-judge-orchestration-ops-details`); sweep bỏ qua `PENDING` lúc đang tạm dừng (mục 5.3). **Cập nhật owner 2026-10-25:** bỏ bảng worker chi tiết vì go-judge không xuất các metric từng worker; snapshot chỉ lấy số liệu job/độ trễ từ DB và cấu hình F4 (`DEC-2026-1025-dd-drop-worker-detail`). **Cập nhật 2026-11-22** (`DEC-2026-1122-f4-queue-consumers-and-throughput-on-adm0401`): snapshot thêm số luồng chấm do worker báo (mục 8b), tốc độ chấm và ước lượng hết hàng đợi; vẫn không có số liệu từng worker |
 | Cấu hình ngôn ngữ và giới hạn tài nguyên | F4-11 | 3 tham số sandbox go-judge: mạng (mặc định chặn), giới hạn tiến trình con, có trả `stderr` hay không |
 | Chỉ số "Beats" | F4-12 | Chỉ hiện với `ACCEPTED`, so cùng bài + cùng ngôn ngữ |
 
@@ -433,6 +433,31 @@ Bảng 8a.1: Quyết định kiến trúc của F4-14.
 
 **Khi Admin tạm dừng tiêu thụ hàng đợi (F4-10):** các bài `PENDING` đứng yên, tốc độ chấm trong 60 giây tụt về 0 nên ước tính trở thành `null` (dưới 3 mẫu) và client chỉ hiện số bài phía trước. Không cần xử lý riêng `[SoT: Suy luận]`.
 
+## 8b. Luồng chấm, tốc độ chấm và ước lượng hết hàng đợi trên `ADM0401`
+
+**Trạng thái (2026-11-22): đã dựng** (backend `mvn verify` module judge đạt, frontend `pnpm check` đạt; chưa xem trên màn hình thật bằng tài khoản quản trị); mục "Hiện trạng bản dựng" của BD màn `ADM0401` sẽ cập nhật khi có mã.
+
+**Nguồn yêu cầu:** RD `01-rd/screens/admin/ADM0401_queue_monitor.md` mục 2.2, REQ-07 đến REQ-09; quyết định `DEC-2026-1122-f4-queue-consumers-and-throughput-on-adm0401` (chủ dự án duyệt 2026-11-22), đảo lại phần "số liệu cụm đọc từ Prometheus, không thêm bảng" của `DEC-2026-1010-admin-operations-regroup`. Tiêu chí ponytail bậc 1 (yêu cầu của chủ dự án), bậc 2 (nguồn thật: số consumer của `JOB-JD-05` và `judge.submissions`), bậc 4 (dùng lại công thức F4-14 và ô cụm worker cũ), bậc 5 (hằng số trong mã). Bảng 8b.1 tóm tắt các quyết định kiến trúc.
+
+| Câu hỏi | Quyết định |
+| :--- | :--- |
+| Số luồng chấm lấy từ đâu | Từ **chính worker**: worker được bầu (giữ khoá leader, JOB-JD-05) ghi `consumers_target`, `consumers_active` và lần đổi gần nhất vào bảng một dòng `judge.worker_status` (`02-bd/database/F4_judge-orchestration.md` mục 1.11), **sau mỗi lần `scale()`** |
+| Vì sao bảng, không Prometheus hay bộ nhớ tiến trình | API và worker có thể là hai tiến trình khác nhau (JOB-JD-05 chạy đúng một tiến trình worker chuyên trách), nên API không đọc được trạng thái trong bộ nhớ của worker. Prometheus đã bị loại khỏi phụ thuộc của màn: giả định "go-judge xuất được metric" chưa từng kiểm, và một màn quản trị không nên hỏng khi máy chủ đo đạc không với tới được. Gauge `judge_grading_consumers_target` và `judge_grading_consumers_active` vẫn xuất như cũ cho Grafana, API **không** đọc chúng |
+| Dòng cũ | Dòng có `reported_at` cũ hơn 60 giây (hằng số trong mã) hoặc không có dòng nào: snapshot trả `consumers = null`, không dựng số từ lần báo cũ. Worker chết, chưa khởi động hay tiến trình API tách riêng chưa có worker đều rơi vào trường hợp này |
+| Lỗi ghi | Ghi trạng thái là việc phụ: lỗi ghi **không** làm dừng, chậm hay đảo kết quả `scale()` (số liệu giám sát không được chạm luồng chấm `[SoT: Suy luận]`). Worker ghi log cảnh báo, chu kỳ kế ghi lại |
+| Tốc độ chấm | `finishedLastMinute` = số bài nộp vào một trong sáu trạng thái cuối trong 60 giây gần nhất. **Dùng lại** `SubmissionReadRepository.finishedLastMinute()` của F4-14 (mục 8a), không thêm SQL, không thêm chỉ mục |
+| Ước lượng hết hàng đợi | `estimatedClearSeconds` = `ceil(pendingCount / (finishedLastMinute / 60))`, `null` khi dưới 3 mẫu hoặc không có job chờ, trần 3600 giây. **Dùng lại** `SubmissionReadProjection.estimate(pending, finishedLastMinute)` (mục 8a, `DEC-2026-1115-f4-queue-wait-in-progress-snapshot`). Khác F4-14 ở đầu vào: F4-14 đếm bài phía trước **một** bài nộp, ở đây đầu vào là **toàn bộ** số job `PENDING` |
+| Trần tối đa | `workerAutoscaleMax` đã có trong snapshot (`judge.autoscale.max-workers`); khối hiện "đang chạy / tối đa" từ trường này |
+| Đường đến màn | Không thêm endpoint hay kênh mới. Snapshot (`GET /admin/queue/snapshot`, mục 16 của file DD API) và lô STOMP `/topic/admin/queue` (`snapshot` trong lô) thêm ba trường; trường cũ giữ nguyên |
+| Quyền | Giữ nguyên `JUDGE_QUEUE_MONITOR:READ`; số liệu không chứa dữ liệu người học |
+| Không làm | Bấm dòng job (ảnh chụp cố ý không mang dữ liệu học viên, bài hay testcase); tải % hay uptime từng worker; lịch sử nhiều lần đổi số luồng (đóng Q5 RD); đưa Prometheus vào API |
+
+Bảng 8b.1: Quyết định kiến trúc của khối "Luồng chấm".
+
+**Luồng báo và đọc** (một chiều, không có callback): worker được bầu chạy `scale()` mỗi chu kỳ (mặc định 15 giây) → đổi hoặc giữ mục tiêu consumer → upsert `worker_status` → (tiến trình API) snapshot đọc `worker_status`, so `reported_at` với giờ DB, ghép với đếm `submissions` → trả `consumers` (hoặc `null`) cùng `finishedLastMinute`, `estimatedClearSeconds`.
+
+**Đánh đổi chấp nhận được:** mỗi 15 giây thêm một câu ghi một dòng (không đáng kể so với tải chấm); số "đang chạy" và "mục tiêu" có thể chậm tới một chu kỳ so với thực tế, và gauge cùng bảng không là một ảnh chụp nguyên tử (đã ghi ở JOB-JD-05). Tốc độ chấm đếm theo `updated_at` của bài ở trạng thái cuối nên là xấp xỉ (cùng giới hạn F4-14).
+
 ## 9. Việc còn mở — chuyển sang DD
 
 - Tên/chữ ký cụ thể `ProblemGradingSpecPort` (mục 3.2).
@@ -560,3 +585,4 @@ Bảng 11.1: Lịch sử sửa đổi BD kiến trúc `judge-orchestration`.
 | 2026-11-15 | Thêm mục 1.1: quy ước gom nhóm package theo tính năng, class dùng chung ở lại package cha, bỏ `package-info.java`; cập nhật đường dẫn gói sau khi gom thư mục con | owner duyệt Phase 6, `06-plan/261114-1645-sonarqube-clear-coverage-90.md`, `06-plan/reports/p6-moves-judge.tsv` |
 | 2026-11-15 | Thêm mục 8a: vị trí trong hàng đợi và thời gian chờ ước tính khi `PENDING` (F4-14), mở rộng ảnh chụp tiến trình endpoint #6, trạng thái dự kiến | quyết định chủ dự án 2026-11-15, `01-rd/req/F4_judge-orchestration.md` F4-14 |
 | 2026-11-16 | Mục 8a: đổi trạng thái từ dự kiến sang đã dựng (backend và FE), thêm bằng chứng kiểm trình duyệt thật và hai quyết định đã chốt (không ẩn ước tính lớn; giảng viên không thấy dòng này) | quyết định chủ dự án 2026-11-16, `06-plan/reports/261116-0100-f4-14-browser-check/report.md` |
+| 2026-11-22 | Thêm mục 8b: worker báo số luồng chấm vào `judge.worker_status` sau mỗi lần `scale()`, API snapshot đọc bảng (thay ý "số liệu cụm đọc từ Prometheus"), thêm tốc độ chấm và ước lượng hết hàng đợi dùng lại công thức F4-14; trạng thái đã thiết kế, chưa dựng | `DEC-2026-1122-f4-queue-consumers-and-throughput-on-adm0401`, `06-plan/nexa-plan/261122-1840-f4-adm0401-luong-cham-thong-luong.md` |

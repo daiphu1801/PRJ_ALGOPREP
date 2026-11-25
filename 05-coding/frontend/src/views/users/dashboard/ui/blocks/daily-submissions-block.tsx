@@ -37,7 +37,7 @@ export function DailySubmissionsBlock({ range }: { range: ProgressRange }) {
       errorMessage={t("errorGeneric")}
       retryLabel={t("retry")}
       headingLevel={2}
-      minHeightClassName="min-h-[260px]"
+      minHeightClassName="min-h-[190px]"
     >
       <div>
         <LineChartWithTotal
@@ -47,7 +47,7 @@ export function DailySubmissionsBlock({ range }: { range: ProgressRange }) {
           }))}
           totalLabel={t("daily.totalLabel", { average })}
           totalValue={String(total)}
-          chartClassName="h-40"
+          chartClassName="h-24"
           ariaLabel={t("daily.chartLabel", { total, average })}
         />
       </div>

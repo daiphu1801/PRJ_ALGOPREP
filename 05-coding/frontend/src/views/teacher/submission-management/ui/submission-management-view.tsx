@@ -223,6 +223,7 @@ export function SubmissionManagementView() {
             ]}
           />
           <FilterMenu
+            align="end"
             label={t("resultFilter")}
             value={result}
             onValueChange={(value) =>
@@ -264,7 +265,7 @@ export function SubmissionManagementView() {
                 ? t("emptyNoSubmission")
                 : t("empty")
           }
-          minWidth={960}
+          minWidth={0}
         />
 
         <Pagination
