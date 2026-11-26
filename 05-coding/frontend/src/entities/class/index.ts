@@ -38,5 +38,6 @@ export {
   useMyClass,
   useMyClasses,
   useRemoveStudent,
+  useRevokeInviteCode,
   useUpdateClass,
 } from "./api/queries";

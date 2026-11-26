@@ -4,6 +4,7 @@ import com.algoprep.identity.application.ports.in.classes.GenerateClassInviteCod
 import com.algoprep.identity.application.ports.in.classes.ListClassInviteCodesUseCase;
 import com.algoprep.identity.application.ports.in.classes.ListClassRosterUseCase;
 import com.algoprep.identity.application.ports.in.classes.RemoveStudentFromClassUseCase;
+import com.algoprep.identity.application.ports.in.classes.RevokeClassInviteCodeUseCase;
 import com.algoprep.identity.domain.model.classes.ClassInviteCode;
 import com.algoprep.identity.domain.model.classes.ClassRosterEntry;
 import com.algoprep.identity.domain.model.classes.ClassStudentRow;
@@ -13,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,21 +22,24 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-/** Invite codes #23 and #24, roster #26 and leave #27 of a class the caller owns. */
+/** Invite codes #23, #24 and #78, roster #26 and leave #27 of a class the caller owns. */
 @RestController
 @RequestMapping("/api/v1/identity/classes/{classId}")
 class ClassMembershipController {
   private final GenerateClassInviteCodeUseCase generate;
+  private final RevokeClassInviteCodeUseCase revoke;
   private final ListClassInviteCodesUseCase codes;
   private final ListClassRosterUseCase roster;
   private final RemoveStudentFromClassUseCase remove;
 
   ClassMembershipController(
       GenerateClassInviteCodeUseCase generate,
+      RevokeClassInviteCodeUseCase revoke,
       ListClassInviteCodesUseCase codes,
       ListClassRosterUseCase roster,
       RemoveStudentFromClassUseCase remove) {
     this.generate = generate;
+    this.revoke = revoke;
     this.codes = codes;
     this.roster = roster;
     this.remove = remove;
@@ -63,7 +68,8 @@ class ClassMembershipController {
       Double avgScore,
       Integer completionPercent,
       String lastSubmittedAt,
-      Long avatarVersion) {
+      Long avatarVersion,
+      boolean accountInactive) {
 
     static StudentResponse of(ClassStudentRow r) {
       ClassRosterEntry e = r.student();
@@ -80,7 +86,8 @@ class ClassMembershipController {
           figures && r.metrics().lastSubmittedAt() != null
               ? r.metrics().lastSubmittedAt().toString()
               : null,
-          e.avatarVersion());
+          e.avatarVersion(),
+          e.accountInactive());
     }
   }
 
@@ -94,6 +101,14 @@ class ClassMembershipController {
   InviteCodeResponse generate(@AuthenticationPrincipal Jwt jwt, @PathVariable String classId) {
     return InviteCodeResponse.of(
         generate.generate(UUID.fromString(jwt.getSubject()), ClassPath.id(classId)));
+  }
+
+  @DeleteMapping("/invite-codes/{codeId}")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  @PreAuthorize("hasAuthority('CLASS_MANAGEMENT:UPDATE')")
+  void revoke(
+      @AuthenticationPrincipal Jwt jwt, @PathVariable String classId, @PathVariable String codeId) {
+    revoke.revoke(UUID.fromString(jwt.getSubject()), ClassPath.id(classId), ClassPath.id(codeId));
   }
 
   @GetMapping("/invite-codes")

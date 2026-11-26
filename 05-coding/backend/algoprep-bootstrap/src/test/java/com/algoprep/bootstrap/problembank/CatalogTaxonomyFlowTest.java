@@ -162,7 +162,15 @@ class CatalogTaxonomyFlowTest {
     String student = token(UUID.randomUUID(), "STUDENT", BaseCategory.STUDENT);
     String teacher = token(UUID.randomUUID(), "INSTRUCTOR", BaseCategory.INSTRUCTOR);
     for (String kind : List.of("levels", "topics")) {
-      assertThat(call(get(BASE + kind), null).getStatus()).isEqualTo(401);
+      // Levels are open to guests (DD F2 section 0A); topics still need a session.
+      assertThat(call(get(BASE + kind), null).getStatus())
+          .isEqualTo("levels".equals(kind) ? 200 : 401);
+      if ("levels".equals(kind)) {
+        var guestCounts = call(get(BASE + kind).param("includeCounts", "true"), null);
+        assertThat(
+                JsonPath.<Object>read(guestCounts.getContentAsString(), "$.items[0].problemCount"))
+            .isNull();
+      }
       for (String bearer : List.of(student, teacher, admin)) {
         var response = call(get(BASE + kind).param("includeCounts", "true"), bearer);
         assertThat(response.getStatus()).isEqualTo(200);

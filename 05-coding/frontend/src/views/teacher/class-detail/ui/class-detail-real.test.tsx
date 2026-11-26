@@ -108,6 +108,33 @@ describe("ClassDetailView with the real API", () => {
     }
   });
 
+  it("marks a learner whose account is no longer active and keeps the headcount (F1 #26)", async () => {
+    serve({
+      students: [
+        STUDENT,
+        {
+          ...STUDENT,
+          studentId: "s2",
+          displayName: "Người dùng đã xoá",
+          email: "deleted-user-s2@anon.local",
+          accountInactive: true,
+        },
+      ],
+    });
+    await open();
+
+    const table = await screen.findByRole("table", {
+      name: m.students.title,
+    });
+    const gone = (await within(table).findByText("Người dùng đã xoá")).closest(
+      "tr",
+    )!;
+    expect(within(gone).getByText(m.students.inactive)).toBeInTheDocument();
+    const active = within(table).getByText("Nguyễn An").closest("tr")!;
+    expect(within(active).queryByText(m.students.inactive)).toBeNull();
+    expect(within(table).getAllByText(m.students.inactive)).toHaveLength(1);
+  });
+
   it("shows status, average, completion and last activity when the roster carries the judge figures", async () => {
     serve({
       students: [

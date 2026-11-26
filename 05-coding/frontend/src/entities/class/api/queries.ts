@@ -23,6 +23,7 @@ import {
   listInviteCodes,
   listMyClasses,
   removeStudent,
+  revokeInviteCode,
   updateClass,
 } from "./__mock__/class-mocks";
 import {
@@ -36,6 +37,7 @@ import {
   realListInviteCodes,
   realListMyClasses,
   realListRoster,
+  realRevokeInviteCode,
   realUpdateClass,
 } from "./real-class";
 import { realListClassActivity } from "./real-class-activity";
@@ -215,6 +217,14 @@ export const useCreateInviteCode = () =>
   useClassWrite(
     (classId: string) => createInviteCode(classId),
     realCreateInviteCode,
+  );
+
+/** F1 #78: takes one invite code away; the others of the class keep working. */
+export const useRevokeInviteCode = () =>
+  useClassWrite(
+    ({ classId, codeId }: { classId: string; codeId: string }) =>
+      revokeInviteCode(classId, codeId),
+    ({ classId, codeId }) => realRevokeInviteCode(classId, codeId),
   );
 
 /** F1 #27: the learner leaves the class (the history stays); the mock only needs the learner. */

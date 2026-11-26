@@ -3,8 +3,6 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import {
   loadAdminProblemList,
-  loadAttentionList,
-  loadTopicDistribution,
   mockBulkDelete,
   mockBulkDifficulty,
   mockBulkPublish,
@@ -101,23 +99,5 @@ describe("bulk overlays", () => {
     await expect(
       mockBulkPublish(Array.from({ length: 21 }, (_, n) => String(n))),
     ).rejects.toMatchObject({ code: "PRB-001" });
-  });
-});
-
-describe("side blocks", () => {
-  it("are derived from the rows listed, never typed in", async () => {
-    const list = await loadAdminProblemList({ ...base, pageSize: 50 });
-    const distribution = await loadTopicDistribution();
-    expect(distribution.totalProblemsWithTopic).toBe(list.totals.total);
-    expect(distribution.items.reduce((sum, item) => sum + item.count, 0)).toBe(
-      list.totals.total,
-    );
-    const attention = await loadAttentionList();
-    expect(attention.map((item) => item.ruleCode)).toEqual([
-      "noTestcase",
-      "lowAcceptRate",
-      "hiddenFromLearners",
-      "staleDraft",
-    ]);
   });
 });

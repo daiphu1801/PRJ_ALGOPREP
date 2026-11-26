@@ -62,6 +62,8 @@
     một lớp sang lớp khác** mà giảng viên phụ trách, actor A2, cùng quyền `CLASS_MANAGEMENT:UPDATE`, một lần xác nhận, không
     phải chọn từng bài. Chỉ thêm liên kết giao bài, không nhân bản bài toán. Bài lớp nhận đã có và bài đã rút xuống thì bỏ
     qua. Sao chép một lần, hai lớp không tự đồng bộ về sau.
+  - **Khách chưa đăng nhập xem danh sách và đề bài đã xuất bản (F2-11, F2-01).** **Amendment 2026-11-26** (`DEC-2026-1126-guest-browse-published-problems`): khách
+    (không có phiên) được xem danh sách bài đã xuất bản, đọc đề kèm ví dụ, xem testcase mẫu (Sample), danh mục độ khó và bấm "Bài ngẫu nhiên"; testcase Hidden vẫn ẩn (F2-08). Khi không có phiên, các giá trị theo người dùng (trạng thái đã giải, đã lưu) không được trả: trạng thái giải là rỗng, `bookmarked` là `false`. Bài nháp, bài đã gỡ và id không tồn tại cùng trả "không tìm thấy". Giải bài, chạy thử, nộp bài, lưu bài, lịch sử, tiến độ, hồ sơ và lớp vẫn cần phiên. Thay phần "khu Người học bắt buộc đăng nhập, không có trạng thái khách" của `DEC-2026-1018-usr-open-questions-phase1-scope`.
   - **Bài đã lưu (bookmark) kèm ghi chú riêng tư** (F2-13) — bổ sung theo `06-plan/PROTOTYPE_DEBT.md` mục
     2.1, đối chiếu `09-layoutBase/Bài đã lưu.dc.html`. Người học đánh dấu bài toán để xem lại, kèm ghi chú
     tự do theo từng bookmark. **Chốt 2026-08-24:** ghi chú lưu ở server theo (`user_id`, `problem_id`) —

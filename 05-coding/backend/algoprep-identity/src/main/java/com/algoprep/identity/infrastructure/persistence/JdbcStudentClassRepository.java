@@ -41,6 +41,7 @@ class JdbcStudentClassRepository implements StudentClassRepository {
                 """
         SELECT c.id, c.name
         FROM identity.class_invite_codes i JOIN identity.classes c ON c.id = i.class_id
+          JOIN identity.users u ON u.id = c.instructor_id AND u.status = 'ACTIVE'
         WHERE i.code = :code AND i.expires_at > now()
         """)
             .param("code", code)

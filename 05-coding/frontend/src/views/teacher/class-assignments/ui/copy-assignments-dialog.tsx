@@ -15,7 +15,7 @@ import {
 import { ApiError } from "@/shared/api";
 import { useApiErrorMessage, useT } from "@/shared/i18n";
 import { toast } from "@/shared/lib/toast-store";
-import { Button, ConfirmDialog, SelectField } from "@/shared/ui";
+import { Button, ConfirmDialog, FilterMenu } from "@/shared/ui";
 
 type ClassOption = { id: string; name: string };
 
@@ -140,20 +140,18 @@ export function CopyAssignmentsDialog({
       pending={sending}
       confirmDisabled={count === 0 || !settled}
     >
-      <SelectField
+      <FilterMenu
         label={t("copy.target")}
+        compact
+        className="w-full [&>button]:h-10 [&>button]:w-full [&>button]:justify-between [&>button]:bg-[var(--color-surface)] [&>button]:px-3 [&>button]:text-sm [&>button]:text-[var(--color-text)] [&>[role=listbox]]:w-full [&>[role=listbox]]:max-w-full"
         value={targetId}
-        disabled={sending}
-        onChange={(event) => setTargetId(event.target.value)}
+        onValueChange={(value) => {
+          if (!sending) setTargetId(value);
+        }}
         options={[
-          ...(targets.length > 1
-            ? [
-                {
-                  value: "",
-                  label: t("copy.targetPlaceholder"),
-                  disabled: true,
-                },
-              ]
+          // The placeholder is offered only until a class is picked, so it can never be chosen again.
+          ...(targetId === ""
+            ? [{ value: "", label: t("copy.targetPlaceholder") }]
             : []),
           ...targets.map((c) => ({ value: c.id, label: c.name })),
         ]}

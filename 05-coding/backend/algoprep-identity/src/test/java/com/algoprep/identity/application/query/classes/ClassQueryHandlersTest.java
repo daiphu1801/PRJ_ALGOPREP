@@ -57,7 +57,8 @@ class ClassQueryHandlersTest {
   void rosterIsListedOnlyForAnOwnedClassAndKeepsStudentsWhenFiguresAreDown() {
     List<ClassRosterEntry> rows =
         List.of(
-            new ClassRosterEntry(UUID.randomUUID(), "Student", "s@example.test", null, now, null));
+            new ClassRosterEntry(
+                UUID.randomUUID(), "Student", "s@example.test", null, now, null, false));
     InstructorClass owned = new InstructorClass(classId, "A", null, null, 1, now);
     when(classes.findOwned(classId, instructor)).thenReturn(Optional.of(owned));
     when(classes.listActiveRoster(classId)).thenReturn(rows);

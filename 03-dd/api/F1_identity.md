@@ -120,9 +120,10 @@ Mọi endpoint lớp của giảng viên kiểm ô `CLASS_MANAGEMENT:READ` cho �
 | `IDT-411` | 404 | Lớp không hiện diện trong ghi danh hiện tại của học viên | #25B |
 | `IDT-412` | 429 | Đã đủ năm lần thử mã mời sai trong 15 phút | #25 |
 | `IDT-413` | 422 | `defaultLanguage` không thuộc ba mã hợp lệ | #15 |
-| `IDT-414` | 404 | Lớp không thuộc phạm vi giảng viên, không có hoặc UUID sai | #28, #29, #57, #58, #59 |
+| `IDT-414` | 404 | Lớp không thuộc phạm vi giảng viên, không có hoặc UUID sai | #28, #29, #57, #58, #59, #78 |
 | `IDT-415` | 409 | Email mới đã thuộc tài khoản khác | #11, #12 |
 | `IDT-416` | 422 | OTP đổi email sai, hết hạn hoặc đã dùng | #12 |
+| `IDT-417` | 409 | Giảng viên đã có lớp trùng tên (không phân biệt hoa thường và khoảng trắng hai đầu) | #20, #21 |
 | `IDT-420` | 422 | Không được gỡ ô `PERMISSION_MATRIX:UPDATE` khi sau thao tác không còn **tài khoản ACTIVE** nào thuộc role gốc ADMIN nắm ô đó (BR-14; sửa 2026-11-03: trước đây đếm role, nay đếm tài khoản) | #31 |
 | `IDT-421` | 422 | Không được xoá role hệ thống | #34 |
 | `IDT-422` | 422 | Không được xoá role còn người dùng gán | #34 |
@@ -196,6 +197,7 @@ Khi JWT hợp lệ nhưng vai trò không có ô `Function:Action` mà endpoint 
 | 62 | GET | `/api/v1/identity/admin/users/management-stats` | Số tài khoản chờ xác thực email | `GetUserManagementStats` [SoT: BD ADM0201 Sheet 7.3 NO 2] | `USER_MANAGEMENT:READ`; không suy số từ trang #35 |
 | 63 | GET | `/api/v1/identity/admin/users/role-distribution` | Bốn nhóm phân bố vai trò loại trừ nhau | `GetRoleDistribution` [SoT: BD ADM0201 Sheet 7.3 NO 3] | `USER_MANAGEMENT:READ`; không suy số từ trang #35 |
 | 77 | DELETE | `/api/v1/identity/admin/users/{userId}/avatar` | Gỡ ảnh đại diện của một người khác (F1-35) | `RemoveUserAvatar` | Xem mục 0.9.4; `USER_MANAGEMENT:UPDATE` |
+| 78 | DELETE | `/api/v1/identity/classes/{classId}/invite-codes/{codeId}` | Thu hồi một mã mời của lớp (F1-25, `DEC-2026-1126-class-invite-revoke`) | `INS0205_class_detail` | `CLASS_MANAGEMENT:UPDATE`; `204`; gọi lặp an toàn; xem mục cuối "Bổ sung 2026-11-26" |
 
 **Xác nhận tự ảnh hưởng của ADMIN (#36–37, chốt với chủ dự án 2026-10-27).** #36 nhận `{ targetRoleId: UUID, acknowledgeSelfImpact?: boolean }`; #37 nhận `{ targetStatus: "ACTIVE"|"DEACTIVATED", reason?: string, notifyByEmail?: boolean, acknowledgeSelfImpact?: boolean }` theo DTO `ADM0201` Sheet 7.1. Khi actor là chính `userId` đích và thao tác #36 hạ từ ADMIN sang role không thuộc `ADMIN`, hoặc #37 khoá chính tài khoản (`targetStatus=DEACTIVATED`), client phải gửi `acknowledgeSelfImpact: true` sau cảnh báo xác nhận. Thiếu/`false` trả `400 IDT-V21`, không đổi user, phiên hay audit và không gửi email. Với đích khác hoặc thao tác không tự ảnh hưởng, cờ không bắt buộc. Bất biến còn ít nhất một ADMIN `ACTIVE` được kiểm trước khi chấp nhận tự ảnh hưởng; nếu vi phạm trả `422 IDT-432` dù có cờ xác nhận. Mỗi endpoint là một lệnh cho một `userId`; màn thao tác nhiều người ghép kết quả từng lệnh. [SoT: BD ADM0201 Q6/Sheet 7.1 NO 13, Sheet 9 NO 6–8; quyết định chủ dự án 2026-10-27].
 
@@ -404,6 +406,7 @@ F1 gọi `JudgeStatsPort`/`ProblemBankStatsPort` theo lô trong phạm vi từng
 | 75 | DELETE | `/api/v1/identity/me/avatar` | Xoá ảnh đại diện của chính mình | `RemoveMyAvatar` [SoT: `02-bd/screens/users/USR0502_profile.md` Sheet 7.3 NO 9] | Idempotent: không có ảnh vẫn `204` |
 | 76 | GET | `/api/v1/identity/users/{userId}/avatar` | Trả byte ảnh của một người, cho mọi người dùng đã đăng nhập | `GetUserAvatar` [SoT: `02-bd/screens/users/USR0502_profile.md` Sheet 7.3 NO 10] | Ngoại lệ có chủ đích của quy ước tiền tố `My`: nhận `userId` (owner chốt D2b). Phản hồi nhị phân, không phải JSON |
 | 77 | DELETE | `/api/v1/identity/admin/users/{userId}/avatar` | Quản trị viên gỡ ảnh đại diện của một người khác | `RemoveUserAvatar` [SoT: `02-bd/screens/admin/ADM0201_user_management.md` Sheet 7.3 NO 9] | `ROLE_ADMIN` cộng ô `USER_MANAGEMENT:UPDATE`, như #36 đến #38. Chỉ gỡ, không có đường tải ảnh thay người khác |
+| 78 | DELETE | `/api/v1/identity/classes/{classId}/invite-codes/{codeId}` | Thu hồi một mã mời của lớp (F1-25, `DEC-2026-1126-class-invite-revoke`) | `INS0205_class_detail` | `CLASS_MANAGEMENT:UPDATE`; `204`; gọi lặp an toàn; xem mục cuối "Bổ sung 2026-11-26" |
 
 #### 0.9.1. `PUT /me/avatar` (#74)
 
@@ -623,3 +626,40 @@ Mục `application/query` ở khối "Triển khai 2026-11-07" (F1-7) nay là `a
 Chủ dự án chọn thu hồi ngay theo phiên. `POST /identity/auth/logout` giữ response 204 và xoá cookie; cookie refresh đã xoay vòng vẫn nhận diện được family. Khi có family hợp lệ, transaction ghi tombstone `identity.session_revocations` và thu hồi refresh family. Access token mang cùng `sid` bị từ chối 401 ở request tiếp theo dù JWT chưa hết hạn; phiên khác của cùng tài khoản còn hợp lệ. Token thiếu `sid` hoặc `sid` không phải UUID bị 401. Không đọc được nguồn xác thực PostgreSQL vẫn fail closed 503 IDT-503.
 
 Sau commit, sự kiện thu hồi đóng ngay socket của family trên instance hiện tại, kể cả socket đang im lặng. Outbound gate kiểm lại nguồn thu hồi trước MESSAGE. Việc đóng ngay socket đang im lặng trên nhiều instance cần cơ chế phát sự kiện liên instance; không suy rộng bằng chứng single-instance hiện tại. Không đảm bảo thu hồi request/frame đã được cho phép trước commit.
+
+## Bổ sung 2026-11-26 — Thu hồi mã mời (#78) và tên lớp duy nhất
+
+Nguồn: `DEC-2026-1126-class-invite-revoke`, `DEC-2026-1126-class-name-unique`; RD F1-23, F1-25; màn `INS0205`, `INS0201`.
+
+### 78. DELETE /api/v1/identity/classes/{classId}/invite-codes/{codeId} (`RevokeClassInviteCode`)
+
+| Mục | Giá trị |
+| :--- | :--- |
+| Xác thực | JWT INSTRUCTOR |
+| Quyền | `CLASS_MANAGEMENT:UPDATE`; lớp thuộc người gọi |
+| Idempotent | có: mã đã mất thì vẫn `204` |
+| Request | không body; `classId`, `codeId` là UUID, sai dạng thì `404 IDT-414` |
+| Response | `204` không nội dung |
+| Lỗi | `404 IDT-414` (lớp không thuộc người gọi, không có, hoặc id sai dạng); `403 IDT-445` (thiếu ô quyền) |
+
+Luồng: kiểm `isOwner(classId, caller)`, rồi `DELETE FROM class_invite_codes WHERE id = :codeId AND class_id = :classId`. Điều kiện `class_id` ngăn thu hồi mã của lớp khác qua đường dẫn này. Không ghi sự kiện và không đụng `class_enrollments`: học viên đã vào lớp giữ nguyên. Mã đã xoá khiến `JoinClassByCode` (#25) không tìm thấy mã và trả `422 IDT-410`, giống mã sai. Các mã khác của lớp vẫn hiệu lực. `GET .../invite-codes` (#24) không còn trả mã đã thu hồi.
+
+| ID | Loại | Nội dung |
+| :--- | :--- | :--- |
+| PB78-N1 | Normal | thu hồi một trong hai mã: `204`, mã kia vẫn dùng được, #24 chỉ còn mã kia |
+| PB78-A1 | Abnormal | học viên nhập mã đã thu hồi: `422 IDT-410`, không ghi danh |
+| PB78-A2 | Abnormal | lớp của giảng viên khác hoặc `classId` sai dạng: `404 IDT-414`, không xoá gì |
+| PB78-B1 | Boundary | gọi lần hai cho cùng mã: `204`; `codeId` của lớp khác đi qua đường dẫn của lớp này: `204` nhưng mã lớp kia còn nguyên |
+
+### Tên lớp duy nhất (#20, #21)
+
+`POST /classes` (#20) và `PATCH /classes/{classId}` (#21) trả `409 IDT-417` khi giảng viên đã có lớp khác trùng tên, không phân biệt hoa thường và khoảng trắng hai đầu. PATCH giữ nguyên tên của chính lớp đó thì không phải trùng. Bảo đảm cuối cùng là chỉ mục duy nhất `classes_instructor_name_uk` trên `(instructor_id, lower(btrim(name)))` (migration `V1.007__class_name_unique_per_instructor.sql`), nên hai request cùng lúc chỉ tạo được một lớp. Các mã lỗi nhập liệu cũ `IDT-V14`, `IDT-V15`, `IDT-V10`, `IDT-V16` giữ nguyên.
+
+### Nhãn tài khoản không còn hoạt động ở danh sách học viên (#26), `DEC-2026-1126-roster-inactive-account-label`
+
+Mỗi học viên trong `200 { items: [...] }` của #26 có thêm `accountInactive: boolean`: `true` khi tài khoản của học viên không còn `ACTIVE` (tự xoá, ẩn danh hoá hoặc bị khoá), `false` ngược lại. Học viên đó vẫn nằm trong danh sách và vẫn tính vào `studentCount` (#19) và mẫu số tỉ lệ hoàn thành. Trường này chỉ để màn `INS0205` ghi nhãn "Tài khoản không còn hoạt động". Tên hiển thị của tài khoản đã ẩn danh là "Người dùng đã xoá". Quy tắc ở `03-dd/logic/F1_identity.md` BR-30.
+
+| ID | Loại | Nội dung |
+| :--- | :--- | :--- |
+| PB26-N3 | Normal | học viên tài khoản `DEACTIVATED` vẫn nằm trong #26 với `accountInactive = true`; học viên `ACTIVE` có `false`; `studentCount` của #19 không đổi |
+| PB25-A3 | Abnormal | mã của lớp mà giảng viên `DEACTIVATED`: `422 IDT-410`, không ghi danh; giảng viên `ACTIVE` lại thì cùng mã dùng được |

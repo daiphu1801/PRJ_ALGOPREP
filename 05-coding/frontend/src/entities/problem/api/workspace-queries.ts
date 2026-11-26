@@ -209,14 +209,17 @@ type OverviewResponse = {
  */
 export async function fetchOverviewProblem(
   problemId: string,
+  guest = false,
 ): Promise<ProblemDetail | null> {
   try {
+    // Khách (DEC-2026-1126) chỉ đọc đề: giới hạn thực thi và lịch sử nộp thuộc module chấm bài và cần
+    // phiên, nên không gọi. Màn ẩn bảng giới hạn và thẻ bài nộp khi là khách, không bịa số liệu.
     const [overview, limits, history] = await Promise.all([
       api.get<OverviewResponse>(
         `/problem-bank/problems/${encodeURIComponent(problemId)}/overview`,
       ),
-      getLimits(problemId),
-      getHistory(problemId),
+      guest ? null : getLimits(problemId),
+      guest ? null : getHistory(problemId),
     ]);
     return {
       id: overview.problemId,
@@ -234,13 +237,15 @@ export async function fetchOverviewProblem(
         output: item.output,
         explanation: item.explanationMd ?? undefined,
       })),
-      limitsByLanguage: toLimits(limits),
+      limitsByLanguage: limits
+        ? toLimits(limits)
+        : ({} as ProblemDetail["limitsByLanguage"]),
       acRate: overview.acRate,
       saved: overview.bookmarked,
       hiddenTestcaseCount: overview.hiddenTestcaseCount,
       starterCode: {} as Record<StarterCodeKey, string>,
       sampleTestcases: [],
-      mySubmissions: toHistory(history),
+      mySubmissions: history ? toHistory(history) : [],
       solutionReview: null,
     };
   } catch (error) {

@@ -362,8 +362,11 @@ class PublishedProblemReadFlowTest {
   }
 
   @Test
-  void aCallWithoutATokenIs401() throws Exception {
-    assertThat(mvc.perform(get(BASE)).andReturn().getResponse().getStatus()).isEqualTo(401);
+  void theWorkspaceWithoutATokenIs401() throws Exception {
+    // The list, random, overview and samples are open to guests (GuestProblemReadFlowTest); the
+    // workspace is not.
+    var path = BASE + "/" + UUID.randomUUID() + "/workspace";
+    assertThat(mvc.perform(get(path)).andReturn().getResponse().getStatus()).isEqualTo(401);
   }
 
   // ---- helpers

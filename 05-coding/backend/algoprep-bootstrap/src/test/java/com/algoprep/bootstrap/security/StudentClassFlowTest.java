@@ -155,6 +155,43 @@ class StudentClassFlowTest {
   }
 
   @Test
+  void aCodeOfAClassWhoseInstructorIsNoLongerActiveIs422Idt410AndEnrolsNobody() throws Exception {
+    UUID teacher = account("INSTRUCTOR", "Teacher Locked");
+    UUID classId = clazz(teacher, "Algo Locked", null, null);
+    String code = inviteCode(classId, "1 hour");
+    UUID student = account("STUDENT", "Student Locked");
+    String access = access(student);
+    assertThat(join(access, code).getStatus()).isEqualTo(200);
+    jdbc.update(
+        "UPDATE identity.class_enrollments SET left_at = now() WHERE class_id = ? AND student_id = ?",
+        classId,
+        student);
+
+    jdbc.update(
+        "UPDATE identity.users SET status = 'DEACTIVATED', deactivation_source = 'ADMIN',"
+            + " deactivated_at = now() WHERE id = ?",
+        teacher);
+    MockHttpServletResponse refused = join(access, code);
+
+    assertThat(refused.getStatus()).isEqualTo(422);
+    assertThat(JsonPath.<String>read(refused.getContentAsString(), "$.errorCode"))
+        .isEqualTo("IDT-410");
+    assertThat(
+            jdbc.queryForObject(
+                "SELECT count(*) FROM identity.class_enrollments WHERE class_id = ? AND student_id"
+                    + " = ? AND left_at IS NULL",
+                Integer.class,
+                classId,
+                student))
+        .isZero();
+    jdbc.update(
+        "UPDATE identity.users SET status = 'ACTIVE', deactivation_source = NULL, deactivated_at"
+            + " = NULL WHERE id = ?",
+        teacher);
+    assertThat(join(access, code).getStatus()).isEqualTo(200);
+  }
+
+  @Test
   void lowercaseCodeWithSurroundingSpacesIsNormalised() throws Exception {
     UUID classId = clazz(account("INSTRUCTOR", "Teacher Four"), "Algo 104", null, null);
     String code = inviteCode(classId, "1 hour");

@@ -25,7 +25,6 @@ import { useRouter } from "next/navigation";
 import { Gauge, Pencil, Tags, Trash2 } from "lucide-react";
 import {
   useAdminProblemList,
-  useAttentionList,
   useBulkDelete,
   useBulkDifficulty,
   useBulkPublish,
@@ -33,7 +32,6 @@ import {
   useBulkTopic,
   useExportFilteredProblems,
   useExportProblems,
-  useTopicDistribution,
   type AdminListParams,
   type AdminProblem,
   type BulkResult,
@@ -71,7 +69,6 @@ import {
   PageHeader,
   Skeleton,
   Pagination,
-  ProgressBar,
   FilterBar,
   FilterMenu,
   SelectField,
@@ -159,8 +156,6 @@ export function ProblemManagementView({
     pageSize,
   };
   const list = useAdminProblemList(params);
-  const distribution = useTopicDistribution();
-  const attention = useAttentionList();
   const publish = useBulkPublish();
   const unpublish = useBulkUnpublish();
   const assignTopic = useBulkTopic();
@@ -696,92 +691,6 @@ export function ProblemManagementView({
           </>
         )}
       </Card>
-
-      <div className="mt-4 grid gap-4 [grid-template-columns:repeat(auto-fit,minmax(320px,1fr))]">
-        <Card
-          title={t("topicDist.title")}
-          description={
-            distribution.data
-              ? t("topicDist.subtitle", {
-                  total: distribution.data.totalProblemsWithTopic,
-                  topics: distribution.data.totalTopicsUsed,
-                })
-              : undefined
-          }
-        >
-          {distribution.isError ? (
-            <ErrorState>{t("blockFailed")}</ErrorState>
-          ) : !distribution.data ? (
-            <Skeleton className="h-24 w-full" />
-          ) : (
-            <ul className="flex flex-col gap-3.5">
-              {distribution.data.items.map((item) => (
-                <li key={item.topicName}>
-                  <div className="mb-1.5 flex items-center justify-between gap-2.5">
-                    <span className="text-[13px] font-semibold">
-                      {problemTopicLabel(topicList, item.topicName)}
-                    </span>
-                    <span className="font-mono text-[12.5px] text-[var(--color-text-muted)]">
-                      {item.count} · {item.percent}%
-                    </span>
-                  </div>
-                  <ProgressBar
-                    value={item.percent}
-                    label={problemTopicLabel(topicList, item.topicName)}
-                    height={7}
-                  />
-                </li>
-              ))}
-            </ul>
-          )}
-        </Card>
-
-        <Card
-          title={t("attention.title")}
-          action={
-            <span className="text-[12.5px] text-[var(--color-text-subtle)]">
-              {t("attention.tag")}
-            </span>
-          }
-        >
-          {attention.isError ? (
-            <ErrorState>{t("blockFailed")}</ErrorState>
-          ) : !attention.data ? (
-            <Skeleton className="h-24 w-full" />
-          ) : (
-            <ul className="flex flex-col gap-2.5">
-              {attention.data
-                .filter((item) => item.count > 0)
-                .map((item) => (
-                  <li
-                    key={item.ruleCode}
-                    className="glass-surface flex items-center gap-3 rounded-2xl border border-[var(--color-border)] px-3.5 py-2.5"
-                  >
-                    <div className="min-w-0 flex-1">
-                      <div className="text-[13.5px] font-semibold">
-                        {t(`attention.rule.${item.ruleCode}.title`)}
-                      </div>
-                      <div className="text-xs text-[var(--color-text-subtle)]">
-                        {t(`attention.rule.${item.ruleCode}.meta`)}
-                      </div>
-                    </div>
-                    <span
-                      className="font-mono text-[13px] font-semibold"
-                      style={{
-                        color:
-                          item.ruleCode === "noTestcase"
-                            ? "var(--color-admin-negative-text)"
-                            : "var(--color-admin-warn-text)",
-                      }}
-                    >
-                      {item.count}
-                    </span>
-                  </li>
-                ))}
-            </ul>
-          )}
-        </Card>
-      </div>
 
       <ManagedListDialog
         open={managingTopics}

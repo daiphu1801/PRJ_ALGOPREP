@@ -105,6 +105,8 @@ export type ClassRosterRow = {
   name: string;
   /** Picture version (F1 #26); absent or null means the learner has no picture. */
   avatarVersion?: number | null;
+  /** The account is deleted or locked; the learner still counts in the class (F1 #26). */
+  accountInactive?: boolean;
   email?: string;
   phone?: string;
   joinedAt?: string;

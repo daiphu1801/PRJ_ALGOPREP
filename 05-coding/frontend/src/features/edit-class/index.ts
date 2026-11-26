@@ -1,3 +1,4 @@
+export { DeleteClassNotice } from "./ui/delete-class-notice";
 export {
   ClassFormDialog,
   type ClassDialogState,

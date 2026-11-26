@@ -121,9 +121,10 @@ class AssignmentMetricsFlowTest {
 
   private void clazz(UUID id, UUID owner) {
     jdbc.update(
-        "INSERT INTO identity.classes(id,instructor_id,name) VALUES(?,?,'Assignment class')",
+        "INSERT INTO identity.classes(id,instructor_id,name) VALUES(?,?,'Assignment class ' || ?)",
         id,
-        owner);
+        owner,
+        id.toString());
   }
 
   private void enroll(UUID classId, UUID who, Instant joined, Instant left) {

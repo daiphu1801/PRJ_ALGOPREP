@@ -28,6 +28,24 @@ describe("FilterMenu", () => {
     expect(screen.queryByRole("listbox")).toBeNull();
   });
 
+  it("shows the choice but opens nothing when disabled", () => {
+    render(
+      <FilterMenu
+        label="By level"
+        options={options}
+        value="easy"
+        onValueChange={vi.fn()}
+        disabled
+      />,
+    );
+    const trigger = screen.getByRole("button", { name: /^By level/ });
+    expect(trigger).toBeDisabled();
+    expect(trigger).toHaveTextContent("Easy");
+    fireEvent.click(trigger);
+    fireEvent.keyDown(trigger, { key: "ArrowDown" });
+    expect(screen.queryByRole("listbox")).toBeNull();
+  });
+
   it("opens a listbox, marks the current option, and reports a pick then closes", () => {
     const onValueChange = vi.fn();
     const trigger = setup(onValueChange);

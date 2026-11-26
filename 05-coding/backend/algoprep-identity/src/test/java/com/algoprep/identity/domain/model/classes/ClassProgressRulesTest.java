@@ -40,7 +40,7 @@ class ClassProgressRulesTest {
         CLASS,
         "A",
         new ClassRosterEntry(
-            m.studentId(), name, "e@x.test", null, NOW.minusSeconds(86_400L * 60), null),
+            m.studentId(), name, "e@x.test", null, NOW.minusSeconds(86_400L * 60), null, false),
         m,
         NOW);
   }

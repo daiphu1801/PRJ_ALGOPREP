@@ -5,12 +5,14 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { SHELL_PADDING_X, SHELL_PADDING_Y } from "@/shared/api/config";
-import { BrandMark, ThemeLangSwitcher } from "@/shared/ui";
+import { BrandMark, Button, ThemeLangSwitcher } from "@/shared/ui";
 import { useT } from "@/shared/i18n";
 import { cn } from "@/shared/lib";
 import { Menu, User, X } from "lucide-react";
-import { UserAvatar, useMyProfile } from "@/entities/user";
+import { UserAvatar, useMyProfile, useSession } from "@/entities/user";
+import { LoginPromptDialog, useLoginPrompt } from "@/features/login-prompt";
 import { JudgeEngineTag } from "./judge-engine-tag";
+import { isGuestReadablePath } from "../model/guest-paths";
 import { STUDENT_MENU_ITEMS, STUDENT_NAV_ITEMS } from "../model/student-nav";
 import { LOGOUT_ITEM_KEY, useSignOut } from "../model/use-sign-out";
 
@@ -32,6 +34,10 @@ export function StudentHeader() {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
   const signOut = useSignOut();
+  // Khách (DEC-2026-1126): thấy đủ mục nav, bấm mục cần phiên thì hiện hộp thoại nhắc đăng nhập;
+  // khối người dùng thành nút Đăng nhập, không gọi hồ sơ.
+  const guest = useSession() === "guest";
+  const prompt = useLoginPrompt();
   const profile = useMyProfile("student").data;
   // Separate from `menuOpen` (the avatar dropdown): this is the narrow-viewport nav drawer that
   // 02-bd/screens/users/_shell.md mục 6 Q5 specifies — below the breakpoint the nav items collapse
@@ -62,6 +68,8 @@ export function StudentHeader() {
 
   const isActive = (href: string) =>
     pathname === href || pathname.startsWith(`${href}/`);
+  // Chỉ "Bài toán" mở cho khách; sáu mục còn lại cần phiên.
+  const needsSession = (href: string) => guest && !isGuestReadablePath(href);
 
   return (
     <header
@@ -89,7 +97,16 @@ export function StudentHeader() {
           className="flex shrink-0 items-center gap-2.5 text-[var(--color-text)]"
         >
           <BrandMark size={32} />
-          <span className="text-[19px] font-bold tracking-tight">AlgoPrep</span>
+          {/* A guest's login button is wider than the avatar: below sm the wordmark gives it the room
+              (the logo stays, screen readers still hear the name). */}
+          <span
+            className={cn(
+              "text-[19px] font-bold tracking-tight",
+              guest && "sr-only sm:not-sr-only",
+            )}
+          >
+            AlgoPrep
+          </span>
           {/* Hidden below sm: brand + tag + the right cluster do not fit a 390px bar. */}
           <span className="hidden sm:contents">
             <JudgeEngineTag />
@@ -100,21 +117,33 @@ export function StudentHeader() {
           aria-label={t("area.student")}
           className="hidden min-w-0 flex-1 items-center gap-5 lg:flex"
         >
-          {STUDENT_NAV_ITEMS.map((item) => (
-            <Link
-              key={item.key}
-              href={item.href}
-              aria-current={isActive(item.href) ? "page" : undefined}
-              className={cn(
-                "whitespace-nowrap border-b-2 pb-0.5 text-[14.5px] transition-colors",
-                isActive(item.href)
-                  ? "border-[var(--color-primary)] font-semibold text-[var(--color-text)]"
-                  : "border-transparent font-medium text-[var(--color-text-muted)] hover:text-[var(--color-text)]",
-              )}
-            >
-              {t(item.labelKey)}
-            </Link>
-          ))}
+          {STUDENT_NAV_ITEMS.map((item) => {
+            const className = cn(
+              "whitespace-nowrap border-b-2 pb-0.5 text-[14.5px] transition-colors",
+              isActive(item.href)
+                ? "border-[var(--color-primary)] font-semibold text-[var(--color-text)]"
+                : "border-transparent font-medium text-[var(--color-text-muted)] hover:text-[var(--color-text)]",
+            );
+            return needsSession(item.href) ? (
+              <button
+                key={item.key}
+                type="button"
+                className={className}
+                onClick={() => prompt.ask(item.href)}
+              >
+                {t(item.labelKey)}
+              </button>
+            ) : (
+              <Link
+                key={item.key}
+                href={item.href}
+                aria-current={isActive(item.href) ? "page" : undefined}
+                className={className}
+              >
+                {t(item.labelKey)}
+              </Link>
+            );
+          })}
         </nav>
 
         {/* Keeps the user block hard right once the inline nav is hidden — without it the two
@@ -124,78 +153,86 @@ export function StudentHeader() {
         <div className="flex shrink-0 items-center gap-1.5 sm:gap-3">
           <ThemeLangSwitcher iconOnlyBelowSm />
 
-          <div className="relative">
-            <button
-              ref={menuButtonRef}
-              type="button"
-              onClick={() => setMenuOpen((open) => !open)}
-              aria-expanded={menuOpen}
-              aria-label={t("accountMenu")}
-              className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full border border-[var(--color-border)] bg-[var(--color-surface-hover)] text-[11.5px] font-semibold text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
-            >
-              {/* The signed-in learner's picture or initials once the profile has loaded; a generic
+          {guest ? (
+            <Button asChild variant="cta" size="sm">
+              <Link href={`/login?redirect=${encodeURIComponent(pathname)}`}>
+                {t("login")}
+              </Link>
+            </Button>
+          ) : (
+            <div className="relative">
+              <button
+                ref={menuButtonRef}
+                type="button"
+                onClick={() => setMenuOpen((open) => !open)}
+                aria-expanded={menuOpen}
+                aria-label={t("accountMenu")}
+                className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full border border-[var(--color-border)] bg-[var(--color-surface-hover)] text-[11.5px] font-semibold text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
+              >
+                {/* The signed-in learner's picture or initials once the profile has loaded; a generic
                   glyph until then, rather than inventing a person's name. */}
-              {profile ? (
-                <UserAvatar
-                  userId={profile.userId}
-                  name={profile.displayName}
-                  avatarVersion={profile.avatarVersion}
-                  size="sm"
-                  className="border-0"
-                />
-              ) : (
-                <User aria-hidden="true" className="h-4 w-4" />
-              )}
-            </button>
+                {profile ? (
+                  <UserAvatar
+                    userId={profile.userId}
+                    name={profile.displayName}
+                    avatarVersion={profile.avatarVersion}
+                    size="sm"
+                    className="border-0"
+                  />
+                ) : (
+                  <User aria-hidden="true" className="h-4 w-4" />
+                )}
+              </button>
 
-            {menuOpen && (
-              <>
-                {/* Click-anywhere-to-close scrim, 1:1 with dc.html:78. Out of the tab order: Escape and the
+              {menuOpen && (
+                <>
+                  {/* Click-anywhere-to-close scrim, 1:1 with dc.html:78. Out of the tab order: Escape and the
                     opener button already close the menu for keyboard users. */}
-                <button
-                  type="button"
-                  tabIndex={-1}
-                  aria-label={t("closeMenu")}
-                  onClick={() => setMenuOpen(false)}
-                  className="fixed inset-0 z-40 cursor-default"
-                />
-                {/* Plain links, not role="menu": arrow-key navigation is not implemented, so the menu role
+                  <button
+                    type="button"
+                    tabIndex={-1}
+                    aria-label={t("closeMenu")}
+                    onClick={() => setMenuOpen(false)}
+                    className="fixed inset-0 z-40 cursor-default"
+                  />
+                  {/* Plain links, not role="menu": arrow-key navigation is not implemented, so the menu role
                     would promise more than the keyboard gets. */}
-                <div className="absolute right-0 top-10 z-50 w-[258px] rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-2.5 shadow-lg">
-                  {STUDENT_MENU_ITEMS.map((item, index) => (
-                    <div key={item.key}>
-                      {item.danger && (
-                        <div className="-mx-2.5 my-2 h-px bg-[var(--color-border)]" />
-                      )}
-                      <Link
-                        href={item.href}
-                        onClick={(event) => {
-                          setMenuOpen(false);
-                          if (item.key === LOGOUT_ITEM_KEY) {
-                            event.preventDefault();
-                            void signOut(item.href);
-                          }
-                        }}
-                        className={cn(
-                          "flex h-[34px] items-center gap-2.5 rounded-lg px-2.5 text-[13.5px] font-medium hover:bg-[var(--color-surface-hover)]",
-                          item.danger
-                            ? "text-[var(--color-danger)]"
-                            : "text-[var(--color-text)]",
+                  <div className="absolute right-0 top-10 z-50 w-[258px] rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-2.5 shadow-lg">
+                    {STUDENT_MENU_ITEMS.map((item, index) => (
+                      <div key={item.key}>
+                        {item.danger && (
+                          <div className="-mx-2.5 my-2 h-px bg-[var(--color-border)]" />
                         )}
-                        autoFocus={index === 0}
-                      >
-                        <item.icon
-                          aria-hidden="true"
-                          className="h-4 w-4 shrink-0"
-                        />
-                        {t(item.labelKey)}
-                      </Link>
-                    </div>
-                  ))}
-                </div>
-              </>
-            )}
-          </div>
+                        <Link
+                          href={item.href}
+                          onClick={(event) => {
+                            setMenuOpen(false);
+                            if (item.key === LOGOUT_ITEM_KEY) {
+                              event.preventDefault();
+                              void signOut(item.href);
+                            }
+                          }}
+                          className={cn(
+                            "flex h-[34px] items-center gap-2.5 rounded-lg px-2.5 text-[13.5px] font-medium hover:bg-[var(--color-surface-hover)]",
+                            item.danger
+                              ? "text-[var(--color-danger)]"
+                              : "text-[var(--color-text)]",
+                          )}
+                          autoFocus={index === 0}
+                        >
+                          <item.icon
+                            aria-hidden="true"
+                            className="h-4 w-4 shrink-0"
+                          />
+                          {t(item.labelKey)}
+                        </Link>
+                      </div>
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
+          )}
         </div>
 
         {navOpen && (
@@ -208,25 +245,45 @@ export function StudentHeader() {
             // page text legible straight through the menu.
             className="absolute left-0 right-0 top-full z-40 mt-2 flex flex-col rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-2 shadow-lg lg:hidden"
           >
-            {STUDENT_NAV_ITEMS.map((item) => (
-              <Link
-                key={item.key}
-                href={item.href}
-                onClick={() => setNavOpen(false)}
-                aria-current={isActive(item.href) ? "page" : undefined}
-                className={cn(
-                  "rounded-lg px-3 py-2 text-[14.5px]",
-                  isActive(item.href)
-                    ? "bg-[var(--color-surface-hover)] font-semibold text-[var(--color-text)]"
-                    : "font-medium text-[var(--color-text-muted)] hover:bg-[var(--color-surface-hover)]",
-                )}
-              >
-                {t(item.labelKey)}
-              </Link>
-            ))}
+            {STUDENT_NAV_ITEMS.map((item) => {
+              const className = cn(
+                "rounded-lg px-3 py-2 text-left text-[14.5px]",
+                isActive(item.href)
+                  ? "bg-[var(--color-surface-hover)] font-semibold text-[var(--color-text)]"
+                  : "font-medium text-[var(--color-text-muted)] hover:bg-[var(--color-surface-hover)]",
+              );
+              return needsSession(item.href) ? (
+                <button
+                  key={item.key}
+                  type="button"
+                  className={className}
+                  onClick={() => {
+                    setNavOpen(false);
+                    prompt.ask(item.href);
+                  }}
+                >
+                  {t(item.labelKey)}
+                </button>
+              ) : (
+                <Link
+                  key={item.key}
+                  href={item.href}
+                  onClick={() => setNavOpen(false)}
+                  aria-current={isActive(item.href) ? "page" : undefined}
+                  className={className}
+                >
+                  {t(item.labelKey)}
+                </Link>
+              );
+            })}
           </nav>
         )}
       </div>
+      <LoginPromptDialog
+        open={prompt.open}
+        returnTo={prompt.returnTo}
+        onClose={prompt.close}
+      />
     </header>
   );
 }

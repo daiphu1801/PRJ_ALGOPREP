@@ -16,10 +16,8 @@ import type {
   AdminListParams,
   AdminProblem,
   AdminProblemList,
-  AttentionItem,
   BulkResult,
   ProblemStatus,
-  TopicDistribution,
 } from "../../model/types";
 
 /** The shape the literal below is written in; `toRow` turns it into what the screen reads. */
@@ -424,55 +422,6 @@ export async function loadAdminProblemList(
     },
     usage: { levels, topics },
   };
-}
-
-// Both side blocks are derived from the rows above, never typed in: the prototype's "486 bài trên
-// 12 chủ đề" contradicts its own 27-row screen (02-bd/screens/shared/SHR0201_problem_management.md
-// section 4.4), so the numbers must come from the dataset actually shown.
-export async function loadTopicDistribution(): Promise<TopicDistribution> {
-  await pause();
-  const rows = visibleRows();
-  const counts = new Map<string, number>();
-  for (const problem of rows)
-    for (const topic of problem.topics)
-      counts.set(topic, (counts.get(topic) ?? 0) + 1);
-  return {
-    totalProblemsWithTopic: rows.length,
-    totalTopicsUsed: counts.size,
-    items: [...counts.entries()]
-      .sort(
-        (left, right) => right[1] - left[1] || left[0].localeCompare(right[0]),
-      )
-      .map(([topicName, count]) => ({
-        topicName,
-        count,
-        percent: Math.round((count / rows.length) * 100),
-      })),
-  };
-}
-
-// The four auto-detected rules (BD Sheet 5 area F). The mock rows carry no publish history, so
-// "hiddenFromLearners" and "staleDraft" cannot be derived and stay at 0 until the API exists.
-export async function loadAttentionList(): Promise<AttentionItem[]> {
-  await pause();
-  const rows = visibleRows();
-  return [
-    {
-      ruleCode: "noTestcase",
-      count: rows.filter((problem) => problem.testcaseCount === 0).length,
-    },
-    {
-      ruleCode: "lowAcceptRate",
-      count: rows.filter(
-        (problem) =>
-          problem.status === "published" &&
-          problem.acceptedRate !== null &&
-          problem.acceptedRate < 30,
-      ).length,
-    },
-    { ruleCode: "hiddenFromLearners", count: 0 },
-    { ruleCode: "staleDraft", count: 0 },
-  ];
 }
 
 const PUBLISH_MAX = 20;

@@ -62,7 +62,7 @@ class ProblemLevelsController {
   }
 
   @GetMapping
-  @PreAuthorize("isAuthenticated()")
+  @PreAuthorize("permitAll()")
   Items list(
       JwtAuthenticationToken caller, @RequestParam(defaultValue = "false") boolean includeCounts) {
     return items(list.list(new CatalogQuery(CatalogRequests.admin(caller), includeCounts)));

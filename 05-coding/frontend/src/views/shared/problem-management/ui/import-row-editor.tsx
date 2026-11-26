@@ -19,9 +19,9 @@ import {
   Badge,
   Button,
   Card,
+  FilterMenu,
   IconAction,
   SegmentedTabs,
-  SelectField,
   TextArea,
   TextField,
 } from "@/shared/ui";
@@ -236,27 +236,37 @@ export function ImportRowEditor({
 
       {part === "solution" ? (
         <div className="grid gap-3">
-          <SelectField
-            label={t("field.language")}
-            value={language ?? row.language}
-            disabled={locked}
-            onChange={(event) => onChange({ language: event.target.value })}
-            options={[
-              ...(language
-                ? []
-                : [
-                    {
-                      value: row.language,
-                      label: row.language || t("choose"),
-                      disabled: true,
-                    },
-                  ]),
-              ...catalogue.languages.map((name) => ({
-                value: name,
-                label: name,
-              })),
-            ]}
-          />
+          <div className="grid gap-1">
+            <span className="text-xs font-medium text-[var(--color-text-muted)]">
+              {t("field.language")}
+            </span>
+            <FilterMenu
+              label={t("field.language")}
+              compact
+              className="w-full [&>button]:h-10 [&>button]:w-full [&>button]:justify-between [&>button]:bg-[var(--color-surface)] [&>button]:px-3 [&>button]:text-sm [&>button]:text-[var(--color-text)] [&>[role=listbox]]:w-full [&>[role=listbox]]:max-w-full"
+              value={language ?? row.language}
+              disabled={locked}
+              onValueChange={(value) => onChange({ language: value })}
+              options={[
+                // Shown only until a language is picked, so it can never be chosen again.
+                ...(language
+                  ? []
+                  : [
+                      {
+                        value: row.language,
+                        label: row.language || t("choose"),
+                      },
+                    ]),
+                ...catalogue.languages.map((name) => ({
+                  value: name,
+                  label: name,
+                })),
+              ]}
+            />
+          </div>
+          <p className="text-xs text-[var(--color-text-muted)]">
+            {t("editor.solutionHint")}
+          </p>
           <TextArea
             label={t("field.solution")}
             rows={16}

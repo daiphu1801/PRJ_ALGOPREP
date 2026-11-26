@@ -47,7 +47,9 @@ describe("ProblemListView", () => {
     await renderView();
 
     expect(screen.getByText("Danh sách bài toán")).toBeInTheDocument();
-    expect(screen.getAllByText("Vào giải").length).toBeGreaterThan(0);
+    expect(
+      screen.getAllByRole("link", { name: /^Xem đề / }).length,
+    ).toBeGreaterThan(0);
   });
 
   it("filters the table by search query", async () => {

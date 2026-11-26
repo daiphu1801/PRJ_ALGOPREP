@@ -36,30 +36,6 @@ export type AdminProblem = {
   updatedAt: string;
 };
 
-/** One row of the "Phân bố theo chủ đề" block (BD TopicDistributionItemDto). */
-export type TopicDistributionItem = {
-  topicName: string;
-  count: number;
-  /** Share of the problems that have a topic, 0-100. */
-  percent: number;
-};
-
-export type TopicDistribution = {
-  items: TopicDistributionItem[];
-  /** Problems with at least one topic: the denominator of `percent`. */
-  totalProblemsWithTopic: number;
-  totalTopicsUsed: number;
-};
-
-export type AttentionRuleCode =
-  "noTestcase" | "lowAcceptRate" | "hiddenFromLearners" | "staleDraft";
-
-/** One row of the "Bài cần chú ý" block (BD AttentionItemDto); `ruleCode` keys the i18n label. */
-export type AttentionItem = {
-  ruleCode: AttentionRuleCode;
-  count: number;
-};
-
 export type { PageMeta };
 
 /** Filters, sort and paging the screen sends to the server; every value is already normalised. */

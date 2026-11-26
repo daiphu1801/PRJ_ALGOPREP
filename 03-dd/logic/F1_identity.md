@@ -204,7 +204,7 @@ theo DEC.
 
 - **Input**: `code` từ `POST /classes/join`.
 - **Các bước**:
-  1. Tra `class_invite_codes WHERE code = :code AND expires_at > now()`.
+  1. Tra `class_invite_codes WHERE code = :code AND expires_at > now()`, nối `classes` với `users` của giảng viên và chỉ nhận khi `users.status = 'ACTIVE'` (`DEC-2026-1126-class-join-needs-active-instructor`, BR-30).
   2. Không tìm thấy/hết hạn → `422 IDT-410`.
   3. Tìm thấy → ĐÃ CHỐT 2026-10-14 (DEC-2026-1014-class-leave-details): `INSERT class_enrollments (class_id, student_id, joined_at) ... ON CONFLICT (class_id, student_id) DO UPDATE SET left_at = NULL WHERE class_enrollments.left_at IS NOT NULL`. Ba trường hợp: (a) chưa có dòng → tạo mới; (b) dòng đang `left_at IS NULL` → không đổi gì, trả `200` idempotent (không báo lỗi trùng); (c) dòng cũ đã rời (`left_at` khác rỗng) → **dùng lại dòng cũ**, đặt `left_at` = NULL, `joined_at` giữ nguyên, không sinh dòng thứ hai, trả `200`. ~~`ON CONFLICT (class_id, student_id) DO NOTHING` trả `200` idempotent nếu đã tham gia trước đó~~ (câu cũ làm học viên đã bị gỡ không vào lại được vì dòng cũ vẫn còn).
   4. Học viên quay lại xuất hiện lại trong "học viên của lớp" và được tính lại vào tổng số, tiến độ, số liệu `INS0202`.
@@ -450,3 +450,17 @@ ghi `identity_recent_activity` theo lịch**. Nhãn `ABSENT` vẫn tồn tại n
 - `IdentityJwtAuthenticationConverter` yêu cầu claim `sid` dạng UUID và kiểm tombstone cùng trạng thái tài khoản trong truy vấn xác thực. Token của family bị thu hồi không còn qua được HTTP hoặc outbound WebSocket.
 - Adapter sự kiện chỉ publish sau commit; rollback không đóng socket. Bootstrap nhận sự kiện và đóng socket family tương ứng, giữ các family khác. Gate outbound vẫn kiểm account/quyền/expiry.
 - Migration `identity/V1.005__session_revocations.sql` phải chạy trước khi nhận request theo bản mới; giữ tombstone khi dữ liệu refresh hết hạn được dọn. Thiết kế dọn tombstone theo thời hạn token tối đa là công việc vận hành riêng, chưa thêm lịch xoá trong patch.
+
+## BR-29 — Thu hồi mã mời và tên lớp duy nhất (F1-23, F1-25)
+
+Nguồn: `DEC-2026-1126-class-invite-revoke`, `DEC-2026-1126-class-name-unique`. BR mới (số tiếp theo sau BR-28).
+
+- **Thu hồi (#78)**: chỉ giảng viên sở hữu lớp. Xoá đúng một dòng `class_invite_codes` của lớp đó trong một giao dịch; không phát sự kiện, không đổi ghi danh. Mã không còn thì thao tác vẫn thành công. Sau khi xoá, BR-09 bước 1 không tìm thấy mã nên trả `IDT-410`, cùng câu trả lời với mã sai để không lộ một mã từng tồn tại.
+- **Tên lớp**: tên đã được cắt hai đầu bởi `ClassValidation` trước khi ghi. Ràng buộc nằm ở DB: chỉ mục duy nhất `(instructor_id, lower(btrim(name)))`. Vi phạm ràng buộc khi `INSERT` hoặc `UPDATE` được đổi thành `409 IDT-417`; không có bước kiểm-rồi-ghi riêng nên không có khe hở giữa hai request.
+
+## BR-30 — Mã mời chỉ dùng được khi giảng viên còn hoạt động; nhãn học viên không còn hoạt động (F1-23)
+
+Nguồn: `DEC-2026-1126-class-join-needs-active-instructor`, `DEC-2026-1126-roster-inactive-account-label`. BR mới (số tiếp theo sau BR-29).
+
+- **Tham gia (#25)**: câu tra mã nối `classes.instructor_id` với `users` và chỉ nhận khi `users.status = 'ACTIVE'`. Giảng viên `DEACTIVATED` (tự xoá hoặc bị khoá) hoặc `PENDING_VERIFICATION` làm mã không tìm thấy, nên trả `422 IDT-410` và tính vào bộ đếm thử sai như mã sai. Học viên đã ghi danh không bị đổi; khi giảng viên `ACTIVE` lại thì mã dùng được lại.
+- **Danh sách học viên (#26)**: mỗi dòng có `accountInactive = (users.status <> 'ACTIVE')`. Dòng vẫn nằm trong danh sách; không đổi `studentCount`, `completionPercent` hay mẫu số nào. Các endpoint khác (#28, #29, #56 đến #59) không thêm trường này.

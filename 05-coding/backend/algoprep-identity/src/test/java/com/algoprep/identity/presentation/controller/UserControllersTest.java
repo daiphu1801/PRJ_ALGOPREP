@@ -67,6 +67,7 @@ import com.algoprep.identity.application.ports.in.classes.ListInstructorRecentAc
 import com.algoprep.identity.application.ports.in.classes.ListInstructorStudentsUseCase;
 import com.algoprep.identity.application.ports.in.classes.ListMyClassesUseCase;
 import com.algoprep.identity.application.ports.in.classes.RemoveStudentFromClassUseCase;
+import com.algoprep.identity.application.ports.in.classes.RevokeClassInviteCodeUseCase;
 import com.algoprep.identity.application.ports.in.classes.UpdateClassUseCase;
 import com.algoprep.identity.application.ports.in.password.ChangeMyPasswordUseCase;
 import com.algoprep.identity.application.ports.in.password.ForgotPasswordUseCase;
@@ -453,7 +454,7 @@ class UserControllersTest {
   }
 
   private ClassStudentRow row(Double completion, boolean withMetrics, Instant lastSubmitted) {
-    var entry = new ClassRosterEntry(other, "An", "a@b.c", "09", now, 1700L);
+    var entry = new ClassRosterEntry(other, "An", "a@b.c", "09", now, 1700L, false);
     StudentMetrics metrics =
         withMetrics
             ? new StudentMetrics(
@@ -475,6 +476,7 @@ class UserControllersTest {
   @Test
   void membershipEndpointsMapRosterFigures() {
     GenerateClassInviteCodeUseCase generate = mock(GenerateClassInviteCodeUseCase.class);
+    RevokeClassInviteCodeUseCase revoke = mock(RevokeClassInviteCodeUseCase.class);
     ListClassInviteCodesUseCase codes = mock(ListClassInviteCodesUseCase.class);
     ListClassRosterUseCase roster = mock(ListClassRosterUseCase.class);
     RemoveStudentFromClassUseCase remove = mock(RemoveStudentFromClassUseCase.class);
@@ -484,9 +486,13 @@ class UserControllersTest {
     when(roster.list(me, other))
         .thenReturn(List.of(row(0.5, true, now), row(null, true, null), row(0.2, false, null)));
     when(remove.remove(me, other, me)).thenReturn(now);
-    var c = new ClassMembershipController(generate, codes, roster, remove);
+    var c = new ClassMembershipController(generate, revoke, codes, roster, remove);
     assertThat(c.generate(jwt, other.toString()).code()).isEqualTo("CODE");
     assertThat(c.codes(jwt, other.toString()).items()).hasSize(1);
+    c.revoke(jwt, other.toString(), code.id().toString());
+    verify(revoke).revoke(me, other, code.id());
+    assertThatThrownBy(() -> c.revoke(jwt, other.toString(), "bad"))
+        .isInstanceOf(ResourceNotFoundException.class);
     var students = c.students(jwt, other.toString()).items();
     assertThat(students.get(0).avatarVersion()).isEqualTo(1700L);
     assertThat(students).hasSize(3);

@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { HOME_PATH_BY_ROLE, ROLE_BY_AREA, type AppArea } from "@/entities/user";
 import { isMockMode, tokenStore } from "@/shared/api";
 import { readBaseCategory } from "@/shared/lib";
+import { isGuestReadablePath } from "../model/guest-paths";
 import { LOGIN_PATH_BY_AREA } from "../model/login-path";
 
 /**
@@ -31,7 +32,9 @@ export function RoleGate({
   const required = ROLE_BY_AREA[area];
   // Safe to read during render: AuthProvider renders nothing until the session is restored.
   const role = isMockMode() ? required : readBaseCategory(tokenStore.get());
-  const allowed = role === required;
+  // Khách chỉ được vào danh sách bài và trang tổng quan bài ở khu Người học (DEC-2026-1126).
+  const guestOk = area === "student" && !role && isGuestReadablePath(pathname);
+  const allowed = role === required || guestOk;
 
   useEffect(() => {
     if (allowed) return;

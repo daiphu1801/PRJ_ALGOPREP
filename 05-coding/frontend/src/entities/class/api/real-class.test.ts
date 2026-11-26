@@ -188,10 +188,31 @@ describe("invite codes, roster and leaving (#23, #24, #26, #27)", () => {
       classId: "c1",
       name: "An",
       avatarVersion: null,
+      accountInactive: false,
       email: "an@x.vn",
       phone: undefined,
       joinedAt: "2026-11-01T03:00:00Z",
     });
+  });
+
+  it("carries the flag of a learner whose account is no longer active", async () => {
+    get.mockResolvedValue({
+      items: [
+        {
+          studentId: "s2",
+          displayName: "Người dùng đã xoá",
+          email: null,
+          phone: null,
+          joinedAt: "2026-11-01T03:00:00Z",
+          status: null,
+          accountInactive: true,
+        },
+      ],
+    });
+
+    const [row] = await realListRoster("c1");
+
+    expect(row?.accountInactive).toBe(true);
   });
 
   it("leaves by class and student ids", async () => {

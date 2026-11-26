@@ -36,10 +36,9 @@ và bổ sung phần đặc thù của màn, đối chiếu prototype `09-layout
 Đối chiếu `09-layoutBase/Ngân hàng bài toán.dc.html` [SoT: 09-layoutBase/Ngân hàng bài toán.dc.html], phạm
 vi trên thể hiện qua các khối màn sau:
 
-1. **Danh sách chính** — bảng bài toán với cột: trạng thái đã giải (chấm tròn), mã số, tên, **nhãn mô hình
-   nộp bài** (`function`/`stdio`, dòng 174), badge "đã có Solution Review" nếu bài đó người học từng phân
-   tích qua F5.1 (dòng 175-177, trường `hasReview`), chủ đề, độ khó, tỉ lệ Accepted, và nút "Vào giải" hiện
-   khi rê chuột qua dòng (dòng 167-189). **Cập nhật 2026-08-25 theo `DEC-2026-0824-dual-submission-model-per-problem`**:
+1. **Danh sách chính** — tên bài, trạng thái giải theo phiên, **nhãn mô hình nộp bài**, nhãn Solution Review
+   theo phiên, chủ đề, độ khó, tỉ lệ chấp nhận và nút **Xem đề** luôn hiện. Mã bài dùng để tìm kiếm.
+   Trên điện thoại, độ khó và chủ đề nằm dưới tên, cạnh nút mở đề. **Cập nhật 2026-08-25 theo `DEC-2026-0824-dual-submission-model-per-problem`**:
    dữ liệu mẫu của prototype gán `mode` cố định 1-trong-2 cho từng bài (dòng 501-524), khớp cách hiểu **cũ**
    của F3-13 — theo quyết định mới, cả hai mô hình luôn song song cho mọi bài (trừ ngoại lệ lược đồ kiểu ở
    dưới). **Đã chốt (Câu hỏi mở Q3, đã đóng; điều chỉnh 2026-10-19):** chỉ vẽ nhãn "Chỉ Standard I/O" cho
@@ -105,6 +104,8 @@ lại ở đây.
 | REQ-03 | Cả hai mô hình nộp bài luôn song song cho mỗi bài toán; học viên tự chọn mỗi lượt làm ở `problem_detail`, trừ khi lược đồ kiểu chưa phủ được thì chỉ còn Standard I/O (F3-13) | Chức năng | `01-rd/req/F3_harness.md` — F3-13 |
 | REQ-04 | **Cho** một bài toán rơi vào ngoại lệ lược đồ kiểu (kiểu dữ liệu vượt lược đồ độc lập ngôn ngữ của F3-01), **khi** tôi xem bài đó trong danh sách, **thì** nhãn mô hình cho biết bài này chỉ còn Standard I/O (Bọc hàm bị ẩn) — ngoại lệ duy nhất còn mang tính cố định theo bài toán, không phải lựa chọn của người học | Chức năng (GWT) | [SoT: 01-rd/req/F3_harness.md — F3-13 ngoại lệ R2] |
 | REQ-05 | **Cho** một bài toán không rơi vào ngoại lệ trên (đa số), **khi** tôi xem bài đó trong danh sách, **thì** dòng bài **không vẽ nhãn mô hình nào** (bài hỗ trợ cả hai mô hình là đa số, vẽ nhãn "Cả hai" trên mọi dòng chỉ gây nhiễu; owner chốt 2026-10-19 theo BD) — mô hình thực sự chỉ được chọn khi vào màn `problem_detail`, mỗi lượt làm một lần | Chức năng (GWT) | [SoT: 01-rd/req/F3_harness.md — F3-13 sau `DEC-2026-0824-dual-submission-model-per-problem`, đã chốt ở Câu hỏi mở Q3] |
+| REQ-G1 | **Cho** tôi chưa đăng nhập, **Khi** tôi mở `/problems`, **Thì** tôi thấy danh sách bài đã xuất bản, tìm kiếm, lọc theo độ khó và nút "Bài ngẫu nhiên"; các phần theo người dùng bị **ẩn hẳn**, không thay bằng ô trống: khối bài đang làm, khối bài lớp giao, thanh chủ đề và lọc theo chủ đề (cần tiến độ cá nhân, chưa mở cho khách), cột và bộ lọc Trạng thái, nhãn "đã có Solution Review" | Chức năng (GWT) | Owner 2026-11-26, `DEC-2026-1126-guest-browse-published-problems` |
+| REQ-G2 | **Cho** tôi chưa đăng nhập, **Khi** tôi mở một bài từ danh sách, **Thì** tôi vào trang tổng quan `USR0104` ở chế độ khách (không bị chuyển sang `auth`) | Chức năng (GWT) | Owner 2026-11-26, `DEC-2026-1126-guest-browse-published-problems` |
 | REQ-06 | **Cho** tôi đã từng yêu cầu Solution Review cho một bài đã `Accepted` (F5-01), **khi** tôi xem lại danh sách, **thì** bài đó hiện thêm nhãn "đã có Solution Review" để mở lại báo cáo cũ mà không cần phân tích lại | Chức năng (GWT) | [SoT: 09-layoutBase/Ngân hàng bài toán.dc.html:175-177] |
 
 ---

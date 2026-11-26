@@ -5,11 +5,9 @@ import { keepPreviousData, useQueries, useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { currentUserScope } from "@/shared/api/user-scope";
 import { foldText, useProblemLevels } from "@/entities/problem";
-import { useMockMutation, useMockQuery, withMockData } from "@/shared/api";
+import { useMockMutation, withMockData } from "@/shared/api";
 import {
   loadAdminProblemList,
-  loadAttentionList,
-  loadTopicDistribution,
   mockBulkDelete,
   mockBulkDifficulty,
   mockBulkPublish,
@@ -19,7 +17,6 @@ import {
   mockExportProblems,
 } from "./__mock__/admin-problem-mocks";
 import {
-  realAttentionList,
   realBulkDelete,
   realBulkDifficulty,
   realBulkPublish,
@@ -28,7 +25,6 @@ import {
   realExportFilteredProblems,
   realExportProblems,
   realListAdminProblems,
-  realTopicDistribution,
 } from "./real-problem-management";
 import type { AdminListParams } from "../model/types";
 
@@ -111,26 +107,6 @@ export function useExistingTitles(
 const SEP = String.fromCharCode(31);
 const joinFound = (results: { data?: string | null }[]) =>
   results.flatMap(({ data }) => (data ? [data] : [])).join(SEP);
-
-/** `GetTopicDistribution`: its own query, so a failure here leaves the table alone. */
-export const useTopicDistribution = () =>
-  useMockQuery({
-    queryKey: [...ADMIN_PROBLEMS_KEY, "distribution", currentUserScope()],
-    mock: loadTopicDistribution,
-    real: realTopicDistribution,
-    spec: SPEC,
-    staleTime: 0,
-  });
-
-/** `GetAttentionList`. */
-export const useAttentionList = () =>
-  useMockQuery({
-    queryKey: [...ADMIN_PROBLEMS_KEY, "attention", currentUserScope()],
-    mock: loadAttentionList,
-    real: realAttentionList,
-    spec: SPEC,
-    staleTime: 0,
-  });
 
 const refresh = [ADMIN_PROBLEMS_KEY] as const;
 

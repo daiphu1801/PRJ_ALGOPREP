@@ -338,6 +338,16 @@ export function createInviteCode(classId: string): Promise<InviteCode> {
   return delay(code);
 }
 
+export function revokeInviteCode(
+  classId: string,
+  codeId: string,
+): Promise<void> {
+  inviteCodes[classId] = (inviteCodes[classId] ?? []).filter(
+    (code) => code.id !== codeId,
+  );
+  return delay(undefined);
+}
+
 export function createClass(form: ClassForm): Promise<ClassSummary> {
   const created: ClassSummary = {
     id: `c${classSeq++}`,

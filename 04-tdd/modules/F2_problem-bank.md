@@ -784,6 +784,30 @@ Tiêu chí nghiệm thu ngân hàng bài toán, testcase, danh mục, giao bài 
 - **Kết quả mong đợi**: ở A, P `assigned = true`, S và T `assigned = false`; ở B cả ba `assigned = false` (cờ theo từng lớp). Sau khi giao T cho A thì T `assigned = true`; sau khi gỡ P thì P `assigned = false`. Giao lại bài `assigned = true` qua #52 vẫn vào `skippedIds`, không tạo dòng thứ hai. Bài `UNPUBLISHED`/đã xoá không xuất hiện dù đang giao.
 - **Nguồn**: [SoT: 03-dd/api/F2_problem-bank.md] §52.3, §52.5, §53.3, PB52-N1, PB52-B1.
 
+### AC-98 — Khách đọc được danh sách và đề, không có dữ liệu theo người dùng (§0A, §2, §3, §7, §8)
+- **Tiền điều kiện**: có bài đã xuất bản, một bài nháp, một bài đã gỡ; người gọi **không có** `Authorization`. Người học A đã giải bài P1 và lưu bài P2.
+- **Hành động**: khách gọi `GET /problems`, `GET /problems/random`, `GET /problems/{P2}/overview`, `GET /problems/{P1}/sample-testcases`, `GET /levels?includeCounts=true`; rồi A gọi cùng các endpoint.
+- **Kết quả mong đợi**: khách nhận `200`; danh sách có `solveStateAvailable = false` và mọi `solveState` rỗng; `overview` của P2 có `bookmarked = false` (A thấy `true`); response của khách không chứa trạng thái giải, bookmark, bài nộp hay dữ liệu Hidden; testcase mẫu chỉ gồm Sample đã duyệt.
+- **Nguồn**: [SoT: 03-dd/api/F2_problem-bank.md] §0A; `DEC-2026-1126-guest-browse-published-problems`.
+
+### AC-99 — Bài không công khai cùng trả không tìm thấy cho khách (§0A, §7, §8, BR-01)
+- **Tiền điều kiện**: khách không có phiên; một bài nháp, một bài đã gỡ, một UUID chưa tồn tại, một chuỗi không phải UUID.
+- **Hành động**: gọi `GET /problems/{id}/overview` và `/sample-testcases` cho từng giá trị.
+- **Kết quả mong đợi**: cả bốn trường hợp cùng `404 PRB-010` với nội dung giống nhau; không phân biệt được bài nháp, đã gỡ hay không tồn tại.
+- **Nguồn**: [SoT: 03-dd/api/F2_problem-bank.md] §0A quy tắc 4.
+
+### AC-100 — Đường cá nhân vẫn cần phiên (§0A quy tắc 1, §6, §4, §9)
+- **Tiền điều kiện**: khách không có phiên.
+- **Hành động**: gọi `GET /problems/{id}/workspace`, `GET /topics/progress`, `GET /me/bookmarks`, `PUT /me/bookmarks/{id}/state`, `GET /suggested-problems`.
+- **Kết quả mong đợi**: mỗi lời gọi trả `401`; không lời gọi nào trả dữ liệu hay tạo bản ghi.
+- **Nguồn**: [SoT: 03-dd/api/F2_problem-bank.md] §0A quy tắc 1.
+
+### AC-101 — Token hết hạn trên đường công khai vẫn là khách (§0A quy tắc 3)
+- **Tiền điều kiện**: một access token đã hết hạn (và một token sai chữ ký).
+- **Hành động**: gửi `GET /problems` và `GET /problems/{id}/overview` kèm token đó; rồi gửi `GET /problems/{id}/workspace` kèm token hết hạn.
+- **Kết quả mong đợi**: hai lời gọi đầu trả `200` như khách; lời gọi thứ ba trả `401` để giao diện làm mới phiên.
+- **Nguồn**: [SoT: 03-dd/api/F2_problem-bank.md] §0A quy tắc 3.
+
 ## 3. Truy vết
 
 Bảng 1: Truy vết tiêu chí nghiệm thu sang endpoint, khối quy tắc, test case QA và test mã nguồn. Cột "Test case QA" giữ ID test case do `testcase-generation` sinh (tài liệu QA); cột "Test mã nguồn" liệt kê test thật đã kiểm bằng grep, theo dạng `Lớp:dòng` (dòng của phương thức test); "Trạng thái" ghi bằng chữ theo bảng 2.
@@ -901,6 +925,10 @@ Mutation test của các lát gần đây (quyền, riêng tư, tiền) chưa l�
 | AC-95 | #57, §64 | [TC-F2-AC95-01–13](../testcases/modules/F2_problem-bank/F2_authoring_defaults.md) | ReadAuthoringDefaultsQueryHandlerTest; F2CloseoutFlowTest.authoringDefaultsRequiresAuthorPermissionAndUsesTheLiveSettings; F2CloseoutFlowTest.authoringDefaultsAcceptsCreateAndReadIndependently; real-authoring-closure.test.ts; f2-closure-real.spec.ts: current backend defaults | Đạt | Log final-reactor-r3 xác nhận F2CloseoutFlowTest 8/8, 0 lỗi/skip: HTTP 401/403 và hai role CREATE-only/READ-only dùng JWT thật, exact 4 key. Browser NEW defaults đạt 1/1 (20261111-f2-new-defaults-real.log), khớp API/DB và không tạo bài. Unit lỗi đại diện trả503 cố định; hai nguồn dùng cùng catch. Adapter giữ defaults/copy limits và từ chối fallback khi lỗi. QA13 ca review/kiểm cấu trúc 0 lỗi, chưa có run record đủ13 ca; cap-fault và expired-token tại riêng #57 chưa chạy riêng, không claim các permutation đó đạt. Xem ac95-qa-design-review.md trong báo cáo closure. |
 | AC-96 | §52 | [TC-F2-AC96-01](../testcases/modules/F2_problem-bank/F2_class_assignments.md) | ClassAssignmentFlowTest.assignableProblemsListAssignedOnesFlaggedAndHideUnpublishedOnes (chạy lại 2026-11-23, 12 test đạt) (đoạn lọc `levelCode`, `topic`, tổng số bản ghi) | Đạt | Lát backend 2026-11-23 |
 | AC-97 | §52, §53, §54 | [TC-F2-AC97-01](../testcases/modules/F2_problem-bank/F2_class_assignments.md) | ClassAssignmentFlowTest.assignableProblemsListAssignedOnesFlaggedAndHideUnpublishedOnes (chạy lại 2026-11-23, 12 test đạt) (đoạn cờ `assigned`, bài gỡ rồi giao lại) | Đạt | Lát backend 2026-11-23 |
+| AC-98 | §0A, §2, §3, §7, §8 | Chưa có | GuestProblemReadFlowTest.aGuestReadsTheOpenRoutesAndGetsNoPersonalValue; guest-browse-real.spec.ts | Đạt | `DEC-2026-1126-guest-browse-published-problems` (2026-11-26): flow test trên PostgreSQL, Redis, MinIO thật và Playwright trên backend thật. |
+| AC-99 | §0A, §7, §8, BR-01 | Chưa có | GuestProblemReadFlowTest.aProblemThatIsNotPublishedLooksMissingToAGuest; guest-browse-real.spec.ts | Đạt | `DEC-2026-1126-guest-browse-published-problems` (2026-11-26): flow test trên PostgreSQL, Redis, MinIO thật và Playwright trên backend thật. |
+| AC-100 | §0A, §6, §4, §9 | Chưa có | GuestProblemReadFlowTest.everyPersonalRouteStillNeedsASession; guest-browse-real.spec.ts | Đạt | `DEC-2026-1126-guest-browse-published-problems` (2026-11-26): flow test trên PostgreSQL, Redis, MinIO thật và Playwright trên backend thật. |
+| AC-101 | §0A | Chưa có | GuestProblemReadFlowTest.aStaleTokenReadsTheOpenRoutesAsAGuestButStaysRefusedOnPersonalOnes; guest-browse-real.spec.ts | Đạt | `DEC-2026-1126-guest-browse-published-problems` (2026-11-26): flow test trên PostgreSQL, Redis, MinIO thật và Playwright trên backend thật. |
 
 Bảng 3: Tổng hợp trạng thái 94 tiêu chí (2026-11-06, sau full regression; cập nhật 2026-11-08: AC-59 chuyển Đạt, đếm lại từ bảng truy vết)
 
@@ -940,6 +968,8 @@ Bảng hiện hành 2026-11-11 (đếm lại từ 95 hàng truy vết, gồm AC-
 | Code xong, chưa test toàn bộ | 7 |
 | Một phần | 0 |
 | Total | 95 |
+
+Cập nhật 2026-11-26 (`DEC-2026-1126-guest-browse-published-problems`): thêm AC-98 đến AC-101 cho khách; bốn hàng đã Đạt trong ngày, chưa cộng vào bảng đếm bên trên.
 
 Cập nhật 2026-11-23 (`DEC-2026-1123-assign-problems-dedicated-screen`): AC-74 viết lại theo hợp đồng mới, thêm AC-96 và AC-97; backend đã làm và `ClassAssignmentFlowTest` chạy lại đạt (12 test, 2026-11-23), nên hiện hành là Đạt 90, Code xong chưa test toàn bộ 7, Một phần 0, Chưa làm 0, Tổng 97 `[SoT: Suy luận, cộng từ bảng 2026-11-11 phía trên]`.
 

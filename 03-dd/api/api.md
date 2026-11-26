@@ -126,7 +126,7 @@ Bảng 3: Endpoint của `identity`. Cột # là số thứ tự trong `03-dd/ap
 
 ### 2.2. `problem-bank` (58 endpoint)
 
-Bảng 4: Endpoint của `problem-bank`. Cột Mục là số mục trong `03-dd/api/F2_problem-bank.md`; đường dẫn đầy đủ gồm base `/api/v1/problem-bank`.
+Bảng 4: Endpoint của `problem-bank`. Cột Mục là số mục trong `03-dd/api/F2_problem-bank.md`; đường dẫn đầy đủ gồm base `/api/v1/problem-bank`. Bốn endpoint đọc bài đã xuất bản (mục 2, 3, 7, 8) mở cho khách không có phiên (`DEC-2026-1126-guest-browse-published-problems`, `F2_problem-bank.md` mục 0A); các endpoint còn lại cần phiên.
 
 | Mục | Method | Path | Operation |
 | :--- | :--- | :--- | :--- |

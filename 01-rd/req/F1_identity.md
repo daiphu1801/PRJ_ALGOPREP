@@ -163,6 +163,15 @@ gì là thiếu]`. **Chốt 2026-08-25** (đối chiếu `09-layoutBase/Trang c�
     công từng học viên. Gác bởi Function `CLASS_MANAGEMENT` trong ma trận phân quyền (F1-12) cho thao tác
     tạo lớp (A2); việc học viên nhập mã mời để tham gia không đi qua ma trận phân quyền, tương tự cách
     F1-05 gán vai trò mặc định khi đăng ký — có sẵn tài khoản hợp lệ và biết mã mời là đủ điều kiện.
+    **Amendment 2026-11-26** (`DEC-2026-1126-class-name-unique`, chủ dự án duyệt): **một giảng viên không có hai lớp
+    trùng tên** (không phân biệt hoa thường và khoảng trắng hai đầu); tạo hoặc đổi tên lớp trùng bị từ chối. Hai giảng
+    viên khác nhau được đặt cùng tên.
+    **Amendment 2026-11-26** (`DEC-2026-1126-class-join-needs-active-instructor`, chủ dự án duyệt): mã mời của một lớp
+    **không dùng được khi tài khoản giảng viên không còn hoạt động** (bị khoá, tự xoá hoặc chưa xác minh); học viên nhập
+    mã bị từ chối như mã sai, học viên đã vào lớp không bị đuổi. **Amendment 2026-11-26**
+    (`DEC-2026-1126-roster-inactive-account-label`, chủ dự án duyệt): học viên đã xoá hoặc bị khoá tài khoản **vẫn nằm
+    trong danh sách và sĩ số lớp**, danh sách ghi nhãn "Tài khoản không còn hoạt động"; tỉ lệ hoàn thành vẫn chia cho cả
+    những học viên đó.
   - **F1-24 — Giáo viên xoá lớp học.** **Chốt 2026-08-28 — qua hỏi trực tiếp chủ dự án:** xoá **thật** (hard
     delete), không phải khoá mềm/ẩn danh hoá như cách F1-16 xử lý xoá tài khoản — đây là một quyết định có
     chủ đích khác với F1-16, không phải sơ suất thiếu nhất quán. Sửa thông tin lớp (đổi tên, mô tả, lịch
@@ -177,6 +186,9 @@ gì là thiếu]`. **Chốt 2026-08-25** (đối chiếu `09-layoutBase/Trang c�
     dùng riêng của nó**, độc lập với các mã cũ (mã cũ hết hạn không tự động ảnh hưởng mã mới). Không nói rõ
     mã cũ còn hiệu lực có bị vô hiệu hoá khi tạo mã mới hay không — `[SoT: Suy luận — để BD quyết định, hợp
     lý là cho phép nhiều mã cùng hiệu lực song song, không cần thu hồi mã cũ]`.
+    **Amendment 2026-11-26** (`DEC-2026-1126-class-invite-revoke`, chủ dự án duyệt): giảng viên **thu hồi được từng mã
+    mời** của lớp mình. Mã đã thu hồi không dùng được nữa (học viên nhập bị từ chối như mã sai); học viên đã vào lớp và
+    các mã khác của lớp không bị ảnh hưởng. Tạo mã mới vẫn **không** vô hiệu các mã cũ.
   - **F1-26 — Giáo viên gỡ một học viên khỏi lớp.** ~~**Chốt 2026-08-28 — qua hỏi trực tiếp chủ dự án:** gỡ học viên khỏi lớp thì **xoá luôn lịch sử làm bài của học viên đó trong phạm vi lớp này** (lượt nộp, điểm, tiến độ gắn với lớp) — không giữ lại, vì "đã gỡ rồi thì giữ cũng không làm gì". Đây là **xoá thật, có cascade**, khác hẳn cách dữ liệu người dùng thường được giữ lại ở nơi khác trong hệ thống (ví dụ F1-16 — xoá tài khoản chỉ khoá mềm) — ghi rõ ở đây để BD/DD không lỡ áp cùng một khuôn mẫu "giữ lại dữ liệu" cho mọi thao tác xoá.~~ **ĐÃ ĐỔI 2026-10-14 (DEC-2026-1014-keep-learning-history-on-leave):** gỡ học viên khỏi lớp thì **giữ lịch sử làm bài và lịch sử học**; học viên chỉ được đánh dấu "đã rời lớp" (ghi danh giữ lại làm lịch sử, kèm ngày rời); giảng viên vẫn xem được bài nộp từ lúc học viên còn trong lớp; dữ liệu của học viên không bị đụng tới; học viên đã rời không còn tính vào tổng số học viên và tiến độ lớp (F1-26) [SoT: .nexa/control/decision-registry.md:3933-3940]. Ghi chú: F1-24 (xoá lớp) vẫn là xoá thật; quyết định này chỉ đổi việc gỡ một học viên.
   - **F1-27 — Giáo viên xem hồ sơ chi tiết một học viên trong lớp mình phụ trách** (thông tin cơ bản, tiến
     độ, lịch sử nộp bài — phạm vi giới hạn trong lớp giáo viên đó quản lý). **Chốt 2026-08-28 — qua hỏi

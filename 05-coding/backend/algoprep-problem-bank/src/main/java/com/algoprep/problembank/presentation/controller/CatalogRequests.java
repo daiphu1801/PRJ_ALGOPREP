@@ -14,7 +14,9 @@ final class CatalogRequests {
   private CatalogRequests() {}
 
   static boolean admin(JwtAuthenticationToken caller) {
-    return caller.getAuthorities().stream().anyMatch(a -> "ROLE_ADMIN".equals(a.getAuthority()));
+    // A guest has no principal (the level list is open to guests, DD F2 section 0A).
+    return caller != null
+        && caller.getAuthorities().stream().anyMatch(a -> "ROLE_ADMIN".equals(a.getAuthority()));
   }
 
   static CatalogCommand command(

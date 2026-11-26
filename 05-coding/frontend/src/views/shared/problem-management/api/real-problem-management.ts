@@ -7,11 +7,8 @@ import type {
   AdminListParams,
   AdminProblem,
   AdminProblemList,
-  AttentionItem,
-  AttentionRuleCode,
   BulkResult,
   ProblemSortKey,
-  TopicDistribution,
 } from "../model/types";
 
 const BASE = "/problem-bank/authoring/problems";
@@ -52,13 +49,6 @@ const SORT_FIELD: Record<ProblemSortKey, string> = {
   edited: "updatedAt",
 };
 
-const RULE: Record<string, AttentionRuleCode> = {
-  NO_TESTCASE: "noTestcase",
-  LOW_AC: "lowAcceptRate",
-  HIDDEN_FROM_LEARNERS: "hiddenFromLearners",
-  STALE_DRAFT: "staleDraft",
-};
-
 export function toAdminProblem(dto: ProblemDto): AdminProblem {
   return {
     id: dto.id,
@@ -97,35 +87,6 @@ export async function realListAdminProblems(
     page: dto.page,
     totals: dto.totals,
   };
-}
-
-/** #25. */
-export async function realTopicDistribution(): Promise<TopicDistribution> {
-  const dto = await api.get<{
-    totalProblemsWithTopic: number;
-    totalTopicsUsed: number;
-    items: { topicName: string; count: number; percent: number }[];
-  }>(`${BASE}/topic-distribution`);
-  return {
-    totalProblemsWithTopic: dto.totalProblemsWithTopic,
-    totalTopicsUsed: dto.totalTopicsUsed,
-    items: dto.items.map(({ topicName, count, percent }) => ({
-      topicName,
-      count,
-      percent,
-    })),
-  };
-}
-
-/** #26: always the four rules, in the server's order; a rule code this client does not know is dropped. */
-export async function realAttentionList(): Promise<AttentionItem[]> {
-  const { items } = await api.get<{
-    items: { ruleCode: string; count: number }[];
-  }>(`${BASE}/attention`);
-  return items.flatMap(({ ruleCode, count }) => {
-    const code = RULE[ruleCode];
-    return code ? [{ ruleCode: code, count }] : [];
-  });
 }
 
 type BulkDto = {

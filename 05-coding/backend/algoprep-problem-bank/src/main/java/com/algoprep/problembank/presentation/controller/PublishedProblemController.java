@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/api/v1/problem-bank/problems")
-@PreAuthorize("isAuthenticated()")
 class PublishedProblemController {
   private final ReadPublishedProblemsUseCase problems;
 
@@ -31,33 +30,42 @@ class PublishedProblemController {
   }
 
   @GetMapping
+  @PreAuthorize("permitAll()")
   StudentProblemViews.ProblemList list(
       JwtAuthenticationToken caller, @RequestParam Map<String, String> params) {
     return problems.list(user(caller), params);
   }
 
   @GetMapping("/random")
+  @PreAuthorize("permitAll()")
   StudentProblemViews.RandomProblem random(
       JwtAuthenticationToken caller, @RequestParam Map<String, String> params) {
     return problems.random(user(caller), params);
   }
 
   @GetMapping("/{problemId}/workspace")
+  @PreAuthorize("isAuthenticated()")
   Workspace workspace(JwtAuthenticationToken caller, @PathVariable String problemId) {
     return problems.workspace(user(caller), problem(problemId));
   }
 
   @GetMapping("/{problemId}/overview")
+  @PreAuthorize("permitAll()")
   Overview overview(JwtAuthenticationToken caller, @PathVariable String problemId) {
     return problems.overview(user(caller), problem(problemId));
   }
 
   @GetMapping("/{problemId}/sample-testcases")
+  @PreAuthorize("permitAll()")
   StudentProblemViews.SampleList samples(@PathVariable String problemId) {
     return problems.samples(problem(problemId));
   }
 
+  /** A guest has no JWT principal; the use case reads a null user id as "no personal data". */
   private static UUID user(JwtAuthenticationToken caller) {
+    if (caller == null) {
+      return null;
+    }
     return UUID.fromString(caller.getToken().getSubject());
   }
 

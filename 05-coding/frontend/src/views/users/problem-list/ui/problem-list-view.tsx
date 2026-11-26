@@ -1,8 +1,6 @@
 // USR0101 on the real api (03-dd/api/F2_problem-bank.md #1 to #4, F4 #8); mock mode answers the same contract.
 //
-// Layout follows 09-layoutBase/Ngân hàng bài toán.dc.html: topic bar (:118-125), filters (:131-153),
-// table (:155-192), paging (:194-201), and the two side blocks "Bài đang làm dở" (:206-220) and
-// "Bài tập lớp" (:222-236) in the right column. Two columns, minmax(0,1fr) 268px (BD USR0101 Sheet 4.4).
+// Bố cục danh sách và hai khối cá nhân theo BD USR0101 Sheet 4.4.
 // The KPI strip (:103-116) was dropped 2026-10-18 (owner: a list screen has no KPI strip). The prototype's
 // `isSolve` branch is not carried over (RD open question Q2, closed).
 //
@@ -20,7 +18,7 @@ import { useState } from "react";
 import { useIsFetching } from "@tanstack/react-query";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { Shuffle } from "lucide-react";
+import { ArrowRight, Bookmark, Shuffle } from "lucide-react";
 import {
   InProgressList,
   IN_PROGRESS_LIMIT,
@@ -37,6 +35,8 @@ import {
   type SolveState,
 } from "@/entities/problem";
 import { useReviewedProblemIds } from "@/entities/solution-review";
+import { useSession } from "@/entities/user";
+import { LoginPromptDialog, useLoginPrompt } from "@/features/login-prompt";
 import { useApiErrorMessage, useLocale, useT } from "@/shared/i18n";
 import { formatDateVN, useDebounced, usePersistedPageSize } from "@/shared/lib";
 import { toast } from "@/shared/lib/toast-store";
@@ -49,11 +49,13 @@ import {
   Pagination,
   FilterBar,
   FilterMenu,
+  PageContainer,
   QueryError,
   Skeleton,
   type BadgeVariant,
   type DataTableColumn,
 } from "@/shared/ui";
+import styles from "./problem-list-view.module.css";
 
 const SOLVE_STATE_VARIANT: Record<SolveState, BadgeVariant> = {
   solved: "success",
@@ -87,6 +89,10 @@ export function ProblemListView() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  // Khách (DEC-2026-1126, BD USR0101 [Trạng thái khách]): chỉ bảng, tìm kiếm, độ khó và bài ngẫu nhiên;
+  // các hook theo phiên tự tắt (enabled = hasSession()) nên không sinh 401.
+  const guest = useSession() === "guest";
+  const prompt = useLoginPrompt();
   const levels = useProblemLevels();
   const topics = useTopicProgress();
   // F5 #5 (real mode): label "analysed" when the catalog row itself does not know. A failed call leaves it empty.
@@ -94,11 +100,10 @@ export function ProblemListView() {
   const levelsFetching = useIsFetching({ queryKey: ["problem", "levels"] }) > 0;
   // A value the URL carries that this screen does not know falls back to the default.
   const statusParam = searchParams.get("status");
-  const status: StatusFilter = STATUS_VALUES.includes(
-    statusParam as StatusFilter,
-  )
-    ? (statusParam as StatusFilter)
-    : "all";
+  const status: StatusFilter =
+    !guest && STATUS_VALUES.includes(statusParam as StatusFilter)
+      ? (statusParam as StatusFilter)
+      : "all";
   const requestedLevel = searchParams.get("level");
   const requestedTopic = searchParams.get("topic");
   const difficulty = levels.some((level) => level.key === requestedLevel)
@@ -157,7 +162,7 @@ export function ProblemListView() {
   };
   const catalogsReady =
     (!requestedLevel || levels.length > 0 || !levelsFetching) &&
-    (!requestedTopic || !topics.isLoading);
+    (guest || !requestedTopic || !topics.isLoading);
   const catalog = useProblemCatalog(params, catalogsReady);
   const assignments = useMyClassAssignments();
   const inProgress = useMyInProgress();
@@ -202,51 +207,42 @@ export function ProblemListView() {
 
   const columns: DataTableColumn<CatalogRow>[] = [
     {
-      key: "solveState",
-      header: t("table.colState"),
-      width: "48px",
-      render: (problem) => (
-        <>
-          <span
-            aria-hidden="true"
-            className="inline-block h-2 w-2 rounded-full"
-            style={{
-              background: `var(${
-                problem.solveState === "solved"
-                  ? "--color-success"
-                  : problem.solveState === "attempted"
-                    ? "--color-admin-warn"
-                    : "--color-border"
-              })`,
-            }}
-          />
-          <span className="sr-only">
-            {t(`state.${problem.solveState ?? "unknown"}`)}
-          </span>
-        </>
-      ),
-    },
-    {
       key: "title",
       header: t("table.colTitle"),
-      sortable: false,
       render: (problem) => (
         <div className="min-w-0">
           <Link
             href={`/problems/${problem.id}`}
-            className="block truncate font-semibold hover:underline"
+            className="block font-semibold wrap-anywhere hover:text-[var(--color-primary)] hover:underline"
           >
             {problem.title}
           </Link>
-          <div className="mt-1 flex flex-wrap items-center gap-1.5">
+          <div className="mt-1.5 flex flex-wrap items-center gap-1.5 empty:hidden">
+            {!guest &&
+              (problem.solveState ? (
+                <Badge variant={SOLVE_STATE_VARIANT[problem.solveState]}>
+                  {t(`state.${problem.solveState}`)}
+                </Badge>
+              ) : (
+                <span className="sr-only">{t("state.unknown")}</span>
+              ))}
             {/* BD Sheet 5 khu D NO 5: only the exception is labelled; "both" is the norm and stays silent. */}
             {problem.submissionModel === "stdioOnly" ? (
               <Badge variant="neutral">{t("submissionModel.stdioOnly")}</Badge>
             ) : null}
             {/* null = F5 did not answer (or is not built): no badge rather than a guess. */}
-            {(problem.hasSolutionReview ?? reviewedIds?.has(problem.id)) ? (
+            {!guest &&
+            (problem.hasSolutionReview ?? reviewedIds?.has(problem.id)) ? (
               <Badge variant="teal">{t("table.hasReview")}</Badge>
             ) : null}
+          </div>
+          <div className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 md:hidden">
+            <Badge variant={problemLevelTone(levels, problem.difficulty)}>
+              {problemLevelLabel(levels, problem.difficulty)}
+            </Badge>
+            <span className="text-xs wrap-anywhere text-[var(--color-text-muted)]">
+              {problem.topics.join(", ")}
+            </span>
           </div>
         </div>
       ),
@@ -254,9 +250,9 @@ export function ProblemListView() {
     {
       key: "topics",
       header: t("table.colTopics"),
-      width: "132px",
+      width: "20%",
       render: (problem) => (
-        <span className="block truncate text-[12.5px] text-[var(--color-text-muted)]">
+        <span className="block wrap-anywhere text-[var(--color-text-muted)]">
           {problem.topics.join(", ")}
         </span>
       ),
@@ -264,7 +260,7 @@ export function ProblemListView() {
     {
       key: "difficulty",
       header: t("table.colDifficulty"),
-      width: "108px",
+      width: "120px",
       sortable: true,
       render: (problem) => (
         <Badge variant={problemLevelTone(levels, problem.difficulty)}>
@@ -275,7 +271,7 @@ export function ProblemListView() {
     {
       key: "acRate",
       header: t("table.colAcRate"),
-      width: "84px",
+      width: "128px",
       align: "right",
       sortable: true,
       render: (problem) => (
@@ -287,113 +283,147 @@ export function ProblemListView() {
     {
       key: "actions",
       header: "",
-      width: "96px",
+      width: locale === "en" ? "10rem" : "7rem",
       align: "right",
       render: (problem) => (
         <Button
           asChild
           variant="ghost"
           size="sm"
-          className="border border-[var(--color-border)]"
+          className="min-h-10 border border-[var(--color-border)] whitespace-nowrap"
         >
           <Link
             href={`/problems/${problem.id}`}
             aria-label={t("table.btnSolveFor", { title: problem.title })}
           >
             {t("table.btnSolve")}
+            <ArrowRight aria-hidden="true" className="ml-1 size-3.5" />
           </Link>
         </Button>
       ),
     },
   ];
 
+  const sortOptions = [
+    { value: "difficulty:asc", label: t("sort.difficultyAsc") },
+    { value: "difficulty:desc", label: t("sort.difficultyDesc") },
+    { value: "acRate:asc", label: t("sort.acRateAsc") },
+    { value: "acRate:desc", label: t("sort.acRateDesc") },
+  ];
+
+  function changeSort(key: string, direction: string) {
+    setUrlParams({
+      sort: key === "acRate" ? "acRate" : null,
+      dir: direction === "desc" ? "desc" : null,
+      page: null,
+    });
+  }
+
   const data = catalog.data;
   // A block with nothing to show is left out whole; loading and error stay visible so a failure is never
   // mistaken for "nothing here".
-  const showInProgress = !inProgress.data || inProgress.data.length > 0;
-  const showAssignments = !assignments.data || assignments.data.length > 0;
+  const showInProgress =
+    !guest && (!inProgress.data || inProgress.data.length > 0);
+  const showAssignments =
+    !guest && (!assignments.data || assignments.data.length > 0);
   const showSide = showInProgress || showAssignments;
 
   return (
-    <div className="p-6">
-      <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
-        <h1 className="text-lg font-bold tracking-tight">{t("title")}</h1>
-        <div className="flex gap-2">
-          <Button
-            asChild
-            variant="ghost"
-            size="sm"
-            className="border border-[var(--color-border)]"
-          >
-            <Link href="/saved">{t("summary.linkSaved")}</Link>
-          </Button>
+    <PageContainer variant="content" className="p-4 sm:p-6">
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
+        <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
+          {t("title")}
+        </h1>
+        <div className="flex flex-wrap gap-2">
+          {guest ? (
+            <Button
+              variant="ghost"
+              className="border border-[var(--color-border)]"
+              onClick={() => prompt.ask("/saved")}
+            >
+              <Bookmark aria-hidden="true" className="mr-2 size-4" />
+              {t("summary.linkSaved")}
+            </Button>
+          ) : (
+            <Button
+              asChild
+              variant="ghost"
+              className="border border-[var(--color-border)]"
+            >
+              <Link href="/saved">
+                <Bookmark aria-hidden="true" className="mr-2 size-4" />
+                {t("summary.linkSaved")}
+              </Link>
+            </Button>
+          )}
           <Button
             variant="cta"
-            size="sm"
             onClick={pickRandom}
             disabled={random.isPending}
           >
-            <Shuffle className="mr-1.5 h-3.5 w-3.5" />
+            <Shuffle aria-hidden="true" className="mr-2 size-4" />
             {t("summary.btnRandom")}
           </Button>
         </div>
       </div>
 
-      <div
-        className="mb-4 flex gap-2 overflow-x-auto pb-1"
-        role="group"
-        aria-label={t("topicNav.label")}
-      >
-        <button
-          type="button"
-          aria-pressed={topicId === "all"}
-          onClick={() => {
-            setTopicId("all");
-          }}
-          className={`shrink-0 rounded-full border px-3 py-1.5 text-[12.5px] font-semibold ${
-            topicId === "all"
-              ? "border-[var(--color-primary)] text-[var(--color-primary)]"
-              : "border-[var(--color-border)] text-[var(--color-text-muted)]"
-          }`}
+      {guest ? null : (
+        <div
+          className="mb-4 flex gap-2 overflow-x-auto pb-1"
+          role="group"
+          aria-label={t("topicNav.label")}
         >
-          {t("filter.all")}
-        </button>
-        {topics.isError ? (
-          <span className="self-center text-[12.5px] text-[var(--color-text-muted)]">
-            {t("topicNav.failed")}
-          </span>
-        ) : null}
-        {topics.data?.items.map((topic) => (
           <button
-            key={topic.id}
             type="button"
-            aria-pressed={topicId === topic.id}
+            aria-pressed={topicId === "all"}
             onClick={() => {
-              // BD EVT-5: pressing the active topic clears the filter.
-              setTopicId(topicId === topic.id ? "all" : topic.id);
+              setTopicId("all");
             }}
-            className={`shrink-0 rounded-full border px-3 py-1.5 text-[12.5px] font-semibold whitespace-nowrap ${
-              topicId === topic.id
+            className={`shrink-0 rounded-full border px-3 py-1.5 text-[12.5px] font-semibold ${
+              topicId === "all"
                 ? "border-[var(--color-primary)] text-[var(--color-primary)]"
                 : "border-[var(--color-border)] text-[var(--color-text-muted)]"
             }`}
           >
-            {/* An unknown solved count leaves only the total: "0/12" would be a made-up figure. */}
-            {topic.solved === null
-              ? `${topic.name} (${topic.total})`
-              : `${topic.name} (${topic.solved}/${topic.total})`}
+            {t("filter.all")}
           </button>
-        ))}
-      </div>
+          {topics.isError ? (
+            <span className="self-center text-[12.5px] text-[var(--color-text-muted)]">
+              {t("topicNav.failed")}
+            </span>
+          ) : null}
+          {topics.data?.items.map((topic) => (
+            <button
+              key={topic.id}
+              type="button"
+              aria-pressed={topicId === topic.id}
+              onClick={() => {
+                // BD EVT-5: pressing the active topic clears the filter.
+                setTopicId(topicId === topic.id ? "all" : topic.id);
+              }}
+              className={`shrink-0 rounded-full border px-3 py-1.5 text-[12.5px] font-semibold whitespace-nowrap ${
+                topicId === topic.id
+                  ? "border-[var(--color-primary)] text-[var(--color-primary)]"
+                  : "border-[var(--color-border)] text-[var(--color-text-muted)]"
+              }`}
+            >
+              {/* An unknown solved count leaves only the total: "0/12" would be a made-up figure. */}
+              {topic.solved === null
+                ? `${topic.name} (${topic.total})`
+                : `${topic.name} (${topic.solved}/${topic.total})`}
+            </button>
+          ))}
+        </div>
+      )}
 
       <div
         className={
           showSide
-            ? "grid grid-cols-1 items-start gap-4 lg:[grid-template-columns:minmax(0,1fr)_268px]"
+            ? "grid grid-cols-1 items-start gap-4 xl:[grid-template-columns:minmax(0,1fr)_268px]"
             : "grid grid-cols-1 gap-4"
         }
       >
-        <Card className="min-w-0 px-[18px] py-4">
+        <Card className="min-w-0 px-3 py-4 sm:px-5">
           <FilterBar
             search={{
               label: t("filter.searchLabel"),
@@ -407,19 +437,21 @@ export function ProblemListView() {
               onSubmit: announceSearch,
             }}
           >
-            <FilterMenu
-              label={t("filter.statusLabel")}
-              value={status}
-              onValueChange={(value) => {
-                setStatus(value);
-              }}
-              options={[
-                { value: "all", label: t("filter.all") },
-                { value: "solved", label: t("state.solved") },
-                { value: "attempted", label: t("state.attempted") },
-                { value: "todo", label: t("state.todo") },
-              ]}
-            />
+            {guest ? null : (
+              <FilterMenu
+                label={t("filter.statusLabel")}
+                value={status}
+                onValueChange={(value) => {
+                  setStatus(value);
+                }}
+                options={[
+                  { value: "all", label: t("filter.all") },
+                  { value: "solved", label: t("state.solved") },
+                  { value: "attempted", label: t("state.attempted") },
+                  { value: "todo", label: t("state.todo") },
+                ]}
+              />
+            )}
             <FilterMenu
               label={t("filter.difficultyLabel")}
               value={difficulty}
@@ -434,9 +466,38 @@ export function ProblemListView() {
                 })),
               ]}
             />
+            <FilterMenu
+              className="md:hidden"
+              label={t("sort.label")}
+              value={`${sort.key}:${sort.direction}`}
+              options={sortOptions}
+              onValueChange={(value) =>
+                changeSort(
+                  value.startsWith("acRate:") ? "acRate" : "difficulty",
+                  value.endsWith(":desc") ? "desc" : "asc",
+                )
+              }
+              compact
+            />
           </FilterBar>
 
-          {data && !data.solveStateAvailable ? (
+          <div className="mb-2 flex min-h-9 flex-wrap items-center justify-between gap-2 border-b border-[var(--color-border)] pb-2">
+            <p
+              role="status"
+              className="text-sm font-medium text-[var(--color-text-muted)]"
+            >
+              {data && !catalog.isError
+                ? t("table.results", { count: data.page.totalItems })
+                : null}
+            </p>
+            {hasActiveFilter ? (
+              <Button variant="ghost" size="sm" onClick={clearFilters}>
+                {t("table.clearFilters")}
+              </Button>
+            ) : null}
+          </div>
+
+          {!guest && data && !data.solveStateAvailable ? (
             <p
               role="status"
               className="mb-3 text-[12.5px] text-[var(--color-text-muted)]"
@@ -458,32 +519,15 @@ export function ProblemListView() {
                 columns={columns}
                 rows={data.items}
                 rowKey={(problem) => problem.id}
-                emptyMessage={
-                  <span className="flex flex-col items-center gap-2">
-                    {t("table.empty")}
-                    {hasActiveFilter ? (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="border border-[var(--color-border)]"
-                        onClick={clearFilters}
-                      >
-                        {t("table.clearFilters")}
-                      </Button>
-                    ) : null}
-                  </span>
-                }
-                minWidth={640}
+                emptyMessage={t(
+                  hasActiveFilter ? "table.empty" : "table.emptyCatalog",
+                )}
+                minWidth={0}
+                className={styles.catalogTable}
                 sort={{
                   key: sort.key,
                   direction: sort.direction,
-                  onSortChange: (key, direction) => {
-                    setUrlParams({
-                      sort: key === "difficulty" ? null : key,
-                      dir: direction === "asc" ? null : direction,
-                      page: null,
-                    });
-                  },
+                  onSortChange: changeSort,
                 }}
               />
 
@@ -611,6 +655,11 @@ export function ProblemListView() {
           </div>
         ) : null}
       </div>
-    </div>
+      <LoginPromptDialog
+        open={prompt.open}
+        returnTo={prompt.returnTo}
+        onClose={prompt.close}
+      />
+    </PageContainer>
   );
 }

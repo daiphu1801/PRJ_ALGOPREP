@@ -151,6 +151,14 @@ export async function realCreateInviteCode(
   );
 }
 
+/** #78: 204; the other codes of the class stay valid, and a code that is already gone is not an error. */
+export async function realRevokeInviteCode(
+  classId: string,
+  codeId: string,
+): Promise<void> {
+  await api.delete(`${CLASSES}/${classId}/invite-codes/${codeId}`);
+}
+
 /** #26: who is in the class now, with the judge figures when the server could read them. */
 export async function realListRoster(
   classId: string,
@@ -160,6 +168,7 @@ export async function realListRoster(
       studentId: string;
       displayName: string;
       avatarVersion?: number | null;
+      accountInactive?: boolean;
       email: string | null;
       phone: string | null;
       joinedAt: string;
@@ -174,6 +183,7 @@ export async function realListRoster(
     classId,
     name: student.displayName,
     avatarVersion: student.avatarVersion ?? null,
+    accountInactive: student.accountInactive === true,
     email: student.email ?? undefined,
     phone: student.phone ?? undefined,
     joinedAt: student.joinedAt,

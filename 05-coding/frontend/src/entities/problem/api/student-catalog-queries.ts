@@ -1,7 +1,7 @@
 import { currentUserScope } from "@/shared/api/user-scope";
 // Data boundary of the learner's problem list (USR0101): four independent reads and the random pick.
 // Mock and real share one contract; a failing side block never takes the table down with it.
-import { useMockMutation, useMockQuery } from "@/shared/api";
+import { hasSession, useMockMutation, useMockQuery } from "@/shared/api";
 import {
   mockCatalog,
   mockMyClassAssignments,
@@ -68,6 +68,8 @@ export const useTopicProgress = () =>
     mock: mockTopicProgress,
     real: realTopicProgress,
     spec: PROBLEM_BANK_SPEC,
+    // Khách không có tiến độ: không gọi, để khỏi sinh 401 (DEC-2026-1126).
+    enabled: hasSession(),
   });
 
 /** `ListMyClassAssignments`. */
@@ -77,6 +79,7 @@ export const useMyClassAssignments = () =>
     mock: mockMyClassAssignments,
     real: realMyClassAssignments,
     spec: PROBLEM_BANK_SPEC,
+    enabled: hasSession(),
   });
 
 /**
@@ -112,4 +115,5 @@ export const useMyInProgress = (limit: number = IN_PROGRESS_LIMIT) =>
     mock: () => mockMyInProgress(limit),
     real: () => realMyInProgress(limit),
     spec: JUDGE_SPEC,
+    enabled: hasSession(),
   });

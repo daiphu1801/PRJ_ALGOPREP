@@ -32,7 +32,11 @@ import {
   useUpdateClass,
   type ClassSummary,
 } from "@/entities/class";
-import { ClassFormDialog, type ClassDialogState } from "@/features/edit-class";
+import {
+  ClassFormDialog,
+  DeleteClassNotice,
+  type ClassDialogState,
+} from "@/features/edit-class";
 import { useApiErrorMessage, useT } from "@/shared/i18n";
 import { toast } from "@/shared/lib/toast-store";
 import {
@@ -268,7 +272,12 @@ export function ClassManagementView() {
         cancelLabel={t("cancel")}
         destructive
       >
-        {t("popup.deleteClassBody")}
+        {deleteTarget ? (
+          <DeleteClassNotice
+            classId={deleteTarget.id}
+            studentCount={deleteTarget.studentCount}
+          />
+        ) : null}
       </ConfirmDialog>
     </PageContainer>
   );

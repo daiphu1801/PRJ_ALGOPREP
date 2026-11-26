@@ -11,7 +11,7 @@ import {
 } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import viMessages from "../../../../../messages/vi.json";
-import { ApiError } from "@/shared/api";
+import { ApiError, tokenStore } from "@/shared/api";
 import { toast, useToasts } from "@/shared/lib/toast-store";
 import { withTestProviders } from "@/shared/test/render-with-providers";
 
@@ -80,6 +80,8 @@ function watch() {
 describe("ProblemOverviewView with the real API", () => {
   beforeEach(() => {
     resetApiMock();
+    // A signed-in learner: without a token the screens read as a guest (DEC-2026-1126).
+    tokenStore.set("h.eyJzdWIiOiJ1MSJ9.s");
     push.mockReset();
     route();
   });

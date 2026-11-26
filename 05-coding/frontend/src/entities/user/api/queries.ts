@@ -1,6 +1,6 @@
 // PROTOTYPE — no DD yet. See 06-plan/PROTOTYPE_DEBT.md
 import { useQuery } from "@tanstack/react-query";
-import { withMockData } from "@/shared/api";
+import { hasSession, withMockData } from "@/shared/api";
 import {
   fakeGetInterviewPreferences,
   fakeGetMyProfile,
@@ -14,12 +14,14 @@ import {
 
 const QUERY_OPTIONS = { staleTime: 30_000, retry: false } as const;
 
+/** Khách ở khu Người học không có hồ sơ: không gọi, để khỏi sinh 401 (DEC-2026-1126). */
 export const useMyProfile = (
   area: "student" | "instructor" | "admin" = "student",
 ) =>
   useQuery({
     queryKey: ["user", "my-profile", area],
     queryFn: () => withMockData(() => fakeGetMyProfile(area), realGetMyProfile),
+    enabled: hasSession(),
     ...QUERY_OPTIONS,
   });
 

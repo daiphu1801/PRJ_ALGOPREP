@@ -163,6 +163,23 @@ class InstructorClassHandlersTest {
   }
 
   @Test
+  void revokingACodeNeedsOwnershipAndAnEmptyDeleteIsNotAnError() {
+    UUID codeId = UUID.randomUUID();
+    when(classes.isOwner(classId, instructor)).thenReturn(true);
+    when(classes.deleteInviteCode(classId, codeId)).thenReturn(true, false);
+    RevokeClassInviteCodeCommandHandler handler = new RevokeClassInviteCodeCommandHandler(classes);
+
+    handler.revoke(instructor, classId, codeId);
+    handler.revoke(instructor, classId, codeId);
+
+    verify(classes, times(2)).deleteInviteCode(classId, codeId);
+    UUID stranger = UUID.randomUUID();
+    assertThatThrownBy(() -> handler.revoke(stranger, classId, codeId))
+        .satisfies(e -> assertCode(e, "IDT-414"));
+    verify(classes, times(2)).deleteInviteCode(classId, codeId);
+  }
+
+  @Test
   void leavePublishesWithTheStoredMomentAndRepeatsWithTheSameOne() {
     Instant leftAt = Instant.parse("2026-10-30T08:00:00.123456Z");
     when(classes.isOwner(classId, instructor)).thenReturn(true);

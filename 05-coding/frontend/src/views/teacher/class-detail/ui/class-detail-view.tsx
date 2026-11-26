@@ -17,7 +17,15 @@ import { UserAvatar } from "@/entities/user";
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Pencil, Trash2, UserMinus } from "lucide-react";
+import {
+  ArrowLeft,
+  CalendarDays,
+  Copy,
+  Pencil,
+  StickyNote,
+  Trash2,
+  UserMinus,
+} from "lucide-react";
 import {
   useClassRoster,
   useCreateInviteCode,
@@ -25,12 +33,18 @@ import {
   useInstructorClasses,
   useInviteCodes,
   useRemoveStudent,
+  useRevokeInviteCode,
+  type InviteCode,
   useUpdateClass,
   type ClassRosterRow,
   type ClassSchedule,
   STUDENT_STATUS_VARIANT,
 } from "@/entities/class";
-import { ClassFormDialog, type ClassDialogState } from "@/features/edit-class";
+import {
+  ClassFormDialog,
+  DeleteClassNotice,
+  type ClassDialogState,
+} from "@/features/edit-class";
 import { useApiErrorMessage, useT } from "@/shared/i18n";
 import { formatDateVN } from "@/shared/lib";
 import { toast } from "@/shared/lib/toast-store";
@@ -74,6 +88,8 @@ export function ClassDetailView({ classId }: { classId: string }) {
   const [formDialog, setFormDialog] = useState<ClassDialogState>(null);
   const [deleting, setDeleting] = useState(false);
   const [removeTarget, setRemoveTarget] = useState<ClassRosterRow | null>(null);
+  const [revokeTarget, setRevokeTarget] = useState<InviteCode | null>(null);
+  const revokeInvite = useRevokeInviteCode();
 
   const back = (
     <IconAction
@@ -101,7 +117,15 @@ export function ClassDetailView({ classId }: { classId: string }) {
     );
   }
 
-  const dayLabel = (day: number) => tm(`schedule.dayShort.${day}`);
+  async function copyInvite(code: string) {
+    try {
+      await navigator.clipboard.writeText(code);
+      toast.success(t("invite.copied"));
+    } catch {
+      toast.error(t("invite.copyFailed"));
+    }
+  }
+
   // The judge figures come with the roster when the server could read them (F1 #26).
   const hasMetrics = (studentsQuery.data ?? []).some((row) => row.metrics);
   const metricColumns: DataTableColumn<ClassRosterRow>[] = [
@@ -174,6 +198,9 @@ export function ClassDetailView({ classId }: { classId: string }) {
             size="sm"
           />
           {row.name}
+          {row.accountInactive ? (
+            <Badge variant="neutral">{t("students.inactive")}</Badge>
+          ) : null}
         </Link>
       ),
     },
@@ -200,8 +227,11 @@ export function ClassDetailView({ classId }: { classId: string }) {
     <PageContainer variant="content" className="@container">
       <PageHeader
         leading={back}
-        title={klass.name}
-        description={klass.description || t("noDescription")}
+        title={
+          <span className="block whitespace-normal [overflow-wrap:anywhere]">
+            {klass.name}
+          </span>
+        }
         actions={
           <>
             <Button
@@ -226,24 +256,32 @@ export function ClassDetailView({ classId }: { classId: string }) {
         }
       />
 
-      <div className="mb-4 grid grid-cols-1 items-start gap-3.5 @min-[880px]:grid-cols-2">
-        <Card title={t("schedule.title")}>
-          <div className="@container">
-            <ScheduleDetails
-              schedule={klass.schedule}
-              t={t}
-              dayLabel={dayLabel}
-            />
-          </div>
+      <div className="mb-4 grid min-w-0 grid-cols-1 items-start gap-3.5 @min-[880px]:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] @min-[880px]:grid-rows-[auto_1fr]">
+        <Card
+          title={t("schedule.title")}
+          className="@container min-w-0 @min-[880px]:col-start-1 @min-[880px]:row-span-2 @min-[880px]:row-start-1"
+        >
+          <ScheduleDetails schedule={klass.schedule} t={t} />
+        </Card>
+
+        <Card
+          title={t("descriptionTitle")}
+          className="min-w-0 @min-[880px]:col-start-2 @min-[880px]:row-start-2"
+        >
+          <p className="max-w-[72ch] text-sm leading-relaxed whitespace-pre-line [overflow-wrap:anywhere] text-[var(--color-text-muted)]">
+            {klass.description || t("noDescription")}
+          </p>
         </Card>
 
         <Card
           title={t("invite.title")}
           description={t("invite.subtitle")}
+          className="min-w-0 @min-[880px]:col-start-2 @min-[880px]:row-start-1"
           action={
             <Button
-              variant="cta"
+              variant="ghost"
               size="sm"
+              className="border border-[var(--color-border)]"
               onClick={() =>
                 createInvite.mutate(classId, {
                   onSuccess: () => toast.success(tm("toast.inviteCreated")),
@@ -268,12 +306,34 @@ export function ClassDetailView({ classId }: { classId: string }) {
               {(invitesQuery.data ?? []).map((invite) => (
                 <li
                   key={invite.id}
-                  className="flex items-center justify-between rounded-lg border border-[var(--color-border)] px-3 py-2"
+                  className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2 rounded-lg border border-[var(--color-border)] px-3 py-2"
                 >
-                  <span className="font-mono font-semibold">{invite.code}</span>
-                  <span className="text-[12px] text-[var(--color-text-muted)]">
-                    {invite.expiresAtLabel}
-                  </span>
+                  <div className="min-w-0">
+                    <span className="block font-mono font-semibold [overflow-wrap:anywhere]">
+                      {invite.code}
+                    </span>
+                    <span className="block text-xs text-[var(--color-text-muted)]">
+                      {invite.expiresAtLabel}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="gap-1.5 border border-[var(--color-border)]"
+                      aria-label={t("invite.copyCode", { code: invite.code })}
+                      onClick={() => void copyInvite(invite.code)}
+                    >
+                      <Copy className="size-3.5" aria-hidden="true" />
+                      {t("invite.copy")}
+                    </Button>
+                    <IconAction
+                      icon={Trash2}
+                      label={t("invite.revokeCode", { code: invite.code })}
+                      tone="danger"
+                      onClick={() => setRevokeTarget(invite)}
+                    />
+                  </div>
                 </li>
               ))}
             </ul>
@@ -347,7 +407,35 @@ export function ClassDetailView({ classId }: { classId: string }) {
         cancelLabel={tm("cancel")}
         destructive
       >
-        {tm("popup.deleteClassBody")}
+        {deleting ? (
+          <DeleteClassNotice
+            classId={classId}
+            studentCount={klass.studentCount}
+          />
+        ) : null}
+      </ConfirmDialog>
+
+      <ConfirmDialog
+        open={revokeTarget !== null}
+        onClose={() => setRevokeTarget(null)}
+        onConfirm={() => {
+          if (revokeTarget) {
+            revokeInvite.mutate(
+              { classId, codeId: revokeTarget.id },
+              {
+                onSuccess: () => toast.success(tm("toast.inviteRevoked")),
+                onError: (error) => toast.error(toMessage(error)),
+              },
+            );
+          }
+          setRevokeTarget(null);
+        }}
+        title={t("invite.revokeTitle", { code: revokeTarget?.code ?? "" })}
+        confirmLabel={t("invite.revokeConfirm")}
+        cancelLabel={tm("cancel")}
+        destructive
+      >
+        {t("invite.revokeBody")}
       </ConfirmDialog>
 
       <ConfirmDialog
@@ -381,62 +469,87 @@ export function ClassDetailView({ classId }: { classId: string }) {
   );
 }
 
-/** The schedule read part by part: short facts in two columns, the note across the full width. */
 function ScheduleDetails({
   schedule,
   t,
-  dayLabel,
 }: {
   schedule: ClassSchedule | undefined;
   t: ReturnType<typeof useT>;
-  dayLabel: (day: number) => string;
 }) {
-  const rows: [string, string][] = [];
-  if (schedule) {
-    if (schedule.days.length > 0)
-      rows.push([
-        t("schedule.days"),
-        [...schedule.days]
-          .sort((a, b) => a - b)
-          .map(dayLabel)
-          .join(", "),
-      ]);
-    if (schedule.startTime)
-      rows.push([
-        t("schedule.time"),
-        schedule.endTime
-          ? `${schedule.startTime} – ${schedule.endTime}`
-          : schedule.startTime,
-      ]);
-    if (schedule.room) rows.push([t("schedule.room"), schedule.room]);
-    if (schedule.startDate)
-      rows.push([
-        t("schedule.period"),
-        schedule.endDate
-          ? `${dayMonthYear(schedule.startDate)} – ${dayMonthYear(schedule.endDate)}`
-          : dayMonthYear(schedule.startDate),
-      ]);
-    if (schedule.note) rows.push([t("schedule.note"), schedule.note]);
-  }
-  if (rows.length === 0)
-    return (
-      <p className="text-sm text-[var(--color-text-muted)]">
-        {t("schedule.empty")}
-      </p>
-    );
+  const days = [...(schedule?.days ?? [])]
+    .sort((a, b) => a - b)
+    .map((day) => t(`schedule.weekday.${day}`))
+    .join(", ");
+  const time = [schedule?.startTime, schedule?.endTime]
+    .filter(Boolean)
+    .join(" – ");
+  const period = [schedule?.startDate, schedule?.endDate]
+    .flatMap((date) => (date ? [dayMonthYear(date)] : []))
+    .join(" – ");
+  const meeting = [
+    [t("schedule.days"), days],
+    [t("schedule.time"), time],
+  ].filter(([, value]) => value);
+  const details = [
+    [t("schedule.room"), schedule?.room],
+    [t("schedule.period"), period],
+  ].filter(([, value]) => value);
+
   return (
-    <dl className="grid grid-cols-1 gap-x-6 gap-y-3 text-sm @min-[420px]:grid-cols-2">
-      {rows.map(([label, value]) => (
-        <div
-          key={label}
-          className={label === t("schedule.note") ? "col-span-full" : undefined}
-        >
-          <dt className="text-[12px] text-[var(--color-text-muted)]">
-            {label}
-          </dt>
-          <dd className="font-medium">{value}</dd>
+    <div className="space-y-4">
+      {meeting.length > 0 && (
+        <div className="flex items-start gap-3 rounded-xl border border-[var(--color-border)] bg-[var(--color-border)]/25 p-3">
+          <CalendarDays
+            className="mt-0.5 size-4 shrink-0 text-[var(--color-text-muted)]"
+            aria-hidden="true"
+          />
+          <dl className="grid min-w-0 flex-1 gap-x-5 gap-y-2 @min-[360px]:grid-cols-2">
+            {meeting.map(([label, value]) => (
+              <div key={label}>
+                <dt className="text-xs text-[var(--color-text-muted)]">
+                  {label}
+                </dt>
+                <dd className="mt-0.5 text-base font-semibold tabular-nums">
+                  {value}
+                </dd>
+              </div>
+            ))}
+          </dl>
         </div>
-      ))}
-    </dl>
+      )}
+      {details.length > 0 && (
+        <dl className="grid gap-x-5 gap-y-3 text-sm @min-[360px]:grid-cols-2">
+          {details.map(([label, value]) => (
+            <div key={label} className="min-w-0">
+              <dt className="text-xs text-[var(--color-text-muted)]">
+                {label}
+              </dt>
+              <dd className="mt-0.5 whitespace-pre-line [overflow-wrap:anywhere]">
+                {value}
+              </dd>
+            </div>
+          ))}
+        </dl>
+      )}
+      {meeting.length === 0 && details.length === 0 && (
+        <p className="text-sm text-[var(--color-text-muted)]">
+          {t("schedule.empty")}
+        </p>
+      )}
+      {schedule?.note && (
+        <section className="border-l-2 border-[var(--color-border)] pl-3">
+          <h3 className="flex items-center gap-2 text-sm font-semibold">
+            <StickyNote
+              className="size-4 text-[var(--color-text-muted)]"
+              aria-hidden="true"
+            />
+            {t("schedule.note")}
+          </h3>
+          <p className="mt-1 max-w-[72ch] text-sm leading-relaxed whitespace-pre-line [overflow-wrap:anywhere]">
+            {schedule.note}
+          </p>
+        </section>
+      )}
+    </div>
   );
 }

@@ -122,6 +122,12 @@ async function pressRun(count: number) {
   await waitFor(() => expect(button(name)).toBeEnabled());
   fireEvent.click(button(name));
 }
+/** The level picker of a table row: a button named "<label>: <chosen level>". */
+const levelPicker = (number: number) =>
+  screen.getByRole("button", {
+    name: new RegExp(`^${text(m.levelOf, { number })}:`),
+  });
+
 async function publish(count: number, className?: string) {
   fireEvent.click(
     await screen.findByRole("button", {
@@ -236,9 +242,8 @@ describe("bringing problems in", () => {
     expect(toasted("Bài 3 (C)", "8 testcase")).toBe(true);
     expect(button(text(m.run, { count: 2 }))).toBeInTheDocument();
 
-    fireEvent.change(screen.getByLabelText(text(m.levelOf, { number: 2 })), {
-      target: { value: "Dễ" },
-    });
+    fireEvent.click(levelPicker(2));
+    fireEvent.click(screen.getByRole("option", { name: "Dễ" }));
     expect(button(text(m.run, { count: 3 }))).toBeInTheDocument();
   });
 
@@ -378,9 +383,7 @@ describe("publishing", () => {
     await waitFor(() =>
       expect(tableRow(1)).toHaveTextContent(m.status.published),
     );
-    expect(
-      screen.getByLabelText(text(m.levelOf, { number: 1 })),
-    ).toBeDisabled();
+    expect(levelPicker(1)).toBeDisabled();
     expect(screen.getByLabelText(m.field.title)).toBeDisabled();
   });
 

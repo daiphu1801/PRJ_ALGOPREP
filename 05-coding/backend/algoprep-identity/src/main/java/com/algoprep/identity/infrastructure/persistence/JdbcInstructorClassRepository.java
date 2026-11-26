@@ -1,5 +1,7 @@
 package com.algoprep.identity.infrastructure.persistence;
 
+import com.algoprep.common.exception.ResourceConflictException;
+import com.algoprep.identity.domain.exception.IdentityErrorCodes;
 import com.algoprep.identity.domain.model.classes.ClassInviteCode;
 import com.algoprep.identity.domain.model.classes.ClassRosterEntry;
 import com.algoprep.identity.domain.model.classes.InstructorClass;
@@ -13,6 +15,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
@@ -112,19 +115,38 @@ class JdbcInstructorClassRepository implements InstructorClassRepository {
   @Override
   public void create(
       UUID id, UUID instructorId, String name, String description, ScheduleSpec schedule) {
-    bindSchedule(
-            jdbc.getObject()
-                .sql(
-                    "INSERT INTO identity.classes (id, instructor_id, name, description, schedule)"
-                        + " VALUES (:id, :instructor, :name, :description, "
-                        + SCHEDULE_JSON
-                        + ")")
-                .param("id", id)
-                .param("instructor", instructorId)
-                .param("name", name)
-                .param("description", description),
-            schedule)
-        .update();
+    try {
+      bindSchedule(
+              jdbc.getObject()
+                  .sql(
+                      "INSERT INTO identity.classes (id, instructor_id, name, description,"
+                          + " schedule) VALUES (:id, :instructor, :name, :description, "
+                          + SCHEDULE_JSON
+                          + ")")
+                  .param("id", id)
+                  .param("instructor", instructorId)
+                  .param("name", name)
+                  .param("description", description),
+              schedule)
+          .update();
+    } catch (DuplicateKeyException e) {
+      throw nameTaken();
+    }
+  }
+
+  private static ResourceConflictException nameTaken() {
+    return new ResourceConflictException(
+        IdentityErrorCodes.CLASS_NAME_TAKEN, "You already have a class with this name");
+  }
+
+  @Override
+  public boolean deleteInviteCode(UUID classId, UUID codeId) {
+    return jdbc.getObject()
+            .sql("DELETE FROM identity.class_invite_codes WHERE id = :id AND class_id = :classId")
+            .param("id", codeId)
+            .param("classId", classId)
+            .update()
+        > 0;
   }
 
   @Override
@@ -148,18 +170,22 @@ class JdbcInstructorClassRepository implements InstructorClassRepository {
 
   @Override
   public void update(UUID classId, String name, String description, ScheduleSpec schedule) {
-    bindSchedule(
-            jdbc.getObject()
-                .sql(
-                    "UPDATE identity.classes SET name = :name, description = :description,"
-                        + " schedule = "
-                        + SCHEDULE_JSON
-                        + ", updated_at = clock_timestamp() WHERE id = :id")
-                .param("id", classId)
-                .param("name", name)
-                .param("description", description),
-            schedule)
-        .update();
+    try {
+      bindSchedule(
+              jdbc.getObject()
+                  .sql(
+                      "UPDATE identity.classes SET name = :name, description = :description,"
+                          + " schedule = "
+                          + SCHEDULE_JSON
+                          + ", updated_at = clock_timestamp() WHERE id = :id")
+                  .param("id", classId)
+                  .param("name", name)
+                  .param("description", description),
+              schedule)
+          .update();
+    } catch (DuplicateKeyException e) {
+      throw nameTaken();
+    }
   }
 
   @Override
@@ -223,7 +249,7 @@ class JdbcInstructorClassRepository implements InstructorClassRepository {
         .sql(
             """
             SELECT u.id, u.display_name, u.email, u.phone, e.joined_at,
-              av.updated_at AS avatar_updated_at
+              av.updated_at AS avatar_updated_at, u.status <> 'ACTIVE' AS inactive
             FROM identity.class_enrollments e JOIN identity.users u ON u.id = e.student_id
               LEFT JOIN identity.user_avatars av ON av.user_id = u.id
             WHERE e.class_id = :id AND e.left_at IS NULL
@@ -240,7 +266,8 @@ class JdbcInstructorClassRepository implements InstructorClassRepository {
                     instant(rs.getObject("joined_at", OffsetDateTime.class)),
                     rs.getTimestamp("avatar_updated_at") == null
                         ? null
-                        : rs.getTimestamp("avatar_updated_at").toInstant().toEpochMilli()))
+                        : rs.getTimestamp("avatar_updated_at").toInstant().toEpochMilli(),
+                    rs.getBoolean("inactive")))
         .list();
   }
 

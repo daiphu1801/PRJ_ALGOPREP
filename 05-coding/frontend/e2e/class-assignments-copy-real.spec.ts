@@ -100,7 +100,10 @@ async function openCopy(page: Page, sourceId: string, targetName: string) {
   await page.goto(`${APP_URL}/instructor/assignments?classId=${sourceId}`);
   await page.getByRole("button", { name: m.copy.button }).click();
   const dialog = page.getByRole("dialog");
-  await dialog.getByLabel(m.copy.target).selectOption({ label: targetName });
+  await dialog
+    .getByRole("button", { name: new RegExp(`^${m.copy.target}`) })
+    .click();
+  await dialog.getByRole("option", { name: targetName }).click();
   return dialog;
 }
 

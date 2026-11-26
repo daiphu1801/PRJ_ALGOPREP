@@ -29,12 +29,19 @@ import org.springframework.transaction.annotation.Transactional;
  * Lenient parameter reading (DD F2 1.2): a value that is not valid is dropped and the default
  * applies, so these reads never answer 400. A problem that is not published is 404 PRB-010, the
  * same answer as a missing id.
+ *
+ * <p>A null {@code userId} is a guest (DD F2 section 0A): no solve states are read from identity
+ * and no bookmark can match, so the personal fields come back empty.
  */
 @Service
 class ReadPublishedProblemsQueryHandler implements ReadPublishedProblemsUseCase {
   static final int Q_MAX = 100;
   static final Set<Integer> PAGE_SIZES = Set.of(12, 24, 48);
   static final Duration DOWNLOAD_TTL = Duration.ofMinutes(5);
+
+  /** Matches no bookmark row, so a guest reads {@code bookmarked = false}. */
+  private static final UUID NO_USER = new UUID(0L, 0L);
+
   private static final Set<String> STATUSES = Set.of("SOLVED", "ATTEMPTED", "UNSOLVED");
 
   private final PublishedProblemReadRepository repository;
@@ -53,7 +60,7 @@ class ReadPublishedProblemsQueryHandler implements ReadPublishedProblemsUseCase 
   @Override
   @Transactional(readOnly = true)
   public ProblemList list(UUID userId, Map<String, String> params) {
-    var states = solveStates.mine(userId).orElse(null);
+    var states = userId == null ? null : solveStates.mine(userId).orElse(null);
     var paging = paging(params);
     var page = repository.list(filter(params, states != null, false), states, paging);
     int totalPages = Math.max(1, (int) Math.ceil(page.totalItems() / (double) paging.pageSize()));
@@ -80,7 +87,7 @@ class ReadPublishedProblemsQueryHandler implements ReadPublishedProblemsUseCase 
   @Override
   @Transactional(readOnly = true)
   public RandomProblem random(UUID userId, Map<String, String> params) {
-    var states = solveStates.mine(userId).orElse(null);
+    var states = userId == null ? null : solveStates.mine(userId).orElse(null);
     return new RandomProblem(
         repository.random(filter(params, states != null, true), states).orElse(null));
   }
@@ -97,7 +104,7 @@ class ReadPublishedProblemsQueryHandler implements ReadPublishedProblemsUseCase 
   @Transactional(readOnly = true)
   public Overview overview(UUID userId, UUID problemId) {
     return repository
-        .overview(problemId, userId)
+        .overview(problemId, userId == null ? NO_USER : userId)
         .orElseThrow(ReadPublishedProblemsQueryHandler::missing);
   }
 

@@ -139,9 +139,11 @@ test("a learner joins with the code, the instructor sees and removes them, and t
 
     await learnerPage.getByLabel(mine.join.label).fill(code.toLowerCase());
     await learnerPage.getByRole("button", { name: mine.join.submit }).click();
-    await expect(learnerPage.getByRole("heading", { name })).toBeVisible({
-      timeout: 10_000,
-    });
+    await expect(
+      learnerPage.getByRole("link", {
+        name: mine.card.viewDetailOf.replace("{name}", name),
+      }),
+    ).toBeVisible({ timeout: 10_000 });
     expect(
       sql(
         `select count(*) from identity.class_enrollments e join identity.users u on u.id = e.student_id
@@ -152,7 +154,12 @@ test("a learner joins with the code, the instructor sees and removes them, and t
     // The learner's detail page: the assignment block is wired (F2-7), empty for a new class.
     await learnerPage.goto(`${APP_URL}/classes/${id}`);
     await expect(learnerPage.getByRole("heading", { name })).toBeVisible();
-    await expect(learnerPage.getByText(mine.card.assignments)).toBeVisible();
+    await expect(
+      learnerPage.getByRole("heading", {
+        name: mine.card.assignments,
+        exact: true,
+      }),
+    ).toBeVisible();
 
     // The instructor sees the learner in the roster, with contact details and the F4 columns.
     await page.reload();

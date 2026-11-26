@@ -1,7 +1,7 @@
 // Data boundary of F5 Solution Review (03-dd/api/F5_ai-review.md sections 4 to 7). Mock = the fixture
 // in __mock__/solution-review-mocks.ts; real = real-solution-review.ts.
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { isMockMode, withMockData } from "@/shared/api";
+import { hasSession, isMockMode, withMockData } from "@/shared/api";
 import type { SolutionReviewDemoOutcome } from "../model/review-errors";
 import { fetchSolutionReviewMock } from "./__mock__/solution-review-mocks";
 import {
@@ -57,7 +57,7 @@ export const useReviewedProblemIds = () =>
   useQuery({
     queryKey: ["solution-review", "problem-ids"],
     queryFn: async () => new Set(await getRealReviewedProblemIds()),
-    enabled: !isMockMode(),
+    enabled: !isMockMode() && hasSession(),
     staleTime: 30_000,
     retry: false,
   });
@@ -67,7 +67,7 @@ export const useReviewQuickInsight = (problemId: string | undefined) =>
   useQuery({
     queryKey: ["solution-review", "quick-insight", problemId],
     queryFn: () => getRealReviewQuickInsight(problemId ?? ""),
-    enabled: !isMockMode() && Boolean(problemId),
+    enabled: !isMockMode() && hasSession() && Boolean(problemId),
     staleTime: 30_000,
     retry: false,
   });

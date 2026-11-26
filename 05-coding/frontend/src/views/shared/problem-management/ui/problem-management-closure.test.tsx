@@ -90,9 +90,6 @@ function serve() {
         page: { number: 1, size: 8, totalItems: 30, totalPages: 4 },
         totals: { total: 30, published: 30 },
       };
-    if (path === `${BASE}/topic-distribution`)
-      return { totalProblemsWithTopic: 0, totalTopicsUsed: 0, items: [] };
-    if (path === `${BASE}/attention`) return { items: [] };
     throw new Error(`Unexpected GET ${path}`);
   });
 }

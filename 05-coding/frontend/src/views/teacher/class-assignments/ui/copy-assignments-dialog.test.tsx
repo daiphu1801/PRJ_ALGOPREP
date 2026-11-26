@@ -153,6 +153,10 @@ async function press(
   fireEvent.click(button);
 }
 
+/** The class picker: a button named "<label>: <chosen class or placeholder>". */
+const trigger = (dialog: ReturnType<typeof within>) =>
+  dialog.getByRole("button", { name: new RegExp(`^${copy.target}`) });
+
 /** The number printed next to a label of the summary. */
 const figure = (dialog: ReturnType<typeof within>, label: string) =>
   dialog.getByText(label).nextElementSibling?.textContent;
@@ -200,7 +204,7 @@ describe("copy the problems of a class to another class", () => {
     const toasts = watch();
     const dialog = await openDialog();
     // The only other class is chosen already.
-    expect(dialog.getByRole("combobox")).toHaveValue("c2");
+    expect(trigger(dialog)).toHaveTextContent("Lớp c2");
     await dialog.findByText(copy.willAssign);
     expect(
       figure(dialog, fill(copy.sourceCount, { className: "Lớp c1" })),
@@ -229,7 +233,7 @@ describe("copy the problems of a class to another class", () => {
     classIds = ["c1", "c2", "c3"];
     server = { c1: problems(3), c2: problems(1), c3: [] };
     const dialog = await openDialog();
-    expect(dialog.getByRole("combobox")).toHaveValue("");
+    expect(trigger(dialog)).toHaveTextContent(copy.targetPlaceholder);
     expect(
       dialog.getByRole("button", { name: copy.confirmEmpty }),
     ).toBeDisabled();
@@ -240,13 +244,15 @@ describe("copy the problems of a class to another class", () => {
     expect(readClasses()).not.toContain("c2");
     expect(readClasses()).not.toContain("c3");
 
-    const choose = (value: string) =>
-      fireEvent.change(dialog.getByRole("combobox"), { target: { value } });
-    choose("c2");
+    const choose = (name: string) => {
+      fireEvent.click(trigger(dialog));
+      fireEvent.click(dialog.getByRole("option", { name }));
+    };
+    choose("Lớp c2");
     await dialog.findByRole("button", {
       name: fill(copy.confirm, { count: 2 }),
     });
-    choose("c3");
+    choose("Lớp c3");
     // Never the figures of c2 under the name of c3.
     expect(dialog.queryByText(copy.willAssign)).toBeNull();
     await press(dialog, 3);

@@ -85,3 +85,15 @@ afterwards; accounts and the class stay, so use a demo database.
 $env:E2E_PG_DB = "algoprep_demo"
 pnpm exec playwright test problem-import-real --workers=1 --reporter=list
 ```
+
+## Class safeguards spec (`class-safeguards-real.spec.ts`)
+
+Four flows of 2026-11-26 on INS0201, INS0205, USR0701, ADM0201 and SHR0201: duplicate class name, invite-code
+revoke, delete dialog with its figures, a locked instructor's code, the inactive-account label, the Excel export and
+the import hint. Problems it seeds are flagged deleted afterwards; accounts and classes stay, so use a demo
+database. No sandbox is needed.
+
+```powershell
+$env:E2E_PG_DB = "algoprep_demo"
+pnpm exec playwright test class-safeguards-real --workers=1 --reporter=list
+```

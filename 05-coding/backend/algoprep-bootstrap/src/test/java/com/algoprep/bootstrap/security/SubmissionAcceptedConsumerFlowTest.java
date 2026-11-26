@@ -115,9 +115,10 @@ class SubmissionAcceptedConsumerFlowTest {
   private UUID classroom() {
     UUID id = UUID.randomUUID();
     jdbc.update(
-        "INSERT INTO identity.classes(id,instructor_id,name) VALUES (?,?,'Feed class')",
+        "INSERT INTO identity.classes(id,instructor_id,name) VALUES (?,?,'Feed class ' || ?)",
         id,
-        instructor);
+        instructor,
+        id.toString());
     return id;
   }
 

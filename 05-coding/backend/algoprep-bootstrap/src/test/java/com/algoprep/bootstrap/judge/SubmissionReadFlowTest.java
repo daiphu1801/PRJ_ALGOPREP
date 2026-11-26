@@ -234,7 +234,10 @@ class SubmissionReadFlowTest {
   private UUID classroom(UUID teacher, Instant joined, Instant left) {
     UUID id = UUID.randomUUID();
     jdbc.update(
-        "INSERT INTO identity.classes(id,instructor_id,name) VALUES(?,?,'Class')", id, teacher);
+        "INSERT INTO identity.classes(id,instructor_id,name) VALUES(?,?,'Class ' || ?)",
+        id,
+        teacher,
+        id.toString());
     jdbc.update(
         "INSERT INTO identity.class_enrollments(id,class_id,student_id,joined_at,left_at) VALUES(?,?,?,CAST(? AS timestamptz),CAST(? AS timestamptz))",
         UUID.randomUUID(),

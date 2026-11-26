@@ -44,17 +44,17 @@ Quét toàn bộ Sheet 7.3 của `02-bd/screens/**` tìm endpoint có "BC sở h
 nghiệp vụ BD đã đặt. Cột "Mục" trỏ tới mục chi tiết trong file này. Cột "Quyền" ghi `FUNCTION:ACTION` theo seed 11 function của
 `02-bd/database/F1_identity.md:64-66` (hoặc "đã xác thực" nếu chỉ cần đăng nhập), kèm phạm vi dữ liệu.
 
-Bảng 0.1: Endpoint cho học viên (A1) và mọi người dùng đã xác thực.
+Bảng 0.1: Endpoint cho học viên (A1) và mọi người dùng đã xác thực; bốn dòng ghi "khách được" mở cho cả người chưa đăng nhập (mục 0A).
 
 | # | Method | Path (sau `/api/v1/problem-bank`) | Tên nghiệp vụ BD | Màn gọi | Quyền | Mục |
 | :-: | :--- | :--- | :--- | :--- | :--- | :-: |
-| 1 | GET | `/problems` | `ListPublishedProblems` | `USR0101` | đã xác thực; chỉ bài `PUBLISHED AND NOT deleted` | 2 |
-| 2 | GET | `/problems/random` | `GetRandomProblem` | `USR0101`, `USR0105` | đã xác thực | 3 |
+| 1 | GET | `/problems` | `ListPublishedProblems` | `USR0101` | **khách được** (mục 0A); chỉ bài `PUBLISHED AND NOT deleted` | 2 |
+| 2 | GET | `/problems/random` | `GetRandomProblem` | `USR0101`, `USR0105` | **khách được** (mục 0A) | 3 |
 | 3 | GET | `/topics/progress` | `ListTopicsWithProgress` | `USR0101` | đã xác thực, dữ liệu của chính người gọi | 4 |
 | 4 | GET | `/me/class-assignments` | `ListMyClassAssignments` | `USR0101` | đã xác thực, lớp của chính người gọi | 5 |
 | 5 | GET | `/problems/{problemId}/workspace` | `GetProblemForWorkspace` | `USR0102` | đã xác thực; bài `PUBLISHED AND NOT deleted` | 6 |
-| 6 | GET | `/problems/{problemId}/overview` | `GetProblemOverview` | `USR0104` | đã xác thực; như trên | 7 |
-| 7 | GET | `/problems/{problemId}/sample-testcases` | `ListSampleTestcases`, `GetProblemSampleTestcases` | `USR0102`, `USR0201` | đã xác thực; chỉ testcase `SAMPLE` đã duyệt | 8 |
+| 6 | GET | `/problems/{problemId}/overview` | `GetProblemOverview` | `USR0104` | **khách được** (mục 0A); như trên | 7 |
+| 7 | GET | `/problems/{problemId}/sample-testcases` | `ListSampleTestcases`, `GetProblemSampleTestcases` | `USR0102`, `USR0201` | **khách được** (mục 0A); chỉ testcase `SAMPLE` đã duyệt | 8 |
 | 8 | GET | `/me/bookmarks` | `ListMySavedProblems` | `USR0103` | đã xác thực, bookmark của chính người gọi | 9 |
 | 9 | PUT | `/me/bookmarks/{problemId}` | `SaveMyBookmark` | `USR0103` | như trên | 10 |
 | 10 | DELETE | `/me/bookmarks/{problemId}` | `RemoveMyBookmark` | `USR0103` | như trên | 11 |
@@ -68,7 +68,7 @@ Bảng 0.2: Danh mục độ khó và chủ đề (F2-02). Đọc cho mọi ngư
 
 | # | Method | Path | Tên nghiệp vụ BD | Màn gọi | Quyền | Mục |
 | :-: | :--- | :--- | :--- | :--- | :--- | :-: |
-| 14 | GET | `/levels` | `ListProblemLevels` | `USR0101`, `USR0103`, `USR0104`, `USR0601`, `SHR0201`, `SHR0202`, `SHR0203` | đã xác thực | 15 |
+| 14 | GET | `/levels` | `ListProblemLevels` | `USR0101`, `USR0103`, `USR0104`, `USR0601`, `SHR0201`, `SHR0202`, `SHR0203` | **khách được** (mục 0A); ghi chỉ ADMIN | 15 |
 | 15 | POST | `/levels` | `CreateProblemLevel` | `SHR0201` | `PROBLEM_AUTHORING:CREATE` + vai trò `ADMIN` | 16 |
 | 16 | PATCH | `/levels/{levelId}` | `UpdateProblemLevel` | `SHR0201` | `PROBLEM_AUTHORING:UPDATE` + `ADMIN` | 17 |
 | 17 | PUT | `/levels/order` | `ReorderProblemLevels` | `SHR0201` | `PROBLEM_AUTHORING:UPDATE` + `ADMIN` | 18 |
@@ -273,13 +273,39 @@ updatedBy: { userId: uuid, displayName: string|null } | null, duplicatedFromProb
 `*DownloadUrl`; `referenceSolution` vẫn trả vì `SHR0203` hiển thị nó [SoT: `SHR0203_problem_info.md:382`] (xem Q-03 ở mục 61).
 `limit` của `aiGeneration` đọc từ `problem_bank_settings.max_ai_generations_per_problem` [SoT: `02-bd/database/F2_problem-bank.md:227`].
 
+## 0A. Khách (không có phiên) trên bốn đường đọc bài đã xuất bản
+
+Theo `DEC-2026-1126-guest-browse-published-problems` (owner 2026-11-26). Đây là nơi **duy nhất** định nghĩa hành vi khách; các mục 2, 3, 7, 8 chỉ trỏ về đây. Bảng 0A.1 là hợp đồng khi request không có `Authorization`.
+
+Bảng 0A.1: Đường mở cho khách và giá trị trả về khi không có phiên.
+
+| Mục | Endpoint | Xác thực | Khác biệt so với người đã đăng nhập |
+| :-: | :--- | :--- | :--- |
+| 2 | `GET /problems` | Không bắt buộc | `solveStateAvailable = false`; mọi `Item.solveState = null`; tham số `status` bị bỏ qua (coi như "Tất cả") |
+| 3 | `GET /problems/random` | Không bắt buộc | Bốc từ mọi bài `PUBLISHED AND NOT deleted` khớp bộ lọc; `status=NOT_SOLVED` bị bỏ qua |
+| 7 | `GET /problems/{problemId}/overview` | Không bắt buộc | `bookmarked = false` |
+| 8 | `GET /problems/{problemId}/sample-testcases` | Không bắt buộc | Không khác (endpoint này không dùng `userId`) |
+| 15 | `GET /levels` | Không bắt buộc | `includeCounts` bị bỏ qua với khách (không có `problemCount`); thêm, sửa, xoá vẫn cần quyền ADMIN |
+
+Quy tắc chung:
+
+1. **Mọi endpoint khác của F2 giữ nguyên quyền**, kể cả `GET /problems/{problemId}/workspace` (mục 6), `/topics`, `/topics/progress`, `/me/**`, `/suggested-problems`, `/catalog/summary`: không có phiên thì `401`.
+2. **Không có phiên không phải là lỗi** trên bốn đường ở bảng 0A.1. Máy chủ coi `userId` là rỗng, **không** gọi cổng `identity` để lấy trạng thái giải, và không đọc bảng `bookmarks`.
+3. **Token hết hạn hoặc sai chữ ký gửi lên bốn đường này vẫn là khách**: máy chủ bỏ qua token, không trả `401`. Lý do: trình duyệt của người đã hết phiên còn giữ token cũ, và trang công khai không được hiện lỗi. Đường cá nhân vẫn trả `401` để giao diện làm mới phiên (`03-dd/api/api.md` mục 1.1).
+4. **Phạm vi dữ liệu không đổi**: chỉ `status = PUBLISHED AND deleted = false`. Bài nháp, bài đã gỡ và `problemId` sai định dạng hoặc không tồn tại cùng trả `404 PRB-010`; không có lỗi nào phân biệt được "đã gỡ" với "chưa từng có".
+5. **Hidden testcase không bao giờ có** trong response (F2-08, `02-bd/security/F2_problem-bank.md` mục 2); mục 8 chỉ có testcase `SAMPLE` đã duyệt.
+6. **Một DTO cho cả hai nhóm người gọi**, không có `/public` riêng. Vì vậy trường theo người dùng phải có giá trị rỗng cố định ở bảng 0A.1; test chặn hồi quy ở AC-98.
+**Triển khai 2026-11-26 (bước 4 của `06-plan/nexa-plan/261126-1108-khach-vang-lai-xem-bai.md`).** Mã: `SecurityConfig.GUEST_READABLE` (`permitAll` cho năm GET: danh sách, ngẫu nhiên, tổng quan, testcase mẫu, `/levels`), `GuestReadBearerFilter` (token hết hạn, sai chữ ký, phiên bị thu hồi hoặc dữ liệu quyền không đọc được trên bốn đường này thì thành khách; token tốt được kiểm một lần rồi giữ), `PublishedProblemController` (`workspace` giữ `isAuthenticated()`, bốn method còn lại khai `permitAll()`; `caller` rỗng với khách; `EndpointGuardTest` liệt kê đúng năm endpoint được mở), `ProblemLevelsController#list` và `CatalogRequests.admin` chịu `caller` rỗng, `ReadPublishedProblemsQueryHandler` (`userId` rỗng thì không gọi `identity`, `overview` dùng UUID không khớp bookmark nào). Test: `GuestProblemReadFlowTest` (AC-98 đến AC-101). `[SoT: Suy luận]` quy tắc 3 mở rộng sang phiên bị thu hồi và tài khoản bị khoá: cùng là "token không dùng được", trang công khai không nên báo lỗi.
+
+7. **Giới hạn tần suất** theo IP không thuộc API này (xem `02-bd/security/F2_problem-bank.md` mục 3A), nếu có thì trả `429` theo hợp đồng chung.
+
 ## 2. GET /problems (`ListPublishedProblems`)
 
 ### 2.1 Hợp đồng
 | Mục | Giá trị |
 | :--- | :--- |
-| Xác thực | JWT (access token) |
-| Quyền | đã xác thực (mọi vai trò) |
+| Xác thực | Tuỳ chọn (access token nếu có; **khách được**, mục 0A) |
+| Quyền | mọi người dùng, kể cả khách; chỉ bài đã xuất bản |
 | Idempotent | có (chỉ đọc) |
 | Phân trang | có (`page`, `pageSize` 12/24/48, mặc định 12) |
 | Nguồn BD | `02-bd/screens/users/USR0101_problem_list.md:560`; F2-11 (`01-rd/req/F2_problem-bank.md:45-47`) |
@@ -351,8 +377,8 @@ Không có `400`: tham số lạ bị bỏ qua (1.2).
 ### 3.1 Hợp đồng
 | Mục | Giá trị |
 | :--- | :--- |
-| Xác thực | JWT |
-| Quyền | đã xác thực |
+| Xác thực | Tuỳ chọn (access token nếu có; **khách được**, mục 0A) |
+| Quyền | mọi người dùng, kể cả khách; chỉ bài đã xuất bản |
 | Idempotent | không (kết quả ngẫu nhiên), không đổi dữ liệu |
 | Nguồn BD | `USR0101_problem_list.md:562`, Sheet 8 EVT-11; `USR0105_workspace_home.md:66` (bốc trong bài chưa giải, máy chủ bốc) |
 
@@ -558,8 +584,8 @@ Không trả: testcase (kể cả `SAMPLE`, có endpoint #7 riêng), đáp án m
 ### 7.1 Hợp đồng
 | Mục | Giá trị |
 | :--- | :--- |
-| Xác thực | JWT |
-| Quyền | đã xác thực; bài `PUBLISHED AND NOT deleted` |
+| Xác thực | Tuỳ chọn (access token nếu có; **khách được**, mục 0A) |
+| Quyền | mọi người dùng, kể cả khách; bài `PUBLISHED AND NOT deleted` |
 | Idempotent | có |
 | Nguồn BD | `USR0104_problem_overview.md:669`, DTO dòng 624-638 |
 
@@ -605,8 +631,8 @@ Như mục 6.5; thêm `SELECT count(*) FROM testcases WHERE problem_id = ? AND v
 ### 8.1 Hợp đồng
 | Mục | Giá trị |
 | :--- | :--- |
-| Xác thực | JWT |
-| Quyền | đã xác thực; bài `PUBLISHED AND NOT deleted` |
+| Xác thực | Tuỳ chọn (access token nếu có; **khách được**, mục 0A) |
+| Quyền | mọi người dùng, kể cả khách; bài `PUBLISHED AND NOT deleted` |
 | Idempotent | có |
 | Nguồn BD | `USR0102_problem_detail.md:743`, DTO NO 11 (dòng 698); `USR0201_submission_result.md:444` |
 
@@ -942,8 +968,8 @@ Truy vấn danh sách `problemId, levelId` đang xuất bản từ F2, lấy map
 ### 15.1 Hợp đồng
 | Mục | Giá trị |
 | :--- | :--- |
-| Xác thực | JWT |
-| Quyền | đã xác thực (mọi vai trò), `02-bd/security/F2_problem-bank.md:35` |
+| Xác thực | Tuỳ chọn (**khách được**, mục 0A) |
+| Quyền | mọi người dùng, kể cả khách, `02-bd/security/F2_problem-bank.md` mục 3A; `includeCounts` chỉ có hiệu lực với ADMIN |
 | Idempotent | có |
 | Nguồn BD | `SHR0201_problem_management.md:725`; `USR0101_problem_list.md:567` |
 

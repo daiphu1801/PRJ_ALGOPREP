@@ -16,13 +16,11 @@ vi.mock("@/shared/api", async (importOriginal) => ({
 
 // Import after the mock so the module talks to the fake `api`.
 import {
-  realAttentionList,
   realBulkDelete,
   realBulkDifficulty,
   realBulkPublish,
   realExportProblems,
   realListAdminProblems,
-  realTopicDistribution,
 } from "./real-problem-management";
 import type { AdminListParams } from "../model/types";
 
@@ -159,46 +157,6 @@ describe("realListAdminProblems (#24)", () => {
   });
 });
 
-describe("the side blocks (#25, #26)", () => {
-  it("maps the topic distribution and keeps the denominator", async () => {
-    get.mockResolvedValue({
-      totalProblemsWithTopic: 10,
-      totalTopicsUsed: 2,
-      items: [
-        { topicId: "t1", topicName: "Mảng", count: 6, percent: 60.0 },
-        { topicId: "t2", topicName: "Cây", count: 4, percent: 40.0 },
-      ],
-    });
-    expect(await realTopicDistribution()).toEqual({
-      totalProblemsWithTopic: 10,
-      totalTopicsUsed: 2,
-      items: [
-        { topicName: "Mảng", count: 6, percent: 60 },
-        { topicName: "Cây", count: 4, percent: 40 },
-      ],
-    });
-    expect(get).toHaveBeenCalledWith(`${BASE}/topic-distribution`);
-  });
-
-  it("maps the four attention rules and drops a code it does not know", async () => {
-    get.mockResolvedValue({
-      items: [
-        { ruleCode: "NO_TESTCASE", count: 1 },
-        { ruleCode: "LOW_AC", count: 2 },
-        { ruleCode: "HIDDEN_FROM_LEARNERS", count: 0 },
-        { ruleCode: "STALE_DRAFT", count: 3 },
-        { ruleCode: "FUTURE_RULE", count: 9 },
-      ],
-    });
-    expect(await realAttentionList()).toEqual([
-      { ruleCode: "noTestcase", count: 1 },
-      { ruleCode: "lowAcceptRate", count: 2 },
-      { ruleCode: "hiddenFromLearners", count: 0 },
-      { ruleCode: "staleDraft", count: 3 },
-    ]);
-  });
-});
-
 describe("bulk actions (#27, #28, #30, #32)", () => {
   const answer = {
     succeededIds: ["p1"],
@@ -253,7 +211,10 @@ describe("bulk actions (#27, #28, #30, #32)", () => {
 
   it("export posts the selected ids and hands back the file and its name", async () => {
     const blob = new Blob(["x"]);
-    downloadPost.mockResolvedValue({ blob, filename: "problems-20261106.xlsx" });
+    downloadPost.mockResolvedValue({
+      blob,
+      filename: "problems-20261106.xlsx",
+    });
     const file = await realExportProblems(["p1", "p2"]);
     expect(downloadPost).toHaveBeenCalledWith(`${BASE}/export`, {
       problemIds: ["p1", "p2"],

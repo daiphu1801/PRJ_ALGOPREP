@@ -76,19 +76,6 @@ function serve(over: Handler = {}) {
       page: { number: 1, size: 8, totalItems: 2, totalPages: 1 },
       totals: { total: 12, published: 7 },
     }),
-    [`${BASE}/topic-distribution`]: () => ({
-      totalProblemsWithTopic: 2,
-      totalTopicsUsed: 1,
-      items: [{ topicId: "t1", topicName: "Mảng", count: 2, percent: 100 }],
-    }),
-    [`${BASE}/attention`]: () => ({
-      items: [
-        { ruleCode: "NO_TESTCASE", count: 1 },
-        { ruleCode: "LOW_AC", count: 0 },
-        { ruleCode: "HIDDEN_FROM_LEARNERS", count: 0 },
-        { ruleCode: "STALE_DRAFT", count: 0 },
-      ],
-    }),
     ...over,
   };
   apiMock.get.mockImplementation(async (path: string) => {
@@ -137,11 +124,6 @@ describe("ProblemManagementView with the real API", () => {
     expect(within(rows[1]!).getByText("-")).toBeInTheDocument();
     expect(within(rows[2]!).getByText("40.5%")).toBeInTheDocument();
     expect(within(rows[1]!).getByText("3 ngày trước")).toBeInTheDocument();
-    // The side blocks come from their own calls.
-    expect(
-      await screen.findByText(m.attention.rule.noTestcase.title),
-    ).toBeInTheDocument();
-    expect(await screen.findByText("2 · 100%")).toBeInTheDocument();
     // The first call carries the default query only.
     expect(listCalls()[0]![1]).toEqual({
       sort: "updatedAt",
@@ -174,15 +156,6 @@ describe("ProblemManagementView with the real API", () => {
     expect(await screen.findByText(m.loadFailed)).toBeInTheDocument();
     expect(screen.queryByRole("table")).toBeNull();
     expect(screen.getByLabelText(m.searchLabel)).toBeInTheDocument();
-  });
-
-  it("degrades one side block on its own when its call fails", async () => {
-    serve({ [`${BASE}/attention`]: () => new ApiError("UNKNOWN_ERROR", 503) });
-    await renderLoaded();
-    expect(await screen.findByText(m.blockFailed)).toBeInTheDocument();
-    // The table and the other block are untouched.
-    expect(rowBoxes()).toHaveLength(2);
-    expect(await screen.findByText("2 · 100%")).toBeInTheDocument();
   });
 
   it("bulk delete: reports the ones that went through and why the others did not, then reloads", async () => {

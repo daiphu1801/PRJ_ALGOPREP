@@ -54,7 +54,7 @@ import {
   NoticeTile,
   PageContainer,
   PageHeader,
-  SelectField,
+  FilterMenu,
   type BadgeVariant,
   type DataTableColumn,
 } from "@/shared/ui";
@@ -626,22 +626,18 @@ export function ProblemImportView({ basePath, canAssign = false }: Props) {
       render: (row) => {
         const level = resolveLevel(row.level, levels);
         return (
-          <SelectField
-            hideLabel
+          <FilterMenu
+            compact
             label={t("levelOf", { number: rows.indexOf(row) + 1 })}
+            className="w-full [&>button]:w-full [&>button]:justify-between [&>button]:whitespace-nowrap"
             value={level?.label ?? row.level}
             disabled={isLocked(row)}
-            onChange={(event) => change(row.id, { level: event.target.value })}
+            onValueChange={(value) => change(row.id, { level: value })}
             options={[
+              // Shown only while the cell holds no known level, so it can never be chosen again.
               ...(level
                 ? []
-                : [
-                    {
-                      value: row.level,
-                      label: row.level || t("choose"),
-                      disabled: true,
-                    },
-                  ]),
+                : [{ value: row.level, label: row.level || t("choose") }]),
               ...levels.map((item) => ({
                 value: item.label,
                 label: item.label,
@@ -928,7 +924,9 @@ export function ProblemImportView({ basePath, canAssign = false }: Props) {
           <div
             className={cn(
               "grid gap-3",
-              current && "xl:grid-cols-[minmax(0,1fr)_380px]",
+              // A narrower editor below 1536px, so the table keeps its action column in view at 1280.
+              current &&
+                "xl:grid-cols-[minmax(0,1fr)_340px] 2xl:grid-cols-[minmax(0,1fr)_380px]",
             )}
           >
             <Card className="min-w-0 self-start px-3 py-2">
@@ -938,7 +936,10 @@ export function ProblemImportView({ basePath, canAssign = false }: Props) {
                 rows={rows}
                 rowKey={(row) => row.id}
                 emptyMessage=""
-                minWidth={640}
+                minWidth={560}
+                // From lg the table fits its card, so it need not scroll sideways, and the level pop-up of a
+                // row is not cut off by the scroll box.
+                className="lg:overflow-x-visible"
               />
             </Card>
             {current ? (

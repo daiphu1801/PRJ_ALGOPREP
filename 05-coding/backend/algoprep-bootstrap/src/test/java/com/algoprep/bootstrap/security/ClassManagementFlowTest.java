@@ -166,6 +166,7 @@ class ClassManagementFlowTest {
             patch(BASE + "/" + classId),
             delete(BASE + "/" + classId),
             post(BASE + "/" + classId + "/invite-codes"),
+            delete(BASE + "/" + classId + "/invite-codes/" + UUID.randomUUID()),
             get(BASE + "/" + classId + "/invite-codes"),
             get(BASE + "/" + classId + "/students"),
             post(BASE + "/" + classId + "/students/" + student + "/leave"),
@@ -211,6 +212,7 @@ class ClassManagementFlowTest {
       {"CREATE", "POST", BASE},
       {"CREATE", "POST", one + "/invite-codes"},
       {"UPDATE", "PATCH", one},
+      {"UPDATE", "DELETE", one + "/invite-codes/" + UUID.randomUUID()},
       {"UPDATE", "POST", one + "/students/" + student + "/leave"},
       {"DELETE", "DELETE", one},
     };
@@ -326,6 +328,111 @@ class ClassManagementFlowTest {
   }
 
   @Test
+  void revokingACodeStopsItWorkingKeepsTheOthersAndARepeatIsHarmless() throws Exception {
+    String token = login(account("INSTRUCTOR"));
+    String classId = createClass(token, "Leaked");
+    String leaked = codeOf(classId, token);
+    MockHttpServletResponse other = send(post(BASE + "/" + classId + "/invite-codes"), token, null);
+    String keptCode = JsonPath.read(other.getContentAsString(), "$.code");
+    String leakedId =
+        jdbc.queryForObject(
+            "SELECT id FROM identity.class_invite_codes WHERE code = ?", String.class, leaked);
+    String student = login(account("STUDENT"));
+
+    MockHttpServletResponse revoked =
+        send(delete(BASE + "/" + classId + "/invite-codes/" + leakedId), token, null);
+
+    assertThat(revoked.getStatus()).isEqualTo(204);
+    MockHttpServletResponse refused =
+        send(post("/api/v1/identity/classes/join"), student, "{\"code\":\"" + leaked + "\"}");
+    assertThat(refused.getStatus()).isEqualTo(422);
+    assertThat(JsonPath.<String>read(refused.getContentAsString(), "$.errorCode"))
+        .isEqualTo("IDT-410");
+    assertThat(
+            JsonPath.<List<String>>read(
+                send(get(BASE + "/" + classId + "/invite-codes"), token, null).getContentAsString(),
+                "$.items[*].code"))
+        .containsExactly(keptCode);
+    assertThat(
+            send(post("/api/v1/identity/classes/join"), student, "{\"code\":\"" + keptCode + "\"}")
+                .getStatus())
+        .isEqualTo(200);
+    assertThat(
+            send(delete(BASE + "/" + classId + "/invite-codes/" + leakedId), token, null)
+                .getStatus())
+        .isEqualTo(204);
+  }
+
+  @Test
+  void aCodeOfAnotherClassIsNeverRevokedThroughThisClassPath() throws Exception {
+    String token = login(account("INSTRUCTOR"));
+    String mine = createClass(token, "Mine");
+    String theirs = createClass(token, "Theirs");
+    String theirCode = codeOf(theirs, token);
+
+    MockHttpServletResponse response =
+        send(
+            delete(
+                BASE
+                    + "/"
+                    + mine
+                    + "/invite-codes/"
+                    + jdbc.queryForObject(
+                        "SELECT id FROM identity.class_invite_codes WHERE code = ?",
+                        String.class,
+                        theirCode)),
+            token,
+            null);
+
+    assertThat(response.getStatus()).isEqualTo(204);
+    assertThat(
+            jdbc.queryForObject(
+                "SELECT count(*) FROM identity.class_invite_codes WHERE code = ?",
+                Integer.class,
+                theirCode))
+        .isEqualTo(1);
+  }
+
+  @Test
+  void anInstructorCannotOwnTwoClassesWithTheSameNameButTwoInstructorsCan() throws Exception {
+    String token = login(account("INSTRUCTOR"));
+    String first = createClass(token, "Cau truc du lieu");
+
+    for (String name : List.of("Cau truc du lieu", "  cau TRUC du lieu  ")) {
+      MockHttpServletResponse taken = send(post(BASE), token, "{\"name\":\"" + name + "\"}");
+      assertThat(taken.getStatus()).as(name).isEqualTo(409);
+      assertThat(JsonPath.<String>read(taken.getContentAsString(), "$.errorCode"))
+          .isEqualTo("IDT-417");
+    }
+    assertThat(
+            jdbc.queryForObject(
+                "SELECT count(*) FROM identity.classes WHERE id = ?::uuid", Integer.class, first))
+        .isEqualTo(1);
+    String second = createClass(token, "Giai thuat");
+    MockHttpServletResponse clash =
+        send(patch(BASE + "/" + second), token, "{\"name\":\"CAU TRUC DU LIEU\"}");
+    assertThat(clash.getStatus()).isEqualTo(409);
+    assertThat(JsonPath.<String>read(clash.getContentAsString(), "$.errorCode"))
+        .isEqualTo("IDT-417");
+    assertThat(
+            send(patch(BASE + "/" + first), token, "{\"name\":\"Cau truc du lieu\"}").getStatus())
+        .as("keeping its own name is not a clash")
+        .isEqualTo(200);
+    assertThat(send(patch(BASE + "/" + first), token, "{\"description\":\"x\"}").getStatus())
+        .isEqualTo(200);
+    assertThat(
+            send(post(BASE), login(account("INSTRUCTOR")), "{\"name\":\"Cau truc du lieu\"}")
+                .getStatus())
+        .isEqualTo(201);
+  }
+
+  private String codeOf(String classId, String token) throws Exception {
+    return JsonPath.read(
+        send(get(BASE + "/" + classId + "/invite-codes"), token, null).getContentAsString(),
+        "$.items[0].code");
+  }
+
+  @Test
   void rosterListsActiveStudentsWithContactAndTheInsufficientDataLabel() throws Exception {
     String token = login(account("INSTRUCTOR"));
     String classId = createClass(token, "Roster");
@@ -349,6 +456,38 @@ class ClassManagementFlowTest {
     assertThat(JsonPath.<String>read(body, "$.items[0].joinedAt")).endsWith("Z");
     assertThat(JsonPath.<String>read(body, "$.items[0].status")).isEqualTo("INSUFFICIENT_DATA");
     assertThat(JsonPath.<Object>read(body, "$.items[0].avgScore")).isNull();
+  }
+
+  @Test
+  void aStudentWhoseAccountIsNoLongerActiveStaysInTheRosterWithAFlag() throws Exception {
+    String token = login(account("INSTRUCTOR"));
+    String classId = createClass(token, "Inactive roster");
+    String active = account("STUDENT");
+    String deleted = account("STUDENT");
+    enrol(UUID.fromString(classId), UUID.fromString(idOf(active)));
+    enrol(UUID.fromString(classId), UUID.fromString(idOf(deleted)));
+    jdbc.update(
+        "UPDATE identity.users SET status = 'DEACTIVATED', deactivation_source = 'SELF',"
+            + " deactivated_at = now() WHERE email = ?",
+        deleted);
+
+    String body = send(get(BASE + "/" + classId + "/students"), token, null).getContentAsString();
+
+    assertThat(JsonPath.<List<String>>read(body, "$.items")).hasSize(2);
+    assertThat(
+            JsonPath.<List<Boolean>>read(
+                body, "$.items[?(@.email=='" + active + "')].accountInactive"))
+        .containsExactly(false);
+    assertThat(
+            JsonPath.<List<Boolean>>read(
+                body, "$.items[?(@.email=='" + deleted + "')].accountInactive"))
+        .containsExactly(true);
+    assertThat(
+            JsonPath.<List<Integer>>read(
+                send(get(BASE + "/my"), token, null).getContentAsString(),
+                "$.items[?(@.id=='" + classId + "')].studentCount"))
+        .as("the class headcount is not changed by the flag")
+        .containsExactly(2);
   }
 
   @Test

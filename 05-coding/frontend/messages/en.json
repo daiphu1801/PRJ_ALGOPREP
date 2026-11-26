@@ -45,6 +45,7 @@
     "IDT-414": "Class not found",
     "IDT-415": "This e-mail already belongs to an account",
     "IDT-416": "The code is wrong or has expired",
+    "IDT-417": "You already have a class with this name. Choose another name",
     "IDT-420": "The last administrator permission-matrix right cannot be removed",
     "IDT-421": "System roles cannot be deleted",
     "IDT-422": "A role that still has users assigned cannot be deleted",
@@ -408,6 +409,13 @@
       "statusLabel": "Filter by status",
       "difficultyLabel": "Filter by difficulty"
     },
+    "sort": {
+      "label": "Sort problems",
+      "difficultyAsc": "Difficulty ascending",
+      "difficultyDesc": "Difficulty descending",
+      "acRateAsc": "Acceptance rate ascending",
+      "acRateDesc": "Acceptance rate descending"
+    },
     "state": {
       "solved": "Solved",
       "attempted": "Attempted",
@@ -423,10 +431,12 @@
       "colTitle": "Problem",
       "colTopics": "Topics",
       "colDifficulty": "Difficulty",
-      "colAcRate": "AC rate",
-      "btnSolve": "Solve",
-      "btnSolveFor": "Solve {title}",
+      "colAcRate": "Acceptance rate",
+      "btnSolve": "View problem",
+      "btnSolveFor": "View problem {title}",
       "hasReview": "Has Solution Review",
+      "results": "{count, plural, one {# problem} other {# problems}}",
+      "emptyCatalog": "No problems have been published yet",
       "empty": "No problem matches this filter",
       "clearFilters": "Clear filters"
     },
@@ -1587,7 +1597,6 @@
   },
   "problemManagement": {
     "loadFailed": "Could not load the problem list. Try again later.",
-    "blockFailed": "Could not load this block. Try again later.",
     "title": "Problem management",
     "subtitle": "{total} problems · {published} visible in the problem bank",
     "importProblems": "Add many",
@@ -1596,32 +1605,6 @@
     "searchPlaceholder": "Search by code or title",
     "difficultyFilterLabel": "Filter by difficulty",
     "statusFilterLabel": "Filter by status",
-    "topicDist": {
-      "title": "Distribution by topic",
-      "subtitle": "{total} problems across {topics} topics"
-    },
-    "attention": {
-      "title": "Needs attention",
-      "tag": "Auto-detected",
-      "rule": {
-        "noTestcase": {
-          "title": "No testcases",
-          "meta": "Problem has no testcase at all"
-        },
-        "lowAcceptRate": {
-          "title": "Low AC rate",
-          "meta": "AC rate below 30%"
-        },
-        "hiddenFromLearners": {
-          "title": "Hidden from learners",
-          "meta": "Was published, now withdrawn"
-        },
-        "staleDraft": {
-          "title": "Stale draft",
-          "meta": "Unpublished for over 7 days"
-        }
-      }
-    },
     "manageTopics": "Manage topics",
     "topicManager": {
       "title": "Manage problem topics",
@@ -1891,7 +1874,8 @@
       "parts": "Content part",
       "statement": "Statement",
       "cases": "Testcases ({count}/{needed})",
-      "solution": "Solution",
+      "solution": "Reference solution",
+      "solutionHint": "The system runs this solution on the testcases to check the expected outputs. Learners never see it.",
       "case": "Testcase {number}",
       "public": "Public",
       "hidden": "Hidden",
@@ -3123,7 +3107,9 @@
       "deleteClassConfirm": "Delete class",
       "removeStudentTitle": "Remove {name} from class?",
       "removeStudentBody": "The learner will leave the class. Their learning history in this class is kept.",
-      "removeStudentConfirm": "Remove student"
+      "removeStudentConfirm": "Remove student",
+      "deleteClassImpact": "The class has {students} learners and {problems} assigned problems. Learners will no longer see the class or these problems; their submissions are kept.",
+      "deleteClassImpactStudents": "The class has {students} learners. Learners will no longer see the class or its problems; their submissions are kept."
     },
     "schedule": {
       "heading": "Schedule",
@@ -3151,7 +3137,8 @@
       "updated": "Changes to class \"{name}\" saved",
       "deleted": "Class \"{name}\" deleted",
       "inviteCreated": "New invite code created",
-      "failed": "The action failed, please try again"
+      "failed": "The action failed, please try again",
+      "inviteRevoked": "Invite code revoked"
     },
     "validation": {
       "nameRequired": "The class name cannot be empty.",
@@ -3166,28 +3153,47 @@
     "backToList": "Back to my classes",
     "notFoundTitle": "Class not found",
     "notFound": "This class does not exist or is not yours.",
+    "descriptionTitle": "Class description",
     "noDescription": "This class has no description yet.",
     "edit": "Edit details",
     "delete": "Delete class",
     "schedule": {
       "title": "Schedule",
-      "days": "Days",
-      "time": "Time",
-      "room": "Room / place",
-      "period": "Period",
-      "note": "Note",
+      "days": "Days of the week",
+      "time": "Class hours",
+      "room": "Location",
+      "period": "Class dates",
+      "note": "Schedule notes",
+      "weekday": {
+        "1": "Monday",
+        "2": "Tuesday",
+        "3": "Wednesday",
+        "4": "Thursday",
+        "5": "Friday",
+        "6": "Saturday",
+        "7": "Sunday"
+      },
       "empty": "This class has no schedule yet. Use Edit details to add one."
     },
     "invite": {
       "title": "Invite codes",
       "subtitle": "Students enter a code to join the class. Several codes can be valid at once.",
       "create": "New code",
-      "empty": "This class has no invite codes yet."
+      "copy": "Copy",
+      "copyCode": "Copy invite code {code}",
+      "copied": "Invite code copied.",
+      "copyFailed": "Select the invite code and copy it manually.",
+      "empty": "This class has no invite codes yet.",
+      "revokeCode": "Revoke invite code {code}",
+      "revokeTitle": "Revoke invite code {code}?",
+      "revokeBody": "This code stops working and learners who enter it are refused. Learners already in the class are not affected, and the other codes of the class keep working.",
+      "revokeConfirm": "Revoke code"
     },
     "students": {
       "title": "Students in this class",
       "subtitle": "{count} students",
       "openFull": "Open in the student list",
+      "inactive": "Account no longer active",
       "empty": "This class has no students yet.",
       "remove": "Remove from class",
       "col": {
@@ -3243,7 +3249,7 @@
       "button": "Copy to another class",
       "noOtherClass": "You have no other class to copy to",
       "sourceEmpty": "This class has no problems to copy",
-      "title": "Copy problems from {className}",
+      "title": "Copy problems from class {className} to",
       "target": "To class",
       "targetPlaceholder": "Choose the receiving class",
       "loading": "Reading the problems of both classes...",
@@ -3919,9 +3925,14 @@
     "btnCopy": "Copy",
     "copied": "Copied.",
     "copyFailed": "Could not copy, select and copy manually.",
-    "exampleInput": "Input {no}",
-    "exampleOutput": "Output {no}",
-    "topicsTitle": "Topics",
+    "statementTitle": "Problem statement",
+    "jumpToExamples": "Jump to examples",
+    "acceptanceRate": "Acceptance rate",
+    "exampleTitle": "Example {no}",
+    "exampleInput": "Input",
+    "exampleOutput": "Output",
+    "copyExampleInput": "Copy input for example {no}",
+    "copyExampleOutput": "Copy output for example {no}",
     "languagesTitle": "Allowed languages",
     "btnUndo": "Undo"
   },
@@ -3990,5 +4001,12 @@
       "note": "Note",
       "doIt": "Solve"
     }
+  },
+  "loginPrompt": {
+    "title": "Sign in required",
+    "body": "You need to sign in to use this. After signing in you will be taken to the page you need.",
+    "login": "Sign in",
+    "register": "Sign up",
+    "later": "Not now"
   }
 }

@@ -45,6 +45,7 @@
     "IDT-414": "Không tìm thấy lớp học",
     "IDT-415": "Email này đã thuộc một tài khoản",
     "IDT-416": "Mã xác nhận không đúng hoặc đã hết hạn",
+    "IDT-417": "Bạn đã có một lớp trùng tên này. Hãy đặt tên khác",
     "IDT-420": "Không thể gỡ quyền quản lý ma trận phân quyền cuối cùng của quản trị viên",
     "IDT-421": "Không thể xoá vai trò hệ thống",
     "IDT-422": "Không thể xoá vai trò đang có người dùng được gán",
@@ -408,6 +409,13 @@
       "statusLabel": "Lọc theo trạng thái",
       "difficultyLabel": "Lọc theo độ khó"
     },
+    "sort": {
+      "label": "Sắp xếp bài toán",
+      "difficultyAsc": "Độ khó tăng dần",
+      "difficultyDesc": "Độ khó giảm dần",
+      "acRateAsc": "Tỉ lệ chấp nhận tăng dần",
+      "acRateDesc": "Tỉ lệ chấp nhận giảm dần"
+    },
     "state": {
       "solved": "Đã giải",
       "attempted": "Đang làm",
@@ -423,10 +431,12 @@
       "colTitle": "Bài toán",
       "colTopics": "Chủ đề",
       "colDifficulty": "Độ khó",
-      "colAcRate": "AC rate",
-      "btnSolve": "Vào giải",
-      "btnSolveFor": "Vào giải bài {title}",
+      "colAcRate": "Tỉ lệ chấp nhận",
+      "btnSolve": "Xem đề",
+      "btnSolveFor": "Xem đề {title}",
       "hasReview": "Đã có Solution Review",
+      "results": "{count} bài toán",
+      "emptyCatalog": "Chưa có bài toán nào được xuất bản",
       "empty": "Không có bài nào khớp bộ lọc",
       "clearFilters": "Xóa bộ lọc"
     },
@@ -1587,7 +1597,6 @@
   },
   "problemManagement": {
     "loadFailed": "Không tải được danh sách bài tập. Thử lại sau.",
-    "blockFailed": "Không tải được khối này. Thử lại sau.",
     "title": "Quản lý bài tập",
     "subtitle": "{total} bài · {published} bài đang hiển thị ở Ngân hàng bài toán",
     "importProblems": "Thêm nhiều bài",
@@ -1596,32 +1605,6 @@
     "searchPlaceholder": "Tìm theo mã bài hoặc tiêu đề",
     "difficultyFilterLabel": "Lọc theo độ khó",
     "statusFilterLabel": "Lọc theo trạng thái",
-    "topicDist": {
-      "title": "Phân bố theo chủ đề",
-      "subtitle": "Tổng {total} bài trên {topics} chủ đề"
-    },
-    "attention": {
-      "title": "Bài cần chú ý",
-      "tag": "Tự phát hiện",
-      "rule": {
-        "noTestcase": {
-          "title": "Chưa có testcase",
-          "meta": "Bài chưa có testcase nào"
-        },
-        "lowAcceptRate": {
-          "title": "Tỉ lệ AC thấp",
-          "meta": "Tỉ lệ AC dưới 30%"
-        },
-        "hiddenFromLearners": {
-          "title": "Đang ẩn khỏi người học",
-          "meta": "Từng xuất bản, hiện đã gỡ"
-        },
-        "staleDraft": {
-          "title": "Bản nháp quá hạn",
-          "meta": "Chưa xuất bản quá 7 ngày"
-        }
-      }
-    },
     "manageTopics": "Quản lý chủ đề",
     "topicManager": {
       "title": "Quản lý chủ đề bài tập",
@@ -1891,7 +1874,8 @@
       "parts": "Phần nội dung",
       "statement": "Đề bài",
       "cases": "Testcase ({count}/{needed})",
-      "solution": "Lời giải",
+      "solution": "Lời giải mẫu",
+      "solutionHint": "Hệ thống chạy lời giải này trên các testcase để kiểm tra đáp án. Học viên không nhìn thấy.",
       "case": "Testcase {number}",
       "public": "Công khai",
       "hidden": "Ẩn",
@@ -3123,7 +3107,9 @@
       "deleteClassConfirm": "Xoá lớp",
       "removeStudentTitle": "Gỡ {name} khỏi lớp?",
       "removeStudentBody": "Học viên sẽ rời khỏi lớp. Lịch sử làm bài của học viên trong lớp này vẫn được giữ.",
-      "removeStudentConfirm": "Gỡ học viên"
+      "removeStudentConfirm": "Gỡ học viên",
+      "deleteClassImpact": "Lớp có {students} học viên đang học và {problems} bài đang giao. Học viên sẽ không còn thấy lớp và các bài giao này; lượt nộp của họ vẫn được giữ.",
+      "deleteClassImpactStudents": "Lớp có {students} học viên đang học. Học viên sẽ không còn thấy lớp và các bài giao; lượt nộp của họ vẫn được giữ."
     },
     "schedule": {
       "heading": "Lịch học",
@@ -3151,7 +3137,8 @@
       "updated": "Đã lưu thay đổi lớp \"{name}\"",
       "deleted": "Đã xoá lớp \"{name}\"",
       "inviteCreated": "Đã tạo mã mời mới",
-      "failed": "Thao tác không thành công, vui lòng thử lại"
+      "failed": "Thao tác không thành công, vui lòng thử lại",
+      "inviteRevoked": "Đã thu hồi mã mời"
     },
     "validation": {
       "nameRequired": "Tên lớp không được để trống.",
@@ -3166,28 +3153,47 @@
     "backToList": "Quay lại danh sách lớp",
     "notFoundTitle": "Không tìm thấy lớp",
     "notFound": "Lớp này không tồn tại hoặc không thuộc về bạn.",
+    "descriptionTitle": "Mô tả lớp học",
     "noDescription": "Chưa có mô tả cho lớp này.",
     "edit": "Sửa thông tin",
     "delete": "Xoá lớp",
     "schedule": {
       "title": "Lịch học",
-      "days": "Ngày học",
-      "time": "Giờ học",
-      "room": "Phòng / địa điểm",
-      "period": "Thời gian",
-      "note": "Ghi chú",
+      "days": "Ngày học trong tuần",
+      "time": "Khung giờ học",
+      "room": "Địa điểm học",
+      "period": "Thời gian diễn ra lớp",
+      "note": "Ghi chú lịch học",
+      "weekday": {
+        "1": "Thứ Hai",
+        "2": "Thứ Ba",
+        "3": "Thứ Tư",
+        "4": "Thứ Năm",
+        "5": "Thứ Sáu",
+        "6": "Thứ Bảy",
+        "7": "Chủ nhật"
+      },
       "empty": "Lớp chưa có lịch học. Bấm Sửa thông tin để thêm."
     },
     "invite": {
       "title": "Mã mời",
       "subtitle": "Học viên nhập mã để tham gia lớp. Nhiều mã có thể còn hạn cùng lúc.",
       "create": "Tạo mã mới",
-      "empty": "Lớp chưa có mã mời nào."
+      "copy": "Sao chép",
+      "copyCode": "Sao chép mã mời {code}",
+      "copied": "Đã sao chép mã mời.",
+      "copyFailed": "Hãy chọn mã mời và sao chép thủ công.",
+      "empty": "Lớp chưa có mã mời nào.",
+      "revokeCode": "Thu hồi mã mời {code}",
+      "revokeTitle": "Thu hồi mã mời {code}?",
+      "revokeBody": "Mã này sẽ không dùng được nữa, học viên nhập mã sẽ bị từ chối. Học viên đã vào lớp không bị ảnh hưởng, các mã khác của lớp vẫn dùng được.",
+      "revokeConfirm": "Thu hồi mã"
     },
     "students": {
       "title": "Học viên của lớp",
       "subtitle": "{count} học viên",
       "openFull": "Mở trong danh sách học viên",
+      "inactive": "Tài khoản không còn hoạt động",
       "empty": "Lớp chưa có học viên nào.",
       "remove": "Gỡ khỏi lớp",
       "col": {
@@ -3243,7 +3249,7 @@
       "button": "Sao chép sang lớp khác",
       "noOtherClass": "Chưa có lớp khác để sao chép sang",
       "sourceEmpty": "Lớp này chưa có bài nào để sao chép",
-      "title": "Sao chép bài tập từ {className}",
+      "title": "Sao chép bài tập từ lớp {className} đến",
       "target": "Sang lớp",
       "targetPlaceholder": "Chọn lớp nhận",
       "loading": "Đang đọc bài tập của hai lớp...",
@@ -3907,7 +3913,10 @@
   },
   "problemOverview": {
     "btnSolve": "Giải bài toán",
-    "infoTitle": "Thông tin",
+    "statementTitle": "Đề bài",
+    "jumpToExamples": "Đến ví dụ",
+    "infoTitle": "Thông tin bài toán",
+    "acceptanceRate": "Tỷ lệ chấp nhận",
     "hiddenTestcases": "Testcase ẩn",
     "limitsCaption": "Giới hạn theo ngôn ngữ",
     "colLanguage": "Ngôn ngữ",
@@ -3916,12 +3925,14 @@
     "recentTitle": "Bài nộp gần đây",
     "linkAllSubmissions": "Xem tất cả bài nộp",
     "btnBack": "Quay về danh sách",
-    "btnCopy": "Copy",
+    "btnCopy": "Sao chép",
     "copied": "Đã sao chép.",
-    "copyFailed": "Không sao chép được, hãy chọn và copy thủ công.",
-    "exampleInput": "Input {no}",
-    "exampleOutput": "Output {no}",
-    "topicsTitle": "Dạng bài",
+    "copyFailed": "Không sao chép được. Hãy chọn nội dung và sao chép thủ công.",
+    "exampleTitle": "Ví dụ {no}",
+    "exampleInput": "Đầu vào",
+    "exampleOutput": "Đầu ra",
+    "copyExampleInput": "Sao chép đầu vào ví dụ {no}",
+    "copyExampleOutput": "Sao chép đầu ra ví dụ {no}",
     "languagesTitle": "Ngôn ngữ cho phép",
     "btnUndo": "Hoàn tác"
   },
@@ -3990,5 +4001,12 @@
       "note": "Ghi chú",
       "doIt": "Làm bài"
     }
+  },
+  "loginPrompt": {
+    "title": "Cần đăng nhập",
+    "body": "Bạn cần đăng nhập để dùng tính năng này. Đăng nhập xong bạn sẽ được đưa tới đúng trang cần dùng.",
+    "login": "Đăng nhập",
+    "register": "Đăng ký",
+    "later": "Để sau"
   }
 }

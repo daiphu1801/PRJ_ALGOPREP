@@ -1,5 +1,6 @@
 package com.algoprep.bootstrap.config;
 
+import java.util.Arrays;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
 import org.springframework.context.annotation.Bean;
@@ -15,8 +16,13 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
+import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
+import org.springframework.security.web.util.matcher.OrRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 
 /**
  * Security configuration: JWT resource server plus method security.
@@ -89,8 +95,27 @@ public class SecurityConfig {
     return http.build();
   }
 
+  /**
+   * Published-problem reads that a guest may call (DD F2 section 0A, table 0A.1): list, random,
+   * overview and sample testcases. The workspace read and every other route still need a session.
+   */
+  static final String[] GUEST_READABLE = {
+    "/api/v1/problem-bank/problems",
+    "/api/v1/problem-bank/problems/random",
+    "/api/v1/problem-bank/problems/*/overview",
+    "/api/v1/problem-bank/problems/*/sample-testcases",
+    "/api/v1/problem-bank/levels"
+  };
+
   @Bean
-  public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+  public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtDecoder jwtDecoder)
+      throws Exception {
+    var guestReadable =
+        new OrRequestMatcher(
+            Arrays.stream(GUEST_READABLE)
+                .<RequestMatcher>map(
+                    path -> PathPatternRequestMatcher.withDefaults().matcher(HttpMethod.GET, path))
+                .toList());
     http.authorizeHttpRequests(
             auth ->
                 auth
@@ -100,6 +125,8 @@ public class SecurityConfig {
                     .permitAll()
                     // Browser clients authenticate in the STOMP CONNECT frame (F4 API section 2).
                     .requestMatchers(HttpMethod.GET, "/ws")
+                    .permitAll()
+                    .requestMatchers(HttpMethod.GET, GUEST_READABLE)
                     .permitAll()
                     .anyRequest()
                     .authenticated())
@@ -118,6 +145,9 @@ public class SecurityConfig {
                 oauth
                     .authenticationEntryPoint(new ApiAuthenticationEntryPoint())
                     .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtConverter)))
+        .addFilterBefore(
+            new GuestReadBearerFilter(guestReadable, jwtDecoder, jwtConverter),
+            BearerTokenAuthenticationFilter.class)
         .headers(this::hardenHeaders);
     return http.build();
   }

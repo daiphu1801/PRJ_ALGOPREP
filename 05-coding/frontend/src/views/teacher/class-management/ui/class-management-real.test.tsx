@@ -171,6 +171,44 @@ describe("ClassManagementView with the real API", () => {
     expect(push).not.toHaveBeenCalled();
   });
 
+  it("reads a name clash (IDT-417) from the code on create and on rename, and keeps the dialog", async () => {
+    apiMock.post.mockRejectedValue(new ApiError("IDT-417", 409));
+    apiMock.patch.mockRejectedValue(new ApiError("IDT-417", 409));
+    const toasts = watch();
+    await open();
+
+    fireEvent.click(
+      screen.getByRole("button", { name: m.header.btnCreateClass }),
+    );
+    typeName("Trùng tên");
+    fireEvent.click(screen.getByRole("button", { name: m.popup.saveClass }));
+    await waitFor(() =>
+      expect(toasts().at(-1)).toEqual(["error", apiErrors["IDT-417"]]),
+    );
+    expect(apiErrors["IDT-417"]).toBeTruthy();
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: m.cancel }));
+    await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: m.classList.col.menuEditOf.replace("{name}", CLASS.name),
+      }),
+    );
+    typeName("Trùng tên");
+    fireEvent.click(screen.getByRole("button", { name: m.popup.saveClass }));
+    // The same message is still on screen, so the toast store keeps one card; the PATCH and the open dialog show the refusal.
+    await waitFor(() =>
+      expect(apiMock.patch).toHaveBeenCalledWith("/identity/classes/c1", {
+        name: "Trùng tên",
+        description: expect.any(String),
+        schedule: expect.anything(),
+      }),
+    );
+    expect(toasts().at(-1)).toEqual(["error", apiErrors["IDT-417"]]);
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+  });
+
   it("edits with a PATCH that clears what the form left blank", async () => {
     apiMock.patch.mockResolvedValue({
       ...CLASS,

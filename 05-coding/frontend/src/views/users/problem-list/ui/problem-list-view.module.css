@@ -1,0 +1,16 @@
+.catalogTable table {
+  table-layout: fixed;
+}
+
+@media (width < 48rem) {
+  /* Chủ đề, độ khó và tỉ lệ chấp nhận nằm giữa tên bài và nút Xem đề. */
+  .catalogTable thead,
+  .catalogTable col:not(:first-child, :last-child),
+  .catalogTable tbody td:not(:first-child, :last-child) {
+    display: none;
+  }
+
+  .catalogTable tbody td {
+    padding-inline: 0.25rem;
+  }
+}

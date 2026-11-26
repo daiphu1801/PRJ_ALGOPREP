@@ -13,6 +13,7 @@ import {
 } from "./real-execution";
 import {
   ApiError,
+  hasSession,
   isMockMode,
   useMockMutation,
   useMockQuery,
@@ -58,7 +59,7 @@ export const useProblemDetail = (problemId: string | undefined) =>
   useMockQuery<ProblemDetail | null>({
     queryKey: ["problem", "detail", currentUserScope(), problemId],
     mock: () => (problemId ? (fetchProblemDetail(problemId) ?? null) : null),
-    real: () => fetchOverviewProblem(problemId!),
+    real: () => fetchOverviewProblem(problemId!, !hasSession()),
     spec: PROBLEM_BANK_SPEC,
     staleTime: 0,
     enabled: Boolean(problemId),

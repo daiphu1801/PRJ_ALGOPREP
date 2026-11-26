@@ -179,7 +179,10 @@ class InstructorActivityFlowTest {
   private UUID clazz(UUID instructor) {
     UUID id = UUID.randomUUID();
     jdbc.update(
-        "INSERT INTO identity.classes (id,instructor_id,name) VALUES (?,?,'Algo')", id, instructor);
+        "INSERT INTO identity.classes (id,instructor_id,name) VALUES (?,?,'Algo ' || ?)",
+        id,
+        instructor,
+        id.toString());
     return id;
   }
 

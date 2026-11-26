@@ -7,6 +7,7 @@ import static org.mockito.Mockito.mock;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -61,6 +62,18 @@ class EndpointGuardTest {
           StudentCatalogController.class,
           SuggestedProblemController.class);
 
+  /**
+   * The only endpoints a guest may call (DD F2 section 0A, table 0A.1). Each says so with an
+   * explicit {@code permitAll()}; a new open endpoint has to be added here on purpose.
+   */
+  private static final Set<String> GUEST_OPEN =
+      Set.of(
+          "PublishedProblemController#list",
+          "PublishedProblemController#random",
+          "PublishedProblemController#overview",
+          "PublishedProblemController#samples",
+          "ProblemLevelsController#list");
+
   private final PreAuthorizeAuthorizationManager manager = new PreAuthorizeAuthorizationManager();
 
   private static boolean isEndpoint(Method m) {
@@ -107,18 +120,30 @@ class EndpointGuardTest {
     String expression = expression(type, method);
 
     assertThat(expression).as(name).isNotNull();
+    if (GUEST_OPEN.contains(name)) {
+      assertThat(expression).as(name).isEqualTo("permitAll()");
+      assertThat(allows(type, method, anonymous())).as(name + " anonymous").isTrue();
+      return;
+    }
+    assertThat(GUEST_OPEN).as(name).doesNotContain(name);
+    assertThat(expression).as(name + " is not left open").doesNotContain("permitAll");
     boolean anyAuthenticated = expression.contains("isAuthenticated()");
     assertThat(allows(type, method, jwt(USER, "UNRELATED:READ")))
         .as(name)
         .isEqualTo(anyAuthenticated);
-    assertThat(
-            allows(
-                type,
-                method,
-                new AnonymousAuthenticationToken(
-                    "key", "anon", AuthorityUtils.createAuthorityList("ROLE_ANONYMOUS"))))
-        .as(name + " anonymous")
-        .isFalse();
+    assertThat(allows(type, method, anonymous())).as(name + " anonymous").isFalse();
+  }
+
+  private static org.springframework.security.core.Authentication anonymous() {
+    return new AnonymousAuthenticationToken(
+        "key", "anon", AuthorityUtils.createAuthorityList("ROLE_ANONYMOUS"));
+  }
+
+  @Test
+  void theGuestOpenSetNamesExistingEndpointsOnly() {
+    var names = new java.util.HashSet<String>();
+    endpoints().forEach(a -> names.add((String) a.get()[0]));
+    assertThat(names).containsAll(GUEST_OPEN);
   }
 
   @ParameterizedTest(name = "{0}")
@@ -126,6 +151,9 @@ class EndpointGuardTest {
   void everyAuthorityNamedByTheExpressionIsAcceptedOnItsOwn(
       String name, Class<?> type, Method method) {
     String expression = expression(type, method);
+    if (GUEST_OPEN.contains(name)) {
+      return;
+    }
     Matcher matcher = AUTHORITY.matcher(expression);
     var named = new ArrayList<String>();
     while (matcher.find()) {

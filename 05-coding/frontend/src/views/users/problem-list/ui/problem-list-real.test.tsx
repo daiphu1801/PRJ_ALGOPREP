@@ -11,7 +11,7 @@ import {
 } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import viMessages from "../../../../../messages/vi.json";
-import { ApiError } from "@/shared/api";
+import { ApiError, tokenStore } from "@/shared/api";
 import { toast, useToasts } from "@/shared/lib/toast-store";
 import { withTestProviders } from "@/shared/test/render-with-providers";
 
@@ -144,6 +144,8 @@ describe("ProblemListView with the real API", () => {
   beforeEach(() => {
     mockUrl.reset("/problems");
     resetApiMock();
+    // A signed-in learner: without a token the screens read as a guest (DEC-2026-1126).
+    tokenStore.set("h.eyJzdWIiOiJ1MSJ9.s");
     push.mockClear();
     localStorage.clear();
     act(() => toast.clear());
@@ -368,6 +370,8 @@ describe("ProblemListView with the real API", () => {
 describe("ProblemListView URL state and block visibility", () => {
   beforeEach(() => {
     resetApiMock();
+    // A signed-in learner: without a token the screens read as a guest (DEC-2026-1126).
+    tokenStore.set("h.eyJzdWIiOiJ1MSJ9.s");
     push.mockClear();
     localStorage.clear();
     act(() => toast.clear());

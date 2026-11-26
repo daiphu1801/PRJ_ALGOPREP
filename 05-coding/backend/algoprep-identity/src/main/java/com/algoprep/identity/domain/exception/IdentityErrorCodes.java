@@ -45,6 +45,11 @@ public final class IdentityErrorCodes {
   /** New e-mail already belongs to an account, possibly the caller's own (HTTP 409). */
   public static final String EMAIL_TAKEN = "IDT-415";
 
+  /**
+   * The instructor already owns a class with this name, ignoring case and outer spaces (HTTP 409).
+   */
+  public static final String CLASS_NAME_TAKEN = "IDT-417";
+
   /** E-mail change code wrong, expired or already used (HTTP 422). */
   public static final String EMAIL_CHANGE_CODE_INVALID = "IDT-416";
 
