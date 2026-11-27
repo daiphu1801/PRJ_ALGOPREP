@@ -28,6 +28,17 @@
 | 6, 8 điều hướng | Không gọi API | Mở `ADM0303`, `SHR0201` |
 | 9 thử lại | Endpoint của khối lỗi | Chỉ làm mới khối đó |
 
+**Triển khai FE 2026-11-12 (nối API thật, Merge M4):** `views/admin/ai-usage/api/real-usage.ts` (§27 đến §31, kèm test `real-usage.test.ts`) và `entities/ai-budget/api/real-budget.ts` (§18); bản ghi `record` là hợp đồng dây. Chế độ mock giữ nguyên qua `useMockQuery`. Năm khối là năm query độc lập (`views/admin/ai-usage/api/queries.ts`); mỗi khối lỗi hiện lý do bằng chữ `apiErrors.AIR-*` kèm nút thử lại riêng (`ui/block-error.tsx`), không hiện thông điệp máy chủ. Chi tiết:
+
+- §27: gửi `rangeDays` 7, 14 hoặc 30 (key query chứa kỳ nên phản hồi muộn của kỳ cũ không ghi đè biểu đồ mới; giữ dữ liệu cũ trong lúc tải kỳ mới). Mặc định màn là 14 ngày, bằng mặc định của máy chủ; **chưa** có tham số URL `days` như BR-SC-01 mô tả (`[SoT: Suy luận]` bỏ qua vì tiêu chí ponytail bậc 3, ghi vào nợ).
+- §18: thanh ngân sách và tỉ trọng theo tính năng đều tính từ `usedTokens`, `limitTokens`, `warnPercent`, `featureBreakdown`; `projectedRunOutDate` là chuỗi ngày, hiện `dd/MM`; không tính lại theo kỳ. `limitTokens = 0` hiện thanh rỗng, không chia cho 0.
+- §28: phần tử `BUDGET` hiện thẻ "Sắp cạn hạn mức", hoặc "Ngân sách đã khoá" khi §18 báo `isLocked`; phần tử `ANOMALY` hiện tên (`displayName`, `null` thì hiện "Một tài khoản"), `callCount` và `ratio` do máy chủ tính. Các trường `windowStart`, `windowEnd`, `baselineAvg`, `userId`, `status` được gửi nhưng màn không đọc.
+- §29: `POST` không body; thành công thì toast và làm mới §28. `AIR-120` hiện thông báo rồi tải lại danh sách; `AIR-301` giữ cảnh báo chưa xem. Nút bị khoá trong lúc gửi đúng cảnh báo đó.
+- §30, §31: không gửi `limit` (dùng mặc định 5 dòng của máy chủ). Tên `null` hiện `-`; `costUsd = null` hiện `-`. Cột "độ khó" dùng `levelDisplayName` của máy chủ, nếu `null` mà có `levelCode` thì tra danh mục độ khó. Phụ đề bảng bài toán đổi thành "Phân tích bài giải và sinh testcase trong 30 ngày" (khớp BR-SC-02, §31.3).
+
+Trường prototype có mà máy chủ không cung cấp: `meta` của người học (mã lớp, K21), ghi chú "tên đăng nhập" — **bỏ** (không có nguồn, ponytail bậc 2). Số trên mock `cost` đổi thành số `costUsd`, định dạng khi hiển thị.
+
+
 EVT-3 và EVT-7 đã bỏ ở BD. Không dựng lại xuất báo cáo hoặc liên kết không có đích.
 
 ## 3. Trạng thái màn
@@ -45,7 +56,7 @@ EVT-3 và EVT-7 đã bỏ ở BD. Không dựng lại xuất báo cáo hoặc li
 
 ### BR-SC-01 Kỳ xem và ngân sách
 
-Giữ kỳ 7/14/30 ngày trong URL `days`, mặc định 7; tham số lạ quay về 7. Đổi kỳ huỷ hoặc bỏ kết quả query cũ để phản hồi đến muộn không thay biểu đồ mới. Khối ngân sách hiển thị cửa sổ tháng hiện tại từ F5 §18, không tính lại theo `days`. [SoT: BD ADM0302 Sheet 4, 8; F5 §18, §27]
+Kỳ 7/14/30 ngày giữ trong state của màn, mặc định 14 (bằng mặc định của máy chủ ở F5 §27); **chưa** đưa lên URL `days` (chủ dự án hoãn 2026-11-12, tiêu chí ponytail bậc 3, ghi vào nợ). Đổi kỳ huỷ hoặc bỏ kết quả query cũ để phản hồi đến muộn không thay biểu đồ mới. Khối ngân sách hiển thị cửa sổ tháng hiện tại từ F5 §18, không tính lại theo `days`. [SoT: BD ADM0302 Sheet 4, 8; F5 §18, §27]
 
 ### BR-SC-02 Cảnh báo và dữ liệu xếp hạng
 

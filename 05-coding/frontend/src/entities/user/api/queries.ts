@@ -1,33 +1,34 @@
 // PROTOTYPE — no DD yet. See 06-plan/PROTOTYPE_DEBT.md
 import { useQuery } from "@tanstack/react-query";
-import { withMockData } from "@/shared/api";
+import { hasSession, withMockData } from "@/shared/api";
 import {
   fakeGetInterviewPreferences,
   fakeGetMyProfile,
   fakeGetMySettings,
 } from "./__mock__/fake-user";
+import { realGetMyProfile } from "./real-profile";
+import {
+  realGetInterviewPreferences,
+  realGetMySettings,
+} from "./real-settings";
 
 const QUERY_OPTIONS = { staleTime: 30_000, retry: false } as const;
 
-function notImplemented(): never {
-  throw new Error(
-    "03-dd/api/F1_identity.md endpoints 9/14 have no real HTTP client wired up yet",
-  );
-}
-
+/** Khách ở khu Người học không có hồ sơ: không gọi, để khỏi sinh 401 (DEC-2026-1126). */
 export const useMyProfile = (
   area: "student" | "instructor" | "admin" = "student",
 ) =>
   useQuery({
     queryKey: ["user", "my-profile", area],
-    queryFn: () => withMockData(() => fakeGetMyProfile(area), notImplemented),
+    queryFn: () => withMockData(() => fakeGetMyProfile(area), realGetMyProfile),
+    enabled: hasSession(),
     ...QUERY_OPTIONS,
   });
 
 export const useMySettings = () =>
   useQuery({
     queryKey: ["user", "my-settings"],
-    queryFn: () => withMockData(fakeGetMySettings, notImplemented),
+    queryFn: () => withMockData(fakeGetMySettings, realGetMySettings),
     ...QUERY_OPTIONS,
   });
 
@@ -35,6 +36,7 @@ export const useMySettings = () =>
 export const useInterviewPreferences = () =>
   useQuery({
     queryKey: ["user", "interview-preferences"],
-    queryFn: () => withMockData(fakeGetInterviewPreferences, notImplemented),
+    queryFn: () =>
+      withMockData(fakeGetInterviewPreferences, realGetInterviewPreferences),
     ...QUERY_OPTIONS,
   });

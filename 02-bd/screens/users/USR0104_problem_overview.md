@@ -56,7 +56,7 @@
 | Tên vật lý (slug) | `problem_overview` |
 | Trục tài liệu | Màn hình (`02-bd/screens/`) |
 | Actor | A1 (`STUDENT`) |
-| Phiên bản | V0.4 |
+| Phiên bản | V0.7 |
 | Người tạo | Claude |
 | Ngày tạo | 2026/10/20 |
 | Người cập nhật | Claude |
@@ -72,6 +72,9 @@
 | V0.2 | Sheet 6 (Khu vực bấm Bỏ lưu), Câu hỏi mở (đóng Q1, Q2, Q7) | Owner chốt 2026/10/20: bỏ lưu có Hoàn tác (đã dựng); Bình luận, Điểm, Nguồn bài hoãn thành nợ; đăng ký slug và mã màn vào bảng mã và khảo sát. Chưa duyệt hình | 2026/10/20 | Claude |
 | V0.3 | Sheet 3, 4.4, 5 (khu F, G), 7, 8 (EVT-10, EVT-11), 9, Câu hỏi mở (đóng Q5, Q6, Q8) | Owner chốt 2026/10/21: thẻ "Bài nộp gần đây" sắp mới nhất trước, có nhãn cho mọi trạng thái nộp bài (thêm bốn nhãn Đang chờ, Đang biên dịch, Lỗi biên dịch, Lỗi hệ thống), mỗi dòng là liên kết tới `submission_result`; "Quay về danh sách" giữ đi thẳng `/problems`; thẻ Solution Review có liên kết "Mở báo cáo đầy đủ" tới báo cáo của lượt nộp `ACCEPTED` mới nhất. Đã dựng. Đo lại toàn bộ số dòng `file:line` trên bản mã cuối. Chưa duyệt hình | 2026/10/21 | Claude |
 | V0.4 | Sheet 4.2, 4.3, 5 (Khu vực B NO 3 đến 8), 6 (Khu vực B NO 2), 7.1, 7.2, 7.3, Câu hỏi mở (Q4) | Sửa 2026-10-22 (đồng bộ DB vòng 3, DEC-2026-1022-problem-bank-schema-sync): ví dụ mẫu không còn đọc từ `problem.testcases`; nguồn là bảng `problem.worked_examples` (`position`, `input`, `output`, `explanation_md`) trả cùng payload đề; `testcases` chỉ còn dùng để đếm dòng `HIDDEN`; bỏ nhắc `function_signatures` (đã gộp vào `problem_specs`). Chỉ sửa tài liệu, bản dựng chưa đổi | 2026/10/22 | Claude |
+| V0.5 | Hiện trạng bản dựng | Nối API thật của F2 (2026-11-06, F2-6 phần 2, **chưa duyệt hình**, chưa chạy trình duyệt với backend thật): Trang tổng quan đọc `#6` (endpoint riêng, DD đóng Q4) cộng giới hạn thực thi và lịch sử nộp của F4 (`fetchOverviewProblem`, `workspace-queries.ts`); nút Lưu nối `#11`, Hoàn tác gửi lại `bookmarked=true` (ghi chú của bookmark cũ đã mất theo DD 12.5). Đọc giới hạn F4 lỗi thì cả trang lỗi, không hiện số bịa. `PRB-010` (404) hiện không tìm thấy. Chưa có nhãn Solution Review (F5 chưa có endpoint). Không đổi RD, DTO hay endpoint | 2026/11/06 | Claude |
+| V0.6 | Hiện trạng bản dựng | Owner 2026-11-12 (ponytail bậc 2): thẻ Solution Review chỉ có hai độ phức tạp và liên kết, không nhận xét ngắn vì F5 #6 không trả `notes`; kiểu `SolutionReviewQuickInsight` bỏ trường `notes` (`entities/problem/model/types.ts:135-138`). Bản dựng đã khớp | 2026-11-12 | Claude |
+| V0.7 | Sheet 4 (4.1), 8 (EVT-12), 9, Câu hỏi mở | Theo `DEC-2026-1126-guest-browse-published-problems` (owner 2026/11/26): màn mở cho khách, Giải bài và Lưu bài mở hộp thoại nhắc đăng nhập, hai thẻ cá nhân ẩn. **Đã dựng 2026-11-26** (owner chưa duyệt hình). | 2026/11/26 | AI |
 
 ---
 
@@ -282,6 +285,8 @@ flowchart LR
 
 ### 4.1 Tổng quan màn
 
+**Bố cục duyệt ngày 26/11/2026.** Đầu trang đặt liên kết về danh sách trước tiêu đề, rồi hiển thị mã, độ khó và chủ đề. Hai cột dùng chiều rộng khung chung của khu Người học và căn lề cùng danh sách bài toán trên desktop. Nội dung Markdown dùng chiều rộng cột đề. Ví dụ ghép Đầu vào và Đầu ra theo từng cặp với nút Sao chép riêng. Cột thao tác đặt Giải bài toán và Lưu bài trên thông tin ngôn ngữ, tỷ lệ chấp nhận và các thẻ theo phiên. Màn hình hẹp hiển thị thao tác ngay trước đề và xếp ví dụ theo chiều dọc. [Kế hoạch và bản duyệt](../../../06-plan/nexa-plan/261126-1453-toi-uu-ui-ux-tong-quan-bai-toan.md)
+
 [Mục đích màn] Cho người học đọc đề, xem ví dụ, giới hạn theo ngôn ngữ, vài lượt nộp gần đây của chính mình và
 (khi có) hai độ phức tạp của Solution Review **trước khi** vào trình soạn mã; lưu bài; rồi bấm "Giải bài toán"
 để sang `problem_detail` [Nguồn: .nexa/control/decision-registry.md:4239-4243; 01-rd/screens/users/USR0104_problem_overview.md:20-26].
@@ -302,8 +307,10 @@ flowchart LR
    phép, thẻ Bài nộp gần đây (3 lượt mới nhất), thẻ Solution Review (chỉ khi đã có báo cáo).
 6. **Vào giải**: bấm "Giải bài toán" để sang `/workspace/{problemId}`.
 
-[Người dùng] Người học đã đăng nhập (`STUDENT`). Khu Người học bắt buộc đăng nhập, không có trạng thái khách
-[Nguồn: 02-bd/screens/users/_shell.md:136].
+[Người dùng] Người học đã đăng nhập (`STUDENT`) **và khách chưa đăng nhập** (đổi 2026-11-26 theo `DEC-2026-1126-guest-browse-published-problems`, thay quyết định
+2026-10-18 "không có trạng thái khách").
+
+[Trạng thái khách] Khách đọc được Khu vực A, B, D (tên, mã, độ khó, đề, ví dụ, tỉ lệ AC, số testcase ẩn; **không có bảng giới hạn theo ngôn ngữ** vì dữ liệu của module chấm bài chưa mở cho khách), E (dạng bài, ngôn ngữ) và H (không tìm thấy), cùng nút Quay về danh sách. Không hiện: thẻ Bài nộp gần đây (Khu vực F) và thẻ Solution Review (Khu vực G), vì không có dữ liệu cá nhân. Nút "Giải bài toán" (Khu vực C NO 1) và "Lưu bài" (NO 2) vẫn hiện; bấm thì mở hộp thoại "Cần đăng nhập" của khung (`_shell.md` mục 2.5A, EVT-12), đường dẫn quay lại là `/problems/{problemId}` hiện tại. Nút Lưu luôn ở trạng thái "Lưu bài" (máy chủ trả `bookmarked = false` cho khách). Bài nháp, đã gỡ hoặc id không tồn tại cho khách hiện cùng thông báo không tìm thấy như người đã đăng nhập.
 
 [Tệp liên quan] Không có. Màn này không xuất hay nhập tệp (nút Copy chỉ ghi bộ nhớ tạm của trình duyệt).
 
@@ -321,7 +328,7 @@ flowchart LR
   [Nguồn: 02-bd/screens/users/USR0103_saved_problems.md:192-194]. Đầu trang là tên bài, mã bài, độ khó và nút quay về.
 
 [Quyền sử dụng]
-- Xem: được, người học đã đăng nhập.
+- Xem: được, người học đã đăng nhập và khách (xem [Trạng thái khách]).
 - Thêm: có, duy nhất bookmark của chính mình (nút Lưu).
 - Sửa: không.
 - Xoá: có, duy nhất bookmark của chính mình (nút Bỏ lưu).
@@ -710,6 +717,7 @@ Ghi chú ranh giới:
 | 9 | Liên kết | Bấm Quay về danh sách bài toán (không tìm thấy) | Bấm liên kết ở Khu vực H. | Có | Không | - | [Các bước]<br>1. Điều hướng sang `/problems`.<br>[Khi thành công] Mở `problem_list` [Nguồn: V:48-53]. |
 | 10 | Liên kết | Bấm một dòng bài nộp gần đây | Bấm một dòng trong thẻ Bài nộp gần đây. | Có | Không | - | [Các bước]<br>1. Điều hướng sang `/submissions/{submissionId}` của dòng đó.<br>[Khi thành công] Mở `submission_result` của lượt nộp [Nguồn: V:254-257]. |
 | 11 | Liên kết | Bấm Mở báo cáo đầy đủ | Bấm liên kết ở cuối thẻ Solution Review. | Có | Không | - | [Các bước]<br>1. Điều hướng sang `/submissions/{submissionId}/review`, với `submissionId` là lượt nộp `ACCEPTED` mới nhất.<br>[Khi thành công] Mở `solution_review` [Nguồn: V:299-308]. Liên kết ẩn khi chưa có lượt `ACCEPTED`. |
+| 12 | Nút | Khách bấm Giải bài toán hoặc Lưu bài | Bấm một trong hai nút khi không có phiên. | Không | Không | - | [Các bước]<br>1. Mở hộp thoại "Cần đăng nhập" (Đăng nhập, Đăng ký, Để sau) của khung.<br>2. Chọn Đăng nhập hoặc Đăng ký thì sang `auth` kèm `?redirect=/problems/{problemId}`.<br>[Khi thành công] Đăng nhập xong quay lại đúng trang này; người dùng bấm lại nút để tiếp tục, không tự thực hiện thao tác đã bấm.<br>[Khi huỷ] "Để sau" đóng hộp thoại, giữ nguyên trang. |
 
 [Nguồn: 05-coding/frontend/src/views/users/problem-overview/ui/problem-overview-view.tsx:32-35,48-53,57-83,108-118,157-162,273-277;
 05-coding/frontend/messages/vi.json:365-366,373,2957-2959]
@@ -723,7 +731,7 @@ Ghi chú ranh giới:
 
 | NO | Loại | Tóm tắt kiểm | Chi tiết | Mức | Mã thông báo | Ghi chú | EVT gọi | Thứ tự |
 | --: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :-: |
-| 1 | Kiểm quyền | Yêu cầu đăng nhập | [Nội dung kiểm] Người dùng chưa đăng nhập thì chuyển về màn `auth`; màn này không có trạng thái khách.<br>[Nơi thực thi] Chặn ở cả tầng định tuyến phía giao diện và tầng phân quyền phía máy chủ. | Lỗi | Chưa có mã thông báo | Nội dung "Vui lòng đăng nhập để tiếp tục." Khu Người học bắt buộc đăng nhập [Nguồn: 02-bd/screens/users/_shell.md:136]. | EVT-1 | 1 |
+| 1 | Kiểm quyền | Khách đọc được, hành động cần phiên (đổi 2026-11-26) | [Nội dung kiểm] Khách mở trang tổng quan của bài đã xuất bản thì đọc được, không bị chuyển về `auth`. Lưu bài và Giải bài mở hộp thoại nhắc (EVT-12). Máy chủ không trả giá trị theo người dùng cho khách (`bookmarked = false`, không có bài nộp gần đây, không có Solution Review).<br>[Nơi thực thi] Máy chủ: `GET` tổng quan mở cho khách, `POST`/`DELETE` bookmark và mọi API cá nhân trả 401 khi không có phiên; giao diện: không gọi API cá nhân khi là khách. | Lỗi | Chưa có mã thông báo | Hộp thoại "Cần đăng nhập" (nhãn thuộc `_shell.md` mục 2.5A). | EVT-12 | 1 |
 | 2 | Kiểm quyền | Phạm vi dữ liệu cá nhân | [Nội dung kiểm] Bookmark, bài nộp gần đây và Solution Review chỉ lấy theo **chính người dùng đăng nhập**; không endpoint nào nhận `user_id`. `INSTRUCTOR`/`ADMIN` không có đường đọc bookmark của người khác.<br>[Nơi thực thi] Máy chủ, ở tầng dịch vụ. | Lỗi | Không có thông báo | Ràng buộc cứng của F2-13 [Nguồn: 02-bd/database/F2_problem-bank.md:187-188]; quy ước tiền tố `My` [Nguồn: 02-bd/screens/users/USR0102_problem_detail.md:731-733]. | EVT-1, EVT-3, EVT-4 | 1 |
 | 3 | Kiểm nghiệp vụ | Bài mở được | [Nội dung kiểm] Chỉ mở được bài `status = PUBLISHED` và `deleted = false`; bài chưa xuất bản, đã ẩn mềm hoặc không tồn tại đều trả về như không tồn tại.<br>[Nơi thực thi] Máy chủ, trong điều kiện truy vấn; giao diện hiển thị Khu vực H. | Lỗi | Chưa có mã thông báo | Nội dung "Không tìm thấy bài toán." **Không** báo "bạn không có quyền" để không lộ sự tồn tại của bài chưa xuất bản (`DEC-2026-0830-problem-lifecycle-two-states`) [Nguồn: 02-bd/screens/users/USR0102_problem_detail.md:803]. Bản dựng đã đúng điều này [Nguồn: V:44-55]. | EVT-1 | 2 |
 | 4 | Kiểm nghiệp vụ | Không lộ testcase ẩn | [Nội dung kiểm] Phản hồi và giao diện chỉ chứa **số lượng** testcase ẩn. Danh sách ví dụ chỉ chứa dòng `worked_examples` (Sửa 2026-10-22, đồng bộ DB vòng 3, DEC-2026-1022-problem-bank-schema-sync; không đọc `testcases`, nên không thể lẫn dòng `HIDDEN`). Không có input, output mong đợi hay diff của dòng `HIDDEN` ở bất kỳ trường nào.<br>[Nơi thực thi] Máy chủ (không đưa dữ liệu vào phản hồi) và giao diện. | Lỗi | Không có thông báo | F2-08 [Nguồn: 01-rd/overview/system_survey.md:290]; cùng nguyên tắc `USR0102` [Nguồn: 02-bd/screens/users/USR0102_problem_detail.md:46]. | EVT-1 | 3 |

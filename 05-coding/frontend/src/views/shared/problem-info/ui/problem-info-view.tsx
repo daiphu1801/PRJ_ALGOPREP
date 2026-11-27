@@ -17,11 +17,11 @@
 "use client";
 
 import Link from "next/link";
+import { useRef, useState } from "react";
 import { ArrowLeft } from "lucide-react";
 import {
   AI_GUARD_KEYS,
   SPEC_LANGUAGES,
-  TESTCASE_CATEGORIES,
   exceedsSchema,
   renderSignature,
   useProblemDraft,
@@ -32,7 +32,7 @@ import {
   useProblemTopics,
   type AiGuardKey,
   type ProblemLimits,
-  type TestcaseCategory,
+  type SpecLanguage,
   canViewerSeeProblem,
 } from "@/entities/problem";
 import { isNotFound } from "@/shared/api";
@@ -45,9 +45,13 @@ import {
   ErrorState,
   IconAction,
   MarkdownPreview,
+  PageContainer,
   PageHeader,
+  SegmentedTabs,
   Skeleton,
 } from "@/shared/ui";
+
+import { TestcaseCoverage } from "./testcase-coverage";
 
 const LIMIT_KEYS: (keyof ProblemLimits)[] = [
   "timeLimitMs",
@@ -56,8 +60,11 @@ const LIMIT_KEYS: (keyof ProblemLimits)[] = [
   "maxSubmissionsPerHour",
 ];
 
+type DetailSection =
+  "statement" | "examples" | "spec" | "coverage" | "solution";
+
 type Props = {
-  /** Route param, e.g. "121" — the list links with the code minus its "#". */
+  /** Problem identifier from the route. */
   problemId: string;
   /** Area root this screen is mounted under, e.g. "/admin/problems". */
   basePath: string;
@@ -69,6 +76,10 @@ export function ProblemInfoView({ problemId, basePath }: Props) {
   const levelList = useProblemLevels();
   const topicList = useProblemTopics();
   const query = useProblemDraft(problemId);
+  const [section, setSection] = useState<DetailSection>("statement");
+  const [signatureLanguage, setSignatureLanguage] =
+    useState<SpecLanguage>("python");
+  const sectionStart = useRef<HTMLDivElement>(null);
 
   if (isNotFound(query.error)) return <EmptyState>{t("notFound")}</EmptyState>;
   if (query.isError) return <ErrorState>{t("loadFailed")}</ErrorState>;
@@ -81,28 +92,60 @@ export function ProblemInfoView({ problemId, basePath }: Props) {
     );
   }
   const draft = query.data.draft;
+  const code = query.data.code;
+  const topic = problemTopicLabel(topicList, draft.topic);
 
+  // Real mode: a caller who may not read testcase bodies gets counts only (DD F2 #33), so the numbers
+  // come from the summary and the coverage block, which needs each row's category, is left out.
+  const server = query.data.server;
+  const summaryOnly =
+    server !== undefined &&
+    draft.testcases.length === 0 &&
+    server.testcaseSummary.total > 0;
   const approved = draft.testcases.filter((row) => row.approved);
-  const pending = draft.testcases.length - approved.length;
-  const publicCount = approved.filter(
-    (row) => row.visibility === "public",
-  ).length;
-  const coverage = TESTCASE_CATEGORIES.map((category: TestcaseCategory) => ({
-    category,
-    approved: approved.filter((row) => row.category === category).length,
-  }));
+  const approvedCount = summaryOnly
+    ? server.testcaseSummary.approved
+    : approved.length;
+  const pending = summaryOnly
+    ? server.testcaseSummary.total - server.testcaseSummary.approved
+    : draft.testcases.length - approved.length;
+  const publicCount = summaryOnly
+    ? server.testcaseSummary.sample
+    : approved.filter((row) => row.visibility === "public").length;
+  const sections: { value: DetailSection; label: string }[] = [
+    { value: "statement", label: ta("statementTitle") },
+    {
+      value: "examples",
+      label: `${ta("examplesTitle")} (${draft.examples.length})`,
+    },
+    { value: "spec", label: t("sectionSpec") },
+  ];
+  if (!summaryOnly)
+    sections.push({ value: "coverage", label: t("sectionCoverage") });
+  if (!server?.readOnly)
+    sections.push({ value: "solution", label: ta("solutionTitle") });
+  const activeSection = sections.some(({ value }) => value === section)
+    ? section
+    : "statement";
+  const solutionLanguage = SPEC_LANGUAGES.find(
+    (language) => language === draft.solutionLanguage.toLowerCase(),
+  );
 
   return (
-    <div>
+    <PageContainer variant="content" className="@container">
       <PageHeader
+        className="static"
         leading={
           <IconAction icon={ArrowLeft} label={t("back")} href={basePath} />
         }
         title={draft.title}
-        description={t("subtitle", {
-          code: problemId,
-          topic: problemTopicLabel(topicList, draft.topic),
-        })}
+        description={
+          <span className="block whitespace-normal [overflow-wrap:anywhere]">
+            {code
+              ? t("subtitle", { code, topic })
+              : t("subtitleTopic", { topic })}
+          </span>
+        }
         actions={
           <>
             {/* Same target as the authoring screen's eye icon: SHR0202 Q6 (owner 2026-10-03) opens
@@ -122,7 +165,7 @@ export function ProblemInfoView({ problemId, basePath }: Props) {
               </a>
             </Button>
             {/* A2 reads other authors' published problems but never edits them. */}
-            {canViewerSeeProblem(problemId) ? (
+            {(server ? !server.readOnly : canViewerSeeProblem(problemId)) ? (
               <Button asChild variant="cta" size="sm">
                 <Link href={`${basePath}/${problemId}/edit`}>{t("edit")}</Link>
               </Button>
@@ -131,236 +174,305 @@ export function ProblemInfoView({ problemId, basePath }: Props) {
         }
       />
 
-      <div className="grid grid-cols-1 items-start gap-4 xl:grid-cols-[minmax(0,1fr)_300px]">
-        <div className="flex min-w-0 flex-col gap-3.5">
-          <Card title={ta("statementTitle")}>
-            <MarkdownPreview size="lg">{draft.body}</MarkdownPreview>
-            <p className="mt-4 mb-1.5 text-[11px] font-semibold tracking-[0.07em] text-[var(--color-text-subtle)] uppercase">
-              {ta("constraintsLabel")}
-            </p>
-            <pre className="font-mono text-[14px] whitespace-pre-wrap">
-              {draft.constraints}
-            </pre>
-          </Card>
+      <div ref={sectionStart} className="flex flex-1 flex-col gap-3">
+        <div className="sticky top-0 z-20 w-[480px] max-w-full rounded-xl bg-[var(--color-background)]">
+          <SegmentedTabs
+            label={t("sectionsLabel")}
+            options={sections}
+            value={activeSection}
+            onValueChange={(nextSection) => {
+              setSection(nextSection);
+              const start = sectionStart.current;
+              const viewport = start?.closest("[data-page-viewport]");
+              const top = Math.max(
+                0,
+                viewport?.getBoundingClientRect().top ?? 0,
+              );
+              if (start && start.getBoundingClientRect().top < top) {
+                start.scrollIntoView({ block: "start" });
+              }
+            }}
+            className="w-full flex-wrap [&>button]:grow"
+          />
+        </div>
 
-          <Card title={ta("examplesTitle")}>
-            <div className="flex flex-col gap-2.5">
-              {draft.examples.map((example, index) => (
-                <div
-                  key={example.id}
-                  className="glass-surface rounded-2xl border border-[var(--color-border)] px-3.5 py-3"
-                >
-                  <p className="mb-2 text-[11px] font-semibold tracking-[0.08em] text-[var(--color-text-subtle)] uppercase">
-                    {ta("exampleIndex", { index: index + 1 })}
+        <div className="grid flex-1 grid-cols-1 gap-4 @min-[960px]:grid-cols-[minmax(0,4fr)_minmax(16rem,1fr)]">
+          <div className="flex min-w-0 flex-col @min-[960px]:[&>section]:flex-1">
+            {activeSection === "statement" && (
+              <Card title={ta("statementTitle")}>
+                <MarkdownPreview size="lg">{draft.body}</MarkdownPreview>
+                {draft.constraints.trim() && (
+                  <div className="mt-4 border-t border-[var(--color-border)] pt-3">
+                    <h3 className="mb-1 text-sm font-semibold">
+                      {ta("constraintsLabel")}
+                    </h3>
+                    <pre className="font-mono text-sm whitespace-pre-wrap wrap-anywhere">
+                      {draft.constraints}
+                    </pre>
+                  </div>
+                )}
+              </Card>
+            )}
+
+            {activeSection === "examples" && (
+              <Card title={ta("examplesTitle")}>
+                {draft.examples.length === 0 ? (
+                  <p className="text-sm text-[var(--color-text-muted)]">
+                    {ta("emptyExamples")}
                   </p>
-                  <dl className="flex flex-col gap-1.5 text-[14px]">
-                    <div className="flex gap-2">
-                      <dt className="w-20 shrink-0 text-[var(--color-text-subtle)]">
-                        {ta("exampleInput")}
-                      </dt>
-                      <dd className="min-w-0 font-mono">{example.input}</dd>
-                    </div>
-                    <div className="flex gap-2">
-                      <dt className="w-20 shrink-0 text-[var(--color-text-subtle)]">
-                        {ta("exampleOutput")}
-                      </dt>
-                      <dd className="min-w-0 font-mono">{example.output}</dd>
-                    </div>
-                    <div className="flex gap-2">
-                      <dt className="w-20 shrink-0 text-[var(--color-text-subtle)]">
-                        {ta("exampleExplanation")}
-                      </dt>
-                      <dd className="min-w-0 text-[var(--color-text-muted)]">
-                        {example.explanation}
-                      </dd>
-                    </div>
-                  </dl>
-                </div>
-              ))}
-            </div>
-          </Card>
+                ) : (
+                  <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,22rem),1fr))] gap-3">
+                    {draft.examples.map((example, index) => (
+                      <article
+                        key={example.id}
+                        className="min-w-0 rounded-xl border border-[var(--color-border)] p-3"
+                      >
+                        <h3 className="mb-3 text-sm font-semibold">
+                          {ta("exampleIndex", { index: index + 1 })}
+                        </h3>
+                        <dl className="grid gap-2 sm:grid-cols-2">
+                          <div className="min-w-0 rounded-lg bg-[var(--color-track)] p-2.5">
+                            <dt className="mb-1 text-xs font-semibold text-[var(--color-text-muted)]">
+                              {ta("exampleInput")}
+                            </dt>
+                            <dd>
+                              <pre className="font-mono text-sm whitespace-pre-wrap wrap-anywhere">
+                                {example.input}
+                              </pre>
+                            </dd>
+                          </div>
+                          <div className="min-w-0 rounded-lg bg-[var(--color-track)] p-2.5">
+                            <dt className="mb-1 text-xs font-semibold text-[var(--color-text-muted)]">
+                              {ta("exampleOutput")}
+                            </dt>
+                            <dd>
+                              <pre className="font-mono text-sm whitespace-pre-wrap wrap-anywhere">
+                                {example.output}
+                              </pre>
+                            </dd>
+                          </div>
+                          {example.explanation.trim() && (
+                            <div className="min-w-0 text-sm sm:col-span-2">
+                              <dt className="font-semibold">
+                                {ta("exampleExplanation")}
+                              </dt>
+                              <dd className="mt-1 wrap-anywhere text-[var(--color-text-muted)]">
+                                {example.explanation}
+                              </dd>
+                            </div>
+                          )}
+                        </dl>
+                      </article>
+                    ))}
+                  </div>
+                )}
+              </Card>
+            )}
 
-          <Card title={t("specTitle")} description={t("specSubtitle")}>
-            {exceedsSchema(draft.spec) ? (
-              <p className="mb-3 text-[12.5px] text-[var(--color-text-muted)]">
-                {ta("spec.wrapperUnsupportedBody")}
-              </p>
-            ) : (
-              <ul className="mb-4 flex flex-col gap-2">
-                {SPEC_LANGUAGES.map((language) => (
-                  <li
-                    key={language}
-                    className="flex flex-wrap items-baseline gap-x-3 gap-y-0.5"
-                  >
-                    <span className="w-16 shrink-0 text-[12px] font-semibold text-[var(--color-text-subtle)]">
-                      {ta(`spec.language.${language}`)}
+            {activeSection === "spec" && (
+              <Card title={t("specTitle")}>
+                <dl className="grid gap-3 text-sm sm:grid-cols-2">
+                  <div className="min-w-0 rounded-lg bg-[var(--color-track)] p-3">
+                    <dt className="mb-1 font-semibold">
+                      {ta("spec.stdinFormat")}
+                    </dt>
+                    <dd className="whitespace-pre-wrap wrap-anywhere">
+                      {draft.spec.stdinFormat || t("unspecified")}
+                    </dd>
+                  </div>
+                  <div className="min-w-0 rounded-lg bg-[var(--color-track)] p-3">
+                    <dt className="mb-1 font-semibold">
+                      {ta("spec.stdoutFormat")}
+                    </dt>
+                    <dd className="whitespace-pre-wrap wrap-anywhere">
+                      {draft.spec.stdoutFormat || t("unspecified")}
+                    </dd>
+                  </div>
+                  <div className="min-w-0 rounded-lg border border-[var(--color-border)] p-3 sm:col-span-2">
+                    <dt className="flex flex-wrap items-center gap-2 font-semibold">
+                      {ta("spec.matchingStrategy")}
+                      <Badge variant="neutral">
+                        {draft.spec.matchingStrategy}
+                      </Badge>
+                    </dt>
+                    <dd className="mt-1 text-[var(--color-text-muted)]">
+                      {ta(`spec.strategy.${draft.spec.matchingStrategy}.meta`)}
+                      {draft.spec.matchingStrategy === "EPSILON" && (
+                        <span className="ml-2 font-mono">
+                          ε = {draft.spec.epsilon}
+                        </span>
+                      )}
+                    </dd>
+                  </div>
+                </dl>
+                <div className="mt-4 border-t border-[var(--color-border)] pt-3">
+                  <h3 className="mb-2 text-sm font-semibold">
+                    {ta("spec.signatureTitle")}
+                  </h3>
+                  {exceedsSchema(draft.spec) ? (
+                    <p className="text-sm text-[var(--color-text-muted)]">
+                      {ta("spec.wrapperUnsupportedBody")}
+                    </p>
+                  ) : !draft.spec.signature.functionName.trim() ? (
+                    <p className="text-sm text-[var(--color-text-muted)]">
+                      {t("unspecified")}
+                    </p>
+                  ) : (
+                    <>
+                      <SegmentedTabs
+                        label={ta("spec.preview.languages")}
+                        options={SPEC_LANGUAGES.map((language) => ({
+                          value: language,
+                          label: ta(`spec.language.${language}`),
+                        }))}
+                        value={signatureLanguage}
+                        onValueChange={setSignatureLanguage}
+                        className="w-fit"
+                      />
+                      <pre className="mt-2 overflow-x-auto rounded-lg bg-[var(--color-track)] p-3 text-sm">
+                        <code>
+                          {renderSignature(
+                            draft.spec.signature,
+                            signatureLanguage,
+                          )}
+                        </code>
+                      </pre>
+                    </>
+                  )}
+                </div>
+              </Card>
+            )}
+
+            {activeSection === "coverage" && !summaryOnly && (
+              <TestcaseCoverage
+                rows={draft.testcases}
+                approvedCount={approvedCount}
+                problemId={server && !server.readOnly ? problemId : undefined}
+              />
+            )}
+
+            {activeSection === "solution" && !server?.readOnly && (
+              <Card
+                title={ta("solutionTitle")}
+                action={
+                  <Badge variant="neutral">
+                    {solutionLanguage
+                      ? ta(`spec.language.${solutionLanguage}`)
+                      : draft.solutionLanguage}
+                  </Badge>
+                }
+              >
+                {draft.solution.trim() ? (
+                  <pre className="overflow-x-auto rounded-lg bg-[var(--color-track)] p-3 text-sm leading-relaxed">
+                    <code>{draft.solution}</code>
+                  </pre>
+                ) : (
+                  <p className="text-sm text-[var(--color-text-muted)]">
+                    {t("solutionEmpty")}
+                  </p>
+                )}
+              </Card>
+            )}
+          </div>
+
+          <div className="flex min-w-0 flex-col gap-3.5 self-start @min-[960px]:sticky @min-[960px]:top-0">
+            <Card title={ta("propertiesTitle")}>
+              <dl className="flex flex-col gap-3 text-[13px]">
+                <div className="flex items-center justify-between gap-2">
+                  <dt className="text-[var(--color-text-subtle)]">
+                    {ta("difficultyLabel")}
+                  </dt>
+                  <dd>
+                    <Badge
+                      variant={problemLevelTone(levelList, draft.difficulty)}
+                    >
+                      {problemLevelLabel(levelList, draft.difficulty)}
+                    </Badge>
+                  </dd>
+                </div>
+                <div className="flex items-center justify-between gap-2">
+                  <dt className="text-[var(--color-text-subtle)]">
+                    {ta("statusLabel")}
+                  </dt>
+                  <dd>
+                    <Badge
+                      variant={
+                        draft.status === "published" ? "success" : "neutral"
+                      }
+                    >
+                      {ta(`status.${draft.status}`)}
+                    </Badge>
+                  </dd>
+                </div>
+                <div className="flex items-center justify-between gap-2">
+                  <dt className="text-[var(--color-text-subtle)]">
+                    {t("statTestcases")}
+                  </dt>
+                  <dd>
+                    {approvedCount}{" "}
+                    <span className="text-[12px] text-[var(--color-text-muted)]">
+                      {t("statTestcasesMeta", { count: pending })}
                     </span>
-                    <code className="min-w-0 overflow-x-auto font-mono text-[12.5px] whitespace-pre">
-                      {renderSignature(draft.spec.signature, language)}
-                    </code>
+                  </dd>
+                </div>
+                <div className="flex items-center justify-between gap-2">
+                  <dt className="text-[var(--color-text-subtle)]">
+                    {t("statPublic")}
+                  </dt>
+                  <dd>{publicCount}</dd>
+                </div>
+                <div className="flex items-center justify-between gap-2">
+                  <dt className="text-[var(--color-text-subtle)]">
+                    {t("statSolution")}
+                  </dt>
+                  <dd>
+                    {draft.solutionCheck.ran
+                      ? `${draft.solutionCheck.passed}/${draft.solutionCheck.total}`
+                      : "-"}{" "}
+                    <span className="text-[12px] text-[var(--color-text-muted)]">
+                      {draft.solutionLanguage}
+                    </span>
+                  </dd>
+                </div>
+                {LIMIT_KEYS.map((key) => (
+                  <div
+                    key={key}
+                    className="flex items-center justify-between gap-2"
+                  >
+                    <dt className="text-[var(--color-text-subtle)]">
+                      {ta(`limit.${key}`)}
+                    </dt>
+                    <dd className="font-mono">
+                      {draft.limits[key] ?? ta("limit.systemDefault")}
+                    </dd>
+                  </div>
+                ))}
+              </dl>
+            </Card>
+
+            <Card title={ta("aiTitle")}>
+              <ul className="mb-3 flex flex-col gap-2 text-[12.5px]">
+                {AI_GUARD_KEYS.map((key: AiGuardKey) => (
+                  <li
+                    key={key}
+                    className="flex items-center justify-between gap-2"
+                  >
+                    <span>{ta(`aiGuard.${key}.label`)}</span>
+                    <Badge
+                      variant={draft.aiGuards[key] ? "success" : "neutral"}
+                    >
+                      {draft.aiGuards[key] ? t("guardOn") : t("guardOff")}
+                    </Badge>
                   </li>
                 ))}
               </ul>
-            )}
-            <dl className="flex flex-col gap-3 text-[12.5px]">
-              <div>
-                <dt className="mb-1 text-[11px] font-semibold tracking-[0.07em] text-[var(--color-text-subtle)] uppercase">
-                  {ta("spec.stdinFormat")}
-                </dt>
-                <dd className="whitespace-pre-wrap">
-                  {draft.spec.stdinFormat}
-                </dd>
-              </div>
-              <div>
-                <dt className="mb-1 text-[11px] font-semibold tracking-[0.07em] text-[var(--color-text-subtle)] uppercase">
-                  {ta("spec.stdoutFormat")}
-                </dt>
-                <dd className="whitespace-pre-wrap">
-                  {draft.spec.stdoutFormat}
-                </dd>
-              </div>
-              <div className="flex flex-wrap items-center gap-2">
-                <dt className="text-[11px] font-semibold tracking-[0.07em] text-[var(--color-text-subtle)] uppercase">
-                  {ta("spec.matchingStrategy")}
-                </dt>
-                <dd className="flex items-center gap-2">
-                  <Badge variant="neutral">{draft.spec.matchingStrategy}</Badge>
-                  {draft.spec.matchingStrategy === "EPSILON" ? (
-                    <span className="font-mono">{draft.spec.epsilon}</span>
-                  ) : null}
-                </dd>
-              </div>
-            </dl>
-          </Card>
-
-          <Card
-            title={ta("coverageTitle")}
-            description={ta("coverageSubtitle")}
-          >
-            <div className="flex flex-wrap gap-2">
-              {coverage.map((row) => (
-                <Badge
-                  key={row.category}
-                  variant={row.approved > 0 ? "success" : "neutral"}
-                >
-                  {ta(`category.${row.category}`)}: {row.approved}
-                </Badge>
-              ))}
-            </div>
-          </Card>
-
-          <Card
-            title={ta("solutionTitle")}
-            description={t("solutionSubtitle", {
-              language: draft.solutionLanguage,
-            })}
-          >
-            <details>
-              <summary className="cursor-pointer text-[13px] font-semibold">
-                {t("solutionToggle")}
-              </summary>
-              <pre className="mt-3 overflow-x-auto font-mono text-[12.5px] leading-relaxed">
-                {draft.solution}
-              </pre>
-            </details>
-          </Card>
-        </div>
-
-        <div className="flex flex-col gap-3.5 xl:sticky xl:top-[92px]">
-          <Card title={ta("propertiesTitle")}>
-            <dl className="flex flex-col gap-3 text-[13px]">
-              <div className="flex items-center justify-between gap-2">
-                <dt className="text-[var(--color-text-subtle)]">
-                  {ta("difficultyLabel")}
-                </dt>
-                <dd>
-                  <Badge
-                    variant={problemLevelTone(levelList, draft.difficulty)}
-                  >
-                    {problemLevelLabel(levelList, draft.difficulty)}
-                  </Badge>
-                </dd>
-              </div>
-              <div className="flex items-center justify-between gap-2">
-                <dt className="text-[var(--color-text-subtle)]">
-                  {ta("statusLabel")}
-                </dt>
-                <dd>
-                  <Badge
-                    variant={
-                      draft.status === "published" ? "success" : "neutral"
-                    }
-                  >
-                    {ta(`status.${draft.status}`)}
-                  </Badge>
-                </dd>
-              </div>
-              <div className="flex items-center justify-between gap-2">
-                <dt className="text-[var(--color-text-subtle)]">
-                  {t("statTestcases")}
-                </dt>
-                <dd>
-                  {approved.length}{" "}
-                  <span className="text-[12px] text-[var(--color-text-muted)]">
-                    {t("statTestcasesMeta", { count: pending })}
-                  </span>
-                </dd>
-              </div>
-              <div className="flex items-center justify-between gap-2">
-                <dt className="text-[var(--color-text-subtle)]">
-                  {t("statPublic")}
-                </dt>
-                <dd>{publicCount}</dd>
-              </div>
-              <div className="flex items-center justify-between gap-2">
-                <dt className="text-[var(--color-text-subtle)]">
-                  {t("statSolution")}
-                </dt>
-                <dd>
-                  {draft.solutionCheck.ran
-                    ? `${draft.solutionCheck.passed}/${draft.solutionCheck.total}`
-                    : "-"}{" "}
-                  <span className="text-[12px] text-[var(--color-text-muted)]">
-                    {draft.solutionLanguage}
-                  </span>
-                </dd>
-              </div>
-              {LIMIT_KEYS.map((key) => (
-                <div
-                  key={key}
-                  className="flex items-center justify-between gap-2"
-                >
-                  <dt className="text-[var(--color-text-subtle)]">
-                    {ta(`limit.${key}`)}
-                  </dt>
-                  <dd className="font-mono">
-                    {draft.limits[key] ?? ta("limit.systemDefault")}
-                  </dd>
-                </div>
-              ))}
-            </dl>
-          </Card>
-
-          <Card title={ta("aiTitle")}>
-            <ul className="mb-3 flex flex-col gap-2 text-[12.5px]">
-              {AI_GUARD_KEYS.map((key: AiGuardKey) => (
-                <li
-                  key={key}
-                  className="flex items-center justify-between gap-2"
-                >
-                  <span>{ta(`aiGuard.${key}.label`)}</span>
-                  <Badge variant={draft.aiGuards[key] ? "success" : "neutral"}>
-                    {draft.aiGuards[key] ? t("guardOn") : t("guardOff")}
-                  </Badge>
-                </li>
-              ))}
-            </ul>
-            <p className="text-[12.5px] text-pretty text-[var(--color-text-muted)]">
-              {draft.aiBrief || t("aiBriefEmpty")}
-            </p>
-          </Card>
+              <p className="text-[12.5px] text-pretty text-[var(--color-text-muted)]">
+                {draft.aiBrief || t("aiBriefEmpty")}
+              </p>
+            </Card>
+          </div>
         </div>
       </div>
-    </div>
+    </PageContainer>
   );
 }

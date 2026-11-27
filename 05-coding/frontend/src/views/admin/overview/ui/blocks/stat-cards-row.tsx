@@ -9,7 +9,6 @@ import {
   useSubmissionsSummary,
 } from "../../api";
 
-// Row 1, left column: three vertical stat cards (the third was added 2026-10-01, see usePasswordResetsSummary) (02-bd/screens/admin/ADM0101_overview.md section 2 point 3).
 export function StatCardsRow() {
   const t = useT("adminOverview");
   const submissions = useSubmissionsSummary();
@@ -17,7 +16,7 @@ export function StatCardsRow() {
   const passwordResets = usePasswordResetsSummary();
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="grid grid-cols-1 gap-3 @min-[640px]:grid-cols-3 @min-[880px]:[@media(max-height:850px)]:[&>section]:p-2 @min-[880px]:[@media(max-height:850px)]:[&>section>div]:py-2">
       <DashboardBlockState
         title={t("blocks.submissionsSummary")}
         isLoading={submissions.isLoading}
@@ -36,6 +35,7 @@ export function StatCardsRow() {
             value={submissions.data.value.toLocaleString("vi-VN")}
             deltaPercent={submissions.data.deltaPercent}
             deltaDirection={submissions.data.deltaDirection}
+            noComparisonLabel={t("blocks.previousPeriodZero")}
             sparklineSeries={submissions.data.sparklineSeries}
             accentColorVar="--color-admin-cyan"
           />
@@ -59,6 +59,7 @@ export function StatCardsRow() {
             value={activeUsers.data.value.toLocaleString("vi-VN")}
             deltaPercent={activeUsers.data.deltaPercent}
             deltaDirection={activeUsers.data.deltaDirection}
+            noComparisonLabel={t("blocks.previousPeriodZero")}
             sparklineSeries={activeUsers.data.sparklineSeries}
             accentColorVar="--color-admin-teal"
           />
@@ -82,6 +83,7 @@ export function StatCardsRow() {
             value={passwordResets.data.value.toLocaleString("vi-VN")}
             deltaPercent={passwordResets.data.deltaPercent}
             deltaDirection={passwordResets.data.deltaDirection}
+            noComparisonLabel={t("blocks.previousPeriodZero")}
             sparklineSeries={passwordResets.data.sparklineSeries}
             accentColorVar="--color-admin-warn"
           />

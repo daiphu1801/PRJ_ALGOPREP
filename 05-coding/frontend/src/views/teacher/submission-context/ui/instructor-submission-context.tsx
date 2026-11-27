@@ -11,12 +11,10 @@
 "use client";
 
 import Link from "next/link";
+import { isMockMode } from "@/shared/api";
 import { useRouter, useSearchParams } from "next/navigation";
-import {
-  initialsOfClassStudent,
-  useClassStudentDetail,
-  useInstructorClasses,
-} from "@/entities/class";
+import { UserAvatar } from "@/entities/user";
+import { useClassStudentDetail, useInstructorClasses } from "@/entities/class";
 import {
   parseSubmissionOrigin,
   type SubmissionOrigin,
@@ -25,6 +23,14 @@ import { useT } from "@/shared/i18n";
 import { Badge } from "@/shared/ui";
 
 type SubmissionRef = {
+  instructorContext?: {
+    studentId: string;
+    studentName: string;
+    studentAvatarVersion?: number | null;
+    classId: string;
+    className: string;
+    leftClass: boolean;
+  };
   id: string;
   problemTitle: string;
   submittedAt: string;
@@ -52,6 +58,7 @@ function useResolved(ref: Refs) {
     loading: student.isLoading,
     known: student.data != null,
     studentName: student.data?.name ?? null,
+    avatarVersion: student.data?.avatarVersion,
     className: classes.data?.find((c) => c.id === ref.classId)?.name ?? null,
   };
 }
@@ -88,6 +95,7 @@ export function InstructorSubmissionBreadcrumb({
 }) {
   const origin = useOrigin();
   const ref = useStudentRef();
+  if (!isMockMode()) return <ListCrumb submission={submission} />;
   // student and class screens need the hint; without it every origin degrades to the list.
   if (!ref || origin === "submissions")
     return <ListCrumb submission={submission} />;
@@ -147,6 +155,19 @@ export function InstructorSubmissionContext({
   submission: SubmissionRef;
 }) {
   const ref = useStudentRef();
+  if (!isMockMode()) {
+    const context = submission.instructorContext;
+    return (
+      <ContextCard
+        submission={submission}
+        refs={context}
+        leftClass={context?.leftClass}
+        studentName={context?.studentName}
+        avatarVersion={context?.studentAvatarVersion}
+        className={context?.className}
+      />
+    );
+  }
   return ref ? (
     <ResolvedContext refs={ref} submission={submission} />
   ) : (
@@ -161,7 +182,8 @@ function ResolvedContext({
   refs: { studentId: string; classId: string };
   submission: SubmissionRef;
 }) {
-  const { loading, known, studentName, className } = useResolved(refs);
+  const { loading, known, studentName, className, avatarVersion } =
+    useResolved(refs);
   if (loading) return null;
   // A hint that names nobody of that class is not shown as if it were true.
   if (!known) return <ContextCard submission={submission} />;
@@ -170,6 +192,7 @@ function ResolvedContext({
       submission={submission}
       refs={refs}
       studentName={studentName}
+      avatarVersion={avatarVersion}
       className={className}
     />
   );
@@ -179,11 +202,16 @@ function ContextCard({
   submission,
   refs,
   studentName,
+  avatarVersion,
   className,
+  leftClass,
 }: {
   submission: SubmissionRef;
   refs?: { studentId: string; classId: string };
+  /** The student left the class: name and picture stay (the work is theirs), the name stops being a link. */
+  leftClass?: boolean;
   studentName?: string | null;
+  avatarVersion?: number | null;
   className?: string | null;
 }) {
   const t = useT("instructorSubmission");
@@ -194,38 +222,46 @@ function ContextCard({
     >
       {refs ? (
         <div className="flex min-w-0 items-center gap-3">
-          <span
-            aria-hidden="true"
-            className="glass-surface flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[var(--color-border)] text-sm font-semibold"
-          >
-            {studentName ? initialsOfClassStudent(studentName) : "?"}
-          </span>
+          <UserAvatar
+            userId={refs.studentId}
+            name={studentName ?? ""}
+            avatarVersion={avatarVersion}
+          />
           <div className="min-w-0">
             <p className="truncate text-[15px] font-semibold">
-              <Link
-                href={`/instructor/classes/${refs.classId}/students/${refs.studentId}`}
-                className="hover:underline"
-              >
-                {studentName ?? refs.studentId}
-              </Link>
+              {leftClass ? (
+                <span>{studentName ?? refs.studentId}</span>
+              ) : (
+                <Link
+                  href={`/instructor/classes/${refs.classId}/students/${refs.studentId}`}
+                  className="hover:underline"
+                >
+                  {studentName ?? refs.studentId}
+                </Link>
+              )}
               <span className="font-normal text-[var(--color-text-muted)]">
                 {" · "}
                 {submission.problemTitle}
               </span>
             </p>
             <p className="text-[12.5px] text-[var(--color-text-muted)]">
-              <Link
-                href={`/instructor/classes/${refs.classId}`}
-                className="hover:underline"
-              >
-                {className ?? refs.classId}
-              </Link>
+              {leftClass ? (
+                <span>{className ?? refs.classId}</span>
+              ) : (
+                <Link
+                  href={`/instructor/classes/${refs.classId}`}
+                  className="hover:underline"
+                >
+                  {className ?? refs.classId}
+                </Link>
+              )}
             </p>
           </div>
         </div>
       ) : (
         <p className="text-[15px] font-semibold">{submission.problemTitle}</p>
       )}
+      {leftClass ? <Badge variant="warn">{t("leftClassBadge")}</Badge> : null}
       <Badge variant="neutral">{t("readOnlyBadge")}</Badge>
       <p className="min-w-[200px] flex-1 text-[12.5px] text-[var(--color-text-muted)]">
         {t("readOnlyNote")}

@@ -122,12 +122,12 @@ export function fakeDifficultyBreakdown(): Promise<DifficultyBreakdown> {
 }
 
 export function fakeSubmissionsByDay(): Promise<SubmissionsByDay> {
-  // dc.html:470-474 (dayLabels/dayVals/weekTotal/dayAvg) — dc.html scales intensity out of 10 dots.
-  const dayVals = [7, 8, 6, 7, 10, 6, 4];
+  // Daily counts add up to weekTotal (942); dc.html:470-474 only had 0-10 dot intensities.
+  const dayVals = [128, 146, 110, 128, 181, 150, 99];
   return delay({
     columns: ["T2", "T3", "T4", "T5", "T6", "T7", "CN"].map((label, i) => ({
       label,
-      intensity: dayVals[i]!,
+      count: dayVals[i]!,
     })),
     weekTotal: 942,
     dailyAverage: 135,

@@ -45,6 +45,11 @@ describe("admin nav config", () => {
     ]);
   });
 
+  it("ends the session from the user menu: a logout item that lands on the admin login", () => {
+    const logout = ADMIN_NAV_MISC.find((item) => item.key === "logout");
+    expect(logout?.href).toBe("/admin/login");
+  });
+
   it("does not contain admin_rejudge (removed from scope, DEC-2026-0828-remove-rejudge-scope)", () => {
     const allKeys = [
       ADMIN_NAV_OVERVIEW,

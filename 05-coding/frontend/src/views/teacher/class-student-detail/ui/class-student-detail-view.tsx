@@ -10,6 +10,7 @@
 "use client";
 
 import { useMemo, useState, type ReactNode } from "react";
+import { isMockMode } from "@/shared/api";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -23,14 +24,13 @@ import {
   User,
   type LucideIcon,
 } from "lucide-react";
-import { useClassAssignments } from "@/entities/class-assignment";
+import { useClassAssignedProblems } from "@/entities/class-assignment";
 import {
-  matchesResultFilter,
   SUBMISSION_LANGUAGE_LABEL,
   SUBMISSION_STATUS_VARIANT,
   useInstructorReadableSubmissions,
+  useStudentClassSubmissionHistory,
   type SubmissionDetail,
-  type SubmissionResultFilter,
 } from "@/entities/submission";
 import {
   STUDENT_STATUS_VARIANT,
@@ -38,6 +38,7 @@ import {
   useInstructorClasses,
   useRemoveStudent,
 } from "@/entities/class";
+import { UserAvatar } from "@/entities/user";
 import { useT } from "@/shared/i18n";
 import { toast } from "@/shared/lib/toast-store";
 import {
@@ -46,9 +47,10 @@ import {
   Card,
   ConfirmDialog,
   DataTable,
-  FilterMenu,
   IconAction,
+  PageContainer,
   PageHeader,
+  Pagination,
   QueryError,
   type DataTableColumn,
 } from "@/shared/ui";
@@ -107,6 +109,9 @@ function buildSubmissionHistory(readable: SubmissionDetail[]) {
   });
 }
 
+// 20 rows per page, the size of the server page (03-dd/api/F4_judge-orchestration.md mục 15).
+const HISTORY_PAGE_SIZE = 20;
+
 export function ClassStudentDetailView({
   classId,
   studentId,
@@ -117,24 +122,41 @@ export function ClassStudentDetailView({
   const t = useT("classStudentDetail");
   const classesQuery = useInstructorClasses();
   const studentQuery = useClassStudentDetail(studentId, classId);
-  const assignmentsQuery = useClassAssignments();
+  const assignedQuery = useClassAssignedProblems(classId);
   const removeStudent = useRemoveStudent();
   const router = useRouter();
   const [confirmingRemove, setConfirmingRemove] = useState(false);
   const tVerdict = useT("submissionResult");
-  const [historyFilter, setHistoryFilter] =
-    useState<SubmissionResultFilter>("all");
+  const [historyPage, setHistoryPage] = useState(1);
 
   const className =
     classesQuery.data?.find((c) => c.id === classId)?.name ?? classId;
 
-  const classAssignments = useMemo(
-    () =>
-      (assignmentsQuery.data ?? []).filter((row) =>
-        row.assignedClassIds.includes(classId),
-      ),
-    [assignmentsQuery.data, classId],
-  );
+  // Real mode (F1 #28): the rows are the problems still given to the class, titles and topics from
+  // every page of F2 #49 (useClassAssignedProblems); a problem missing from it still shows "-".
+  const progress = studentQuery.data?.assignmentProgress;
+  const classAssignments = useMemo(() => {
+    if (progress) {
+      const known = new Map(
+        (assignedQuery.data ?? []).map((row) => [row.id, row]),
+      );
+      return progress.map((item) => {
+        const row = known.get(item.problemId);
+        return {
+          id: item.problemId,
+          title: row?.title ?? "-",
+          topic: row?.topic ?? "-",
+          acRate: row?.acRate ?? null,
+        };
+      });
+    }
+    return (assignedQuery.data ?? []).map((row) => ({
+      id: row.id,
+      title: row.title,
+      topic: row.topic,
+      acRate: row.acRate as number | null,
+    }));
+  }, [progress, assignedQuery.data]);
 
   const topicBreakdown = useMemo(() => {
     const byTopic = new Map<string, number>();
@@ -143,18 +165,29 @@ export function ClassStudentDetailView({
     return [...byTopic.entries()];
   }, [classAssignments]);
 
-  const readableQuery = useInstructorReadableSubmissions();
-  const submissionHistory = useMemo(
+  const readableQuery = useInstructorReadableSubmissions(isMockMode());
+  const realHistory = useStudentClassSubmissionHistory(
+    classId,
+    studentId,
+    historyPage,
+  );
+  // Mock: the whole list lives in memory and is cut into pages here. Real: the server already sent one page.
+  const mockHistory = useMemo(
     () => buildSubmissionHistory(readableQuery.data ?? []),
     [readableQuery.data],
   );
-
-  const visibleHistory = useMemo(
+  const historyTotal = isMockMode()
+    ? mockHistory.length
+    : (realHistory.data?.totalCount ?? 0);
+  const submissionHistory = useMemo(
     () =>
-      submissionHistory.filter((row) =>
-        matchesResultFilter(row.status, historyFilter),
-      ),
-    [submissionHistory, historyFilter],
+      isMockMode()
+        ? mockHistory.slice(
+            (historyPage - 1) * HISTORY_PAGE_SIZE,
+            historyPage * HISTORY_PAGE_SIZE,
+          )
+        : (realHistory.data?.items ?? []),
+    [mockHistory, historyPage, realHistory.data],
   );
 
   const student = studentQuery.data;
@@ -176,8 +209,26 @@ export function ClassStudentDetailView({
       key: "acRate",
       header: t("assignmentProgress.col.acRate"),
       align: "right",
-      render: (row) => `${row.acRate}%`,
+      render: (row) => (row.acRate == null ? "-" : `${row.acRate}%`),
     },
+    // Real mode only (F1 #28): the best result of THIS student on the problem, since it was given.
+    ...(student?.assignmentProgress
+      ? [
+          {
+            key: "best",
+            header: t("assignmentProgress.col.best"),
+            align: "right" as const,
+            render: (row: (typeof classAssignments)[number]) => {
+              const best = student.assignmentProgress?.find(
+                (item) => item.problemId === row.id,
+              );
+              return best?.bestVerdict
+                ? `${Math.round((best.bestRatio ?? 0) * 100)}% · ${tVerdict(`verdict.${best.bestVerdict}`)}`
+                : "-";
+            },
+          },
+        ]
+      : []),
   ];
 
   const historyColumns: DataTableColumn<(typeof submissionHistory)[number]>[] =
@@ -262,7 +313,7 @@ export function ClassStudentDetailView({
   }
 
   return (
-    <div>
+    <PageContainer variant="content" className="@container">
       <PageHeader
         leading={
           <IconAction
@@ -306,7 +357,15 @@ export function ClassStudentDetailView({
         <Card title={t("info.contactTitle")} className="h-full">
           <dl className="flex flex-col gap-4 text-sm">
             <InfoItem icon={User} label={t("info.name")}>
-              {student.name}
+              <span className="flex items-center gap-2">
+                <UserAvatar
+                  userId={student.id}
+                  name={student.name}
+                  avatarVersion={student.avatarVersion}
+                  size="sm"
+                />
+                {student.name}
+              </span>
             </InfoItem>
             <InfoItem icon={Mail} label={t("info.email")}>
               {student.email ? (
@@ -380,36 +439,36 @@ export function ClassStudentDetailView({
         />
       </Card>
 
-      <Card title={t("submissionHistory.title")}>
+      <Card className="flex grow flex-col" title={t("submissionHistory.title")}>
+        {!isMockMode() && realHistory.isError ? (
+          <QueryError query={realHistory} />
+        ) : null}
         <div className="mb-3.5 flex flex-wrap items-center gap-2.5">
-          <FilterMenu
-            label={t("submissionHistory.filter.label")}
-            value={historyFilter}
-            onValueChange={(value) =>
-              setHistoryFilter(value as SubmissionResultFilter)
-            }
-            options={[
-              { value: "all", label: t("submissionHistory.filter.all") },
-              {
-                value: "accepted",
-                label: t("submissionHistory.filter.accepted"),
-              },
-              { value: "failed", label: t("submissionHistory.filter.failed") },
-            ]}
-          />
           <span className="ml-auto text-[12.5px] text-[var(--color-text-muted)]">
-            {t("submissionHistory.resultCount", {
-              count: visibleHistory.length,
-            })}
+            {t("submissionHistory.resultCount", { count: historyTotal })}
           </span>
         </div>
         <DataTable
           caption={t("submissionHistory.title")}
           columns={historyColumns}
-          rows={visibleHistory}
+          rows={submissionHistory}
           rowKey={(row) => row.id}
           emptyMessage={t("empty")}
           minWidth={760}
+        />
+        <Pagination
+          className="mt-auto"
+          hideWhenSinglePage
+          page={historyPage}
+          pageSize={HISTORY_PAGE_SIZE}
+          total={historyTotal}
+          onPageChange={setHistoryPage}
+          summary={t("submissionHistory.pageSummary", {
+            page: historyPage,
+            total: Math.max(1, Math.ceil(historyTotal / HISTORY_PAGE_SIZE)),
+          })}
+          previousLabel={t("submissionHistory.previous")}
+          nextLabel={t("submissionHistory.next")}
         />
       </Card>
 
@@ -417,15 +476,18 @@ export function ClassStudentDetailView({
         open={confirmingRemove}
         onClose={() => setConfirmingRemove(false)}
         onConfirm={() => {
-          removeStudent.mutate(studentId, {
-            onSuccess: () => {
-              toast.success(t("toast.removed", { name: student.name }));
-              // The learner left the class, so this page has nothing left to show: back to the caller
-              // (BD INS0204 Q10, DEC-2026-1014-instructor-batch3-4-contracts-and-removal).
-              router.back();
+          removeStudent.mutate(
+            { classId, studentId },
+            {
+              onSuccess: () => {
+                toast.success(t("toast.removed", { name: student.name }));
+                // The learner left the class, so this page has nothing left to show: back to the caller
+                // (BD INS0204 Q10, DEC-2026-1014-instructor-batch3-4-contracts-and-removal).
+                router.back();
+              },
+              onError: () => toast.error(t("toast.failed")),
             },
-            onError: () => toast.error(t("toast.failed")),
-          });
+          );
           setConfirmingRemove(false);
         }}
         title={t("popup.removeTitle", { name: student.name })}
@@ -435,6 +497,6 @@ export function ClassStudentDetailView({
       >
         {t("popup.removeBody")}
       </ConfirmDialog>
-    </div>
+    </PageContainer>
   );
 }

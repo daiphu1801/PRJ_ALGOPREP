@@ -7,7 +7,7 @@
 | Actor, route | A3 `ADMIN`; `/admin/permissions` |
 | Nguồn | `01-rd/screens/admin/ADM0202_permission_matrix.md`; `02-bd/screens/admin/ADM0202_permission_matrix.md` Sheet 1–9; [F1](../../api/F1_identity.md) §0.5, BR-13–15 |
 | Prototype | `05-coding/frontend/src/views/admin/permission-matrix/ui/admin-permission-matrix-view.tsx` |
-| Phiên bản | V0.1, 2026-10-25; DD màn, Mode B |
+| Phiên bản | V0.2, 2026-11-02 (nối API thật, task #12); V0.1, 2026-10-25; DD màn, Mode B |
 
 ## 1. Bản đồ slice FSD
 
@@ -28,6 +28,15 @@
 | 7–8 xoá role | F1 #34 `DELETE /rbac/roles/{roleId}` | Xác nhận; server chặn role hệ thống/đang có user |
 | 9 | Không có nút Lưu chung | Mỗi ô gọi F1 #31 `PATCH /rbac/matrix/{roleId}/{functionId}/{actionId}` ngay |
 | 10 | Không gọi API tại view | Khung xử lý điều hướng |
+
+**Triển khai 2026-11-02 (task #12, lát 2).** Màn đã nối API thật ở chế độ `NEXT_PUBLIC_MOCK_DATA=false`; chế độ mock giữ nguyên.
+- **Vị trí mã.** Giữ trong `views/admin/permission-matrix/api/` như các màn Admin khác, không tách sang `entities/permission` và `features/manage-permissions` như bảng mục 1 dự kiến (tiêu chí ponytail bậc 4: chưa có màn thứ hai dùng chung). Gồm `real-permission-matrix.ts` (gọi #30, #32, #31, #33, #34, #9 và ánh xạ DTO), `queries.ts` (`usePermissionMatrixPage`), `mutations.ts` (`usePermissionActions`).
+- **Một truy vấn cho trang.** `realFetchPermissionMatrix` gọi song song #30 (lưới ô, danh mục chức năng và thao tác), #32 (danh sách role kèm số người dùng) và `GET /me/profile`. Trên màn, role được định danh bằng `code` (`Role.key`: `STUDENT`, `INSTRUCTOR`, `ADMIN`, `role_<tên>`), còn trên đường truyền bằng `id`; `id` của chức năng và thao tác đi cùng trang để gọi #31. Chức năng ngoài mười một mã của màn bị bỏ qua.
+- **Role của chính quản trị viên** (`currentRoleKey`, phục vụ cảnh báo tự gỡ quyền) lấy bằng cách so `roleName` của hồ sơ với tên role ở #32 `[SoT: Suy luận]`, vì tên role không trùng nhau (IDT-425); không khớp thì cảnh báo tự gỡ quyền không hiện và máy chủ vẫn là người quyết định.
+- **Ghi từng ô.** Bấm ô gọi #31 và chỉ đổi theo giá trị máy chủ trả về; ô đang chờ bị khoá riêng, các ô khác vẫn bấm được. Lỗi: ô giữ giá trị cũ và toast nêu mã lỗi qua `apiErrors` (`IDT-420`, `IDT-423`, `IDT-445`, `IDT-424`). Thành công thì làm mới cả lưới từ máy chủ.
+- **Thêm và xoá role.** Chỉ cập nhật màn sau khi máy chủ trả lời; lỗi (`IDT-425`, `IDT-V22` đến `IDT-V25`, `IDT-421`, `IDT-422`, `IDT-446`) giữ nguyên form hoặc tab và toast nêu lý do. Hộp xoá vẫn bị chặn ở client khi role còn người dùng theo số đếm lúc tải trang; nếu người khác vừa gán thì máy chủ từ chối bằng `IDT-422`.
+- **Chưa làm.** Sau khi quản trị viên tự gỡ quyền của chính role mình, màn không tự chuyển trang (DD mục 3 dòng cuối); lần gọi kế tiếp báo `IDT-445` qua toast. Ghi nợ.
+- Kiểm chứng: `pnpm check` 125 file, 706 test; `e2e/admin-permissions-real.spec.ts` 4 kịch bản trên backend và frontend thật.
 
 ## 3. Trạng thái màn
 

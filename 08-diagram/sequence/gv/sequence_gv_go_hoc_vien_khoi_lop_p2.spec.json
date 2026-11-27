@@ -14,22 +14,22 @@
         "role": "actor"
       },
       {
-        "name": "ClassController",
+        "name": "StudentClassController",
         "role": "controller",
         "stereo": "presentation"
       },
       {
-        "name": "JoinClassByInvite",
+        "name": "JoinClassByCodeCommandHandler",
         "role": "service",
         "stereo": "application command"
       },
       {
-        "name": "ClassRepository",
+        "name": "InstructorClassRepository",
         "role": "repository",
         "stereo": "output port"
       },
       {
-        "name": "IdentityDbAdapter",
+        "name": "JdbcInstructorClassRepository",
         "role": "repository",
         "stereo": "persistence adapter"
       },
@@ -45,44 +45,44 @@
       },
       {
         "from": "Học viên",
-        "to": "ClassController",
+        "to": "StudentClassController",
         "text": "Nhập mã mời để vào lớp"
       },
       {
-        "from": "ClassController",
-        "to": "JoinClassByInvite",
+        "from": "StudentClassController",
+        "to": "JoinClassByCodeCommandHandler",
         "text": "Tham gia lớp bằng mã mời"
       },
       {
-        "from": "JoinClassByInvite",
-        "to": "ClassRepository",
+        "from": "JoinClassByCodeCommandHandler",
+        "to": "InstructorClassRepository",
         "text": "Tìm mã mời còn hạn"
       },
       {
-        "from": "ClassRepository",
-        "to": "IdentityDbAdapter",
+        "from": "InstructorClassRepository",
+        "to": "JdbcInstructorClassRepository",
         "text": "Đọc mã mời và lớp"
       },
       {
-        "from": "IdentityDbAdapter",
+        "from": "JdbcInstructorClassRepository",
         "to": "PostgreSQL",
         "text": "Tìm mã còn hiệu lực"
       },
       {
         "from": "PostgreSQL",
-        "to": "IdentityDbAdapter",
+        "to": "JdbcInstructorClassRepository",
         "text": "Lớp hoặc mã không hợp lệ",
         "kind": "return"
       },
       {
-        "from": "IdentityDbAdapter",
-        "to": "ClassRepository",
+        "from": "JdbcInstructorClassRepository",
+        "to": "InstructorClassRepository",
         "text": "Lớp hoặc mã không hợp lệ",
         "kind": "return"
       },
       {
-        "from": "ClassRepository",
-        "to": "JoinClassByInvite",
+        "from": "InstructorClassRepository",
+        "to": "JoinClassByCodeCommandHandler",
         "text": "Lớp hoặc mã không hợp lệ",
         "kind": "return"
       },
@@ -91,46 +91,46 @@
           "label": "Mã mời còn hạn?",
           "then": [
             {
-              "from": "JoinClassByInvite",
-              "to": "ClassRepository",
+              "from": "JoinClassByCodeCommandHandler",
+              "to": "InstructorClassRepository",
               "text": "Ghi danh hoặc kích hoạt lại dòng cũ"
             },
             {
-              "from": "ClassRepository",
-              "to": "IdentityDbAdapter",
+              "from": "InstructorClassRepository",
+              "to": "JdbcInstructorClassRepository",
               "text": "Giữ ngày vào đầu tiên khi vào lại"
             },
             {
-              "from": "IdentityDbAdapter",
+              "from": "JdbcInstructorClassRepository",
               "to": "PostgreSQL",
               "text": "Thêm dòng mới hoặc xóa mốc rời cũ"
             },
             {
               "from": "PostgreSQL",
-              "to": "IdentityDbAdapter",
+              "to": "JdbcInstructorClassRepository",
               "text": "Đã trong lớp",
               "kind": "return"
             },
             {
-              "from": "IdentityDbAdapter",
-              "to": "ClassRepository",
+              "from": "JdbcInstructorClassRepository",
+              "to": "InstructorClassRepository",
               "text": "Đã trong lớp",
               "kind": "return"
             },
             {
-              "from": "ClassRepository",
-              "to": "JoinClassByInvite",
+              "from": "InstructorClassRepository",
+              "to": "JoinClassByCodeCommandHandler",
               "text": "Đã trong lớp",
               "kind": "return"
             },
             {
-              "from": "JoinClassByInvite",
-              "to": "ClassController",
+              "from": "JoinClassByCodeCommandHandler",
+              "to": "StudentClassController",
               "text": "Trả kết quả tham gia",
               "kind": "return"
             },
             {
-              "from": "ClassController",
+              "from": "StudentClassController",
               "to": "Học viên",
               "text": "Hiển thị lớp và lịch sử học cũ",
               "kind": "return"
@@ -138,13 +138,13 @@
           ],
           "else": [
             {
-              "from": "JoinClassByInvite",
-              "to": "ClassController",
+              "from": "JoinClassByCodeCommandHandler",
+              "to": "StudentClassController",
               "text": "Báo mã hết hạn hoặc không tồn tại",
               "kind": "return"
             },
             {
-              "from": "ClassController",
+              "from": "StudentClassController",
               "to": "Học viên",
               "text": "Hiển thị lỗi mã mời",
               "kind": "return"

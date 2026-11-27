@@ -123,7 +123,8 @@ test("the student list shows up to 20 rows a page, with no size picker", async (
   // 20 rows a page, fixed (DEC-2026-1014-instructor-batch5-6-nav-pagination-rubric): the 12 learners of
   // the mock fit one page, and the mock learner who left is not listed.
   await expect(table.locator("tbody tr")).toHaveCount(12);
-  await expect(page.getByText("Trang 1 / 1")).toBeVisible();
+  // One page: the pager is not drawn.
+  await expect(page.getByText("Trang 1 / 1")).toHaveCount(0);
   await expect(
     page.getByRole("combobox", { name: "Số dòng mỗi trang" }),
   ).toHaveCount(0);
@@ -170,21 +171,21 @@ test("profile and settings, opened from the toolbar menu, stay inside the instru
   });
 });
 
-test("the assign popup gives a bank problem to a class without leaving the shell", async ({
+test("the assign screen gives a bank problem to a class without leaving the shell", async ({
   page,
 }) => {
   await page.goto("/instructor/assignments");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(
     "Bài giao cho lớp",
   );
-  await page
-    .getByRole("button", { name: "+ Gán từ ngân hàng bài toán" })
-    .click();
-  const dialog = page.getByRole("dialog");
-  await dialog.getByLabel(/Binary Search/).check();
-  await dialog.getByRole("button", { name: "Giao 1 bài" }).click();
+  await page.getByRole("link", { name: "+ Gán từ ngân hàng bài toán" }).click();
+  await expect(page).toHaveURL(/\/instructor\/assignments\/new/, {
+    timeout: 15_000,
+  });
+  await page.getByRole("checkbox", { name: "Chọn Binary Search" }).check();
+  await page.getByRole("button", { name: "Giao 1 bài" }).click();
 
-  await expect(page).toHaveURL(/\/instructor\/assignments$/);
+  await expect(page).toHaveURL(/\/instructor\/assignments\?classId=/);
   await expect(page.getByRole("cell", { name: "Binary Search" })).toBeVisible();
 });
 
@@ -198,7 +199,7 @@ test("the toolbar user menu shows who is signed in with a sign-out link, and the
   await expect(page.getByRole("menuitem", { name: "Cài đặt" })).toBeVisible();
   await expect(page.getByRole("menuitem", { name: "Thoát" })).toHaveAttribute(
     "href",
-    "/login",
+    "/instructor/login",
   );
   await expect(page.getByText("AlgoPrep Giảng viên · v2.4.1")).toBeVisible();
 });
@@ -252,7 +253,8 @@ test("a class schedule is picked by weekday, time range and room, and shows as o
   await dialog.getByRole("button", { name: "Lưu" }).click();
 
   await expect(
-    page.getByText("T2 · T3 · T4 · T6 — 19:00–21:30 · A101 · 17/08–20/12"),
+    // The class card shows the short form: days, time and room, without the date range.
+    page.getByText("T2 · T3 · T4 · T6 19:00–21:30 · A101"),
   ).toBeVisible();
 });
 

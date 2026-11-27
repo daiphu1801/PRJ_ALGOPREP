@@ -21,6 +21,248 @@
       }
     }
   },
+  "apiErrors": {
+    "IDT-101": "This email is already registered",
+    "IDT-102": "Incorrect email or password",
+    "IDT-103": "Too many failed attempts. Please try again in 15 minutes",
+    "IDT-104": "This account has been deactivated",
+    "IDT-105": "Your session has expired. Please sign in again",
+    "IDT-106": "Your session is no longer secure. Please sign in again",
+    "IDT-107": "The reset code is incorrect or has expired",
+    "IDT-111": "This account cannot sign in to the instructor portal",
+    "IDT-112": "The verification code is incorrect or has expired",
+    "IDT-113": "Your email is not verified yet. Enter the code sent to your inbox",
+    "IDT-114": "The restore link is no longer valid. Sign in again to get a new one",
+    "IDT-109": "The provider sign-in has expired or is not valid. Please try again",
+    "IDT-110": "The provider has not verified your e-mail, so you cannot sign in this way",
+    "IDT-115": "The current password is incorrect",
+    "IDT-201": "The confirmation email does not match your account",
+    "IDT-400": "The email address is not valid",
+    "IDT-410": "The class code is incorrect or has expired",
+    "IDT-411": "This class is not in your class list",
+    "IDT-412": "Too many wrong class codes. Please try again in 15 minutes",
+    "IDT-413": "The default language is not valid",
+    "IDT-414": "Class not found",
+    "IDT-415": "This e-mail already belongs to an account",
+    "IDT-416": "The code is wrong or has expired",
+    "IDT-417": "You already have a class with this name. Choose another name",
+    "IDT-420": "The last administrator permission-matrix right cannot be removed",
+    "IDT-421": "System roles cannot be deleted",
+    "IDT-422": "A role that still has users assigned cannot be deleted",
+    "IDT-423": "The student role permission matrix is read-only",
+    "IDT-424": "Role, function or action not found",
+    "IDT-425": "A role with this name already exists",
+    "IDT-432": "The last active administrator cannot delete their own account",
+    "IDT-440": "This email is already used by another account",
+    "IDT-441": "The selected role is not valid",
+    "IDT-442": "The log retention setting is not valid (an integer from 1 to 1,000,000)",
+    "IDT-443": "The log filter is not valid",
+    "IDT-444": "The log search keyword is limited to 100 characters",
+    "IDT-445": "You do not have permission to do this",
+    "IDT-446": "The action could not be recorded in the audit log, so it was not performed. Please try again",
+    "IDT-447": "Only administrators can do this",
+    "IDT-448": "An anonymised account cannot be reactivated",
+    "IDT-449": "Too many people are watching the live log. Please try again later",
+    "IDT-450": "Account not found",
+    "IDT-503": "The service is busy. Please try again in a few minutes",
+    "IDT-504": "We could not send the verification e-mail. Please try again in a few minutes",
+    "IDT-505": "Sign-in with this provider is not available right now. Try again later or use your e-mail and password",
+    "IDT-506": "This block could not be loaded. Please try again in a few minutes",
+    "IDT-507": "The class figures could not be loaded. Please try again in a few minutes",
+    "IDT-508": "The submission history could not be read for the export. Please try again in a few minutes",
+    "IDT-509": "The interview transcripts could not be read for the export. Please try again in a few minutes",
+    "IDT-V01": "Password must be at least 8 characters",
+    "IDT-V02": "Password must be at most 72 bytes (accented letters use more bytes)",
+    "IDT-V03": "Password needs at least one letter and one digit",
+    "IDT-V04": "Password must differ from your email and display name",
+    "IDT-V05": "You asked to change your e-mail more than 3 times in 24 hours. Try again later",
+    "IDT-V06": "You exported your data a moment ago. Please try again in 5 minutes",
+    "IDT-V07": "Current position is at most 100 characters",
+    "IDT-V08": "Target position is at most 100 characters",
+    "IDT-V09": "School or company is at most 150 characters",
+    "IDT-V10": "The room or note of the class schedule is too long",
+    "IDT-V11": "The request is not valid. Please reload the page",
+    "IDT-V12": "Please wait a moment before requesting another code",
+    "IDT-V13": "The phone number is not valid",
+    "IDT-V14": "The class name must be 1 to 120 characters",
+    "IDT-V15": "The class description is limited to 500 characters",
+    "IDT-V16": "The class schedule has an invalid structure",
+    "IDT-V17": "The list filter or paging is not valid",
+    "IDT-V18": "The interview preferences are not valid",
+    "IDT-V19": "Display name must be at least 2 characters",
+    "IDT-V20": "Display name must be at most 100 characters",
+    "IDT-V21": "Confirmation is required for an action that affects your own account",
+    "IDT-V22": "The role name must not be empty",
+    "IDT-V23": "The role name is limited to 50 characters",
+    "IDT-V24": "The base role category is not valid",
+    "IDT-V25": "The granted flag is missing",
+    "IDT-V26": "The action data is not valid. Please check it and try again",
+    "IDT-V28": "This sign-in provider is not supported",
+    "JDG-101": "This problem was not found or is no longer available.",
+    "JDG-102": "This language was disabled. Choose another language.",
+    "JDG-103": "This problem only supports Standard I/O.",
+    "JDG-104": "This problem has no approved testcases to grade.",
+    "JDG-105": "This problem has no sample testcases to run.",
+    "JDG-106": "You reached the hourly submission limit. Try again later.",
+    "JDG-107": "You reached the hourly sample run limit. Try again later.",
+    "JDG-110": "Submission not found.",
+    "JDG-111": "Class not found in your scope.",
+    "JDG-112": "Student not found in this class.",
+    "JDG-201": "Someone changed the queue state. Reload before trying again.",
+    "JDG-202": "Someone changed the configuration. Reload before saving.",
+    "JDG-203": "Keep at least one language enabled.",
+    "JDG-204": "Effective time limits must be between 100 and 30,000 ms.",
+    "JDG-205": "Effective memory limits must be between 64 and 1,024 MB.",
+    "JDG-301": "You do not have permission to perform this action.",
+    "JDG-501": "The execution service is temporarily unavailable. Your code is preserved.",
+    "JDG-502": "The execution service is busy. Try again later.",
+    "JDG-503": "The queue could not confirm admission. Check history before resubmitting.",
+    "JDG-504": "Grading data is not ready. Try again later.",
+    "JDG-505": "Submission admission could not be confirmed. Check history before resubmitting.",
+    "JDG-506": "Results or history are temporarily unavailable. Reload to try again.",
+    "HRN-001": "Problem or starter code not found.",
+    "HRN-003": "Starter code is temporarily unavailable. Try again.",
+    "HRN-004": "This problem only supports Standard I/O.",
+    "HRN-005": "The function signature is not ready.",
+    "HRN-060": "The function specification is invalid. Check the highlighted fields.",
+    "HRN-061": "Too many previews. The preview will retry shortly.",
+    "HRN-062": "The preview specification exceeds the 16 KB limit.",
+    "PRB-001": "Some values are not valid. Please check and try again.",
+    "PRB-002": "You do not have permission to do this.",
+    "PRB-003": "You can only change problems you wrote yourself.",
+    "PRB-004": "Only an administrator can change this list.",
+    "PRB-005": "You do not teach this class.",
+    "PRB-010": "Problem not found, or it is no longer available.",
+    "PRB-011": "Testcase not found.",
+    "PRB-012": "Topic not found.",
+    "PRB-013": "Difficulty level not found.",
+    "PRB-014": "This problem was already removed from your saved list elsewhere. The list will reload.",
+    "PRB-015": "That class is not in your class list.",
+    "PRB-020": "Someone else just changed this problem. Reload before saving.",
+    "PRB-021": "A topic with this name already exists.",
+    "PRB-022": "A difficulty level with this name already exists.",
+    "PRB-023": "A testcase generation is already running for this problem. Wait for it to finish.",
+    "PRB-025": "This problem was already removed from the class.",
+    "PRB-030": "The problem does not meet the publishing checklist.",
+    "PRB-031": "Problems still use this topic, so it cannot be deleted.",
+    "PRB-032": "Problems still use this difficulty level, so it cannot be deleted.",
+    "PRB-033": "At least one difficulty level must remain.",
+    "PRB-036": "The function signature of this problem is not valid.",
+    "PRB-037": "This problem is no longer published, so it cannot be assigned to a class.",
+    "PRB-039": "The chosen topic or difficulty no longer exists. Reload the list.",
+    "PRB-040": "This problem has no reference solution yet.",
+    "PRB-041": "The conditions for AI testcase generation are not met.",
+    "PRB-042": "This problem has used all its testcase generations.",
+    "PRB-043": "The generated testcases were rejected because they did not meet the requirements.",
+    "PRB-044": "The upload session is no longer valid. Upload the files again.",
+    "PRB-045": "An uploaded file has the wrong size or encoding.",
+    "PRB-046": "The problem has reached the maximum number of testcases.",
+    "PRB-047": "The upload batch exceeds the limit on pairs or size.",
+    "PRB-048": "The testcase content is too large (1 MB per side at most).",
+    "PRB-049": "The submitted order does not match the current list. Reload the list.",
+    "PRB-050": "Code execution is temporarily unavailable. Try again later.",
+    "PRB-051": "The AI feature is temporarily unavailable. Try again later.",
+    "PRB-052": "File storage is temporarily unavailable. Try again later.",
+    "PRB-053": "A published problem must keep at least 2 worked examples.",
+    "PRB-054": "A published problem must keep enough approved testcases and sample testcases.",
+    "PRB-055": "You ran the reference solution too many times. Try again in a few minutes.",
+    "PRB-056": "The change could not be saved. Try again later.",
+    "PRB-057": "Your solve status could not be read, so progress is not shown. Try again later.",
+    "PRB-058": "The class list could not be read. Try again later.",
+    "PRB-060": "The testcase data does not match the parameters declared in the function signature. If the solution is a stdin program, clear the function name and parameters on the Spec tab; if it is a function, fix the testcases so their order and types match.",
+    "INB-010": "This question no longer exists or has been retired.",
+    "INB-011": "The topic does not exist. Reload the list.",
+    "INB-012": "The level does not exist. Reload the list.",
+    "INB-020": "This name is already taken. Choose another.",
+    "INB-021": "This difficulty name is already taken. Choose another.",
+    "INB-030": "The topic still has questions, so it cannot be deleted.",
+    "INB-031": "The level still has questions, so it cannot be deleted.",
+    "INB-032": "This is the last level and cannot be deleted.",
+    "INB-033": "Criteria weights must add up to 100.",
+    "INB-034": "The submitted order does not match the current list. Reload the list.",
+    "INB-035": "The chosen topic or level no longer exists.",
+    "INB-040": "This question has no scoring criteria, so AI practice is not available.",
+    "INB-041": "You have sent more than 20 answers this hour. Try again later.",
+    "INB-042": "Your AI budget is used up. Try again later.",
+    "INB-050": "Two submissions collided. Send it again.",
+    "INB-301": "You do not have permission to manage the question bank.",
+    "INB-302": "Only administrators can manage topics and levels.",
+    "INB-501": "The AI did not respond in time. Your answer was saved; try again later.",
+    "INB-502": "The AI returned an invalid result. Your answer was saved; try again later.",
+    "INB-503": "The audit log could not be written, so the change was not saved. Try again later.",
+    "INB-V01": "The filter or sort option is not valid.",
+    "INB-V02": "The selection is not valid (at most 100 questions, no duplicates).",
+    "INB-V03": "The name must be 1 to 60 characters.",
+    "INB-V04": "Choose a valid self-rating.",
+    "INB-V05": "The bookmark state is not valid.",
+    "INB-V06": "Enter an answer before sending.",
+    "INB-V07": "The answer is too long (5000 characters at most).",
+    "INB-V08": "The title must not be empty and has at most 255 characters.",
+    "INB-V09": "Choose a topic and a level.",
+    "INB-V10": "The scoring criteria are not valid: name 1 to 100 characters, weight 0 to 100.",
+    "INB-V11": "Two criteria cannot share a name.",
+    "INB-V12": "The follow-up questions are not valid.",
+    "INB-V13": "There is no change to save.",
+    "INB-V14": "The submitted order is not valid.",
+    "INB-V15": "The import file must have 1 to 500 rows.",
+    "INB-V16": "The submitted data is not valid.",
+    "INB-V17": "The submitted data is too large.",
+    "AIR-101": "The submission was not found.",
+    "AIR-102": "Only accepted submissions can be analysed.",
+    "AIR-103": "The report for this submission is being generated. Wait a moment and reload.",
+    "AIR-110": "The interview session was not found.",
+    "AIR-111": "The interview session has ended.",
+    "AIR-112": "The session changed elsewhere. Reload it.",
+    "AIR-113": "The session is handling another turn. Wait for it to finish.",
+    "AIR-114": "The session reached its turn limit. End it to see the result.",
+    "AIR-115": "Hints are not allowed in this session.",
+    "AIR-116": "You have not answered anything yet, so there is nothing to score.",
+    "AIR-117": "You have used all hints of this session.",
+    "AIR-120": "This alert no longer exists. Reload the list.",
+    "AIR-121": "This price row no longer exists. Reload the list.",
+    "AIR-201": "The running prompt was just changed by someone else. Reload and try again.",
+    "AIR-202": "The chosen model is not in the allowed list.",
+    "AIR-203": "Cannot unlock: usage is still not below the limit.",
+    "AIR-204": "This model name already exists. Choose another.",
+    "AIR-205": "There is nothing to publish.",
+    "AIR-301": "You do not have permission to do this.",
+    "AIR-302": "This data does not belong to you.",
+    "AIR-401": "The AI budget is used up, so this feature is locked for now. Try again later.",
+    "AIR-402": "You requested too many analyses this hour. Try again later.",
+    "AIR-403": "You opened too many interview sessions this hour. Try again later.",
+    "AIR-404": "You just sent a request. Wait a moment and try again.",
+    "AIR-501": "The AI service is temporarily unavailable. Try again later.",
+    "AIR-502": "The AI returned an invalid result. Try again.",
+    "AIR-503": "The audit log could not be written, so the change was not saved. Try again later.",
+    "AIR-V01": "The problem is not valid.",
+    "AIR-V02": "The requested count is outside the allowed range.",
+    "AIR-V03": "The session details are incomplete or contain extra parts.",
+    "AIR-V04": "The interviewer level is not valid.",
+    "AIR-V05": "The maximum number of turns must be 8, 12 or 16.",
+    "AIR-V06": "The topic list is not valid (1 to 10 topics, each at most 60 characters).",
+    "AIR-V07": "The question is not valid (at most 2,000 characters).",
+    "AIR-V08": "The answer must not be empty and has at most 4,000 characters.",
+    "AIR-V09": "The session turn count is not valid. Reload the session.",
+    "AIR-V10": "The time range is not valid.",
+    "AIR-V11": "The feature is not valid.",
+    "AIR-V12": "The system instruction must not be empty and has at most 20,000 characters.",
+    "AIR-V13": "The response guard settings are not valid for this feature.",
+    "AIR-V14": "The publish list is not valid (1 to 3 features, no duplicates).",
+    "AIR-V15": "The token limit must be a positive integer.",
+    "AIR-V16": "The limit value is not valid, or nothing was changed.",
+    "AIR-V17": "The model name must not be empty and has at most 100 characters.",
+    "AIR-V18": "The price is not valid.",
+    "AIR-V19": "The day range must be 7, 14 or 30.",
+    "AIR-V40": "The output token limit is invalid or exceeds the selected model's limit.",
+    "UNKNOWN_ERROR": "Something went wrong. Please try again",
+    "IDT-V29": "The image must be PNG, JPEG or WebP",
+    "IDT-V30": "The image is too large, 512 KB at most",
+    "IDT-V31": "The image dimensions are not valid",
+    "IDT-V32": "The upload request is not valid. Please choose the image again",
+    "IDT-451": "This user has no profile picture",
+    "IDT-452": "You changed or removed your picture too many times. Please try again in an hour",
+    "IDT-511": "Picture storage is temporarily unavailable. Please try again later"
+  },
   "nav": {
     "dashboard": "Overview",
     "problems": "Problems",
@@ -44,22 +286,31 @@
     },
     "myClasses": "My classes"
   },
+  "authCallback": {
+    "title": "Sign in with a provider",
+    "working": "Finishing your sign-in...",
+    "failed": "We could not sign you in. Please try again",
+    "unknownProvider": "This sign-in provider is not supported",
+    "backToLogin": "Back to sign in",
+    "deactivatedBody": "You deleted this account and it can still be restored. Do you want to restore it?",
+    "restore": "Restore account",
+    "restored": "Account restored. Please sign in again"
+  },
   "auth": {
     "loginTitle": "Log in",
     "signupTitle": "Sign up",
     "forgotEmailTitle": "Forgot password",
     "forgotOtpTitle": "Enter verification code",
     "forgotResetTitle": "Reset password",
+    "verifyEmailTitle": "Verify your email",
     "switchToLogin": "Already have an account? Log in",
     "switchToSignup": "No account yet? Sign up",
-    "usernameLabel": "Username",
     "passwordLabel": "Password",
+    "displayNameLabel": "Full name",
     "emailLabel": "E-mail",
-    "identifierLabel": "E-mail or username",
     "passwordShow": "SHOW",
     "passwordHide": "HIDE",
     "termsLabel": "I agree to the terms of use",
-    "rememberMeLabel": "Remember me",
     "forgotPasswordLink": "Forgot password?",
     "signupSubmit": "Sign up",
     "loginSubmit": "Log in",
@@ -73,6 +324,8 @@
     "otpResend": "Resend code",
     "otpResendCooldown": "Resend in {seconds}s",
     "forgotOtpSubmit": "Verify code",
+    "verifyEmailHint": "A code was sent to {email}. Enter it to activate your account.",
+    "verifyEmailSubmit": "Confirm email",
     "newPasswordLabel": "New password",
     "confirmPasswordLabel": "Confirm new password",
     "forgotResetSubmit": "Reset password",
@@ -81,7 +334,8 @@
       "codeSent": "Verification code sent to your email",
       "codeResent": "Verification code sent again",
       "passwordReset": "Password reset, please sign in",
-      "deactivationCancelled": "Account deletion request cancelled"
+      "deactivationCancelled": "Deletion request cancelled, please sign in again",
+      "emailVerified": "Email verified, you can sign in now"
     },
     "deactivatedBannerCancel": "Cancel deletion request",
     "loadingTitle": "Processing...",
@@ -98,19 +352,23 @@
     "asideSignupTitle": "Start practicing with AlgoPrep",
     "asideSignupDescription": "Solve problems, get a solution review, and a mock interview right after Accepted.",
     "errors": {
-      "usernameTooShort": "Username must be at least 3 characters",
       "passwordTooShort": "Password must be at least 8 characters",
+      "passwordTooLong": "Password must be at most 72 bytes (accented letters use more bytes)",
+      "passwordNeedsLetter": "Password needs at least one letter",
+      "passwordNeedsDigit": "Password needs at least one digit",
       "emailInvalid": "Invalid e-mail",
       "termsRequired": "You must agree to the terms of use before signing up",
-      "identifierRequired": "Please enter an e-mail or username",
       "passwordRequired": "Please enter a password",
       "otpLength": "The code must be 6 digits",
       "otpDigitsOnly": "The code must contain digits only",
       "passwordMismatch": "Passwords do not match",
-      "usernameTaken": "This username already exists",
-      "credentialsInvalid": "Wrong username or password",
+      "credentialsInvalid": "Incorrect email or password",
       "otpInvalid": "Incorrect verification code",
-      "notInstructorAccount": "This account does not have instructor access"
+      "notInstructorAccount": "This account does not have instructor access",
+      "displayNameTooShort": "Full name must be at least 2 characters",
+      "displayNameTooLong": "Full name must be at most 100 characters",
+      "emailTaken": "This email is already registered",
+      "emailNotVerified": "This email is not verified yet"
     },
     "quickLoginTitle": "Quick login (mock data)",
     "quickLoginStudent": "Student",
@@ -132,12 +390,17 @@
   },
   "problemList": {
     "title": "Problems",
+    "blockFailed": "Could not load this block. Try again later.",
+    "degraded": {
+      "solveState": "Your solve status cannot be read right now, so it is not shown and the status filter is not applied."
+    },
     "summary": {
       "linkSaved": "Saved problems",
       "btnRandom": "Random problem"
     },
     "topicNav": {
-      "label": "Filter by topic"
+      "label": "Filter by topic",
+      "failed": "Could not load the topic list."
     },
     "filter": {
       "all": "All",
@@ -146,10 +409,18 @@
       "statusLabel": "Filter by status",
       "difficultyLabel": "Filter by difficulty"
     },
+    "sort": {
+      "label": "Sort problems",
+      "difficultyAsc": "Difficulty ascending",
+      "difficultyDesc": "Difficulty descending",
+      "acRateAsc": "Acceptance rate ascending",
+      "acRateDesc": "Acceptance rate descending"
+    },
     "state": {
       "solved": "Solved",
       "attempted": "Attempted",
-      "todo": "Todo"
+      "todo": "Todo",
+      "unknown": "Status unknown"
     },
     "submissionModel": {
       "stdioOnly": "Standard I/O only"
@@ -160,9 +431,12 @@
       "colTitle": "Problem",
       "colTopics": "Topics",
       "colDifficulty": "Difficulty",
-      "colAcRate": "AC rate",
-      "btnSolve": "Solve",
+      "colAcRate": "Acceptance rate",
+      "btnSolve": "View problem",
+      "btnSolveFor": "View problem {title}",
       "hasReview": "Has Solution Review",
+      "results": "{count, plural, one {# problem} other {# problems}}",
+      "emptyCatalog": "No problems have been published yet",
       "empty": "No problem matches this filter",
       "clearFilters": "Clear filters"
     },
@@ -182,7 +456,8 @@
     "assignment": {
       "title": "Class assignments",
       "empty": "No problem assigned yet",
-      "meta": "{solved} / {total} problems · assigned {date}"
+      "meta": "Assigned {date}",
+      "viewAll": "View all {count} problems"
     },
     "language": {
       "java": "Java",
@@ -209,6 +484,10 @@
   "savedProblems": {
     "title": "Saved problems",
     "subtitle": "{total} saved, {solved} solved",
+    "subtitleNoSolved": "{total} saved",
+    "degraded": {
+      "solveState": "Your solve status cannot be read right now, so it is not shown and the status filter is not applied."
+    },
     "filter": {
       "all": "All",
       "searchLabel": "Search problems",
@@ -219,7 +498,8 @@
     "state": {
       "solved": "Solved",
       "attempted": "Attempted",
-      "todo": "Todo"
+      "todo": "Todo",
+      "unknown": "Unknown"
     },
     "table": {
       "caption": "Saved problems table",
@@ -256,6 +536,12 @@
       "previous": "‹",
       "next": "›",
       "pageLabel": "Page {page}"
+    },
+    "unsaved": {
+      "title": "Discard unsaved note changes?",
+      "body": "Your note changes will not be saved.",
+      "leave": "Discard changes",
+      "stay": "Keep editing"
     }
   },
   "problemDetail": {
@@ -347,7 +633,13 @@
       },
       "summaryPassed": "{n} passed",
       "summaryFailed": "{n} failed",
-      "btnDetail": "View details"
+      "btnDetail": "View details",
+      "progressSlow": "Updates are delayed. Open the result page or reload to check the latest status.",
+      "queue": {
+        "waiting": "Waiting to be judged: {ahead} submission(s) ahead of you",
+        "waitingWithEstimate": "Waiting to be judged: {ahead} submission(s) ahead, about {seconds} seconds estimated",
+        "aboutToStart": "Waiting to be judged: you are next"
+      }
     },
     "verdict": {
       "accepted": "Accepted",
@@ -408,7 +700,8 @@
     "footerLinkApiDocs": "API docs",
     "footerLinkJudgeStatus": "go-judge status",
     "footerLinkChangelog": "Changelog",
-    "footerLinkSupport": "Support"
+    "footerLinkSupport": "Support",
+    "logout": "Sign out"
   },
   "instructorNav": {
     "skipToContent": "Skip to main content",
@@ -444,11 +737,31 @@
     "retry": "Retry",
     "emptyGeneric": "No data yet",
     "errorGeneric": "Could not load data",
+    "labels": {
+      "language": {
+        "PYTHON": "Python",
+        "CPP": "C++",
+        "JAVA": "Java"
+      },
+      "verdict": {
+        "ACCEPTED": "Accepted",
+        "WRONG_ANSWER": "Wrong answer",
+        "TIME_LIMIT_EXCEEDED": "Time limit exceeded",
+        "RUNTIME_ERROR": "Runtime error",
+        "COMPILE_ERROR": "Compile error"
+      },
+      "legend": {
+        "totalSubmissions": "Total submissions",
+        "acceptedSubmissions": "Accepted"
+      }
+    },
     "blocks": {
       "submissionsSummary": "Total submissions",
       "activeUsersSummary": "Active users",
       "passwordResetsSummary": "Password reset requests",
+      "previousPeriodZero": "Previous period: 0",
       "submissionsByLanguage": "Submissions by language",
+      "languageWindow": "Last 20 days",
       "verdictDistribution": "Verdict distribution",
       "difficultyBreakdown": "Difficulty breakdown",
       "submissionsByDay": "Submissions by day",
@@ -478,12 +791,12 @@
   },
   "adminLanguageConfig": {
     "title": "Languages and judge limits",
-    "subtitle": "Per-language time multipliers applied to every problem",
+    "subtitle": "Choose languages and set grading limits.",
     "save": "Save",
     "languagesTitle": "Supported languages",
-    "languagesSubtitle": "Enable or disable a language and adjust its multiplier",
+    "languagesSubtitle": "Multiply the base limit by the language’s factor. For example, 1,000 ms × 2 = 2,000 ms.",
     "columnLanguage": "Language",
-    "columnEnabled": "On",
+    "columnEnabled": "Allow submissions",
     "timeMultiplierFor": "Time multiplier for {language}",
     "enableLanguage": "Enable {language}",
     "unitMs": "ms",
@@ -491,55 +804,55 @@
     "unitKb": "KB",
     "unitSec": "s",
     "defaultsTitle": "Default limits",
-    "defaultsSubtitle": "Used when a problem declares none of its own",
+    "defaultsSubtitle": "Used when a problem has no limits of its own.",
     "defaults": {
       "timeLimitMs": {
-        "label": "Time limit",
+        "label": "Maximum run time",
         "meta": "Multiplied by the language factor"
       },
       "memoryLimitMb": {
-        "label": "Memory limit",
+        "label": "Maximum memory",
         "meta": "Applies to every language"
       },
       "outputLimitKb": {
-        "label": "Output size",
+        "label": "Maximum output size",
         "meta": "Exceeding it reports Output limit"
       },
       "compileTimeoutSec": {
-        "label": "Compile time",
+        "label": "Maximum compile time",
         "meta": "Not counted toward the run limit"
       }
     },
     "generator": {
-      "title": "Testcase data generator script",
-      "subtitle": "Limits applied when the system runs the script the AI wrote to generate inputs (F2-14). Separate from submissions",
-      "languageLabel": "Script language",
-      "languageMeta": "Fixed, not editable",
+      "title": "AI-generated test data",
+      "subtitle": "These limits apply when the system runs AI-generated code to produce test inputs.",
+      "languageLabel": "Data generation language",
+      "languageMeta": "Fixed for all data generation runs.",
       "runtime": {
         "label": "Maximum run time",
-        "meta": "A script running longer than this is dropped entirely"
+        "meta": "The system stops generating data when this time is exceeded."
       },
       "output": {
-        "label": "Maximum output size",
-        "meta": "Total output above this drops the whole script"
+        "label": "Maximum data size",
+        "meta": "The system discards results that exceed this total size."
       }
     },
     "saveFailed": "Could not save the language and limits configuration. Try again later.",
     "loadFailed": "Could not load the language and limits configuration. Try again later.",
-    "errorInvalidGenerator": "Run time must be 1 to 300 seconds and output size 1 to 1024 MB",
-    "sandboxTitle": "Sandbox",
+    "errorInvalidGenerator": "Enter a run time from 1 to 300 seconds and a data size from 1 to 1,024 MB.",
+    "sandboxTitle": "Grading environment",
     "sandbox": {
       "networkAccess": {
         "label": "Allow network access",
-        "meta": "Always off in the judging sandbox"
+        "meta": "When off, submitted programs cannot access the network during grading."
       },
       "limitChildProcesses": {
         "label": "Limit child processes",
-        "meta": "At most 60 processes"
+        "meta": "When on, a submitted program is limited to 60 processes."
       },
       "returnStderr": {
-        "label": "Return stderr to students",
-        "meta": "Truncated to the first 2 KB"
+        "label": "Show program error messages to learners",
+        "meta": "Shows messages from the program for failed sample tests on standard input/output problems."
       }
     },
     "saveDone": "Language and limit configuration saved",
@@ -549,24 +862,26 @@
     "historyLink": "View change history",
     "tabsLabel": "Configuration groups",
     "tabLanguages": "Languages and limits",
-    "tabAdvanced": "Sandbox and testcase generation",
+    "tabAdvanced": "Grading environment and test data",
     "columnMultipliers": "Multipliers",
-    "multiplierTime": "TIME",
+    "multiplierTime": "Time",
+    "multiplierTimeFull": "Time",
+    "multiplierMemoryFull": "Memory",
     "multiplierMemory": "RAM",
     "memoryMultiplierFor": "Memory multiplier for {language}",
-    "columnEffective": "Effective limit",
+    "columnEffective": "Limits after applying multipliers",
     "effectiveLimit": "{time} ms · {memory} MB",
     "unsavedCount": "{count} unsaved changes",
-    "appliesNote": "Applies to new submissions from the moment you save",
+    "appliesNote": "New limits apply to submissions that start grading after you save.",
     "confirmDisable": {
       "title": "Turn off a language?",
-      "body": "You are about to turn off: {languages}. A disabled language can no longer be picked on the solving screen for new submissions. Earlier submissions keep their verdict.",
+      "body": "Learners will no longer be able to submit new solutions in {languages}. Earlier submissions are still processed and keep their results.",
       "yes": "Turn off and save",
       "no": "Cancel"
     },
     "unsaved": {
       "title": "Unsaved changes",
-      "body": "Save and leave, leave without saving (changes are lost), or stay and keep editing.",
+      "body": "You can save before leaving or stay on the page to keep editing.",
       "saveAndLeave": "Save and leave",
       "leave": "Leave without saving",
       "stay": "Stay"
@@ -586,7 +901,7 @@
       "policy": "Expired logs",
       "policyDelete": "Delete",
       "policyArchive": "Compress and archive",
-      "hint": "No per-row delete exists; only the system job cleans up expired rows.",
+      "hint": "No per-row delete exists; only the system job cleans up expired rows. The “Compress and archive” policy is not active yet: expired rows are kept as they are, neither compressed nor deleted.",
       "save": "Save",
       "cancel": "Cancel",
       "errorMin": "Enter a whole number of {min} or more",
@@ -638,20 +953,47 @@
       "config": "Config",
       "content": "Content"
     },
-    "resultCount": "{shown} / {total} rows",
-    "pageLabel": "Showing the {shown} most recent of {total} events",
-    "loadMore": "Load {count} more",
+    "resultCount": "{count} rows loaded",
+    "pageLabel": "Page {page} · {shown} events",
+    "pagePrevious": "Previous page",
+    "pageNext": "Next page",
+    "pageLoading": "Loading page…",
     "emptyFiltered": "No event matches the current filter",
     "clearFilters": "Clear filters",
     "activeAdminsTitle": "Active admins",
     "activeAdminsSubtitle": "By most recent action",
+    "activeAdminsEmpty": "No recent activity data.",
     "breakdownTitle": "Actions by category · 7 days",
     "infraNote": "Infrastructure events (worker, AI, backup) live on the Judge queue screen",
     "eventListLabel": "Event list",
     "dateFrom": "From",
     "dateTo": "To",
     "rangeInvalid": "The end date must not be before the start date",
-    "reasonLabel": "Reason"
+    "reasonLabel": "Reason",
+    "liveReconnecting": "Reconnecting to the live feed",
+    "liveAnnounce": "{count} new log rows",
+    "loadMoreFailed": "Could not load the next rows",
+    "retry": "Retry",
+    "exportFailed": "Could not download the CSV file",
+    "actionFallback": "Action {action}",
+    "action": {
+      "PASSWORD_CHANGED": "User changed the password",
+      "EMAIL_CHANGED": "User changed the e-mail",
+      "PASSWORD_RESET_REQUESTED": "Password reset requested",
+      "PASSWORD_RESET_COMPLETED": "Password reset completed",
+      "SELF_ACCOUNT_DELETE_REQUESTED": "User requested account deletion",
+      "SECURITY_TOKEN_REUSE_DETECTED": "Refresh token reuse detected",
+      "AUDIT_LOG_EXPORTED": "System log exported",
+      "AUDIT_LOG_SETTINGS_CHANGED": "Log retention set to {retentionDays} days, policy {expiredPolicy}",
+      "USER_CREATED": "Account created with role {roleName}",
+      "USER_LOCKED": "An account was locked",
+      "USER_UNLOCKED": "An account was unlocked",
+      "USER_ROLE_CHANGED": "Account role changed to {roleName}",
+      "USER_PASSWORD_RESET": "Password reset for an account",
+      "ROLE_CREATED": "Role {name} created",
+      "ROLE_DELETED": "Role {name} deleted",
+      "ROLE_PERMISSION_CHANGED": "{granted, select, true {Granted} other {Revoked}} {action} on {function}"
+    }
   },
   "adminUserManagement": {
     "title": "User management",
@@ -740,9 +1082,19 @@
     "lockDone": "Locked {count} accounts",
     "lockDoneNotified": "Locked {count} accounts and emailed the users",
     "unlockDone": "Unlocked {count} accounts",
+    "batchFailed": "{count} accounts could not be processed: {reason}",
     "columnActions": "Actions",
     "actionChangeRole": "Change role",
     "actionChangeRoleFor": "Change the role of {name}",
+    "details": {
+      "open": "View account details for {name}",
+      "title": "Account details",
+      "id": "Account ID",
+      "passwordLabel": "Login password",
+      "passwordSet": "Set",
+      "passwordUnset": "Not set",
+      "close": "Close"
+    },
     "actionResetPassword": "Reset password",
     "actionResetPasswordFor": "Reset the password of {name}",
     "actionLock": "Lock account",
@@ -763,7 +1115,13 @@
     "resetAction": "Reset",
     "resetDone": "Sent a temporary password to {email}",
     "resetBodyOAuth": "This account signs in only through an external provider, so it has no password to reset. The system sends instructions for returning to the provider to {email}. This action is written to the System log.",
-    "resetDoneOAuth": "Sent provider sign-in instructions to {email}"
+    "resetDoneOAuth": "Sent provider sign-in instructions to {email}",
+    "actionRemoveAvatar": "Remove photo",
+    "actionRemoveAvatarFor": "Remove the profile picture of {name}",
+    "removeAvatarTitle": "Remove the profile picture of {name}?",
+    "removeAvatarBody": "The picture disappears everywhere and initials show instead. The action is written to the system log.",
+    "removeAvatarAction": "Remove photo",
+    "removeAvatarDone": "Removed the profile picture of {name}"
   },
   "adminAiUsage": {
     "title": "AI token usage",
@@ -794,12 +1152,14 @@
     "alert": {
       "budgetRunningOut": {
         "title": "Budget running low",
-        "meta": "At the current rate the monthly budget runs out on 28/08."
+        "meta": "At the current rate the monthly budget runs out on {date}.",
+        "metaNoDate": "Usage has reached the budget warning threshold."
       },
       "anomalousAccount": {
         "title": "One account is using AI abnormally",
-        "meta": "nguyenvana made 214 calls in 24 hours, 7x the average. An admin should review it; the system does not lock the account."
+        "meta": "{name} made {count} calls in 24 hours, {ratio}x the average. An admin should review it; the system does not lock the account."
       },
+      "unknownAccount": "An account",
       "budgetLocked": {
         "title": "Budget locked",
         "meta": "AI is locked for students and instructors. Raise the cap, then unlock it on the AI limits screen."
@@ -808,7 +1168,7 @@
     "topUsersTitle": "Heaviest learners",
     "topUsersSubtitle": "Over the last 30 days",
     "topProblemsTitle": "Most token-hungry problems",
-    "topProblemsSubtitle": "Solution review, mock interview and testcase generation combined",
+    "topProblemsSubtitle": "Solution review and testcase generation over 30 days",
     "columnLearner": "Learner",
     "columnTokens": "Tokens",
     "columnCalls": "Calls",
@@ -828,13 +1188,15 @@
       "save": "Save",
       "cancel": "Cancel",
       "errorMin": "Enter a whole number of {min} or more",
-      "autoscaleThreshold": "Worker autoscale threshold",
-      "autoscaleThresholdHint": "Waiting jobs needed before the cluster adds a worker.",
-      "jobsPerPage": "Rows per page in the job table",
-      "errorRetention": "How long failed system jobs stay",
-      "latencyCap": "Latency bar ceiling",
-      "unitJobs": "jobs",
-      "unitRows": "rows",
+      "autoscaleThreshold": "Waiting submissions threshold for adding threads",
+      "autoscaleThresholdHint": "When autoscaling is on, one thread is added if the waiting count exceeds this threshold on two consecutive checks.",
+      "jobsPerPage": "Submissions shown per page",
+      "errorRetention": "How long to show system errors",
+      "errorRetentionHint": "After this time, the submission leaves the error list. Its record is kept.",
+      "latencyCap": "Time at which the wait bar is full",
+      "latencyCapHint": "For example, with 10 seconds set, the bar fills at 10 seconds. The number still shows the actual average wait.",
+      "unitJobs": "submissions",
+      "unitRows": "submissions",
       "unitHours": "hours",
       "unitSeconds": "seconds",
       "saved": "Queue settings saved"
@@ -843,15 +1205,46 @@
     "subtitle": "go-judge worker cluster, waiting jobs and queue controls",
     "refresh": "Refresh",
     "refreshDone": "Queue data refreshed",
+    "refreshing": "Refreshing…",
+    "refreshFailed": "Could not refresh queue data",
+    "refreshPartial": "Some data could not be refreshed",
+    "loading": "Loading…",
+    "metricsLabel": "Operational metrics",
+    "settingsUnavailable": "Could not load queue settings",
     "state": {
       "ok": "Normal",
       "paused": "Paused",
       "overloaded": "Worker overloaded",
       "backlog": "{count} jobs backed up",
       "stale": "Stale data",
-      "staleHint": "No newer data for over a minute. Press Refresh."
+      "staleHint": "No new data for over a minute.",
+      "fallback": "Live connection lost. Trying periodic updates.",
+      "unavailable": "Could not load the queue status"
     },
     "updatedAt": "Updated at {time}",
+    "grading": {
+      "title": "Grading threads",
+      "subtitle": "Grading threads reported by the worker, grading speed and the estimated time to drain the queue",
+      "running": "Grading threads running / maximum",
+      "runningValue": "{active} / {max}",
+      "target": "Target",
+      "noReport": "No report received from the grading worker",
+      "lastScaling": "Last change",
+      "noScaling": "No change yet",
+      "scaledUp": "{time} · up from {from} to {to} · {reason} · {pending} waiting",
+      "scaledDown": "{time} · down from {from} to {to} · {reason} · {pending} waiting",
+      "reason": {
+        "BACKLOG": "Queue backlog",
+        "IDLE": "Queue empty",
+        "DISABLED": "Autoscale turned off"
+      },
+      "throughput": "Grading speed",
+      "throughputValue": "{count} per minute",
+      "clear": "Estimated time to drain",
+      "clearUnknown": "Not enough data",
+      "clearSeconds": "about {count} seconds",
+      "clearMinutes": "about {count} minutes"
+    },
     "workersTitle": "go-judge worker cluster",
     "workersSubtitle": "{count} workers · autoscale up to {max}",
     "workerStatus": {
@@ -861,34 +1254,44 @@
     },
     "workerLoadLabel": "Load of {id}",
     "workerJobs": "{count} jobs",
-    "controlsTitle": "Controls",
+    "controlsTitle": "Controls and grading details",
     "historyLink": "View change history",
     "latencyTitle": "Average wait",
+    "pendingTitle": "Submissions waiting",
+    "latencyUnavailable": "No wait measurements yet",
     "control": {
       "paused": {
-        "label": "Pause queue consumption",
-        "meta": "Hold jobs back, do not hand them to workers",
+        "label": "Pause intake of new submissions",
+        "meta": "New submissions stay queued. Grading already in progress continues.",
         "doneOn": "Paused accepting new submissions",
         "doneOff": "Resumed accepting new submissions",
         "confirmTitle": "Pause queue consumption?",
         "confirmBody": "Pausing queue consumption makes new submissions wait. Jobs already being graded run to completion. Continue?"
       },
       "autoscale": {
-        "label": "Autoscale workers",
-        "meta": "Add workers when the queue exceeds {threshold} jobs",
-        "doneOn": "Worker autoscaling turned on",
-        "doneOff": "Worker autoscaling turned off",
-        "confirmTitle": "Turn off worker autoscaling?",
-        "confirmBody": "Turning autoscaling off means the cluster will not add workers when the queue backs up. Continue?"
+        "label": "Automatically adjust grading threads",
+        "meta": "Add grading threads when the queue exceeds {threshold} submissions",
+        "metaUnknown": "Add grading threads when the queue exceeds the configured threshold",
+        "doneOn": "Automatic grading thread adjustment turned on",
+        "doneOff": "Automatic grading thread adjustment turned off",
+        "confirmTitle": "Turn off automatic grading thread adjustment?",
+        "confirmBody": "The system will return to one grading thread after the extra threads finish their current submissions. Continue?"
       }
     },
     "confirm": {
       "yes": "Continue",
       "no": "Cancel"
     },
-    "jobsTitle": "Jobs in the queue",
+    "jobsTitle": "Submissions in the queue",
     "jobsSubtitle": "Click the Wait column header to change the sort order",
-    "jobTabsLabel": "Filter jobs by status",
+    "sortWaitDesc": "Longest wait first",
+    "sortWaitAsc": "Shortest wait first",
+    "jobTabsLabel": "Filter submissions by status",
+    "tabLabels": {
+      "waiting": "Waiting",
+      "failed": "Failed",
+      "all": "All"
+    },
     "tabWaiting": "Waiting {count}",
     "tabFailed": "Failed {count}",
     "tabAll": "All {count}",
@@ -901,13 +1304,19 @@
       "waiting": "Waiting",
       "sandboxError": "Sandbox error"
     },
-    "emptyJobs": "No jobs in this group",
+    "emptyJobsByTab": {
+      "waiting": "No submissions are waiting.",
+      "failed": "No failed grading attempts.",
+      "all": "No submissions in this list."
+    },
     "pageSummary": "{from}-{to} of {total}",
     "pagePrevious": "Previous",
     "pageNext": "Next",
     "infraTitle": "Infrastructure events",
-    "infraSummary": "{warn} warnings, {error} errors on the latest day",
-    "infraLink": "See all events"
+    "infraSummary": "{warn} warnings, {error} errors in the last 24 hours",
+    "infraLink": "See all events",
+    "infraErrorLink": "See infrastructure errors",
+    "infraUnavailable": "Could not load infrastructure metrics"
   },
   "adminInfraEvents": {
     "title": "Infrastructure events",
@@ -931,6 +1340,10 @@
     "dateTo": "To date",
     "rangeInvalid": "The start date cannot be later than the end date",
     "emptyFiltered": "No events match the filters",
+    "emptyUnfiltered": "No infrastructure events recorded",
+    "dateRange": "Filter by date",
+    "dateRangeActive": "Date range: {from} – {to}",
+    "loadedCount": "Showing {count} events",
     "clearFilters": "Clear filters",
     "listLabel": "Infrastructure event list",
     "pageLabel": "Showing {shown} of {total} events",
@@ -940,9 +1353,9 @@
   },
   "adminPermissionMatrix": {
     "title": "Permission matrix",
-    "subtitle": "Role × Function × Action · changes take effect immediately",
+    "subtitle": "Permissions by role and function. Changes take effect immediately.",
     "scopeNoticeTitle": "What this matrix governs",
-    "scopeNoticeBody": "Functions and Actions are fixed seed data and read-only — only Roles can be created, edited or deleted. A STUDENT's basic learning rights (view/submit, review, interview, practise) do not go through this matrix.",
+    "scopeNoticeBody": "Select a role to grant or revoke permissions for each function. The lists of functions and actions are fixed. Basic student learning permissions are managed separately.",
     "roleSwitcherLabel": "Select a role",
     "addRole": "+ New role",
     "newRoleLabel": "New role name",
@@ -1021,8 +1434,12 @@
       "draft": "Draft"
     },
     "metaModel": "Model",
-    "metaMaxTokens": "Limit",
-    "metaUpdated": "Updated {date}",
+    "metaMaxTokens": "Max output tokens per call",
+    "maxTokensHint": "Takes effect when you publish this configuration.",
+    "maxTokensInvalid": "Enter a whole number between 1 and 32,768.",
+    "metaUpdatedLabel": "Updated",
+    "instructionPreview": "System instruction preview",
+    "instructionEmpty": "No system instruction configured.",
     "guardsTitle": "Answer guards",
     "guard": {
       "noFullSolution": {
@@ -1080,6 +1497,7 @@
       "item": {
         "instruction": "System instruction edited",
         "model": "Model: {from} to {to}",
+        "tokens": "Output tokens: {from, number} to {to, number}",
         "guards": "Answer rules: {count} items"
       }
     },
@@ -1181,37 +1599,12 @@
     "loadFailed": "Could not load the problem list. Try again later.",
     "title": "Problem management",
     "subtitle": "{total} problems · {published} visible in the problem bank",
+    "importProblems": "Add many",
     "newProblem": "New problem",
     "searchLabel": "Search problems",
     "searchPlaceholder": "Search by code or title",
     "difficultyFilterLabel": "Filter by difficulty",
     "statusFilterLabel": "Filter by status",
-    "topicDist": {
-      "title": "Distribution by topic",
-      "subtitle": "{total} problems across {topics} topics"
-    },
-    "attention": {
-      "title": "Needs attention",
-      "tag": "Auto-detected",
-      "rule": {
-        "noTestcase": {
-          "title": "No testcases",
-          "meta": "Problem has no testcase at all"
-        },
-        "lowAcceptRate": {
-          "title": "Low AC rate",
-          "meta": "AC rate below 30%"
-        },
-        "hiddenFromLearners": {
-          "title": "Hidden from learners",
-          "meta": "Was published, now withdrawn"
-        },
-        "staleDraft": {
-          "title": "Stale draft",
-          "meta": "Unpublished for over 7 days"
-        }
-      }
-    },
     "manageTopics": "Manage topics",
     "topicManager": {
       "title": "Manage problem topics",
@@ -1287,14 +1680,14 @@
     "selectAll": "Select every visible problem",
     "selectRow": "Select {title}",
     "selectionLabel": "{count} problems selected",
-    "selectionLabelHidden": "{count} problems selected ({hidden} hidden by the filter)",
     "bulk": {
       "publish": "Publish",
       "changeDifficulty": "Change difficulty",
       "assignTopic": "Assign topic",
       "duplicate": "Duplicate",
-      "exportCsv": "Export CSV",
-      "delete": "Delete"
+      "exportCsv": "Export Excel",
+      "delete": "Delete",
+      "unpublish": "Withdraw"
     },
     "edit": "Edit",
     "delete": "Delete",
@@ -1308,26 +1701,216 @@
     "goToPage": "Page {page}",
     "confirmDeleteTitle": "Delete {title}?",
     "confirmBulkDeleteTitle": "Delete {count} selected problems?",
-    "confirmBulkDeleteHidden": "Warning: {count} of these problems are hidden by the current filter.",
     "confirmDeleteBody": "The problem will be hidden from learners and from this list. Submissions, scores, bookmarks and class history are kept.",
     "confirmDeleteImpact": "The problem has {submissions} submissions and is assigned to {classes} classes.",
     "confirmBulkDeleteImpact": "{count} problems, {submissions} submissions; {assigned} assigned to classes.",
     "toast": {
-      "notWired": "{action}: not wired to an API in this prototype, nothing changed",
       "deleted": "Problem {title} deleted",
+      "publishMax": "At most {max} problems can be published at once. Deselect a few.",
+      "exported": "Exported {count} problems to an Excel file",
+      "bulkPartial": "{done} problems done, {failed} could not be processed. {reason}",
       "duplicatePickOne": "Select exactly one problem to duplicate",
       "searchResult": "Found {count} problems",
       "searchEmpty": "No problems found",
       "bulkNeedsChoice": "Pick a value to apply first (the prototype has no picker yet)",
       "bulk": {
+        "publish": "Published {count} problems",
         "delete": "Deleted {count} problems",
-        "changeDifficulty": "Changed the difficulty of {count} problems"
+        "changeDifficulty": "Changed the difficulty of {count} problems",
+        "unpublish": "Withdrew {count} problems",
+        "assignTopic": "Assigned topic to {count} problems"
       }
-    }
+    },
+    "exportFiltered": "Export filtered to Excel",
+    "bulkFailureTitle": "Problems that could not be processed",
+    "bulkTopicTitle": "Assign topic to {count} problems",
+    "bulkTopicLabel": "Topic to add",
+    "confirmUnpublish": "Withdraw {count} selected problems?",
+    "unpublishHint": "These problems will leave the learner catalog. Submission history is preserved."
+  },
+  "problemImport": {
+    "title": "Add many problems",
+    "back": "Back to problem management",
+    "subtitleEmpty": "Bring in an Excel file, review it, fix it, then create the whole set",
+    "count": {
+      "rows": "{count} problems",
+      "blocked": "{count} to fix",
+      "published": "{count} published"
+    },
+    "step": {
+      "prepare": "Bring in and fix",
+      "create": "Create drafts, run solutions",
+      "publish": "Publish"
+    },
+    "zone": {
+      "title": "Drop an Excel file here",
+      "body": "Or choose an .xlsx file, or copy cells in Excel or Google Sheets and press Ctrl V. One row is one problem, at most {max} problems. Only problems that read standard input and print to standard output.",
+      "more": "Drop another file, or paste cells with Ctrl V"
+    },
+    "chooseFile": "Choose Excel file",
+    "downloadTemplate": "Download template",
+    "templateSaved": "Template saved to your downloads folder.",
+    "addRow": "Add row",
+    "run": "Create drafts and run solutions ({count})",
+    "publishCount": "Publish {count} passing",
+    "stop": "Stop",
+    "stopping": "Stopping after this problem...",
+    "received": "{count} problems received.",
+    "published": "{count} problems published.",
+    "assigned": "{count} problems assigned to {className}.",
+    "assignFailed": "{count} problems could not be assigned to {className}. They are still published.",
+    "assignAgain": "Assign again",
+    "retry": "Retry",
+    "remove": "Remove",
+    "removeRow": "Remove problem {number} from the table",
+    "removedKeepsDraft": "Removed from the table. The draft already created stays in the problem list.",
+    "untitled": "No title yet",
+    "choose": "Choose",
+    "levelOf": "Difficulty of problem {number}",
+    "openList": "Open the problem list",
+    "createAgain": "Checked, create again",
+    "openEditor": "Open problem",
+    "cancel": "Cancel",
+    "column": {
+      "number": "#",
+      "title": "Title",
+      "level": "Difficulty",
+      "cases": "Testcases",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "status": {
+      "ready": "Complete",
+      "changed": "Needs another run",
+      "incomplete": "Can be a draft",
+      "blocked": "Fix needed",
+      "gaps": "Missing {items}.",
+      "saving": "Saving...",
+      "running": "Running the solution...",
+      "waiting": "Waiting for a slot ({seconds} s)",
+      "draft": "Saved as draft",
+      "pass": "Passed {total}/{total}",
+      "fail": "Failed testcase {position}",
+      "failDetail": "Reason: {reason}. Fix the solution or the testcase and run again.",
+      "compileError": "Compile error",
+      "compileErrorDetail": "Fix the solution and run again.",
+      "error": "Not created",
+      "errorStored": "Not finished",
+      "unknown": "Outcome unknown",
+      "unknownDetail": "The connection was lost while creating. Check the list before creating again, to avoid a duplicate.",
+      "publishing": "Publishing...",
+      "published": "Published",
+      "publishError": "Not published"
+    },
+    "gap": {
+      "stdin": "input format",
+      "stdout": "output format",
+      "solution": "solution",
+      "cases": "{count} testcases"
+    },
+    "issue": {
+      "titleMissing": "Title is missing.",
+      "titleTooLong": "Title is longer than 255 characters.",
+      "titleRepeated": "Title is used twice in the table.",
+      "levelMissing": "Choose a difficulty.",
+      "levelUnknown": "No difficulty \"{value}\".",
+      "topicUnknown": "No topic \"{value}\".",
+      "statementMissing": "Statement is missing.",
+      "statementTooLong": "Statement is longer than 100,000 characters.",
+      "constraintsTooLong": "Constraints are longer than 20,000 characters.",
+      "languageUnknown": "Language \"{value}\" is not supported.",
+      "solutionTooLong": "Solution is larger than 64 KB.",
+      "caseHalf": "Testcase {value} lacks its input or output.",
+      "caseTooLarge": "Testcase {value} is larger than 1 MB."
+    },
+    "failure": {
+      "WRONG_ANSWER": "wrong answer",
+      "TIME_LIMIT_EXCEEDED": "time limit exceeded",
+      "MEMORY_LIMIT_EXCEEDED": "memory limit exceeded",
+      "RUNTIME_ERROR": "runtime error",
+      "OUTPUT_LIMIT_EXCEEDED": "output limit exceeded",
+      "COMPILE_ERROR": "compile error"
+    },
+    "notice": {
+      "noHeader": "No header row found, so cells are read in the order of the template.",
+      "unknownColumns": "Unknown columns skipped: {names}.",
+      "leftOver": "At most {max} problems per run: {taken} taken, the last {left} left out. Bring them in the next run.",
+      "dates": "Excel turned {count} cells into dates ({cells}), so they are blank. Format them as Text and import again, or type them here.",
+      "formulas": "Cells with formula errors are blank: {cells}.",
+      "sheets": "The file has several sheets; only the first one, \"{name}\", was read."
+    },
+    "error": {
+      "noHeader": "The first row has no column names like the template (Title, Difficulty, Input 1...). Download the template to compare.",
+      "noRows": "There are no problems to take.",
+      "template": "Could not download the template. Try again.",
+      "languages": "Could not read the judge languages, so problems cannot be created yet.",
+      "file": {
+        "extension": "Only .xlsx files are accepted.",
+        "tooLarge": "The file is larger than 10 MB.",
+        "protectedOrOld": "The file has a password or is an old .xls. Save it as .xlsx without a password.",
+        "notXlsx": "Not a valid Excel .xlsx file.",
+        "unsupported": "The file uses an unsupported compression.",
+        "inflatedTooLarge": "The file content is too large.",
+        "corrupt": "The file is damaged or cannot be read.",
+        "empty": "The first sheet has no data."
+      }
+    },
+    "field": {
+      "title": "Title",
+      "topics": "Topics (separated by commas)",
+      "statement": "Statement (Markdown, LaTeX)",
+      "stdin": "Input format",
+      "stdout": "Output format",
+      "constraints": "Constraints",
+      "language": "Language",
+      "solution": "Reference solution (reads stdin, writes stdout)",
+      "caseInput": "Input {number}",
+      "caseOutput": "Output {number}",
+      "caseNote": "Explanation {number}"
+    },
+    "editor": {
+      "title": "Problem {number}",
+      "close": "Close",
+      "parts": "Content part",
+      "statement": "Statement",
+      "cases": "Testcases ({count}/{needed})",
+      "solution": "Reference solution",
+      "solutionHint": "The system runs this solution on the testcases to check the expected outputs. Learners never see it.",
+      "case": "Testcase {number}",
+      "public": "Public",
+      "hidden": "Hidden",
+      "addCase": "Add testcase",
+      "removeCase": "Remove testcase {number}"
+    },
+    "publish": {
+      "title": "Publish {count} passing problems",
+      "body": "Learners will see these problems in the problem bank. The others stay drafts.",
+      "classLabel": "Assign to a class as well (optional)",
+      "noClass": "Do not assign",
+      "classesFailed": "Could not read the class list. You can still publish now and assign later.",
+      "confirm": "Publish {count} problems"
+    },
+    "columnsHelp": {
+      "title": "Which columns are read?",
+      "body": "The first row holds column names, in any order, ignoring case and accents: Title, Difficulty, Topics, Statement, Input format, Output format, Constraints, Solution, Language, Input 1, Output 1, Explanation 1, Input 2, Output 2, Explanation 2, up to Input 20, Output 20. The first two Input and Output pairs are public examples, the others are hidden testcases. Upload large testcases on the authoring screen."
+    },
+    "leave": {
+      "title": "Leave this screen?",
+      "body": "Problems not created yet will be lost. Drafts already created stay in the problem list.",
+      "bodyBusy": "The run in progress stops after the current problem. Problems not created yet will be lost.",
+      "confirm": "Leave",
+      "stay": "Stay"
+    },
+    "rowLabel": "Problem {number} ({title})",
+    "blockedOnIntake": "{count} problems need fixing. Click a title to see why.",
+    "runDone": "Run finished: {pass} passed, {bad} not passed, {draft} saved as drafts.",
+    "titlesExist": "The bank already has problems titled: {titles}. Check before importing them twice.",
+    "openEditorOf": "Open {title} in a new tab"
   },
   "interviewQuestionManagement": {
     "title": "Interview question bank",
     "loadFailed": "Could not load the question list. Try again later.",
+    "retry": "Try again",
     "subtitle": "{total} questions · instructors and admins can edit all of them",
     "manageTopics": "Manage topics",
     "topicManager": {
@@ -1409,7 +1992,8 @@
         "unknownLevel": "level \"{detail}\" is not in the list",
         "badRubric": "rubric is malformed (expected name:weight, weight a whole number from 0 to 100)",
         "rubricSum": "rubric weights do not total 100",
-        "duplicate": "the question duplicates an existing one or an earlier row in the file"
+        "duplicate": "the question duplicates an existing one or an earlier row in the file",
+        "invalidField": "a cell is not valid (question over 255 characters or wrong data type)"
       }
     },
     "newQuestion": "New question",
@@ -1438,6 +2022,7 @@
     "editQuestion": "Edit question {code}",
     "deleteQuestion": "Delete question {code}",
     "emptyFiltered": "No question matches the current filter",
+    "emptyBank": "The bank has no questions yet",
     "pageLabel": "Page {page} of {totalPages} · showing {shown} rows",
     "previous": "Previous",
     "next": "Next",
@@ -1455,6 +2040,7 @@
     "confirmDeleteBody": "The question leaves the bank. Interview sessions that already used it keep their history.",
     "toast": {
       "bulkDeleted": "{count} questions deleted",
+      "bulkPartial": "{done} deleted, {failed} could not be deleted: {reason}",
       "deleted": "Question {code} deleted",
       "searchResult": "Found {count} questions",
       "searchEmpty": "No questions found"
@@ -1462,18 +2048,26 @@
   },
   "interviewQuestionAuthoring": {
     "titleNew": "Author an interview question",
-    "subtitle": "Saving makes the question live — there is no separate publish step",
+    "subtitle": "Changes go live when saved",
     "titleEdit": "Edit question {code}",
     "notFoundTitle": "Question not found",
-    "notFoundBody": "No question has the code {code}. It may have been removed from the bank.",
+    "notFoundBody": "This question was not found. It may have been removed from the bank.",
     "classifyTitle": "Classification",
     "classifySubtitle": "Topic and level drive the filters in the question bank",
     "back": "Back",
     "previewAsLearner": "Preview as learner",
+    "previewEmpty": "No question content yet.",
+    "previewClose": "Close",
     "save": "Save",
     "saving": "Saving…",
     "savedAt": "Saved at {time}",
+    "saved": "Saved",
     "unsaved": "Not saved",
+    "sectionsLabel": "Jump to an editing section",
+    "sectionQuestion": "Question",
+    "sectionFollowUps": "Follow-ups",
+    "sectionRubric": "Criteria",
+    "savedContext": "Saved context",
     "group1Title": "Question content",
     "group1Subtitle": "The question body is written in Markdown",
     "questionLabel": "Question",
@@ -1513,12 +2107,16 @@
       "softDeleted": "Question retired"
     },
     "saveBlocked": {
-      "empty": "Enter the question text before saving."
+      "empty": "Enter the question text before saving.",
+      "titleTooLong": "The question can have at most {max} characters.",
+      "criterionBlank": "Every criterion needs a name.",
+      "criterionDuplicate": "Two criteria cannot share a name.",
+      "classify": "Choose a topic and a level before saving."
     }
   },
   "problemAuthoring": {
     "notFound": "Problem not found.",
-    "subtitle": "Topic {topic} · publish once the checklist passes",
+    "subtitle": "Topic {topic}",
     "back": "Back",
     "previewAsLearner": "Preview as learner",
     "previewNeedsSave": "Save the problem before previewing",
@@ -1538,6 +2136,7 @@
     "saveHint": {
       "saving": "Saving...",
       "saved": "Saved",
+      "new": "New draft",
       "dirty": "Unsaved changes",
       "error": "Save failed, try again"
     },
@@ -1547,12 +2146,18 @@
       "examples": "Examples ({count})",
       "testcases": "Testcases ({count})",
       "ai": "AI guidance",
-      "spec": "Spec"
+      "spec": "Spec",
+      "solution": "Reference solution"
     },
     "statementTitle": "Statement",
     "statementSubtitle": "Written in Markdown with LaTeX support",
     "titleLabel": "Title",
     "bodyLabel": "Statement body",
+    "bodyMode": {
+      "edit": "Edit Markdown",
+      "preview": "Preview Markdown",
+      "empty": "The problem statement is empty."
+    },
     "limitsTitle": "Constraints and limits",
     "limitsSubtitle": "Applies to every language; override per language on the Languages screen",
     "limit": {
@@ -1589,8 +2194,49 @@
     "edit": "Edit",
     "delete": "Delete",
     "addTestcase": "Add testcase",
+    "testcase": {
+      "btnBulkUpload": "Bulk upload"
+    },
+    "bulk": {
+      "title": "Bulk upload testcases",
+      "hint": "Pick many files at once. Two files with the same name and different extensions make one testcase: 01.in is the input, 01.out the expected output. At most {max} pairs at a time.",
+      "choose": "Choose files",
+      "chooseAgain": "Choose again",
+      "upload": "Upload {count} testcases",
+      "uploading": "Uploading...",
+      "saveFirst": "Save the problem before a bulk upload",
+      "issuesLabel": "Problems with the chosen files",
+      "tableCaption": "Paired files",
+      "columnName": "Name",
+      "noPairs": "No pair could be matched yet.",
+      "done": "Added {count} testcases",
+      "itemError": "File {file}: {reason}",
+      "fault": {
+        "MISSING": "this file did not upload",
+        "SIZE_MISMATCH": "the uploaded size does not match",
+        "INVALID_TEXT": "the content is not valid UTF-8 text"
+      },
+      "issue": {
+        "extension": "File {file} does not end in .in or .out.",
+        "duplicate": "File {file} repeats the name of a chosen file.",
+        "unmatched": "File {file} has no partner (same name, the other extension).",
+        "empty": "File {file} is empty.",
+        "sideTooLarge": "File {file} is over {limit}.",
+        "tooManyPairs": "{count} pairs chosen, at most {limit} at a time.",
+        "totalTooLarge": "The total size is over {limit}.",
+        "tooManyTestcases": "The problem would have {count} testcases, at most {limit}."
+      },
+      "visibilityDefault": "The first {count} testcases are set to Public so they can be used as examples. You can change each row in the Visibility column.",
+      "visibilityOf": "Visibility of {file}"
+    },
     "addExample": "Add example",
     "runSolution": "Run reference solution",
+    "runOne": "Run this testcase",
+    "moveUp": "Move testcase up",
+    "moveDown": "Move testcase down",
+    "reorderHint": "Drag the position or use the up/down buttons to reorder testcases",
+    "testcaseTooLarge": "Each testcase side must be at most 1 MB in UTF-8.",
+    "unsupportedSignatureType": "There is no editor for type {kind} yet. Saving preserves its original data; choosing another type replaces it.",
     "runResultTitle": "Reference solution ran",
     "runResultBody": "Passed {passed}/{total} approved testcases.",
     "runStaleTitle": "No valid run result",
@@ -1607,7 +2253,8 @@
       "editExample": "Edit worked example",
       "save": "Save",
       "cancel": "Cancel",
-      "required": "Input and output are required."
+      "required": "Input and output are required.",
+      "largeSide": "Large content stored outside the database, it cannot be edited here."
     },
     "aiTitle": "Guidance for the AI assistant",
     "aiSubtitle": "Problem-specific context appended to the system prompt from the AI configuration screen",
@@ -1646,6 +2293,9 @@
       "published": "Published"
     },
     "checklistTitle": "Publish checklist",
+    "checklistProgress": "{done}/{total} requirements met",
+    "testcaseRow": "Testcase {number}",
+    "statusApproved": "Approved",
     "checklistBlockTitle": "Cannot publish yet",
     "checklistBlockBody": "{count} requirements still unmet.",
     "checkDone": "Done",
@@ -1699,12 +2349,33 @@
       "exampleUpdated": "Worked example updated",
       "exampleDeleted": "Worked example deleted",
       "draftApproved": "Draft testcase approved",
-      "draftRejected": "Draft testcase rejected"
+      "draftRejected": "Draft testcase rejected",
+      "droppedDuplicateInput": "Dropped {count} duplicate inputs",
+      "examplesNoPublic": "There are no approved public testcases to use as examples yet.",
+      "examplesNothingNew": "The public testcases are already in the examples list.",
+      "examplesFromTestcases": "Added {count} examples from public testcases. Add the explanations."
     },
     "runBlocked": {
       "noSolution": "Enter the reference solution before running it.",
-      "noTestcase": "At least one approved testcase is needed to run the reference solution."
+      "noTestcase": "At least one approved testcase is needed to run the reference solution.",
+      "needsSave": "Save the problem before running the reference solution."
     },
+    "running": "Running...",
+    "runCompileError": "The reference solution does not compile.",
+    "runFailedAt": "Failed at testcase #{position}: {reason}. {passed}/{total} correct.",
+    "runFailure": {
+      "WRONG_ANSWER": "wrong answer",
+      "TIME_LIMIT_EXCEEDED": "time limit exceeded",
+      "MEMORY_LIMIT_EXCEEDED": "memory limit exceeded",
+      "RUNTIME_ERROR": "runtime error",
+      "OUTPUT_LIMIT_EXCEEDED": "output limit exceeded",
+      "COMPILE_ERROR": "compile error"
+    },
+    "readOnlyNotice": "This problem was written by someone else and is published; you can read it but not save changes.",
+    "testcasesHiddenNotice": "Your account cannot see testcase contents. The problem has {total} testcases.",
+    "copyWillCopy": "The first save also copies {count} testcases of the source problem.",
+    "copyWillCopyWithSpec": "The first save also copies {count} testcases and the function spec of the source problem.",
+    "largeSideCell": "(large content)",
     "spec": {
       "wrapperUnsupportedTitle": "Standard I/O only",
       "wrapperUnsupportedBody": "A type falls outside the harness type schema, so this problem has no function-wrapper model; learners can only submit through Standard I/O (F3-13). Function signatures are no longer required to be complete.",
@@ -1745,6 +2416,8 @@
       "ioSubtitle": "Standard I/O model: learners read stdin and print stdout exactly as these two descriptions say.",
       "stdinFormat": "stdin read format",
       "stdoutFormat": "stdout print format",
+      "stdinPlaceholder": "Example: Line 1 is an integer n. Line 2 has n integers separated by spaces.",
+      "stdoutPlaceholder": "Example: A single integer, the sum of the even elements.",
       "matchingTitle": "Matching strategy",
       "matchingSubtitle": "How a learner's output is compared with the expected one.",
       "matchingStrategy": "Matching strategy",
@@ -1771,9 +2444,39 @@
       "signatureTitle": "Function signature",
       "signatureSubtitle": "Declared once for all three languages. The harness maps the types to each language and generates the starter code: the learner writes only the function body, the harness reads the input and prints the output. Parameter names show up in the starter code and when a sample testcase is displayed.",
       "stubTitle": "Starter code the learner will see",
+      "preview": {
+        "languages": "Preview language",
+        "loading": "Updating the signature…",
+        "rateLimited": "Waiting {seconds} seconds before retrying the preview.",
+        "unsupported": "The current draft does not support the function wrapper.",
+        "reasons": {
+          "HRN-V01": "A data type is outside the supported schema.",
+          "HRN-V02": "A container is missing its element type.",
+          "HRN-V03": "An element type is not supported by its container.",
+          "HRN-V04": "An array has more than three dimensions.",
+          "HRN-V05": "Data types are nested too deeply.",
+          "HRN-V06": "Nodes of the same kind must share a value type.",
+          "HRN-V07": "The function signature has not been declared."
+        }
+      },
       "stubSubtitle": "Illustrated from the signature above; the real starter code is generated by the harness. The name is derived: Python uses snake_case, Java and C++ camelCase.",
       "overrideName": "{language} function name (empty = derived)"
-    }
+    },
+    "generateNeedsSave": "Save the problem changes before generating testcases with AI.",
+    "kind": {
+      "title": "Problem type",
+      "subtitle": "Choose how learners submit. This decides whether a function signature is needed.",
+      "stdio": "stdin program",
+      "function": "Function (wrapper)",
+      "stdioHint": "Learners write the whole program: read from stdin and print the answer to stdout. No function name or parameters to declare.",
+      "functionHint": "Learners write only the function body to the signature you declare on the Spec tab; the system reads the input and prints the result. You must declare the name, parameters and return type, and the testcase data must follow the parameter order."
+    },
+    "runNote": {
+      "success": "Reference solution passes",
+      "warn": "Reference solution fails",
+      "negative": "The reference solution could not run"
+    },
+    "examplesFromTestcases": "Copy from public testcases"
   },
   "problemPreview": {
     "notFound": "Problem not found.",
@@ -1795,7 +2498,8 @@
     "loadFailed": "Could not load the problem. Try again later.",
     "back": "Back to list",
     "edit": "Edit problem",
-    "subtitle": "Code #{code} · topic {topic}",
+    "subtitle": "Topic {topic} · Problem code {code}",
+    "subtitleTopic": "Topic {topic}",
     "statTestcases": "Approved testcases",
     "statTestcasesMeta": "{count} testcases awaiting review",
     "statPublic": "Public testcases",
@@ -1806,10 +2510,31 @@
     "guardOn": "On",
     "guardOff": "Off",
     "aiBriefEmpty": "No problem-specific context yet.",
+    "sectionsLabel": "Problem details",
+    "sectionSpec": "Specification",
+    "sectionCoverage": "Testcase coverage",
+    "coverageSummary": "{approved}/{total} approved testcases",
+    "coverageEmpty": "None yet",
+    "allTestcases": "All testcases",
+    "uncategorizedTestcases": "Uncategorized",
+    "testcaseCategoryFilter": "Testcase category",
+    "testcaseNumber": "Testcase {number}",
+    "testcasePageSummary": "{from}–{to} of {total} testcases",
+    "previousTestcasePage": "Previous",
+    "nextTestcasePage": "Next",
+    "testcasePage": "Page {number}",
+    "testcaseApproved": "Approved",
+    "expectedOutput": "Expected output",
+    "emptyTestcaseValue": "(Empty)",
+    "solutionEmpty": "No reference solution yet.",
+    "unspecified": "Not specified",
     "specTitle": "Problem spec",
     "specSubtitle": "Function signature (function-wrapper model), standard I/O format and how results are matched. Read-only, edit it on the edit page."
   },
   "interviewQuestionInfo": {
+    "sectionsLabel": "Question details",
+    "followUpsTab": "Follow-ups ({count})",
+    "rubricTab": "Criteria ({count})",
     "back": "Back to list",
     "edit": "Edit question",
     "title": "Question {code}",
@@ -1888,7 +2613,14 @@
       "mockInterview": "Mock interview (AI)",
       "retry": "Back to Workspace",
       "needAccepted": "Available once this submission is Accepted."
-    }
+    },
+    "progressSlow": "Updates are delayed. Reload to check the latest status.",
+    "queue": {
+      "waiting": "Waiting to be judged: {ahead} submission(s) ahead of you",
+      "waitingWithEstimate": "Waiting to be judged: {ahead} submission(s) ahead, about {seconds} seconds estimated",
+      "aboutToStart": "Waiting to be judged: you are next"
+    },
+    "testcaseUnavailable": "Testcase details are no longer available for this submission."
   },
   "mySubmissions": {
     "title": "My submissions",
@@ -1984,6 +2716,17 @@
       "applyFailed": "Could not save the code in this browser. Check the browser storage permission."
     },
     "statCreatedAt": "Analyzed at",
+    "loadingLabel": "Analyzing the solution, this can take up to 30 seconds",
+    "errorRateLimitedTitle": "Cannot analyze right now",
+    "errorRateLimitedBody": "You have requested too many analyses. Try again in {seconds} seconds.",
+    "retryIn": "Retry in {seconds}s",
+    "sourceUnavailable": "The submitted code could not be loaded, so the comparison is hidden.",
+    "withdrawn": "Withdrawn from the bank",
+    "diff": {
+      "added": "added",
+      "removed": "removed"
+    },
+    "rateLimitedToast": "You are going a bit fast. Try again in {seconds} seconds.",
     "errorUnavailableTitle": "Cannot open the solution review",
     "errorUnavailableBody": "This submission does not exist, is not yours, or is not accepted yet, so it has no solution review.",
     "backToSubmissions": "Back to My submissions",
@@ -2001,6 +2744,9 @@
       "custom": "Custom topic"
     },
     "customTopicHint": "Pick at least one topic for a self-practice session.",
+    "viewAllBank": "View all {total} questions",
+    "emptySubmissions": "You have no Accepted submission yet. Solve a problem first, then come back.",
+    "emptyBank": "The question bank has nothing to pick yet.",
     "configTitle": "Session settings",
     "levelLabel": "Level",
     "level": {
@@ -2039,7 +2785,9 @@
     "retryCta": "Practice again",
     "backCta": "Back to list",
     "toast": {
-      "finished": "Interview session finished. Your evaluation is ready."
+      "finished": "Interview session finished. Your evaluation is ready.",
+      "sessionAbandoned": "The previous interview session closed after being idle too long.",
+      "sessionGone": "This interview session could not be reopened."
     },
     "customTopicsLabel": "Interview topics",
     "chatLogLabel": "Interview conversation",
@@ -2068,7 +2816,114 @@
     "tip1": "State the approach first, implementation details after.",
     "tip2": "Be explicit about time and space complexity.",
     "tip3": "Raise edge cases yourself before being asked.",
-    "sendShortcut": "Ctrl + Enter to send"
+    "sendShortcut": "Ctrl + Enter to send",
+    "startPending": "Opening the session...",
+    "submissionConfigNote": "A session from a submission uses the system defaults: turns, level and hints cannot be changed.",
+    "turnCountOpen": "Turn {current}",
+    "restoringLabel": "Restoring the session...",
+    "waitingReply": "The interviewer is replying, please wait a moment.",
+    "waitingSlow": "This is taking longer than usual. You can reload the page, the session is kept.",
+    "turnFailedTitle": "No reply yet to this answer",
+    "turnFailedBody": "Your answer is saved. Press Retry so the interviewer can reply.",
+    "turnRetry": "Retry",
+    "completionPendingTitle": "The session is ready to be scored",
+    "completionRetry": "Score now",
+    "completingLabel": "Scoring the session...",
+    "hintBlockTitle": "Hint",
+    "earlyExitNoTurnBody": "You have not answered anything yet, so there is nothing to score. The session is left and closes on its own.",
+    "earlyExitNoTurnConfirm": "Leave session",
+    "hero": {
+      "statSessions": "Sessions completed",
+      "statAverage": "Average score",
+      "statWeakest": "Criterion to practise"
+    },
+    "source": {
+      "submittedOn": "Submitted {date}",
+      "showMore": "Show {count} more",
+      "showLess": "Show less",
+      "pickedLabel": "Selected"
+    },
+    "opening": {
+      "title": "Opening your interview",
+      "preparing": "Preparing the session",
+      "stepSent": "Session settings sent",
+      "stepWriting": "The AI interviewer is writing the opening question",
+      "stepEnter": "Enter the interview room",
+      "elapsed": "Waited {time}",
+      "usual": "Usually takes about {seconds} seconds",
+      "slow": "Taking a little longer than usual, the system is still working. You do not need to reload.",
+      "composing": "The interviewer is writing a question"
+    },
+    "scoring": {
+      "title": "Scoring the session",
+      "body": "The AI is reading the whole conversation and scoring the four criteria.",
+      "elapsed": "Waited {time}"
+    },
+    "scoreLevel": {
+      "weak": "Weak",
+      "fair": "Fair",
+      "good": "Good"
+    },
+    "legend": {
+      "title": "Score band",
+      "weak": "below 5",
+      "fair": "5 to below 8",
+      "good": "8 and above"
+    },
+    "result": {
+      "summaryTitle": "Overall feedback",
+      "radarLabel": "Shape of your skills across the four criteria"
+    },
+    "rubricShort": {
+      "clarity": "Clarity",
+      "technicalAccuracy": "Technical",
+      "pushbackHandling": "Pushback",
+      "complexityAwareness": "Complexity"
+    },
+    "history": {
+      "title": "Interview history",
+      "subtitle": "Sessions you finished or left unfinished. Open one to see its scorecard and conversation.",
+      "back": "Back to mock interview",
+      "seeAll": "See all",
+      "empty": "No session matches. Scores of graded sessions appear here.",
+      "error": "Could not load the session history. The rest of the screen still works.",
+      "viewDetail": "View detail",
+      "col": {
+        "date": "Started",
+        "source": "Source",
+        "level": "Level",
+        "turns": "Turns",
+        "score": "Score",
+        "status": "Status"
+      },
+      "status": {
+        "completed": "Completed",
+        "abandoned": "Abandoned"
+      },
+      "filter": {
+        "searchLabel": "Search interview sessions",
+        "searchPlaceholder": "Search by question or topic",
+        "source": "Source",
+        "status": "Status",
+        "band": "Score band",
+        "level": "Level",
+        "all": "All"
+      },
+      "footer": {
+        "pageSize": "Rows per page",
+        "summary": "Showing {from} to {to} of {total} sessions",
+        "previous": "Previous",
+        "next": "Next",
+        "pageLabel": "Page {page}"
+      },
+      "detail": {
+        "title": "Interview session detail",
+        "back": "Back to interview history",
+        "noScore": "This session was left unfinished, so it has no score. The conversation is below.",
+        "transcript": "Conversation",
+        "noTurns": "This session has no turns yet."
+      }
+    }
   },
   "interviewBankList": {
     "startDrill": "Quick drill · {count}",
@@ -2094,12 +2949,19 @@
     },
     "bookmarkLabel": "Bookmark for later",
     "emptyFiltered": "No question matches these filters.",
+    "emptyBank": "The bank has no questions yet.",
+    "loadMore": "Load more",
+    "loadMoreRetry": "Try again",
+    "loadMoreFailed": "Could not load more questions.",
     "quickView": {
       "selectPrompt": "Select a question to preview it.",
       "outlineLabel": "Answer outline",
       "recallLabel": "Recall level",
       "viewDetail": "View details",
       "nextReview": "Next review in {n} days",
+      "nextReviewDue": "Review is due now",
+      "loadFailed": "Could not load the question details.",
+      "retry": "Try again",
       "keywordsLabel": "Core keywords"
     },
     "drill": {
@@ -2115,7 +2977,14 @@
       "bookmarked": "Question saved.",
       "unbookmarked": "Question removed from saved.",
       "searchResult": "Found {count} questions.",
-      "searchEmpty": "No questions found."
+      "searchEmpty": "No questions found.",
+      "loadFailed": "Could not load the list. The filters went back to what they were.",
+      "unavailable": "This question is no longer available.",
+      "rateFailed": "Could not save your recall level. Try again.",
+      "bookmarkFailed": "Could not save the bookmark. Try again.",
+      "drillFailed": "Could not start the quick drill. Try again.",
+      "drillEmpty": "No question matches the filters to drill.",
+      "drillRateFailed": "That last self-rating was not saved."
     },
     "bookmarkedOnly": "Bookmarked only",
     "title": "Question bank",
@@ -2147,7 +3016,8 @@
         "vague": "Vague",
         "forgotten": "Forgotten"
       },
-      "nextReviewHint": "Next review in {n} days"
+      "nextReviewHint": "Next review in {n} days",
+      "nextReviewDue": "Review is due now"
     },
     "practice": {
       "answerLabel": "Your answer",
@@ -2173,6 +3043,7 @@
     "attempts": {
       "title": "Attempt history",
       "emptyState": "You haven't practised this question yet.",
+      "loadMore": "Load more ({shown} / {total})",
       "attemptNo": "Attempt {n}",
       "status": {
         "pending": "Grading",
@@ -2236,7 +3107,9 @@
       "deleteClassConfirm": "Delete class",
       "removeStudentTitle": "Remove {name} from class?",
       "removeStudentBody": "The learner will leave the class. Their learning history in this class is kept.",
-      "removeStudentConfirm": "Remove student"
+      "removeStudentConfirm": "Remove student",
+      "deleteClassImpact": "The class has {students} learners and {problems} assigned problems. Learners will no longer see the class or these problems; their submissions are kept.",
+      "deleteClassImpactStudents": "The class has {students} learners. Learners will no longer see the class or its problems; their submissions are kept."
     },
     "schedule": {
       "heading": "Schedule",
@@ -2264,7 +3137,8 @@
       "updated": "Changes to class \"{name}\" saved",
       "deleted": "Class \"{name}\" deleted",
       "inviteCreated": "New invite code created",
-      "failed": "The action failed, please try again"
+      "failed": "The action failed, please try again",
+      "inviteRevoked": "Invite code revoked"
     },
     "validation": {
       "nameRequired": "The class name cannot be empty.",
@@ -2279,28 +3153,47 @@
     "backToList": "Back to my classes",
     "notFoundTitle": "Class not found",
     "notFound": "This class does not exist or is not yours.",
+    "descriptionTitle": "Class description",
     "noDescription": "This class has no description yet.",
     "edit": "Edit details",
     "delete": "Delete class",
     "schedule": {
       "title": "Schedule",
-      "days": "Days",
-      "time": "Time",
-      "room": "Room / place",
-      "period": "Period",
-      "note": "Note",
+      "days": "Days of the week",
+      "time": "Class hours",
+      "room": "Location",
+      "period": "Class dates",
+      "note": "Schedule notes",
+      "weekday": {
+        "1": "Monday",
+        "2": "Tuesday",
+        "3": "Wednesday",
+        "4": "Thursday",
+        "5": "Friday",
+        "6": "Saturday",
+        "7": "Sunday"
+      },
       "empty": "This class has no schedule yet. Use Edit details to add one."
     },
     "invite": {
       "title": "Invite codes",
       "subtitle": "Students enter a code to join the class. Several codes can be valid at once.",
       "create": "New code",
-      "empty": "This class has no invite codes yet."
+      "copy": "Copy",
+      "copyCode": "Copy invite code {code}",
+      "copied": "Invite code copied.",
+      "copyFailed": "Select the invite code and copy it manually.",
+      "empty": "This class has no invite codes yet.",
+      "revokeCode": "Revoke invite code {code}",
+      "revokeTitle": "Revoke invite code {code}?",
+      "revokeBody": "This code stops working and learners who enter it are refused. Learners already in the class are not affected, and the other codes of the class keep working.",
+      "revokeConfirm": "Revoke code"
     },
     "students": {
       "title": "Students in this class",
       "subtitle": "{count} students",
       "openFull": "Open in the student list",
+      "inactive": "Account no longer active",
       "empty": "This class has no students yet.",
       "remove": "Remove from class",
       "col": {
@@ -2308,7 +3201,10 @@
         "status": "Status",
         "avgScore": "Avg score",
         "completion": "Completion",
-        "lastActive": "Last active"
+        "lastActive": "Last active",
+        "email": "Email",
+        "phone": "Phone",
+        "joinedAt": "Joined"
       }
     },
     "status": {
@@ -2326,6 +3222,7 @@
     "header": {
       "title": "Class assignments",
       "summary": "{count} problems assigned to your classes · from the shared problem bank",
+      "avgAcRate": "Average AC rate {value}",
       "btnAssignFromBank": "+ Assign from problem bank"
     },
     "stats": {
@@ -2348,12 +3245,35 @@
         "withdrawn": "Withdrawn"
       }
     },
+    "copy": {
+      "button": "Copy to another class",
+      "noOtherClass": "You have no other class to copy to",
+      "sourceEmpty": "This class has no problems to copy",
+      "title": "Copy problems from class {className} to",
+      "target": "To class",
+      "targetPlaceholder": "Choose the receiving class",
+      "loading": "Reading the problems of both classes...",
+      "retry": "Try again",
+      "sourceCount": "{className} has",
+      "alreadyHas": "{className} already has",
+      "withdrawn": "Unpublished, cannot be assigned",
+      "willAssign": "Will be assigned",
+      "nothingLeft": "{className} has no problems left to assign.",
+      "confirm": "Copy {count} problems",
+      "confirmEmpty": "Copy",
+      "sending": "Copying...",
+      "done": "Assigned {count} problems to {className}",
+      "skipped": "{count} problems the class already has were skipped",
+      "refused": "{count} problems could not be assigned: {titles}.",
+      "partial": "Only {done}/{total} problems were assigned, press again to send the rest."
+    },
     "filterAll": "All",
     "cancel": "Cancel",
     "pageSummary": "Page {page} / {total}",
     "previous": "Previous",
     "next": "Next",
     "emptyAssignments": "No problems assigned yet",
+    "loadFailed": "Could not load the assigned problems. Please try again later.",
     "popup": {
       "removeAssignmentTitle": "Remove {title} from class?",
       "removeAssignmentBody": "The problem will no longer appear as assigned from now on, but students' submission history, scores and progress stay intact.",
@@ -2362,17 +3282,42 @@
     },
     "toast": {
       "removed": "Removed \"{title}\" from the class",
-      "failed": "Could not remove the assignment, please try again",
-      "assigned": "Assigned {count} problems to {className}",
-      "assignFailed": "Could not assign the problems, please try again"
+      "failed": "Could not remove the assignment, please try again"
+    }
+  },
+  "classAssignProblems": {
+    "title": "Assign problems to a class",
+    "subtitle": "Pick published problems from the bank and give them to a class",
+    "back": "Back to Class assignments",
+    "classLabel": "Class",
+    "search": "Search by code or title",
+    "levelFilter": "Difficulty",
+    "topicFilter": "Topic",
+    "filterAll": "All",
+    "resultCount": "{count} problems",
+    "col": {
+      "title": "Problem",
+      "topic": "Topic",
+      "difficulty": "Difficulty"
     },
-    "assign": {
-      "title": "Assign problems to a class",
-      "classLabel": "Class",
-      "listLabel": "Bank problems not yet given to this class",
-      "loading": "Loading…",
-      "empty": "No problems left to assign to this class",
-      "confirm": "Assign {count}"
+    "assigned": "Assigned",
+    "selectAll": "Select every assignable problem on this page",
+    "selectRow": "Select {title}",
+    "empty": "No problem matches the filters",
+    "loadFailed": "Could not load the problems. Please try again later.",
+    "pageSummary": "Page {page} of {total}",
+    "previous": "Previous",
+    "next": "Next",
+    "selection": "{count} selected, assign to {className}",
+    "overLimit": "At most {max} problems per call",
+    "clear": "Clear",
+    "confirm": "Assign {count}",
+    "noClass": "You do not teach any class yet.",
+    "noClassLink": "Create a class first",
+    "toast": {
+      "assigned": "Assigned {count} problem(s) to {className}",
+      "skipped": "{count} problem(s) were already in the class and were skipped",
+      "refused": "{count} problem(s) could not be assigned."
     }
   },
   "classProgress": {
@@ -2398,7 +3343,7 @@
       "title": "Student list",
       "searchBox": "Search students",
       "classTabs": "Filter by class",
-      "resultCount": "{shown} / {total} students",
+      "resultCount": "{shown} / {total} rows",
       "col": {
         "studentName": "Student",
         "className": "Class",
@@ -2458,7 +3403,8 @@
       "col": {
         "title": "Problem",
         "topic": "Topic",
-        "acRate": "AC"
+        "acRate": "AC",
+        "best": "Best result"
       }
     },
     "submissionHistory": {
@@ -2472,13 +3418,10 @@
       },
       "btnViewResult": "View result",
       "btnViewResultOf": "View the result of {problem}",
-      "filter": {
-        "label": "Filter by result",
-        "all": "All",
-        "accepted": "Accepted",
-        "failed": "Not passed"
-      },
-      "resultCount": "{count} submissions"
+      "resultCount": "{count} submissions",
+      "pageSummary": "Page {page} / {total}",
+      "previous": "Previous",
+      "next": "Next"
     },
     "empty": "No data yet",
     "cancel": "Cancel",
@@ -2494,6 +3437,7 @@
   },
   "instructorSubmission": {
     "contextLabel": "Learner's submission",
+    "leftClassBadge": "Left the class",
     "readOnlyBadge": "Read-only",
     "readOnlyNote": "Read-only: you are viewing a submission of a learner in a class you teach.",
     "breadcrumb": {
@@ -2540,6 +3484,7 @@
     "title": "Instructor overview",
     "kpi": {
       "classes": "Classes in charge",
+      "classesCount": "{count} classes",
       "classesMeta": "{count} students",
       "students": "Total students",
       "studentsMeta": "{count} absent"
@@ -2596,7 +3541,14 @@
     },
     "activity": {
       "title": "Recent activity",
-      "subtitle": "Latest 10 items"
+      "subtitle": "Latest {count} items",
+      "type": {
+        "SUBMISSION_ACCEPTED": "{name} just had a submission Accepted",
+        "SOLUTION_REVIEW_COMPLETED": "{name} just received a solution review",
+        "MOCK_INTERVIEW_FINISHED": "{name} just finished a mock interview",
+        "CLASS_PROBLEM_PUBLISHED": "{name} just assigned a problem to the class",
+        "STUDENT_STREAK_ACHIEVED": "{name} reached a submission streak"
+      }
     },
     "empty": "No data yet"
   },
@@ -2607,13 +3559,17 @@
     "settingsShortcut": "Account settings",
     "form": {
       "title": "Personal details",
+      "contactGroup": "Contact",
+      "workGroup": "Education and work",
       "displayName": "Full name",
       "email": "Email",
-      "schoolOrCompany": "School / company",
-      "currentPosition": "Current role",
-      "targetPosition": "Target position",
+      "schoolOrCompany": "School or workplace",
+      "currentPosition": "Current job title",
+      "targetPosition": "Target job title",
+      "phone": "Phone number",
       "revert": "Revert",
       "save": "Save changes",
+      "unsaved": "Unsaved changes",
       "savedToast": "Profile saved",
       "invalid": "The profile details are not valid",
       "saveFailed": "Could not save the profile. Try again later.",
@@ -2632,9 +3588,7 @@
     "account": {
       "title": "Account",
       "joinedAt": "Joined",
-      "role": "Role",
-      "roleInstructor": "Instructor",
-      "roleAdmin": "Administrator",
+      "role": "System role",
       "userCode": "User code"
     },
     "practice": {
@@ -2650,7 +3604,12 @@
       "codeLabel": "Confirmation code",
       "cancel": "Cancel",
       "confirm": "Confirm",
-      "done": "New email confirmed"
+      "done": "New email confirmed",
+      "resend": "Resend code",
+      "resendCooldown": "Resend in {seconds}s",
+      "expiresIn": "Code valid for {time}",
+      "expired": "The code has expired. Request a new one.",
+      "resent": "Confirmation code sent again"
     },
     "passwordDialog": {
       "titleChange": "Change password",
@@ -2678,7 +3637,11 @@
         "digit": "At least one digit",
         "match": "Both passwords match"
       },
-      "doneSet": "Password set."
+      "doneSet": "Password set.",
+      "doneSetNoMail": "Password set, but the notification e-mail could not be sent.",
+      "titleForced": "Set a new password",
+      "forcedHint": "Your current password is a temporary one issued by an administrator. Set a new password before you continue.",
+      "signOut": "Sign out"
     },
     "errors": {
       "displayNameRequired": "Please enter your full name",
@@ -2686,8 +3649,9 @@
       "schoolOrCompanyTooLong": "Up to 150 characters",
       "currentPositionTooLong": "Up to 100 characters",
       "targetPositionTooLong": "Up to 100 characters",
+      "phoneInvalid": "Phone number may only contain digits, spaces and + - ( ), up to 20 characters",
       "passwordTooShort": "Password must be at least 8 characters",
-      "passwordTooLong": "Password must be at most 128 characters",
+      "passwordTooLong": "Password must be at most 72 bytes (accented letters use more bytes)",
       "passwordNeedsLetter": "Password needs at least one letter",
       "passwordNeedsDigit": "Password needs at least one digit",
       "passwordMismatch": "Passwords do not match",
@@ -2698,7 +3662,30 @@
       "otpInvalid": "The code is invalid or has expired",
       "emailRequired": "Please enter an email",
       "emailTooLong": "Email is at most 254 characters",
-      "emailInvalid": "Invalid email"
+      "emailInvalid": "Invalid email",
+      "displayNameTooShort": "Full name needs at least 2 characters"
+    },
+    "avatar": {
+      "change": "Change photo",
+      "remove": "Remove photo",
+      "save": "Save photo",
+      "cancel": "Cancel",
+      "previewAlt": "Profile picture preview, not saved",
+      "previewLabel": "Preview, not saved",
+      "fileTypeError": "Only PNG, JPEG or WebP images are accepted",
+      "fileTooBigError": "The original image is larger than 10 MB, choose a smaller one",
+      "decodeError": "This image cannot be read, choose another one",
+      "fileInputLabel": "Choose a profile picture file",
+      "removeTitle": "Remove your profile picture?",
+      "removeBody": "The picture disappears everywhere and your name initials show instead.",
+      "removeConfirm": "Remove photo",
+      "uploaded": "Profile picture updated",
+      "removed": "Profile picture removed",
+      "leaveTitle": "Unsaved profile picture",
+      "leaveBody": "You picked a new picture but have not saved it. Save it before leaving?",
+      "saveAndLeave": "Save and leave",
+      "leave": "Leave without saving",
+      "stay": "Stay"
     }
   },
   "settings": {
@@ -2743,7 +3730,7 @@
     },
     "saveBar": {
       "title": "Status",
-      "statusIdle": "Theme and language apply immediately; the rest is saved with the button below.",
+      "statusIdle": "No changes to save.",
       "statusDirty": "You have unsaved changes.",
       "save": "Save settings",
       "saved": "Settings saved.",
@@ -2755,7 +3742,8 @@
       "exportSubmissions": "Export submissions",
       "exportInterviews": "Export interview transcripts",
       "exported": "Data exported.",
-      "exportFailed": "Could not export your data. Please try again."
+      "exportFailed": "Could not export your data. Please try again.",
+      "truncated": "The file holds only your latest {count} submissions."
     },
     "dangerZone": {
       "title": "Danger zone",
@@ -2817,14 +3805,6 @@
     "difficulty": {
       "title": "By difficulty"
     },
-    "focus": {
-      "title": "Focus next",
-      "allSolved": "You have solved every topic's problems",
-      "reasonWeakest": "Skill {score}/100 — the lowest",
-      "reasonLowestAc": "{rate}% AC — the weakest topic",
-      "reasonMostUnsolved": "{remaining} problems left, {rate}% AC",
-      "reasonStale": "No submission in {days} days"
-    },
     "interview": {
       "title": "Mock interviews",
       "newSession": "Start a new session",
@@ -2847,6 +3827,12 @@
     "filterAll": "All",
     "emptyGeneric": "No data yet",
     "errorGeneric": "Could not load this block",
+    "interviewTopics": {
+      "title": "Question review by topic",
+      "colTopic": "Topic",
+      "colAttempted": "Attempted",
+      "colLast": "Last practiced"
+    },
     "errorAi": "The AI subsystem is not responding — the other blocks still work",
     "solveState": {
       "solved": "Solved",
@@ -2883,31 +3869,14 @@
       "chartLabel": "Submissions per day: {total} submissions, {average} per day on average",
       "empty": "No submissions in this range"
     },
-    "radar": {
-      "title": "Skill by topic",
-      "subtitle": "Scored 0-100. Shows the {count} lowest-scoring topics, from acceptance rate and how much of the topic is solved; the topic to improve first is in orange",
-      "empty": "At least 3 topics with data are needed to draw this chart"
-    },
-    "activity": {
-      "title": "Activity, last 12 months",
-      "summary": "{days} active days in the last 12 months",
-      "less": "Less",
-      "more": "More",
-      "tooltip": "{day}: {count} submissions",
-      "tooltipNone": "{day}: no submissions",
-      "empty": "No activity in the last 12 months"
-    },
     "suggested": {
       "title": "Suggested problems",
-      "count": "{count} problems",
-      "difficultyLabel": "Filter by difficulty",
-      "topicLabel": "Filter by topic",
       "colProblem": "Problem",
       "colTopic": "Topic",
       "colDifficulty": "Difficulty",
       "colAcRate": "AC rate",
       "tagFunction": "function",
-      "empty": "No problem matches these filters"
+      "allSolved": "You have solved every suggested problem. Find more on the Problems page."
     },
     "topics": {
       "title": "Topic progress",
@@ -2918,9 +3887,7 @@
       "title": "Mock Interview",
       "session": "Session on {date}",
       "empty": "No interview sessions yet",
-      "summary": "{count} sessions · average {score} / 10",
-      "summaryNoScore": "{count} sessions · no session scored yet",
-      "weakest": "weakest: {criterion}"
+      "sessionWeakest": "To improve: {criterion} ({score}/10)"
     },
     "reviews": {
       "title": "Solution Review",
@@ -2958,9 +3925,14 @@
     "btnCopy": "Copy",
     "copied": "Copied.",
     "copyFailed": "Could not copy, select and copy manually.",
-    "exampleInput": "Input {no}",
-    "exampleOutput": "Output {no}",
-    "topicsTitle": "Topics",
+    "statementTitle": "Problem statement",
+    "jumpToExamples": "Jump to examples",
+    "acceptanceRate": "Acceptance rate",
+    "exampleTitle": "Example {no}",
+    "exampleInput": "Input",
+    "exampleOutput": "Output",
+    "copyExampleInput": "Copy input for example {no}",
+    "copyExampleOutput": "Copy output for example {no}",
     "languagesTitle": "Allowed languages",
     "btnUndo": "Undo"
   },
@@ -2997,8 +3969,16 @@
       "progress": "{solved}/{total} done",
       "solved": "Done",
       "todo": "To do",
+      "attempted": "In progress",
       "viewDetail": "View class details",
-      "viewDetailOf": "View details of {name}"
+      "viewDetailOf": "View details of {name}",
+      "progressLoading": "Loading progress…",
+      "assignedCount": "{total} assigned problems",
+      "allDone": "Completed",
+      "remaining": "{count} left",
+      "joinedOn": "Joined",
+      "className": "Class",
+      "status": "Status"
     },
     "detail": {
       "back": "Back to my classes",
@@ -3008,7 +3988,25 @@
       "noSchedule": "No schedule yet",
       "colProblem": "Problem",
       "colAssignedAt": "Assigned",
-      "colState": "Status"
+      "colState": "Status",
+      "withdrawn": "Withdrawn",
+      "progressUnknown": "{total} problems assigned; how many you solved could not be read.",
+      "pageSummary": "Page {page} / {total}",
+      "previous": "Previous",
+      "next": "Next",
+      "colLevel": "Level",
+      "showMore": "Show more",
+      "showLess": "Show less",
+      "period": "Period",
+      "note": "Note",
+      "doIt": "Solve"
     }
+  },
+  "loginPrompt": {
+    "title": "Sign in required",
+    "body": "You need to sign in to use this. After signing in you will be taken to the page you need.",
+    "login": "Sign in",
+    "register": "Sign up",
+    "later": "Not now"
   }
 }

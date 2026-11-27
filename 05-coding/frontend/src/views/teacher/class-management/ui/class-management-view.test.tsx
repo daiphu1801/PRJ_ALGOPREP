@@ -53,6 +53,22 @@ describe("ClassManagementView", () => {
     expect(toasts.result.current[0]!.message).not.toMatch(/^toast\./);
   });
 
+  it("tells what the delete takes with it: the learners and the assigned problems of the class", async () => {
+    render(withTestProviders(<ClassManagementView />));
+
+    fireEvent.click(
+      (await screen.findAllByRole("button", { name: /^Xoá lớp / }))[0]!,
+    );
+    const dialog = await screen.findByRole("dialog");
+
+    expect(
+      await within(dialog).findByText(
+        /^Lớp có \d+ học viên đang học và \d+ bài đang giao\./,
+      ),
+    ).toBeInTheDocument();
+    expect(within(dialog).getByText(/xoá thật/i)).toBeInTheDocument();
+  });
+
   it("opens the edit form with the class's current name, description and schedule", async () => {
     render(withTestProviders(<ClassManagementView />));
 
@@ -132,14 +148,13 @@ describe("ClassManagementView", () => {
     ).toHaveAttribute("href", "/instructor/classes/c1");
   });
 
-  it("lists the schedule as one readable line under the class name", async () => {
+  it("lists days, time and room under the class name, without the period", async () => {
     render(withTestProviders(<ClassManagementView />));
 
     expect(
-      await screen.findByText(
-        "T2 · T4 · T6 — 19:00–21:00 · Phòng B203 · 17/08–20/12",
-      ),
+      await screen.findByText("T2 · T4 · T6 19:00–21:00 · Phòng B203"),
     ).toBeInTheDocument();
+    expect(screen.queryByText(/17\/08–20\/12/)).not.toBeInTheDocument();
   });
 
   it("refuses an end time that is not after the start time", async () => {

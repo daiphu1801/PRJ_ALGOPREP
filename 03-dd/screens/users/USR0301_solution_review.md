@@ -24,6 +24,7 @@ Bảng 0.1 là bìa tài liệu; mỗi dòng nêu một thuộc tính nhận d�
 
 | Ver | Nội dung | Ngày | Người sửa |
 | :--- | :--- | :--- | :--- |
+| V0.2 | Mục 2 | 2026-11-12: nối API thật F5 #4 và F4 #5 cho màn; mục 2 ghi hook thật. Móc phụ: nhãn "đã phân tích" ở `USR0101` (F5 #5, `useReviewedProblemIds`), thẻ nhận định nhanh ở `USR0102` và `USR0104` (F5 #6, `useReviewQuickInsight`, không có `notes`), khối "gần đây" ở `USR0601` (F5 #7). Trường bỏ: `servedFromCache`, `isReferenceOnly`, `id` | 2026-11-12 | Claude |
 | V0.1 | Tạo mới từ prototype đã duyệt hình một phần và DD module F5 (2026-10-23). Chưa có owner duyệt | 2026-10-24 | Claude |
 
 Bảng 0.3 giải nghĩa các tên viết tắt dùng trong cột trích dẫn của file này.
@@ -74,13 +75,13 @@ Bảng 2.1 ánh xạ sự kiện của BD301 Sheet 8 sang endpoint ở file API;
 
 | EVT (BD301) | Endpoint (ID) | Hook, query | Thật hay mock |
 | :--- | :--- | :--- | :--- |
-| EVT-1 Mở màn hình | API-F5 §4 `POST /api/v1/ai/submissions/{submissionId}/solution-review` (`GetOrCreateSolutionReview`) | `useSolutionReview` (`entities/solution-review/api/queries.ts:9`) | Mock (`useMockQuery`, `spec` trỏ `03-dd/api/F5_ai-review.md`) |
-| EVT-1 (phần mã nguồn, nhãn bài) | API-F4 #5 `GET /api/v1/judge/submissions/{submissionId}` (mục 8 của file F4; BD301 Sheet 7.3 NO 2 gọi tên `GetSubmissionSourceCode`) | `useSubmissionDetail` (`entities/submission/api/queries.ts:29`) | Hook có; màn chưa gọi |
+| EVT-1 Mở màn hình | API-F5 §4 `POST /api/v1/ai/submissions/{submissionId}/solution-review` (`GetOrCreateSolutionReview`) | `useSolutionReview` (`entities/solution-review/api/queries.ts:9`) | **Thật** (2026-11-12): `useQuery` + `withMockData`, gọi `getRealSolutionReview` (`entities/solution-review/api/real-solution-review.ts:124`), `staleTime: Infinity`, không retry, có `signal`, hạn 40 giây mỗi lần, `AIR-103` chờ 3 giây tối đa 10 lần trong hàm gọi (`entities/solution-review/api/queries.ts:24`) |
+| EVT-1 (phần mã nguồn, nhãn bài) | API-F4 #5 `GET /api/v1/judge/submissions/{submissionId}` (mục 8 của file F4; BD301 Sheet 7.3 NO 2 gọi tên `GetSubmissionSourceCode`) | `useSubmissionDetail` (`entities/submission/api/queries.ts:29`) | **Thật**: màn gọi hook này (`solution-review-view.tsx:90`), ghép tên bài, mã nộp, `withdrawn`, `submissionMode` vào báo cáo (`sourceOf`, `solution-review-view.tsx:540`); lỗi F4 hoặc `problem = null` thì ẩn mã và diff, tắt nút Áp dụng |
 | EVT-2 Bấm breadcrumb | Không có | `next/link` tới `/submissions/{submissionId}` (`solution-review-view.tsx:122-134`) | Không áp dụng |
 | EVT-3 Bấm Phỏng vấn bài này | Không có | `next/link` tới `/submissions/{submissionId}/interview` (`solution-review-view.tsx:270-274`) | Không áp dụng |
 | EVT-4, EVT-5 Mở, huỷ popup | Không có | state `applyConfirmOpen` (`solution-review-view.tsx:89`) | Không áp dụng |
 | EVT-6 Xác nhận áp dụng | Không có endpoint. Ghi `localStorage` qua `saveWorkspaceDraft`, rồi điều hướng `/workspace/{problemId}`. F5-26 thuộc tầng Workspace (API-F5 §1.1, `03-dd/api/F5_ai-review.md:78`) | `saveWorkspaceDraft` (`entities/problem/model/workspace-draft.ts:16`) | Thật (trình duyệt) |
-| EVT-7 Bấm Thử lại | Như EVT-1 (`query.refetch()`, `solution-review-view.tsx:150`) | `useSolutionReview().refetch` | Mock |
+| EVT-7 Bấm Thử lại | Như EVT-1 (`query.refetch()`, `solution-review-view.tsx:150`) | `useSolutionReview().refetch` | **Thật**; `AIR-402`/`AIR-404` có nút Thử lại tắt theo `retryAfterSeconds` (`RetryCountdown`, `solution-review-view.tsx:559`) |
 
 Các hệ quả của hợp đồng F5 đối với cách gọi (chi tiết ở BR-SC-01):
 

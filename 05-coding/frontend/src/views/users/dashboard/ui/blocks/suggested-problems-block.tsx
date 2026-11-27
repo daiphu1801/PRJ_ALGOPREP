@@ -1,94 +1,51 @@
 // PROTOTYPE — no DD yet. See 06-plan/PROTOTYPE_DEBT.md
 "use client";
 
-import { useMemo, useState } from "react";
 import Link from "next/link";
 import {
   problemLevelLabel,
   problemLevelTone,
   useProblemLevels,
-  useProblemListPage,
-  type ProblemListItem,
+  useSuggestedProblems,
+  type CatalogRow,
 } from "@/entities/problem";
-import { useTopicProgress } from "@/entities/progress";
-import { scoreTopics } from "../../model/derive-skill-radar";
 import { useT } from "@/shared/i18n";
 import {
   Badge,
   DataTable,
-  SegmentedTabs,
+  SeeAllLink,
   type DataTableColumn,
 } from "@/shared/ui";
 
+/** Only what is still to do, and few enough to read at a glance (DEC-2026-1123-student-dashboard-trim). */
+const SHOWN = 5;
+
 /**
- * 09-layoutBase/Dashboard AlgoPrep.dc.html:217-266 — "Bài toán gợi ý": difficulty tabs, topic
- * chips, and a 4-column table showing status dot, id, title, `function` tag, topic, difficulty,
- * AC rate.
+ * 09-layoutBase/Dashboard AlgoPrep.dc.html:217-266 — "Bài toán gợi ý": a 4-column table showing status dot,
+ * id, title, `function` tag, topic, difficulty, AC rate. The prototype's difficulty tabs and topic chips were
+ * dropped on 2026-11-23 (DEC-2026-1123-student-dashboard-trim): filtering belongs to the problem list, which
+ * "Xem tất cả" opens, and solved problems are no longer suggested.
  *
- * Reads `entities/problem` rather than owning a list: these are rows from the same catalogue
- * `problem_list` renders, filtered and re-ordered. A dashboard-owned copy would be a second set of
- * problem titles to keep in step with the first.
- *
- * Ranking rule (01-rd/screens/users/USR0601_dashboard.md mục 4 Q2 — plain rule, no AI call):
- * unsolved problems first, then problems whose topic scores lowest by the same score the skill radar plots. That ties
- * the suggestion to the same weakness the greeting and radar call out, instead of being a third
- * independent opinion about what the learner is bad at.
+ * The server ranks and filters (F2 #12, 03-dd/api/F2_problem-bank.md section 13, USR0601 BR-SC-07):
+ * unsolved first, then the topics where the learner scores lowest, at most seven rows. A filter change
+ * asks again, and the previous rows stay on screen while it loads.
  */
-const SUGGESTION_COUNT = 7;
-
-type DifficultyFilter = string;
-
-const EMPTY_PAGE: {
-  items: ProblemListItem[];
-  topics: { id: string; name: string }[];
-} = { items: [], topics: [] };
-
 export function SuggestedProblemsBlock() {
   const t = useT("dashboard");
   const levels = useProblemLevels();
-  const [difficulty, setDifficulty] = useState<DifficultyFilter>("all");
-  const [topicId, setTopicId] = useState<string>("all");
-  const topicsQuery = useTopicProgress("all");
+  const suggestions = useSuggestedProblems("all", "all");
+  // The server puts unsolved first; a solved one is not a suggestion, so it is left out here.
+  const rows = (suggestions.data ?? [])
+    .filter((problem) => problem.solveState !== "solved")
+    .slice(0, SHOWN);
 
-  // Query data keeps one identity between renders, so `useMemo` below re-sorts only when it changes.
-  // While loading or failed the table shows its empty state (the block owns no boundary of its own).
-  const page = useProblemListPage().data ?? EMPTY_PAGE;
-  const weakestFirst = useMemo(() => {
-    const scored = topicsQuery.data ? scoreTopics(topicsQuery.data) : [];
-    const scoreByTopic = new Map(
-      scored.map((point) => [point.topicName.toLowerCase(), point.score]),
-    );
-    // Topics with no score sort as 100 — "nothing known against them", so they rank below a
-    // topic the learner is measurably weak at, rather than above everything on a missing value.
-    const weaknessOf = (problem: ProblemListItem) =>
-      Math.min(
-        ...problem.topics.map(
-          (name) => scoreByTopic.get(name.toLowerCase()) ?? 100,
-        ),
-        100,
-      );
-
-    return [...page.items].sort((left, right) => {
-      const leftUnsolved = left.solveState === "solved" ? 1 : 0;
-      const rightUnsolved = right.solveState === "solved" ? 1 : 0;
-      if (leftUnsolved !== rightUnsolved) return leftUnsolved - rightUnsolved;
-      return weaknessOf(left) - weaknessOf(right);
-    });
-  }, [page.items, topicsQuery.data]);
-
-  const rows = weakestFirst
-    .filter(
-      (problem) =>
-        (difficulty === "all" || problem.difficulty === difficulty) &&
-        (topicId === "all" ||
-          problem.topics.some((name) => name.toLowerCase() === topicId)),
-    )
-    .slice(0, SUGGESTION_COUNT);
-
-  const solveDot = (problem: ProblemListItem) => (
+  const solveDot = (problem: CatalogRow) => (
     <span
-      role="img"
-      aria-label={t(`solveState.${problem.solveState}`)}
+      role={problem.solveState ? "img" : undefined}
+      aria-hidden={problem.solveState ? undefined : true}
+      aria-label={
+        problem.solveState ? t(`solveState.${problem.solveState}`) : undefined
+      }
       className="inline-block h-2 w-2 shrink-0 rounded-full"
       style={{
         background: `var(${
@@ -102,7 +59,7 @@ export function SuggestedProblemsBlock() {
     />
   );
 
-  const columns: DataTableColumn<ProblemListItem>[] = [
+  const columns: DataTableColumn<CatalogRow>[] = [
     {
       key: "title",
       header: t("suggested.colProblem"),
@@ -161,47 +118,7 @@ export function SuggestedProblemsBlock() {
     <section aria-label={t("suggested.title")} className="glass-card p-3">
       <div className="mb-3 flex items-baseline justify-between gap-3">
         <h2 className="text-sm font-semibold">{t("suggested.title")}</h2>
-        <span className="font-mono text-xs text-[var(--color-text-subtle)]">
-          {t("suggested.count", { count: rows.length })}
-        </span>
-      </div>
-
-      <div className="mb-3 flex flex-wrap items-center gap-2.5">
-        <SegmentedTabs
-          label={t("suggested.difficultyLabel")}
-          value={difficulty}
-          onValueChange={setDifficulty}
-          options={[
-            { value: "all", label: t("filterAll") },
-            ...levels.map((level) => ({
-              value: level.key,
-              label: level.label,
-            })),
-          ]}
-        />
-        <div
-          className="flex flex-wrap gap-1.5"
-          role="group"
-          aria-label={t("suggested.topicLabel")}
-        >
-          {[{ id: "all", name: t("filterAll") }, ...page.topics].map(
-            (topic) => (
-              <button
-                key={topic.id}
-                type="button"
-                aria-pressed={topicId === topic.id}
-                onClick={() => setTopicId(topic.id)}
-                className={`shrink-0 rounded-full border px-3 py-2 text-[12.5px] md:px-2.5 md:py-1 font-medium whitespace-nowrap ${
-                  topicId === topic.id
-                    ? "border-[var(--color-primary)] text-[var(--color-primary)]"
-                    : "border-[var(--color-border)] text-[var(--color-text-muted)]"
-                }`}
-              >
-                {topic.name}
-              </button>
-            ),
-          )}
-        </div>
+        <SeeAllLink href="/problems">{t("seeAll")}</SeeAllLink>
       </div>
 
       {/* A phone cannot hold four columns: the table scrolled sideways and cut the topic off with no sign
@@ -213,14 +130,14 @@ export function SuggestedProblemsBlock() {
           columns={columns}
           rows={rows}
           rowKey={(problem) => problem.id}
-          emptyMessage={t("suggested.empty")}
+          emptyMessage={t("suggested.allSolved")}
           minWidth={520}
         />
       </div>
       <ul className="flex flex-col gap-2 md:hidden">
         {rows.length === 0 ? (
           <li className="py-6 text-center text-[13px] text-[var(--color-text-muted)]">
-            {t("suggested.empty")}
+            {t("suggested.allSolved")}
           </li>
         ) : (
           rows.map((problem) => (

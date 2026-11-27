@@ -1,5 +1,5 @@
 {
-  "_": "Nguồn tiêu chí: 01-rd/req/user_stories/a4_system.md:53; 01-rd/req/user_stories/a4_system.md:56; 01-rd/req/user_stories/a4_system.md:59; 01-rd/req/user_stories/a4_system.md:62. Nguồn thiết kế: 03-dd/logic/F5_ai-review.md; 03-dd/api/F5_ai-review.md. [SoT: Suy luận] Tên lớp và chữ ký phương thức là thiết kế đề xuất từ hợp đồng DD vì backend nghiệp vụ chưa hiện thực đầy đủ. Mỗi phương thức ở lớp điều phối nối với đúng một tiêu chí theo thứ tự trong bảng truy vết; không hàm ý một endpoint riêng cho mỗi tiêu chí. Bỏ DTO HTTP, getter/setter, nhánh lỗi chi tiết.",
+  "_": "Nguồn tiêu chí: 01-rd/req/user_stories/a4_system.md:53-62. Nguồn thiết kế: 05-coding/backend/algoprep-ai-review/src/main/java/com/algoprep/aireview/. Cấu trúc CommandHandler và Port chuẩn theo kiến trúc Hexagonal / Clean Architecture của phân hệ F5.",
   "kind": "class",
   "title": "A4 — Điều phối AI và suy giảm có kiểm soát",
   "covers": [
@@ -21,74 +21,85 @@
     "legend": "shared",
     "classes": [
       {
-        "id": "service",
-        "name": "AiProcessingService",
+        "id": "reviewHandler",
+        "name": "GetOrCreateSolutionReviewCommandHandler",
         "methods": [
-          "+ analyzeAccepted(submissionId : UUID) : ReviewReport",
-          "+ runThreeStages(sessionId : UUID) : InterviewRubric",
-          "+ buildSafeContext(request : AiRequest) : SafeAiContext",
-          "+ degradeOnFailure(request : AiRequest, cause : AiFailure) : AiFallback"
+          "+ getOrCreate(callerId : UUID, category : CallerCategory, submissionId : UUID) : StoredSolutionReview"
         ]
       },
       {
-        "id": "port1",
-        "name": "AcceptedSubmissionPort",
+        "id": "turnHandler",
+        "name": "SendInterviewTurnCommandHandler",
+        "methods": [
+          "+ send(command : SendInterviewTurnCommand, sink : InterviewTurnSink) : void"
+        ]
+      },
+      {
+        "id": "submissionPort",
+        "name": "SubmissionSnapshotPort",
         "kind": "interface",
         "methods": [
-          "+ requireAccepted(id : UUID) : Submission"
+          "+ getAccepted(submissionId : UUID) : SubmissionSnapshot"
         ]
       },
       {
-        "id": "port2",
-        "name": "AiProviderPort",
+        "id": "llmPort",
+        "name": "LlmProviderPort",
         "kind": "interface",
         "methods": [
-          "+ complete(context : SafeAiContext) : AiResponse"
+          "+ completeStructured(sys : SystemInstruction, ctx : PerProblemContext, data : UserData) : StructuredResult",
+          "+ streamTurn(mem : ChatMemoryRef, sys : SystemInstruction, ctx : PerProblemContext) : Flux<TokenChunk>"
         ]
       },
       {
-        "id": "port3",
-        "name": "AiBudgetPort",
+        "id": "costGatePort",
+        "name": "AiCostGatePort",
         "kind": "interface",
         "methods": [
-          "+ check(request : AiRequest) : BudgetDecision"
+          "+ gate(userId : UUID, category : CallerCategory, feature : FeatureCode) : GateOutcome"
         ]
       },
       {
-        "id": "port4",
-        "name": "AiHistoryRepository",
-        "kind": "class",
+        "id": "reviewRepo",
+        "name": "SolutionReviewRepository",
+        "kind": "interface",
         "methods": [
-          "+ save(result : AiResult)"
+          "+ findBySubmission(submissionId : UUID) : Optional<StoredSolutionReview>",
+          "+ insertReview(review : StoredSolutionReview) : boolean"
         ]
       }
     ],
     "externals": [],
     "relations": [
       {
-        "from": "service",
-        "to": "port1",
+        "from": "reviewHandler",
+        "to": "submissionPort",
         "kind": "dependency"
       },
       {
-        "from": "service",
-        "to": "port2",
+        "from": "reviewHandler",
+        "to": "llmPort",
         "kind": "dependency"
       },
       {
-        "from": "service",
-        "to": "port3",
+        "from": "reviewHandler",
+        "to": "costGatePort",
         "kind": "dependency"
       },
       {
-        "from": "service",
-        "to": "port4",
+        "from": "reviewHandler",
+        "to": "reviewRepo",
+        "kind": "dependency"
+      },
+      {
+        "from": "turnHandler",
+        "to": "llmPort",
         "kind": "dependency"
       }
     ],
     "notes": [
-      "Mọi lời gọi AI có ngữ cảnh tách dữ liệu/chỉ thị và kiểm hạn mức; lỗi AI không làm hỏng F1-F4.",
-      "[SoT: Suy luận] Tên lớp/phương thức là thiết kế backend từ DD."
+      "GetOrCreateSolutionReviewCommandHandler chỉ phân tích bài nộp đã Accepted và tự suy giảm khi AI lỗi.",
+      "AiCostGatePort kiểm tra hạn mức token trước khi gọi model; LlmProviderPort gọi Spring AI và phòng vệ prompt injection."
     ]
   }
 }

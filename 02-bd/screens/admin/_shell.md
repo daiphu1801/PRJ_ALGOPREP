@@ -76,10 +76,12 @@ phím chết. BD `admin_overview` mục 3 đã chốt chúng là trang trí, kh�
 
 ### 3.1. Menu pop-up của khối danh tính (thêm 2026-10-10, chưa duyệt)
 
-Khối danh tính (avatar + tên + vai trò + mũi tên) là một nút mở menu `role="menu"` chứa ba liên kết lấy từ `ADMIN_NAV_MISC`: Cài đặt, Đăng nhập & Đăng ký, Trang cá nhân (cũ là nhóm KHÁC ở sidebar). Menu đóng khi bấm ra ngoài, nhấn Esc hoặc chọn một mục. Mục đích: sidebar ngắn hơn. Hiện thực: `widgets/app-shell/ui/admin-user-menu.tsx`. Menu tự viết trong widget vì `shared/ui` chưa có popover; dựng nếu màn thứ hai cần. Liên kết Cài đặt vẫn trỏ `/admin/language-config`, lệch đã được ADM0101 ghi nhận.
+Khối danh tính (avatar + tên + vai trò + mũi tên) là một nút mở menu `role="menu"` chứa bốn mục lấy từ `ADMIN_NAV_MISC`: Cài đặt, Đăng nhập & Đăng ký, Trang cá nhân và **Đăng xuất** (cũ là nhóm KHÁC ở sidebar). Mục Đăng xuất thêm khi nối API thật (2026-10-31, chủ dự án duyệt giữ lại 2026-10-31): gọi đăng xuất phía máy chủ qua `useSignOut` rồi chuyển về `/admin/login`; khu Admin trước đó không có cách kết thúc phiên [Nguồn: `05-coding/frontend/src/widgets/app-shell/model/admin-nav.ts:117-135`]. Menu đóng khi bấm ra ngoài, nhấn Esc hoặc chọn một mục. Mục đích: sidebar ngắn hơn. Hiện thực: `widgets/app-shell/ui/admin-user-menu.tsx`. Menu tự viết trong widget vì `shared/ui` chưa có popover; dựng nếu màn thứ hai cần. Liên kết Cài đặt vẫn trỏ `/admin/language-config`, lệch đã được ADM0101 ghi nhận.
 
 Khối danh tính hiện là placeholder: chưa có phiên đăng nhập thật
 (`app/providers/auth-provider.tsx` chưa viết), nên nó hiển thị nhãn chung chứ không bịa tên người.
+
+**Hiện trạng (2026-11-18, V1.3, chưa duyệt hình):** khi hồ sơ đã tải, khối danh tính hiện ảnh đại diện thật của quản trị viên (F1-35, `DEC-2026-1117-user-avatar-upload`); chưa có ảnh hoặc ảnh lỗi thì hiện chữ viết tắt, không hiện biểu tượng ảnh hỏng; trước khi hồ sơ tải xong vẫn là nhãn chung, không bịa tên. Nguồn ảnh: `avatarVersion` của hồ sơ, hợp đồng ở `03-dd/api/F1_identity.md` mục 0.9.5. Mã: `05-coding/frontend/src/widgets/app-shell/ui/admin-toolbar.tsx:22`, `area-user-menu.tsx:66-81`. Câu hỏi mở còn lại của khung: Q2 (icon trang trí ở toolbar, mục 6), không đổi.
 
 ## 4. Vùng nội dung
 
@@ -241,3 +243,5 @@ Bảng dưới liệt kê các lần sửa từ 2026-10-14.
 | Phiên bản | Ngày | Nội dung |
 | :--- | :--- | :--- |
 | V1.1 | 2026-10-14 | Sửa lỗi Minor review UX khu Admin F6, F10 (`06-plan/reports/261014-1054-admin-ux-review/`), **chưa duyệt hình**. F6: vòng VI/EN ở rail thu gọn xếp dọc 24px (mục 2.3); nút đầu cột sắp xếp của `DataTable` có vùng bấm trong suốt `::before` cao 24px, hàng tiêu đề không cao thêm, áp cho **mọi** bảng có cột sắp xếp [Nguồn: 05-coding/frontend/src/shared/ui/data/data-table.tsx:194-196]. F10: liên kết chân trang không bị bẻ dòng (mục 9.4) |
+| V1.2 | 2026-11-01 | Mục 3: menu danh tính có thêm mục **Đăng xuất** (`ADMIN_NAV_MISC`, key `logout`), chủ dự án duyệt giữ lại 2026-10-31; đóng nợ ghi ở `06-plan/PROTOTYPE_DEBT.md` (khu Admin đăng xuất). `ADM0101` mục KHÁC không liệt kê từng mục nên không cần sửa |
+| V1.3 | 2026-11-18 | Mục 3: khối danh tính ở toolbar hiện ảnh đại diện thật (hoặc chữ viết tắt) theo `avatarVersion` của hồ sơ, `DEC-2026-1117-user-avatar-upload`, chưa duyệt hình. |

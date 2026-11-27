@@ -15,22 +15,22 @@
         "role": "actor"
       },
       {
-        "name": "PracticeController",
+        "name": "PracticeAnswersController",
         "role": "controller",
-        "stereo": "presentation"
+        "stereo": "presentation REST"
       },
       {
-        "name": "SubmitPracticeAnswer",
+        "name": "SubmitPracticeAnswerCommandHandler",
         "role": "service",
         "stereo": "application command"
       },
       {
-        "name": "PracticeAnswerQueryPort",
+        "name": "LearnerQuestionRepository",
         "role": "repository",
-        "stereo": "output port"
+        "stereo": "output port F6"
       },
       {
-        "name": "InterviewBankDbAdapter",
+        "name": "JdbcInterviewQuestionRepository",
         "role": "repository",
         "stereo": "persistence adapter"
       },
@@ -66,49 +66,49 @@
       },
       {
         "from": "Sinh viên",
-        "to": "PracticeController",
+        "to": "PracticeAnswersController",
         "text": "Nộp câu trả lời để luyện"
       },
       {
-        "from": "PracticeController",
-        "to": "PracticeController",
+        "from": "PracticeAnswersController",
+        "to": "PracticeAnswersController",
         "text": "Kiểm tra câu trả lời có nội dung và tối đa 5.000 ký tự"
       },
       {
-        "from": "PracticeController",
-        "to": "SubmitPracticeAnswer",
+        "from": "PracticeAnswersController",
+        "to": "SubmitPracticeAnswerCommandHandler",
         "text": "Yêu cầu nhận xét cho câu trả lời"
       },
       {
-        "from": "SubmitPracticeAnswer",
-        "to": "PracticeAnswerQueryPort",
+        "from": "SubmitPracticeAnswerCommandHandler",
+        "to": "LearnerQuestionRepository",
         "text": "Kiểm tra câu hỏi đang hiển thị và có tiêu chí"
       },
       {
-        "from": "PracticeAnswerQueryPort",
-        "to": "InterviewBankDbAdapter",
+        "from": "LearnerQuestionRepository",
+        "to": "JdbcInterviewQuestionRepository",
         "text": "Đọc câu hỏi và bộ tiêu chí"
       },
       {
-        "from": "InterviewBankDbAdapter",
+        "from": "JdbcInterviewQuestionRepository",
         "to": "PostgreSQL",
         "text": "Tìm câu đang hoạt động và tiêu chí đánh giá"
       },
       {
         "from": "PostgreSQL",
-        "to": "InterviewBankDbAdapter",
+        "to": "JdbcInterviewQuestionRepository",
         "text": "Câu hỏi và bộ tiêu chí",
         "kind": "return"
       },
       {
-        "from": "InterviewBankDbAdapter",
-        "to": "PracticeAnswerQueryPort",
+        "from": "JdbcInterviewQuestionRepository",
+        "to": "LearnerQuestionRepository",
         "text": "Câu hỏi và bộ tiêu chí",
         "kind": "return"
       },
       {
-        "from": "PracticeAnswerQueryPort",
-        "to": "SubmitPracticeAnswer",
+        "from": "LearnerQuestionRepository",
+        "to": "SubmitPracticeAnswerCommandHandler",
         "text": "Câu hỏi và bộ tiêu chí",
         "kind": "return"
       },
@@ -117,7 +117,7 @@
           "label": "Câu hỏi hợp lệ và có tiêu chí?",
           "then": [
             {
-              "from": "SubmitPracticeAnswer",
+              "from": "SubmitPracticeAnswerCommandHandler",
               "to": "PracticeRateLimitPort",
               "text": "Ghi nhận một lượt luyện trong giờ"
             },
@@ -134,13 +134,13 @@
           ],
           "else": [
             {
-              "from": "SubmitPracticeAnswer",
-              "to": "PracticeController",
+              "from": "SubmitPracticeAnswerCommandHandler",
+              "to": "PracticeAnswersController",
               "text": "Báo câu hỏi không hợp lệ hoặc chưa có tiêu chí",
               "kind": "return"
             },
             {
-              "from": "PracticeController",
+              "from": "PracticeAnswersController",
               "to": "Sinh viên",
               "text": "Hiển thị lý do không thể luyện",
               "kind": "return"
@@ -156,7 +156,7 @@
           "label": "Đã vượt 20 lượt trong giờ?",
           "then": [
             {
-              "from": "SubmitPracticeAnswer",
+              "from": "SubmitPracticeAnswerCommandHandler",
               "to": "PracticeRateLimitPort",
               "text": "Hoàn lại lượt vừa ghi"
             },
@@ -171,13 +171,13 @@
               "text": "Hoàn lại lượt vừa ghi"
             },
             {
-              "from": "SubmitPracticeAnswer",
-              "to": "PracticeController",
+              "from": "SubmitPracticeAnswerCommandHandler",
+              "to": "PracticeAnswersController",
               "text": "Báo đã đạt hạn mức theo giờ",
               "kind": "return"
             },
             {
-              "from": "PracticeController",
+              "from": "PracticeAnswersController",
               "to": "Sinh viên",
               "text": "Hiển thị hạn mức theo giờ",
               "kind": "return"
@@ -185,7 +185,7 @@
           ],
           "else": [
             {
-              "from": "SubmitPracticeAnswer",
+              "from": "SubmitPracticeAnswerCommandHandler",
               "to": "CheckAiBudgetUseCase",
               "text": "Kiểm tra ngân sách AI dùng chung"
             }
@@ -197,7 +197,7 @@
           "label": "Ngân sách đang khóa?",
           "then": [
             {
-              "from": "SubmitPracticeAnswer",
+              "from": "SubmitPracticeAnswerCommandHandler",
               "to": "PracticeRateLimitPort",
               "text": "Hoàn lại lượt vừa ghi"
             },
@@ -212,13 +212,13 @@
               "text": "Hoàn lại lượt vừa ghi"
             },
             {
-              "from": "SubmitPracticeAnswer",
-              "to": "PracticeController",
+              "from": "SubmitPracticeAnswerCommandHandler",
+              "to": "PracticeAnswersController",
               "text": "Báo chưa thể luyện vì ngân sách",
               "kind": "return"
             },
             {
-              "from": "PracticeController",
+              "from": "PracticeAnswersController",
               "to": "Sinh viên",
               "text": "Hiển thị tình trạng ngân sách",
               "kind": "return"
@@ -227,13 +227,13 @@
           "else": [
             {
               "from": "CheckAiBudgetUseCase",
-              "to": "SubmitPracticeAnswer",
+              "to": "SubmitPracticeAnswerCommandHandler",
               "text": "Cho phép tiếp tục luyện",
               "kind": "return"
             },
             {
-              "from": "SubmitPracticeAnswer",
-              "to": "SubmitPracticeAnswer",
+              "from": "SubmitPracticeAnswerCommandHandler",
+              "to": "SubmitPracticeAnswerCommandHandler",
               "text": "Chuyển sang bước nhận xét AI"
             }
           ]

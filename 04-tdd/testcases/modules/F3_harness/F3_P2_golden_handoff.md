@@ -1,5 +1,11 @@
 # Handoff golden P2-T01 — F3 `PreparedProgram`
 
+**Cập nhật 2026-11-02:** helper codegen/packaging đã có, không còn chỉ placeholder.
+D02f có66 cặp source-helper golden đủ nhóm DD §10.2 và manifest tại
+`handoff/f3-f4-debt-closeout/`. Sáu PreparedProgram có specVersion/quyền F2 dưới đây vẫn
+chờ P2/F2 thật; không thay bằng snapshot helper để đóng TC-F3-AC06-02.
+Đoạn mô tả hiện trạng cuối tài liệu là mốc thiết kế ban đầu, không phải trạng thái code mới.
+
 Liên quan [TC-F3-AC06-02](F3_prepare_source_and_version.md), DD F3 API §2.6 P2-T01 và DD F3 logic §10. Đây là **điều kiện kiểm sau codegen**, không phải kết quả test đã chạy.
 
 ## Input cố định

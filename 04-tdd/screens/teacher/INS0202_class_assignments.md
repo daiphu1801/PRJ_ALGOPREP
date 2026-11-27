@@ -16,10 +16,10 @@ Các tiêu chí màn này kiểm hành vi quan sát được và phối hợp c�
 
 - **Nguồn**: [SoT: 03-dd/screens/teacher/INS0202_class_assignments.md] mục 3, 7.
 
-### AC-SC-02 — Popup giao/gỡ đúng cặp lớp và kết quả một phần
-- **Tiền điều kiện:** hai lớp, một bài chưa giao, một bài đã giao, một bài bị rút giữa lúc chọn và gửi.
-- **Hành động:** đổi lớp trong popup, giao ba bài; ở tab Tất cả gỡ bài P khỏi một lớp rồi huỷ lần thử tiếp.
-- **Kết quả mong đợi:** đổi lớp xoá selection cũ; response `succeededIds/skippedIds/failedItems` hiện đúng từng nhóm, refetch dữ liệu; gỡ yêu cầu chọn lớp, chỉ bỏ đúng cặp, bài P vẫn hiện nếu lớp còn lại giao; huỷ không gọi API.
+### AC-SC-02 — Gỡ đúng cặp lớp-bài; nút giao bài dẫn sang màn con (sửa 2026-11-23)
+- **Tiền điều kiện:** hai lớp, một bài đã giao cho cả hai lớp (hoặc một lớp).
+- **Hành động:** bấm "+ Gán từ ngân hàng bài toán" ở tab một lớp rồi ở tab Tất cả; ở tab Tất cả gỡ bài P khỏi một lớp rồi huỷ lần thử tiếp.
+- **Kết quả mong đợi:** nút là liên kết tới `/instructor/assignments/new?classId=<lớp của tab>` (tab Tất cả thì không kèm lớp), không mở popup nào; việc chọn và giao bài kiểm ở màn con `INS0207` (chưa có file TDD riêng, DD màn con viết sau khi duyệt hình, `DEC-2026-1123-assign-problems-dedicated-screen`); gỡ yêu cầu chọn lớp, chỉ bỏ đúng cặp, bài P vẫn hiện nếu lớp còn lại giao; huỷ không gọi API.
 
 - **Nguồn**: [SoT: 03-dd/screens/teacher/INS0202_class_assignments.md] mục 3, 7.
 

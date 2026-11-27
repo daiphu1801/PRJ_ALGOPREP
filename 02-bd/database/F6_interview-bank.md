@@ -238,6 +238,8 @@ Chế độ luyện là một lượt hỏi-đáp, không phải hội thoại �
 | :--- | :--- | :--- | :--- |
 | Rate-limit gọi AI Chế độ luyện (F6-08) | `interview_bank:ratelimit:<userId>` | Bằng độ dài cửa sổ trượt | Namespace riêng, không dùng chung `ai:ratelimit:*` của `ai-review` — hai module không chia sẻ trạng thái. Bộ đếm, không phải nguồn sự thật — mất do Redis restart chỉ làm giới hạn "mở lại" sớm hơn dự kiến |
 
+> **Triển khai F6-5 (chủ dự án chốt 2026-11-11, `DEC-2026-1111-f6-5-practice-via-f5-p5-port`):** hạn mức giờ dùng lại script Lua của F5, khoá `ai:ratelimit:<user>:PRACTICE_FEEDBACK:<epochHour>` (cửa sổ theo giờ đồng hồ); khoá `interview_bank:ratelimit:<userId>` ở dòng trên không được tạo.
+
 ## 4. Migration — thứ tự tạo bảng
 
 Trước khi tạo `interview_questions`: tạo sequence `interview_bank.interview_question_display_no_seq` `[SoT: Suy luận]` (tên) và hàm `f_unaccent`. `question_topics` (seed 5 dòng khởi tạo, sau đó ADMIN thêm/đổi tên/xoá qua API) → `question_levels` (seed 3 dòng, cùng cách) → `interview_questions` → `answer_rubrics` → `bookmarks` →

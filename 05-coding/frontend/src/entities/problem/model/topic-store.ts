@@ -13,7 +13,11 @@ import {
   type ManagedListError,
 } from "@/shared/lib/managed-list-store";
 
-export type ProblemTopic = ManagedItem;
+/** `id` and `problemCount` exist only on the API-backed list (there `key` is the topic id). */
+export type ProblemTopic = ManagedItem & {
+  id?: string;
+  problemCount?: number | null;
+};
 
 export type ProblemTopicError = ManagedListError;
 

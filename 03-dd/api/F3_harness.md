@@ -1,5 +1,22 @@
 # DD API — Module `harness` (F3)
 
+**2026-11-02, P1/P2 nội bộ nối F2 thật:** GetStarterCodeUseCase và PrepareSubmissionUseCase
+đã đọc qua ProblemSpecReaderPort/StarterCodeAccessPort và bootstrap bridge sang F2.
+PreparedProgram ghim specVersion, matchSpec, LineMap, signature, sentinel và exit90 từ cùng
+đặc tả. P1 kiểm quyền hiện hành rồi đọc đặc tả trong read-only REPEATABLE_READ; F2 đọc DB
+trực tiếp, không cache spec/quyền ở harness. Các helper sinh mã/packaging D02e giữ nguyên.
+Wiring riêng tại bootstrap để các pure-component context F3 không cần reader F2 giả.
+Caller id/baseCategory được trusted adapter truyền thêm trong GetStarterCodeQuery nội bộ;
+chưa vỏ REST P1/P6. Không coi lát này là persisted grading E2E. Report `261102-1532-f2-f3-spec-readers`.
+
+**Triển khai component D02e 2026-11-01:** `ProgramPackaging` nhận trực tiếp language,
+typed FunctionSpecDraft/source cho wrapper hoặc language/source cho Standard I/O và trả
+`PackagedProgram` (payload, LineMap, signatureText, sentinel). `ExecutionPlan`, `ToolchainProfile`
+và `GoJudgePayloadAssembler` đã đóng gói command templates thật; input/expected/limits/fileId
+không có trong payload F3. Đây là API nội bộ độc lập để nối F4, **không phải** cổng P2 đọc F2
+hoặc PreparedProgram có problem/specVersion. Các checkpoint D02a–d bên dưới là lịch sử.
+Plan và bằng chứng: `06-plan/261101-2250-f3-f4-execution-bridge.md`.
+
 > Nguồn: `01-rd/req/F3_harness.md:11-42` · `02-bd/architecture/F3_harness.md` (mục 2b, 4, 5, 6, 7) ·
 > `02-bd/database/F3_harness.md` (mục 1, 2, 3) · `02-bd/security/F3_harness.md` (mục 1-3) ·
 > `02-bd/database/F2_problem-bank.md:117-137` (bảng `problem_specs`) ·
@@ -22,7 +39,7 @@ Request / Response / Lỗi / Luồng / Test viewpoints" được dùng, chỉ th
 | Bảng PostgreSQL | **Không có**. Schema `harness` được tạo và để rỗng | `02-bd/database/F3_harness.md:10`, `.nexa/control/decision-registry.md:4373` (`DEC-2026-1022-harness-empty-schema-kept`) |
 | Truy cập dữ liệu | Chỉ đọc đặc tả từ `problem-bank` qua **một cổng ra** (mục 4); template là tài nguyên trong jar | `02-bd/database/F3_harness.md:63-73`, `:17` |
 | Endpoint HTTP | `GET .../starter-code` bọc P1; `POST .../function-signature/preview` bọc P6 cho tác giả xem trước chữ ký chưa lưu. P2–P5 chỉ gọi nội bộ | `02-bd/screens/users/USR0102_problem_detail.md:745,761`; owner 2026-10-25 |
-| Redis | Không tạo khoá riêng. Chỉ có thể đọc `problem:spec:<problemId>` do `problem-bank` sở hữu, và chỉ **phía sau** cổng ra | `02-bd/database/F3_harness.md:49-61` |
+| Redis | Không có cache riêng. Chỉ có thể đọc `problem:spec:<problemId>` do `problem-bank` sở hữu, và chỉ **phía sau** cổng ra. Ngoại lệ: bộ đếm giới hạn tần suất của P6 `harness:preview:rate:<userId>` (không phải cache, `DEC-2026-1108-f3-preview-rate-limit-owner`) | `02-bd/database/F3_harness.md:49-61` |
 | Cổng nào ở đâu | Cổng vào: `application/ports/in`. Cổng ra: `domain/ports/out` (đúng quy ước BD). Kiểu dùng chung và bộ kiểm đặc tả: `algoprep-common` | `02-bd/architecture/F3_harness.md:68-74`, `02-bd/database/F3_harness.md:63-69` |
 
 Ngoài phạm vi file này: sinh mã đọc/in theo từng kiểu (`logic/F3_harness.md` mục 3-4), ánh xạ lỗi biên dịch
@@ -118,6 +135,21 @@ mọi thứ cần để xử lý kết quả (bảng ánh xạ dòng, thông s�
 
 ### 2.2 Request — `PrepareSubmissionCommand`
 
+**Checkpoint D02d 2026-11-01:** có helper nội bộ FunctionWrapperRenderer nhận
+`Language, FunctionSpecDraft, String userSource` và trả RenderedProgram/LineMap. Helper phát
+đọc–gọi–in ba ngôn ngữ, nối guard Python và buffer output; không thay chữ ký cổng P2 bên dưới,
+không thêm endpoint, không đọc F2 và chưa tạo PreparedProgram/ExecutionPlan. Hợp đồng runtime
+được bổ sung bởi DEC-2026-1101-harness-wire-serialization: giới hạn là byte UTF-8 phần kết quả
+gồm newline cuối, không gồm sentinel; env thiếu/sai trả 91, không có mặc định trong source.
+
+**Triển khai lõi ghép source 2026-11-01 (D02b):** helper `ProgramSourceAssembler` nhận language,
+source và `WrapperSource` đã render để trả `RenderedProgram` (sourceFileName/text/LineMap).
+Hai phương thức `standardIo` và `functionWrapper` không phải P2 `prepare` hoàn chỉnh: chưa đọc
+F2, ghim specVersion, phát mã đọc/gọi/in hay tạo payload/matchSpec/sentinel. Không có port/adapter
+F2 giả. Kiểm HRN-020/021/022 trên source; giới hạn byte tính trên UTF-8 gốc trước chuẩn hóa.
+`[SoT: Suy luận]` null/BOM-only source coi là blank; fragment nội bộ sai trả HRN-030 cố định,
+null language HRN-010. Xem plan `06-plan/261101-1720-f3-source-assembly.md` và báo cáo D02b.
+
 | Trường | Kiểu | Bắt buộc | Ràng buộc | Ghi chú |
 | :--- | :--- | :--- | :--- | :--- |
 | `problemId` | uuid | Có | | |
@@ -128,6 +160,13 @@ mọi thứ cần để xử lý kết quả (bảng ánh xạ dòng, thông s�
 | `correlationId` | string, nullable | Không | | Chỉ để gắn log nội bộ, không đi vào gói chấm |
 
 ### 2.3 Response — `PreparedProgram`
+
+**Hợp đồng runtime owner chốt 2026-11-01 (D02c):** F4 phân biệt exit 91 +
+`@@APH-HARNESS-OUTPUT-LIMIT@@` → RE; Python FUNCTION_WRAPPER exit 92 +
+`@@APH-HARNESS-SIGNATURE-ERROR@@` → COMPILE_ERROR với thông báo chữ ký cố định.
+Không chỉ dựa mã thoát, không chạy P3 với runtime traceback. Hạn mức output theo testcase
+do F4 truyền lúc run qua khóa môi trường dành riêng APH_MAX_RESULT_BYTES, không đưa vào source.
+Chưa có PreparedProgram/P2 hoặc classifier F4 thực tế; đoạn này ghi hợp đồng cho lát sau.
 
 DTO bất biến, tuần tự hoá được thành JSON (để `judge-orchestration` đưa qua hàng đợi nếu cần).
 
@@ -219,6 +258,24 @@ Vùng mã người học là các dòng tuyệt đối `prefixLineCount + 1` đ�
 
 ## 3. Cổng vào P1 — `GetStarterCodeUseCase.getStarterCode`
 
+**Checkpoint 2026-11-01 — chỉ D02a lõi starter:** đã có helper
+`application/starter/StarterCodeRenderer.render(Language, SubmissionModel, FunctionSpecDraft)`
+trả String; loader classpath tạo renderer từ sáu template jar. Đây **không** phải P1 hay endpoint
+GET đã triển khai: không có problemId/specVersion, quyền đọc hoặc reader F2 giả. Khi nối P1,
+phải thực hiện §3.5 với quyền và cờ DB thật trước khi gọi helper.
+
+Helper Standard I/O bỏ qua draft; Wrapper kiểm đủ chữ ký (HRN-005), P5 hard (HRN-006),
+ngoài schema (HRN-004). Không nhận cờ DB nên không thay thế kiểm functionWrapperSupported
+của P1. Dùng lại FunctionSignatureDeclarations của P6, không tự tính lại tên/kiểu.
+`[SoT: Suy luận]` null language/model nội bộ lần lượt HRN-010/HRN-031, không định nghĩa
+HTTP status mới. Template thiếu marker/ngôn ngữ hoặc có marker lạ trả HRN-030.
+
+Bằng chứng: 52 test starter mới, gồm golden sáu khung và 11 ca Java compile với --release 21;
+focused verify 254 test đạt `2026-11-01T17:08:50+07:00`, Checkstyle/SpotBugs 0,
+harness 712/730 dòng. Probe riêng 2 Python/2 C++ syntax, chưa phải toolchain judge/P2.
+Node compile dùng khai báo phụ trợ chỉ trong test, vì starter chỉ có chú thích theo §4.6 logic.
+Xem `06-plan/reports/261101-1704-f3-starter-code/report.md`; AC-01–05/48 E2E chưa đóng.
+
 ### 3.1 Hợp đồng
 
 | Mục | Giá trị |
@@ -283,11 +340,28 @@ không sửa file đó).
 
 ### 3.7. P6 — `PreviewFunctionSignatureUseCase.preview`
 
+**Triển khai 2026-11-01 — chỉ lõi typed P6:** bean `PreviewFunctionSignatureHandler`
+nhận FunctionSpecDraft, gọi P5 thật, trả FunctionSignaturePreview bất biến với Map Language
+đủ ba khóa. Hard violations ném PreviewSpecInvalidException (HRN-060, ClientErrorDetails
+chứa violations; message cố định không chứa draft). Thiếu/ngoài lược đồ giữ unsupportedReasons
+và ba declaration null. Formatter tên/kiểu nằm ở domain/signature để P1 dùng lại sau này;
+không có thân hàm, template chạy, DB, sandbox hoặc dependency module nghiệp vụ khác.
+`[SoT: Suy luận]` null command nội bộ trả HRN-031 đã che; không định nghĩa HTTP status mới.
+
+**Triển khai 2026-11-08 (C08, `DEC-2026-1108-f3-preview-rate-limit-owner`):** POST bên dưới đã chạy thật. Vỏ HTTP `PreviewFunctionSignatureController` đọc tối đa 16.385 byte để từ chối body quá cỡ mà không giữ cả body trong bộ nhớ; bộ đếm 429 do `harness` sở hữu (`PreviewRateLimitPort`, adapter Redis theo mẫu `RedisSampleQuotaAdapter` của `judge`); JSON thô được đọc bằng `ProblemSpecJson` của F2 qua cầu `HarnessPreviewDraftBridge` trong bootstrap, nên xem trước đọc bản nháp đúng như lúc lưu và khớp mã khung sau khi lưu. Nợ ownership của bộ đếm đã chốt: `harness` sở hữu, key là bộ đếm chứ không phải cache. Bằng chứng: 7 ca HTTP (`PreviewFunctionSignatureFlowTest`: 401, 403, bản nháp đúng, bản nháp rỗng và nửa vời, 422, biên 16.384/16.385 byte kể cả ký tự nhiều byte, 429, khớp starter sau khi lưu), 2 ca adapter (Redis lỗi thì cho qua), 3 ca Vitest, 2 ca trình duyệt thật (`e2e/f3-f4-real-preview.spec.ts`).
+
+Bằng chứng: 48 test P6 mới; focused verify parent/common/harness 202 test đạt lúc
+`2026-11-01T16:47:19+07:00`, 27,610 giây; Checkstyle/SpotBugs 0, harness 634/652 dòng.
+Chưa chạy HTTP, F1/bootstrap hoặc save/starter E2E AC-49. Báo cáo:
+`06-plan/reports/261101-1643-f3-p6-preview/report.md`.
+
 `POST /api/v1/harness/function-signature/preview` nhận body là `FunctionSpecDraft` của P5 (`functionName`, `returnType`, `parameters`, `nameOverrides`, `matchingStrategy`, `epsilonValue`). Chỉ INSTRUCTOR hoặc ADMIN đã đăng nhập; không nhận `problemId` và không đọc bản lưu, vì tác giả cần xem bản nháp chưa lưu. Endpoint không ghi DB, không gọi sandbox/AI, không lưu cache; cùng một body trả cùng kết quả. Giới hạn body 16 KiB; từ chối trường lạ và tên/ký tự ngoài validation F3. Vỏ HTTP gọi P5 để nhận `violations` và `wrapperSupported`; nếu có vi phạm cứng trả `422 HRN-060` cùng `details.violations` (mã `HRN-Vnn`, đường dẫn trường). Nếu thiếu chữ ký hoặc `wrapperSupported = false` vì kiểu ngoài lược đồ, trả `200 { wrapperSupported: false, unsupportedReasons, declarations: { JAVA: null, CPP: null, PYTHON: null } }`. Nếu hợp lệ, `200 { wrapperSupported: true, unsupportedReasons: [], declarations: { JAVA: string, CPP: string, PYTHON: string } }`. Mỗi dòng khai báo chứa tên suy ra/override, kiểu trả về và thứ tự tham số theo đúng quy tắc `logic/F3_harness.md` §2; không chứa thân hàm, khung chạy, testcase hay mã đáp án. `nameOverrides` ghi khoá HOA; một lựa chọn ngôn ngữ ở client chỉ đổi dòng đang hiển thị, không gọi lại endpoint. Giới hạn gọi 10 lần/giây/người bằng Redis; vượt trả `429 HRN-061` với `retryAfterSeconds`; Redis lỗi thì cho qua vì thao tác thuần CPU và body bị giới hạn.
 
 Vỏ HTTP đếm byte của body JSON UTF-8 trước khi parse/gọi P5: tối đa 16.384 byte được xử lý; từ 16.385 byte trả `413 HRN-062 PREVIEW_BODY_TOO_LARGE`, không gọi P5 và không ghi dữ liệu. [Chủ dự án chốt 2026-10-27]
 
 Test viewpoints: (1) cùng bản nháp trả ba khai báo và override chỉ đổi ngôn ngữ tương ứng; (2) chữ ký chưa đủ trả ba `null`, không gọi F2; (3) vi phạm cứng trả đường dẫn và mã `HRN-Vnn`; (4) STUDENT nhận 403, anonymous 401; (5) body 16 KiB và giới hạn tần suất; (6) kết quả khớp dòng khai báo trong starter code sinh từ cùng đặc tả sau khi lưu.
+
+**Nối FE hoàn chỉnh 2026-11-12 (GAP-03):** SHR0202 dùng body hiện hành làm query key, chỉ debounce thời điểm gọi400ms; AbortSignal hủy request/retry khi body đổi hoặc rời tab. Phản hồi cũ không hiện trong cửa sổ debounce. Một query chung trả ba declaration, tab ngôn ngữ không gọi lại. FE map HRN-060 theo JSON pointer, giữ unsupportedReasons server, dịch HRN-060/061/062;429 tự thử lại theo retryAfterSeconds cho body còn hiện hành,413 không tự thử lại. Chi tiết UI và bằng chứng mới: `03-dd/screens/shared/SHR0202_problem_authoring.md` §preview và `06-plan/reports/261112-f1-f4-followup-fix/preview.md`.
 
 ## 4. Cổng ra O1 — `ProblemSpecReaderPort.findSpec`
 
@@ -344,11 +418,32 @@ bài chưa có trong cache không lỗi; E1-T04 sự kiện cũ hơn mục đang
 
 ### 6.1. P3 — `MapCompileErrorUseCase.map`
 
+**Triển khai 2026-11-01:** bean `MapCompileErrorHandler` trong `application/compile` của harness;
+parser/phân loại/làm sạch ở `domain/compilation`, model LineMap/diagnostic ở `domain/model`.
+Không đọc F2/F4/P2, không chạy mã người học. Log đi qua `CompilerDiagnosticLogPort` và adapter
+JUL nội bộ mức SEVERE (ERROR), không qua API nhật ký F1. Không sửa symbol Java P4/P5/F1.
+
+**Chủ dự án chốt cùng ngày:** parse và log tối đa 65.536 ký tự đầu, kèm correlationId/truncated;
+không đưa source/caret/contextLines vào response. Logger lỗi thì vẫn trả báo cáo đã làm sạch,
+có thể mất log, không truyền message/cause của logger ra người học. Pure core không I/O; adapter
+log là tác dụng phụ riêng. Quyền xem/retention của log cần kiểm khi triển khai môi trường.
+
+Bằng chứng: 60 test P3 mới (59 mapping, 1 log adapter); focused clean verify parent/common/harness
+cùng P4/P5 đạt 154 test lúc `2026-11-01T16:16:10+07:00`, Checkstyle/SpotBugs 0; coverage harness
+547/562 dòng (97,33%). Có 5 fixture compiler thật (javac 25.0.2, g++ 11.4, Python 3.12.10), chưa
+phải toolchain image judge/gói P2. Chi tiết: `handoff/f3-p3-compile-errors/report.md`.
+
+**AC-18 Python:** py_compile không kiểm tên/số tham số hàm. Đã điều tra và chủ dự án chọn guard
+lookup + inspect.signature/bind ngay trước call trong sandbox; không kiểm AST cứng, không đổi
+TypeError trong thân hàm thành lỗi chữ ký. P3 chỉ map diagnostic được cung cấp; guard và wire
+contract P2/F4 chưa triển khai, nên AC-18 chưa đóng toàn bộ. Xem
+`handoff/f3-p3-compile-errors/python-signature-investigation.md`.
+
 | Mục | Giá trị |
 | :--- | :--- |
 | Chữ ký | `CompileErrorReport map(MapCompileErrorCommand cmd)` |
 | Idempotent | Có, thuần |
-| I/O | Không (không đọc đặc tả; mọi thứ cần thiết đã nằm trong `PreparedProgram`) |
+| I/O | Lõi mapping không I/O, không đọc đặc tả; adapter ghi log nội bộ riêng, failure mode theo ghi chú triển khai ở trên |
 
 Request `MapCompileErrorCommand`:
 
@@ -372,7 +467,7 @@ Response `CompileErrorReport`:
 
 Lỗi: `HRN-040` (`lineMap` không nhất quán), `HRN-031` (lỗi bất ngờ). Quy tắc phân loại, danh sách hành vi
 compiler đã biết và nội dung thông điệp cố định ở `logic/F3_harness.md` mục 6. **Văn bản `rawCompilerOutput`
-chỉ đi vào log nội bộ mức `ERROR`, không bao giờ đi vào response.**
+chỉ đi vào log nội bộ mức `ERROR` ở bản tối đa 65.536 ký tự cùng cờ truncated, không bao giờ đi vào response.**
 
 Test viewpoints: lỗi ở dòng đầu, dòng cuối, và dòng trong khối lồng của mã người học, cho từng ngôn ngữ
 (đúng danh sách kiểm của tham chiếu codegen); lỗi ở mã khung (phần trước và phần sau); lỗi ở dòng gọi hàm;
@@ -380,6 +475,23 @@ nhiều lỗi lẫn lộn; đầu ra không parse được; `STANDARD_IO` với 
 `04-tdd/modules/F3_harness.md` AC-14 đến AC-22.
 
 ### 6.2. P4 — `MatchOutputUseCase.match`
+
+**Triển khai 2026-11-01:** `MatchOutputMatcher` là Spring bean thực thi cổng P4 trong
+`algoprep-harness`; phần thuật toán/parser ở `domain/matching`, không I/O hay giao dịch. Có đủ
+EXACT, TRIMMED, EPSILON, UNORDERED_SET; dùng kiểu chung từ P5, không gọi F2/F4. Chủ dự án chốt
+đăng ký bean ngay ở lát này và TRIMMED với ARRAY(STRING) so như EXACT để giữ nội dung chuỗi.
+STANDARD_IO có returnType (đáp án mẫu F2) vẫn parse/so theo kiểu đúng §2.3.3.
+
+Bằng chứng: `MatchOutputMatcherTest` 59 test; cùng 35 test contract P5, verify tập trung
+`-pl algoprep-harness -am` đạt lúc `2026-11-01T15:39:46+07:00`, 94 test không failure/error/skipped,
+Checkstyle/SpotBugs 0, coverage harness 318/325 dòng (97,85%). Không chạy bộ F1/bootstrap/ArchUnit
+hoặc luồng chấm F4 trong lượt này. Chi tiết: `handoff/f3-p4-output-matching/report.md`.
+
+Giới hạn triển khai: số Standard I/O có số mũ vượt khả năng BigDecimal trả HRN-031 với thông báo
+đã che và không đính parser cause; không tuyên bố hỗ trợ số mũ tùy ý. Expected typed không parse/
+chuẩn hóa được trả HRN-050 trước khi xét actual, kể cả thiếu sentinel; actual typed hỏng là NO_MATCH.
+`[SoT: Suy luận]` đầu vào nội bộ null/thiếu cấu hình bắt buộc được chặn bằng HRN-051. Chưa nối bên
+gọi F4; quyền hiển thị output Sample/Hidden vẫn thuộc F4, không phải P4.
 
 | Mục | Giá trị |
 | :--- | :--- |
@@ -412,6 +524,26 @@ trả `NO_MATCH`. Thuật toán ở `logic/F3_harness.md` mục 7. Test viewpoin
 nó (mục 7 của logic và `04-tdd/modules/F3_harness.md` AC-23 đến AC-30).
 
 ### 6.3. P5 — `FunctionSpecEvaluator.evaluate` (thư viện tĩnh, `algoprep-common`)
+
+**Triển khai 2026-11-01 — phần thư viện P5:** đã có `com.algoprep.common.functionspec`
+trong `05-coding/backend/algoprep-common`, gồm model typed, `NameConventions`, `SpecLimits`,
+`FunctionSpecEvaluator` và tài nguyên `function-spec/type-node.schema.json`. Vị trí common theo
+`DEC-2026-1025-dd-function-spec-evaluator-common`; không phải endpoint HTTP. Draft Java dùng
+`Map<String, String>` cho `nameOverrides` để báo V18 cho khóa lạ trước khi parse enum; bộ kiểm
+nhận khóa không phân biệt hoa thường. **Chủ dự án chốt 2026-11-01:** các khóa trùng sau chuẩn hóa
+(ví dụ `JAVA` và `java`) trả `HRN-V18`, không chọn theo thứ tự map.
+
+Bằng chứng: 35 test P5 mới ở `FunctionSpecEvaluatorTest` và `NameConventionsTest`; full reactor
+trên develop `6b9bbce` lúc `2026-11-01T15:08:18+07:00` đạt 388 test, 0 failure/error/skipped,
+Checkstyle/SpotBugs 0, coverage common 236/237 dòng. Đây là kết quả lần chạy backend đã ghi nhận,
+không phải lần chạy mới khi cập nhật tài liệu. Chi tiết: `handoff/f3-spec-evaluator/report.md`.
+
+**Nợ tích hợp đã chốt:** adapter JSON thô làm cùng F2 `SaveProblemSpec`: kiểm shape trước khi tạo
+typed record (V10), giữ nguyên JSON gốc; kind lạ chỉ map OTHER lúc đánh giá, không lưu marker OTHER.
+Chưa có save/JSONB roundtrip, cờ DB, P1/P2/P6 hoặc codegen. Chỉ phần evaluator của AC-31–AC-38 có
+bằng chứng, không đánh dấu toàn bộ AC hoàn tất. Kiểm schema chạy riêng bằng
+`python handoff/f3-spec-evaluator/check_schema.py` (cần Python package `jsonschema`): 5 fixture
+được chấp nhận và 11 fixture bị từ chối đúng kỳ vọng; Maven `verify` không chạy script này.
 
 | Mục | Giá trị |
 | :--- | :--- |
@@ -474,3 +606,27 @@ Tổng cộng 18 mã, dải `HRN-001` đến `HRN-062` (có khoảng trống gi�
 | Q5 | **Đã đóng tại F4 validation:** ngưỡng mã nguồn | 65.536 byte UTF-8, cùng `judge.submission.max-source-bytes`; 65.537 bị từ chối | `03-dd/validation/F4_judge-orchestration.md` §2 |
 | Q6 | **Đã đóng tại DD:** `functionSignatureText` cho thông báo sai chữ ký hàm | `PreparedProgram.signatureText` do F3 dựng một lần; F4 truyền lại cho P3, không suy riêng | §2.3; F4 §1 |
 | Q7 | **Đã chốt owner 2026-10-25:** màn biên soạn dùng cổng F3 xem trước dòng khai báo | Thêm P6 và `POST /function-signature/preview` ở §3.7, sinh cả ba ngôn ngữ từ bản nháp, không để client tự dựng | `DEC-2026-1025-dd-function-signature-preview` |
+
+
+## Triển khai D02s — 2026-11-04: F3 starter HTTP và nhánh không cache
+
+**D02s — F3 REST starter P1, 2026-11-04:** HTTP starter/quyền hiện hành/phiên bản thật đã kiểm; nhánh F3 không cache đọc v1→v2 không chờ event và từ chối expected version cũ. 57 test liên quan đạt (13 unit mới, 18 API mới, 26 hợp đồng/wiring trực tiếp), 5/5 mutation bị bắt; Spotless/Checkstyle/SpotBugs đạt. Chỉ tập trung F3/F4, task riêng F1/F2 tạm gác. C08/cache-on giữ giới hạn đã nêu, D09/persisted E2E và FE chưa đóng. [Report](F:/prj_algoprep/06-plan/reports/261104-f3-starter-http/report.md).
+
+GET P1 theo URL language/model, response language/submissionModel/sourceCode (không specVersion).
+Identity từ JWT subject và authorities hiện hành, không tin claim role cũ/query. Published cho
+mọi authenticated, unpublished author/admin; missing/deleted/ngoài quyền cùng404 HRN-001.
+HTTP lỗi đúng §3.4, không trả raw cause/message; thiếu/lạ model là400 binding Spring, DD chưa
+quy định mã miền riêng. Giữ core RR và port đã có, không sửa F1/F2. @Lazy chỉ giữ pure core scan
+không cần lắp bootstrap, runtime ứng dụng dùng port thật.
+
+Default không local cache theo logic §9/BD database §2: đã kiểm v1→v2/matching, Redis poison,
+P2 stale expected bị HRN-002. Chưa có bằng chứng cache-on/E1 Rabbit delivery; không tick QA
+TC-F3-AC40-01–04 cho cấu hình cache bật. Không thêm no-op listener hoặc tạo cache giả.
+Sample pipeline save→starter→điền lời giải→F4 Run Code đã đạt, không thay persisted Submit E2E
+D09/AC-18 hoặc FE/browser. C08 giữ hoãn. Full regression/coverage BUNDLE để mốc clear theo owner.
+
+
+**D02t — 2026-11-04:** D09/AC-18 local persisted E2E đã đạt 9/9 ca mới (3 Accepted + 6 sai tên/arity, Java/CPP/Python), spec v2/source/DB/API/quyền thật; static gates đạt. Không sửa production code, không chạy full regression. C08/cache-on và nghiệm thu tổng F3 giữ phạm vi riêng. [Report](F:/prj_algoprep/06-plan/reports/261104-f3-persisted-acceptance/report.md).
+
+
+**D02u — 2026-11-04:** Backend F3 local đã đóng, giữ ngoại lệ C08/AC-49 HTTP/UI tiếp tục hoãn theo owner. Review đủ 50 AC với symbol/oracle và mức bằng chứng; 6/6 test Spring startup mới (AC-44) và Spotless/Checkstyle/SpotBugs đạt. 114 file lõi/resource + 2 HTTP khớp nguồn đã kiểm; không chạy lại suite cũ hoặc full regression. Cache-on conditional chưa bật; F4/FE/FINAL còn mở. [Report](F:/prj_algoprep/06-plan/reports/261104-f3-backend-closeout/report.md).

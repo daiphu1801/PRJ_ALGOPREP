@@ -30,17 +30,15 @@ export function StatCardsRow() {
   const overview = overviewQuery.data;
   const interview = interviewQuery.data;
 
-  const acRate =
-    overview && overview.totalSubmissions > 0
-      ? Math.round((overview.acceptedCount / overview.totalSubmissions) * 100)
-      : null;
+  // The server already leaves SYSTEM_ERROR submissions out of the denominator (DD api F1 #47).
+  const acRate = overview?.acceptanceRatePercent ?? null;
 
   return (
     <div className="mb-3.5 grid gap-3.5 grid-cols-2 lg:grid-cols-4">
       <DashboardBlockState
         title={t("stats.regionLabel", { metric: t("stats.solved") })}
         hideTitle
-        minHeightClassName="min-h-[104px]"
+        minHeightClassName="min-h-[76px]"
         isLoading={overviewQuery.isLoading}
         isError={overviewQuery.isError}
         isEmpty={false}
@@ -53,10 +51,16 @@ export function StatCardsRow() {
           <StatCard
             label={t("stats.solved")}
             value={overview.solvedProblemCount}
-            delta={`/ ${overview.totalPublishedProblemCount}`}
-            meta={t("stats.solvedMeta", {
-              avg: overview.avgAttemptsPerSolved ?? 0,
-            })}
+            delta={
+              overview.totalPublishedProblemCount === null
+                ? undefined
+                : `/ ${overview.totalPublishedProblemCount}`
+            }
+            meta={
+              overview.avgAttemptsPerSolved === null
+                ? undefined
+                : t("stats.solvedMeta", { avg: overview.avgAttemptsPerSolved })
+            }
             bare
           />
         )}
@@ -65,7 +69,7 @@ export function StatCardsRow() {
       <DashboardBlockState
         title={t("stats.regionLabel", { metric: t("stats.acRate") })}
         hideTitle
-        minHeightClassName="min-h-[104px]"
+        minHeightClassName="min-h-[76px]"
         isLoading={overviewQuery.isLoading}
         isError={overviewQuery.isError}
         isEmpty={acRate === null}
@@ -90,7 +94,7 @@ export function StatCardsRow() {
       <DashboardBlockState
         title={t("stats.regionLabel", { metric: t("stats.streak") })}
         hideTitle
-        minHeightClassName="min-h-[104px]"
+        minHeightClassName="min-h-[76px]"
         isLoading={overviewQuery.isLoading}
         isError={overviewQuery.isError}
         isEmpty={false}
@@ -102,8 +106,12 @@ export function StatCardsRow() {
         {overview && (
           <StatCard
             label={t("stats.streak")}
-            value={overview.currentStreakDays}
-            delta={t("stats.streakUnit")}
+            value={overview.currentStreakDays ?? "-"}
+            delta={
+              overview.currentStreakDays === null
+                ? undefined
+                : t("stats.streakUnit")
+            }
             meta={t("stats.streakMeta")}
             bare
           />
@@ -113,7 +121,7 @@ export function StatCardsRow() {
       <DashboardBlockState
         title={t("stats.regionLabel", { metric: t("stats.interview") })}
         hideTitle
-        minHeightClassName="min-h-[104px]"
+        minHeightClassName="min-h-[76px]"
         isLoading={interviewQuery.isLoading}
         isError={interviewQuery.isError}
         isEmpty={interview ? interview.completedSessionCount === 0 : false}

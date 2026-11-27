@@ -1,5 +1,18 @@
 # BD — Kiến trúc module `harness` (F3)
 
+**2026-11-02, nối F2:** ProblemSpecReaderPort/StarterCodeAccessPort do harness khai,
+bootstrap gọi inbound F2 và dịch type; harness không import F2/SQL/Redis. P1/P2 handlers
+được lắp bằng bootstrap configuration để core component scans cũ vẫn độc lập. P1 dùng
+read-only transaction REPEATABLE_READ cho hai lời gọi quyền/spec trong cùng DB snapshot;
+không ghi dữ liệu hoặc giữ cache cục bộ. ProgramPackaging/codegen cũ giữ nguyên.
+Report `261102-1532-f2-f3-spec-readers`.
+
+**Checkpoint component D02e 2026-11-01:** collaborator GoJudgePayloadAssembler và lõi
+ExecutionPlan/ToolchainProfile đã có, dùng chung wrapper/Standard I/O; payload không chứa
+testcase/limits/cache ID. ProgramPackaging nhận typed input trực tiếp, chưa hoàn tất P2/F2
+reader hoặc interface plugin/registry đầy đủ. Bootstrap nối contracts P3/P4 sang port F4,
+giữ nguyên nguyên tắc không import giữa các business module.
+
 > Trạng thái: **hoàn thiện BD 2026-09-12** (module thứ ba theo `06-plan/260912-1055-bd-rollout-order.md`).
 > Mục 1-5 giữ nguyên nội dung chốt sơ bộ 2026-08-24 (kiến trúc Strategy/Plugin, hai mô hình song song).
 > Mục 6 trở đi là phần bổ sung của lượt BD này: lược đồ kiểu dữ liệu cụ thể (F3-01), chữ ký phương thức
@@ -105,6 +118,11 @@ Sửa 2026-10-22 (đồng bộ DB, phase 3, DEC-2026-1022-problem-bank-schema-sy
 ### 4.3. Từng kiểu: khai báo, sinh mã đọc/in, rủi ro
 
 #### a) Kiểu nguyên thuỷ (`INT`, `LONG`, `DOUBLE`, `BOOLEAN`, `CHAR`, `STRING`)
+
+**Owner chốt D02d 2026-11-01:** CHAR là ASCII in được U+0021–U+007E, không khoảng trắng,
+để cùng biểu diễn được bằng `char` C++/Java và `str` Python. Unicode dùng STRING.
+LIST/ARRAY(STRING) escape cả control theo DD §3.4; xem DEC-2026-1101-harness-wire-serialization.
+
 - **Khai báo trong `problem_specs`** (sửa 2026-10-22, đồng bộ DB phase 3, DEC-2026-1022-problem-bank-schema-sync: tên bảng số nhiều): một node `{"kind":"..."}`không tham số, gắn trực tiếp làm `return_type`
   hoặc phần tử `parameters[].type` (`02-bd/database/F2_problem-bank.md` mục 1.4; mục 1.5 `function_signatures` đã gộp vào đây).
 - **Sinh mã đọc input** (khái niệm, không phải code thật): mỗi ngôn ngữ đọc một token/dòng theo đúng kiểu
@@ -243,7 +261,9 @@ kiểu dữ liệu có cấu trúc:
 - **`TRIMMED`** (chuẩn hoá khoảng trắng): cắt khoảng trắng thừa ở đầu/cuối dòng và gộp nhiều khoảng trắng
   liên tiếp trước khi so `EXACT` — áp dụng tốt cho `ARRAY`/nguyên thuỷ (định dạng theo dòng), **ít ý nghĩa**
   với `LIST`/`BINARY_TREE` (định dạng ngoặc vuông không có khoảng trắng thừa để chuẩn hoá) — với hai kiểu
-  này `TRIMMED` cho kết quả tương đương `EXACT`.
+  này `TRIMMED` cho kết quả tương đương `EXACT`. **Đồng bộ chủ dự án chốt 2026-11-01:** ngoại lệ
+  này cũng áp dụng cho `ARRAY(STRING)` vì stdout đã đổi sang ký pháp ngoặc lồng; không gộp khoảng
+  trắng bên trong phần tử chuỗi. DD logic F3 §7.2 và test P4 đã triển khai quy tắc này.
 - **`EPSILON`** (số thực): không so sánh chuỗi mà **parse lại thành số** rồi so `|actual - expected| ≤
   epsilon_value`. Với cấu trúc chứa `DOUBLE` lồng bên trong (`LIST<DOUBLE>`, `ARRAY` phần tử `DOUBLE`),
   harness phải so khớp **theo từng phần tử tương ứng vị trí** (duyệt song song hai cấu trúc, so từng lá số
@@ -316,3 +336,24 @@ dòng** (bước 2-4), đây là phần bất biến không đổi theo compiler
 - `.nexa/control/dependency-map.md` mục 2 (harness = pure computation, chỉ Postgres cho template/lược đồ
   kiểu), mục "Open items" (câu hỏi "harness có cần schema riêng hay không" — trả lời ở
   `02-bd/database/F3_harness.md`).
+
+
+## Triển khai D02s — 2026-11-04: F3 starter HTTP và nhánh không cache
+
+**D02s — F3 REST starter P1, 2026-11-04:** HTTP starter/quyền hiện hành/phiên bản thật đã kiểm; nhánh F3 không cache đọc v1→v2 không chờ event và từ chối expected version cũ. 57 test liên quan đạt (13 unit mới, 18 API mới, 26 hợp đồng/wiring trực tiếp), 5/5 mutation bị bắt; Spotless/Checkstyle/SpotBugs đạt. Chỉ tập trung F3/F4, task riêng F1/F2 tạm gác. C08/cache-on giữ giới hạn đã nêu, D09/persisted E2E và FE chưa đóng. [Report](F:/prj_algoprep/06-plan/reports/261104-f3-starter-http/report.md).
+
+GET P1 theo URL language/model, response language/submissionModel/sourceCode (không specVersion).
+Identity từ JWT subject và authorities hiện hành, không tin claim role cũ/query. Published cho
+mọi authenticated, unpublished author/admin; missing/deleted/ngoài quyền cùng404 HRN-001.
+HTTP lỗi đúng §3.4, không trả raw cause/message; thiếu/lạ model là400 binding Spring, DD chưa
+quy định mã miền riêng. Giữ core RR và port đã có, không sửa F1/F2. @Lazy chỉ giữ pure core scan
+không cần lắp bootstrap, runtime ứng dụng dùng port thật.
+
+Default không local cache theo logic §9/BD database §2: đã kiểm v1→v2/matching, Redis poison,
+P2 stale expected bị HRN-002. Chưa có bằng chứng cache-on/E1 Rabbit delivery; không tick QA
+TC-F3-AC40-01–04 cho cấu hình cache bật. Không thêm no-op listener hoặc tạo cache giả.
+Sample pipeline save→starter→điền lời giải→F4 Run Code đã đạt, không thay persisted Submit E2E
+D09/AC-18 hoặc FE/browser. C08 giữ hoãn. Full regression/coverage BUNDLE để mốc clear theo owner.
+
+
+**D02u — 2026-11-04:** Backend F3 local đã đóng, giữ ngoại lệ C08/AC-49 HTTP/UI tiếp tục hoãn theo owner. Review đủ 50 AC với symbol/oracle và mức bằng chứng; 6/6 test Spring startup mới (AC-44) và Spotless/Checkstyle/SpotBugs đạt. 114 file lõi/resource + 2 HTTP khớp nguồn đã kiểm; không chạy lại suite cũ hoặc full regression. Cache-on conditional chưa bật; F4/FE/FINAL còn mở. [Report](F:/prj_algoprep/06-plan/reports/261104-f3-backend-closeout/report.md).

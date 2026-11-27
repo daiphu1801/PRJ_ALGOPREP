@@ -2,30 +2,100 @@
   "_": "Thiết kế dự kiến, backend nghiệp vụ F1 chưa triển khai. Nguồn: 03-dd/logic/F1_identity.md BR-12; 03-dd/api/F1_identity.md endpoint #26/#29; 01-rd/system/SYS0101_backend_architecture.md mục 5.4.B. ClassProgressCtrl = ClassProgressController; GetClassProgressQry = GetClassProgressQueryHandler; IdentityReadAdapter = IdentityProgressReadAdapter [SoT: Suy luận]. ClassRosterReadPort đọc học viên còn ghi danh từ schema identity. Bảng class_completion_stats và bước tính sẵn mỗi SubmissionGraded đã bị bỏ; tỉ lệ hoàn thành phải tính khi đọc ở trang 1b. Không đọc trực tiếp schema judge/problem.",
   "kind": "sequence",
   "title": "Sơ đồ tuần tự chi tiết - Đọc học viên trong lớp (1a/2)",
-  "covers": ["F1-27"],
+  "covers": [
+    "F1-27"
+  ],
   "mode": "color",
   "sequence": {
     "detail": true,
     "participants": [
-      {"name": "Giảng viên", "role": "actor"},
-      {"name": "ClassProgressCtrl", "role": "controller", "stereo": "presentation"},
-      {"name": "GetClassProgressQry", "role": "service", "stereo": "application query"},
-      {"name": "ClassRosterReadPort", "role": "repository", "stereo": "application read port"},
-      {"name": "IdentityReadAdapter", "role": "repository", "stereo": "infrastructure"},
-      {"name": "PostgreSQL", "role": "datastore", "stereo": "schema identity"}
+      {
+        "name": "Giảng viên",
+        "role": "actor"
+      },
+      {
+        "name": "InstructorActivityController",
+        "role": "controller",
+        "stereo": "presentation"
+      },
+      {
+        "name": "GetClassStudentSubmissionMetricsQueryHandler",
+        "role": "service",
+        "stereo": "application query"
+      },
+      {
+        "name": "InstructorClassRepository",
+        "role": "repository",
+        "stereo": "application read port"
+      },
+      {
+        "name": "JdbcInstructorClassRepository",
+        "role": "repository",
+        "stereo": "infrastructure"
+      },
+      {
+        "name": "PostgreSQL",
+        "role": "datastore",
+        "stereo": "schema identity"
+      }
     ],
     "messages": [
-      {"phase": "Giai đoạn 1 - Đọc lớp và học viên còn ghi danh (F1-27)"},
-      {"from": "Giảng viên", "to": "ClassProgressCtrl", "text": "Gửi yêu cầu xem tiến độ lớp"},
-      {"from": "ClassProgressCtrl", "to": "ClassProgressCtrl", "text": "Kiểm tra quyền xem lớp"},
-      {"from": "ClassProgressCtrl", "to": "GetClassProgressQry", "text": "Yêu cầu dữ liệu tiến độ"},
-      {"from": "GetClassProgressQry", "to": "ClassRosterReadPort", "text": "Đọc học viên còn trong lớp"},
-      {"from": "ClassRosterReadPort", "to": "IdentityReadAdapter", "text": "Chuyển yêu cầu đọc danh sách"},
-      {"from": "IdentityReadAdapter", "to": "PostgreSQL", "text": "Đọc lớp và ghi danh hiện hành"},
-      {"from": "PostgreSQL", "to": "IdentityReadAdapter", "text": "Danh sách học viên", "kind": "return"},
-      {"from": "IdentityReadAdapter", "to": "ClassRosterReadPort", "text": "Danh sách học viên", "kind": "return"},
-      {"from": "ClassRosterReadPort", "to": "GetClassProgressQry", "text": "Danh sách học viên", "kind": "return"},
-      {"from": "GetClassProgressQry", "to": "GetClassProgressQry", "text": "Tiếp tục ghép bài giao ở trang 1b"}
+      {
+        "phase": "Giai đoạn 1 - Đọc lớp và học viên còn ghi danh (F1-27)"
+      },
+      {
+        "from": "Giảng viên",
+        "to": "InstructorActivityController",
+        "text": "Gửi yêu cầu xem tiến độ lớp"
+      },
+      {
+        "from": "InstructorActivityController",
+        "to": "InstructorActivityController",
+        "text": "Kiểm tra quyền xem lớp"
+      },
+      {
+        "from": "InstructorActivityController",
+        "to": "GetClassStudentSubmissionMetricsQueryHandler",
+        "text": "Yêu cầu dữ liệu tiến độ"
+      },
+      {
+        "from": "GetClassStudentSubmissionMetricsQueryHandler",
+        "to": "InstructorClassRepository",
+        "text": "Đọc học viên còn trong lớp"
+      },
+      {
+        "from": "InstructorClassRepository",
+        "to": "JdbcInstructorClassRepository",
+        "text": "Chuyển yêu cầu đọc danh sách"
+      },
+      {
+        "from": "JdbcInstructorClassRepository",
+        "to": "PostgreSQL",
+        "text": "Đọc lớp và ghi danh hiện hành"
+      },
+      {
+        "from": "PostgreSQL",
+        "to": "JdbcInstructorClassRepository",
+        "text": "Danh sách học viên",
+        "kind": "return"
+      },
+      {
+        "from": "JdbcInstructorClassRepository",
+        "to": "InstructorClassRepository",
+        "text": "Danh sách học viên",
+        "kind": "return"
+      },
+      {
+        "from": "InstructorClassRepository",
+        "to": "GetClassStudentSubmissionMetricsQueryHandler",
+        "text": "Danh sách học viên",
+        "kind": "return"
+      },
+      {
+        "from": "GetClassStudentSubmissionMetricsQueryHandler",
+        "to": "GetClassStudentSubmissionMetricsQueryHandler",
+        "text": "Tiếp tục ghép bài giao ở trang 1b"
+      }
     ]
   }
 }

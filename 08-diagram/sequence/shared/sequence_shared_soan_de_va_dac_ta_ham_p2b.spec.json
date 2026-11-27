@@ -15,7 +15,7 @@
         "role": "actor"
       },
       {
-        "name": "SaveProblemSpec",
+        "name": "SaveProblemSpecCommandHandler",
         "role": "service",
         "stereo": "application command"
       },
@@ -64,7 +64,7 @@
         "phase": "Giai đoạn 2 - Làm mới dữ liệu và báo thay đổi đặc tả"
       },
       {
-        "from": "SaveProblemSpec",
+        "from": "SaveProblemSpecCommandHandler",
         "to": "ProblemSpecCachePort",
         "text": "Xóa bản đặc tả tạm của bài"
       },
@@ -83,7 +83,7 @@
           "label": "Phiên bản đặc tả đã tăng?",
           "then": [
             {
-              "from": "SaveProblemSpec",
+              "from": "SaveProblemSpecCommandHandler",
               "to": "ProblemEventPort",
               "text": "Ghi sự kiện cùng lần lưu đặc tả"
             },
@@ -117,8 +117,8 @@
           ],
           "else": [
             {
-              "from": "SaveProblemSpec",
-              "to": "SaveProblemSpec",
+              "from": "SaveProblemSpecCommandHandler",
+              "to": "SaveProblemSpecCommandHandler",
               "text": "Giữ nguyên phiên bản, không phát sự kiện"
             }
           ]

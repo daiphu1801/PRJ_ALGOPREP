@@ -78,6 +78,28 @@ suốt dự án, không phải đặc thù riêng module.
   (`01-rd/req/F2_problem-bank.md:63-66`) — nghĩa là không có API thống kê "bao nhiêu học viên đã lưu bài
   này" lộ ra cho A2/A3, kể cả dạng số tổng hợp ẩn danh, trừ khi RD mở rộng lại phạm vi này (hiện chưa).
 
+## 3A. Khách chưa đăng nhập (`DEC-2026-1126-guest-browse-published-problems`)
+
+Bảng 3A.1 là ma trận quyền của vai trò Khách (không có phiên) trên các đường đọc bài đã xuất bản của F2; mọi endpoint không có trong bảng vẫn yêu cầu phiên.
+
+| Đường đọc | Khách | Ghi chú |
+| :--- | :-: | :--- |
+| `GET /problems` (danh sách) | Được | Không trả giá trị theo người dùng: `solveStateAvailable = false`, mọi `solveState` rỗng |
+| `GET /problems/random` | Được | Bốc từ mọi bài đã xuất bản, không loại bài đã giải |
+| `GET /problems/{id}/overview` | Được | `bookmarked = false`; không có dữ liệu bài nộp hay Solution Review (hai thứ đó đến từ endpoint khác, vẫn cần phiên) |
+| `GET /problems/{id}/sample-testcases` | Được | Chỉ testcase Sample; Hidden không bao giờ có trong response (F2-08) |
+| `GET /levels` | Được | Danh mục độ khó, không có dữ liệu cá nhân; `includeCounts` chỉ có hiệu lực với ADMIN nên khách không thấy số bài. Thêm, sửa, xoá vẫn cần quyền ADMIN |
+| `GET /topics`, `GET /topics/progress`, `GET /judge/problems/{id}/execution-limits` | Không (401) | Owner chưa mở cho khách (2026-11-26) |
+| `GET /problems/{id}/workspace` và mọi ghi (bookmark, nộp, chạy thử) | Không (401) | Khách phải đăng nhập |
+
+Các điều kiện kèm theo:
+
+- **Một hợp đồng, không có bản sao `/public`.** Vì danh sách và tổng quan dùng chung endpoint với người đã đăng nhập, mọi trường theo người dùng phải có giá trị rỗng cố định khi không có phiên. Cần một bộ test chặn hồi quy: gọi vô danh rồi đối chiếu response không chứa trạng thái giải, bookmark hay dữ liệu bài nộp. Đây là ngoại lệ bậc 6 của tiêu chí ponytail (mở lỗ hổng nếu thiếu).
+- **Không lộ bài chưa xuất bản.** Bài nháp, bài đã gỡ và id không tồn tại cùng trả "không tìm thấy" (cùng mã với người đã đăng nhập), để khách không dò được id nào đang tồn tại.
+- **Token hết hạn trên đường công khai.** Bộ lọc xác thực không được biến một token hết hạn thành 401 trên bốn đường đọc ở bảng 3A.1: khách còn giữ token cũ phải đọc được như khách. Đường có ghi hoặc đường cá nhân vẫn trả 401 để giao diện làm mới phiên.
+- **Sanitize Markdown.** Mục 5 áp dụng nặng hơn: `statement_md` nay hiển thị cho người chưa xác thực, nên bắt buộc sanitize ở tầng render.
+- **Giới hạn tần suất theo IP** cho bốn đường đọc: không viết bộ lọc Java mới; đề xuất đặt ở reverse proxy khi triển khai (kế hoạch CD `06-plan/261125-1649-trien-khai-cicd-vps.md`). Chưa chốt, không chặn việc dựng.
+
 ## 4. F2-14 — AI sinh testcase, kiểm soát rủi ro
 
 - AI **chỉ được truyền vào prompt**: nội dung đề bài (Markdown) và ràng buộc dữ liệu do Admin khai —

@@ -27,6 +27,7 @@ function AuthViewContent({ initialMode = "signup" }: AuthViewProps) {
   const isLoginLike = mode === "login" || mode === "signup";
   const title = {
     signup: t("signupTitle"),
+    verify_email: t("verifyEmailTitle"),
     login: t("loginTitle"),
     forgot_email: t("forgotEmailTitle"),
     forgot_otp: t("forgotOtpTitle"),
@@ -36,7 +37,7 @@ function AuthViewContent({ initialMode = "signup" }: AuthViewProps) {
   return (
     <>
       <ThemeLangSwitcher variant="floating" />
-      <section className="glass-surface relative grid w-full max-w-3xl grid-cols-1 overflow-hidden rounded-2xl border border-[var(--color-border)] shadow-lg lg:grid-cols-[1.06fr_1fr]">
+      <section className="glass-surface relative grid w-full max-w-md grid-cols-1 lg:max-w-3xl overflow-hidden rounded-2xl border border-[var(--color-border)] shadow-lg lg:grid-cols-[1.06fr_1fr]">
         <div className="p-8">
           <div className="flex items-center gap-2.5">
             <BrandMark size={36} />

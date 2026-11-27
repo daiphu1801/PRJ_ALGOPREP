@@ -10,7 +10,7 @@
 | 73 | server-side permission enforcement and authorized live update | TC-F1-AC73-01, TC-F1-AC73-02 | Reviewed 2026-10-28 |
 | 74 | full list/reset variants and unauthorized direct access | TC-F1-AC74-01, TC-F1-AC74-02 | Reviewed 2026-10-28 |
 | 76 | preserve last admin, audit, concurrent changes and self-impact acknowledgement | TC-F1-AC76-01, TC-F1-AC76-02, TC-F1-AC76-03 | Reviewed 2026-10-28 |
-| 77 | legacy/new teacher overview and role scope | TC-F1-AC77-01 | Reviewed 2026-10-28 |
+| 77 | current teacher overview (#56) and role scope; legacy #44 retired | TC-F1-AC77-01 | Reviewed 2026-10-28; revised 2026-11-07 |
 | 78 | shared filter set/export; deleted cursor anchor; failed CSV stream | TC-F1-AC78-01, TC-F1-AC78-02, TC-F1-AC78-03 | Reviewed 2026-10-28 |
 
 ### TC-F1-AC73-01 — Role permissions are enforced by server
@@ -148,19 +148,19 @@
 | Evidence | Three responses, DB role/active ADMIN counts, token authorization and audit diff. |
 | Design review | Reviewed 2026-10-28; chưa thực thi |
 
-### TC-F1-AC77-01 — Legacy teacher summary remains distinct from current overview
+### TC-F1-AC77-01 — Current teacher overview is scoped to the instructor; legacy #44 is retired
 
 | Field | Value |
 |---|---|
-| AC / DD source | AC-77; API #44,#56; BR-17 |
-| Kind / priority | Compatibility/Security; P1 — client breakage or cross-class leakage |
+| AC / DD source | AC-77; API #56 (#44 retired by owner 2026-11-07, `DEC-2026-1107-f1-f2-final-scope-and-debts`); BR-17 |
+| Kind / priority | Security; P1 — cross-class leakage |
 | Environment | API + DB with teacher overview endpoints |
 | Preconditions | I1 owns C1,C2; I2 owns C3. S1 is enrolled in C1 and C2, S2 in C2, S3 in C1, S4 in C3. Each class has identical mean score 8/10 so legacy mean is unambiguous. |
 | Test data | C1/C2 have same `created_at` with ordered UUIDs for tie rule; C1 and C2 each have 2 active students; C3 has 1. F4 accepted ratios for each class yield mean 8/10. |
-| Steps | I1 calls legacy #44 and current #56; open current `INS0101` overview contract #56. I2 calls its own endpoints; N1 attempts #56. |
-| Expected | Legacy #44 stays at its path and reports two classes, three distinct students, average score 8.0 across I1 classes. Current #56 returns `classCount=2`, `studentCount=3`, scoped items C1/C2 ordered newest first then classId ascending on tie; per-class stats use active enrollment and assignment results. C3 never appears for I1. Non-INSTRUCTOR is denied. The legacy count/value contract is not silently substituted into current overview fields. |
+| Steps | I1 calls current #56 (the `INS0101` overview contract). I2 calls its own #56; N1 (non-INSTRUCTOR) attempts #56. The old path `/instructor/dashboard/summary` (#44) is also called once. |
+| Expected | Current #56 returns `classCount=2`, `studentCount=3`, scoped items C1/C2 ordered newest first then classId ascending on tie; per-class stats use active enrollment and assignment results. C3 never appears for I1; I2 sees only C3. Non-INSTRUCTOR is denied. The retired #44 path is no longer served as a contract (no 2xx body with the old counting rule). |
 | Cleanup | Remove class and aggregate fixtures. |
-| Evidence | Both raw responses, endpoint schemas, owner-scoped DB query results. |
+| Evidence | Raw #56 responses for I1 and I2, the denied response for N1, owner-scoped DB query results. |
 | Design review | Reviewed 2026-10-28 |
 
 ### TC-F1-AC78-01 — Audit search cursor and CSV export use identical filters

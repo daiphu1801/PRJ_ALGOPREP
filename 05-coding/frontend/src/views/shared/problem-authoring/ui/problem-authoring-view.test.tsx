@@ -1,6 +1,6 @@
 // Smoke test (PROTOTYPE lane): testcase add/delete invalidates the reference-solution run, and
 // re-running restores it (F2-18).
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   act,
   fireEvent,
@@ -17,11 +17,15 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { ReactElement } from "react";
 import { ProblemAuthoringView } from "./problem-authoring-view";
 
-vi.mock("next/navigation", () => ({ useRouter: () => ({ push: vi.fn() }) }));
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({ push: vi.fn(), replace: vi.fn() }),
+}));
 
 vi.mock("@/shared/i18n", () => ({
   useT: () => (key: string, params?: Record<string, unknown>) =>
     params ? `${key} ${JSON.stringify(params)}` : key,
+  useApiErrorMessage: () => (error: { code?: string }) =>
+    `api:${error.code ?? "?"}`,
 }));
 
 beforeEach(() => {
@@ -54,6 +58,11 @@ describe("ProblemAuthoringView testcase tab", () => {
     expect(
       toasts.result.current.map((item) => [item.tone, item.message]),
     ).toEqual([["error", "dialog.required"]]);
+    await waitFor(() =>
+      expect(
+        within(dialog).getByRole("button", { name: "dialog.save" }),
+      ).toBeEnabled(),
+    );
 
     const fields = within(dialog).getAllByRole("textbox");
     fireEvent.change(fields[0]!, { target: { value: 's = "xyz", t = "y"' } });
@@ -62,6 +71,9 @@ describe("ProblemAuthoringView testcase tab", () => {
       within(dialog).getByRole("button", { name: "dialog.save" }),
     );
 
+    await waitFor(() =>
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument(),
+    );
     expect(screen.getByText('s = "xyz", t = "y"')).toBeInTheDocument();
     // No inline notice any more: a stale run shows as the checklist item going back to pending.
     const solutionItem = () =>
@@ -72,6 +84,7 @@ describe("ProblemAuthoringView testcase tab", () => {
       message: "toast.testcaseAdded",
     });
 
+    fireEvent.click(screen.getByRole("button", { name: "tab.content" }));
     fireEvent.click(screen.getByRole("button", { name: "runSolution" }));
     expect(solutionItem()).toHaveTextContent("checkDone");
     expect(toasts.result.current.at(-1)).toMatchObject({ tone: "success" });
@@ -154,7 +167,11 @@ describe("ProblemAuthoringView save and publish", () => {
     fireEvent.click(screen.getByRole("button", { name: /tab\.examples/ }));
 
     // The mock draft is published with exactly 2 examples (BD Sheet 6 area D item 6).
-    fireEvent.click(screen.getAllByRole("button", { name: "delete" })[0]!);
+    // One page: the testcase rows have delete buttons too, so look inside the examples section.
+    const examples = screen.getByRole("region", { name: /^tab.examples/ });
+    fireEvent.click(
+      within(examples).getAllByRole("button", { name: "delete" })[0]!,
+    );
     expect(toasts.result.current.at(-1)).toMatchObject({
       tone: "warning",
       message: "examplesFloorWarning",
@@ -384,6 +401,9 @@ describe("ProblemAuthoringView spec tab (F2-03, F2-04)", () => {
   it("shows the starter-code preview of each language for the sample problem", async () => {
     await openSpecTab();
     for (const language of ["java", "cpp", "python"]) {
+      fireEvent.click(
+        screen.getByRole("button", { name: `spec.language.${language}` }),
+      );
       expect(
         screen.getByRole("listitem", { name: `spec.language.${language}` }),
       ).toBeInTheDocument();
@@ -416,5 +436,49 @@ describe("ProblemAuthoringView spec tab (F2-03, F2-04)", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "check.specDeclared" }));
     expect(screen.getByLabelText("spec.stdinFormat")).toBeInTheDocument();
+  });
+});
+
+describe("ProblemAuthoringView bulk upload on mock data (EVT-15)", () => {
+  // jsdom has no Blob.text(); browsers do.
+  beforeAll(() => {
+    if (!Blob.prototype.text)
+      Blob.prototype.text = function (this: Blob) {
+        return new Promise<string>((resolve) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(String(reader.result));
+          reader.readAsText(this);
+        });
+      };
+  });
+
+  it("reads the .in and .out files and appends one approved testcase per pair, even for a new problem", async () => {
+    await renderLoaded(<ProblemAuthoringView basePath="/admin/problems" />);
+    fireEvent.click(screen.getByRole("button", { name: /tab\.testcases/ }));
+    const toasts = renderHook(() => useToasts());
+
+    const open = screen.getByRole("button", { name: "testcase.btnBulkUpload" });
+    expect(open).toBeEnabled();
+    fireEvent.click(open);
+    const dialog = screen.getByRole("dialog");
+    fireEvent.change(within(dialog).getByTestId("bulk-input"), {
+      target: {
+        files: [
+          new File(["3 4\n"], "bulk-a.in"),
+          new File(["7\n"], "bulk-a.out"),
+        ],
+      },
+    });
+    fireEvent.click(
+      within(dialog).getByRole("button", { name: /^bulk\.upload/ }),
+    );
+
+    await waitFor(() =>
+      expect(
+        toasts.result.current.map((item) => [item.tone, item.message]),
+      ).toContainEqual(["success", 'bulk.done {"count":1}']),
+    );
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(screen.getByText("3 4")).toBeInTheDocument();
   });
 });

@@ -11,10 +11,14 @@ export type ProgressRange = z.infer<typeof progressRangeSchema>;
 /** `MyProgressOverviewDto` — global figures, NOT affected by the range filter [SoT: Sheet 6 Khu vực A]. */
 export type ProgressOverview = {
   solvedProblemCount: number;
-  totalPublishedProblemCount: number;
+  /** `problem-bank` figure; `null` while that endpoint is not built (real mode). */
+  totalPublishedProblemCount: number | null;
   totalSubmissions: number;
   acceptedCount: number;
-  currentStreakDays: number;
+  /** Whole percent over submissions that ended with a verdict (no SYSTEM_ERROR); `null` with none. */
+  acceptanceRatePercent: number | null;
+  /** `judge-orchestration` figure; `null` while it is not wired (real mode). */
+  currentStreakDays: number | null;
   /** `null` when `solvedProblemCount === 0` — the screen shows "-" instead of dividing by zero. */
   avgAttemptsPerSolved: number | null;
 };
@@ -39,12 +43,6 @@ export type DifficultyProgress = {
   difficulty: Difficulty;
   solvedCount: number;
   totalCount: number;
-};
-
-/** `SubmissionDailyCountDto` — always 14 entries, zero-filled days included. */
-export type SubmissionDailyCount = {
-  day: string;
-  count: number;
 };
 
 /** `FocusSuggestionDto` — derived from `TopicProgress`, no dedicated endpoint (Sheet 7.1 NO 13). */

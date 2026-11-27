@@ -1,44 +1,96 @@
 {
-  "_": "Nguồn hành vi: 01-rd/req/user_stories/a1_student.md:8-34; 03-dd/api/F1_identity.md:24-41; 03-dd/logic/F1_identity.md:58-88; dữ liệu identity.users và identity.refresh_tokens theo 02-bd/database/F1_identity.md. [SoT: Suy luận] Tên AuthService, UserRepository, RefreshTokenRepository, LoginRateLimiter, TokenIssuerPort và chữ ký phương thức là thiết kế đề xuất vì backend nghiệp vụ chưa có. AuthService gom F1-01..04; F1-05 là ràng buộc vai trò. Chỉ vẽ một số phương thức mang trách nhiệm chính; UserAccount/RefreshToken là kiểu dữ liệu ở repository, sẽ được mô tả trong sơ đồ model F1 dùng chung. Bỏ DTO HTTP, getter/setter và chi tiết mã hoá token khỏi hình.",
+  "_": "Nguồn tiêu chí: 01-rd/req/user_stories/a1_student.md:8-34. Nguồn mã nguồn: 05-coding/backend/algoprep-identity/src/main/java/com/algoprep/identity/presentation/controller/AuthController.java, RegistrationController.java, application/command/LoginCommandHandler.java và domain/ports/out/RefreshTokenRepository.java.",
   "kind": "class",
   "title": "A1 — Đăng ký, đăng nhập và quản lý phiên",
-  "covers": ["F1-01", "F1-02", "F1-03", "F1-04", "F1-05"],
+  "covers": [
+    "F1-01",
+    "F1-02",
+    "F1-03",
+    "F1-04",
+    "F1-05"
+  ],
   "class": {
     "legend": "shared",
     "classes": [
       {
-        "id": "service",
-        "name": "AuthService",
+        "id": "authController",
+        "name": "AuthController",
         "methods": [
-          "+ register(email : String, password : String)",
-          "+ login(email : String, password : String, ip : String)",
-          "+ refresh(refreshToken : String)",
-          "+ logout(refreshToken : String)"
+          "+ login(body : LoginRequest) : ResponseEntity<LoginResult>",
+          "+ refresh(cookie : String) : ResponseEntity<RefreshResult>",
+          "+ logout(cookie : String) : ResponseEntity<Void>"
         ]
       },
       {
-        "id": "users",
-        "name": "UserRepository",
-        "methods": ["+ findByEmail(email : String) : UserAccount"]
+        "id": "regController",
+        "name": "RegistrationController",
+        "methods": [
+          "+ register(body : RegisterRequest) : ResponseEntity<Void>"
+        ]
       },
       {
-        "id": "tokens",
-        "name": "RefreshTokenRepository",
-        "methods": ["+ revokeFamily(familyId : UUID)"]
+        "id": "loginHandler",
+        "name": "LoginCommandHandler",
+        "methods": [
+          "+ login(command : LoginCommand) : LoginResult"
+        ]
       },
-      {"id": "rate", "name": "LoginRateLimiter", "methods": ["+ check(email : String, ip : String)"]},
-      {"id": "issuer", "name": "TokenIssuerPort", "kind": "interface", "methods": ["+ issueAccessToken(userId : UUID) : String"]}
+      {
+        "id": "logoutHandler",
+        "name": "LogoutCommandHandler",
+        "methods": [
+          "+ logout(command : LogoutCommand)"
+        ]
+      },
+      {
+        "id": "tokenRepo",
+        "name": "RefreshTokenRepository",
+        "kind": "interface",
+        "methods": [
+          "+ insert(token : StoredRefreshToken, tokenHash : String, issuedAt : Instant)",
+          "+ revokeFamily(familyId : UUID, at : Instant)"
+        ]
+      },
+      {
+        "id": "userRepo",
+        "name": "UserAccountRepository",
+        "kind": "interface",
+        "methods": [
+          "+ findByEmail(email : String) : Optional<UserAccount>"
+        ]
+      }
     ],
     "externals": [],
     "relations": [
-      {"from": "service", "to": "users", "kind": "dependency", "label": "đọc/lưu"},
-      {"from": "service", "to": "tokens", "kind": "dependency", "label": "xoay vòng"},
-      {"from": "service", "to": "rate", "kind": "dependency", "label": "giới hạn"},
-      {"from": "service", "to": "issuer", "kind": "dependency", "label": "cấp token"}
+      {
+        "from": "authController",
+        "to": "loginHandler",
+        "kind": "dependency"
+      },
+      {
+        "from": "authController",
+        "to": "logoutHandler",
+        "kind": "dependency"
+      },
+      {
+        "from": "loginHandler",
+        "to": "userRepo",
+        "kind": "dependency"
+      },
+      {
+        "from": "loginHandler",
+        "to": "tokenRepo",
+        "kind": "dependency"
+      },
+      {
+        "from": "logoutHandler",
+        "to": "tokenRepo",
+        "kind": "dependency"
+      }
     ],
     "notes": [
-      "Đăng ký nhận vai trò STUDENT; refresh token dùng một lần, dùng lại sẽ thu hồi cả family.",
-      "[SoT: Suy luận] Tên lớp và chữ ký phương thức là thiết kế backend từ DD, chưa có trong code."
+      "AuthController và RegistrationController nhận request REST từ phía sinh viên; LoginCommandHandler kiểm tra xác thực và cấp token.",
+      "Refresh Token được quản lý theo token family qua RefreshTokenRepository, thu hồi toàn bộ chuỗi nếu phát hiện dùng lại token cũ."
     ]
   }
 }

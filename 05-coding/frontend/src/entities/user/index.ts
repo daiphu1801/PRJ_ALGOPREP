@@ -1,6 +1,7 @@
 export type { User, Role } from "./model/types";
 export type { AppArea } from "./model/area";
 export { ROLE_BY_AREA, HOME_PATH_BY_ROLE } from "./model/area";
+export { useSession, type SessionState } from "./model/use-session";
 
 // PROTOTYPE — no DD yet. See 06-plan/PROTOTYPE_DEBT.md
 export type {
@@ -38,3 +39,11 @@ export {
   updateMyProfile,
   updateMySettings,
 } from "./api/mutations";
+export type { ExportedFile } from "./api/real-export";
+export {
+  removeMyAvatar,
+  removeUserAvatar,
+  uploadMyAvatar,
+} from "./api/mutations";
+export { useAvatarUrl } from "./api/avatar-queries";
+export { UserAvatar } from "./ui/user-avatar";

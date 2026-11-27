@@ -1,0 +1,15 @@
+# Combine with local for the existing host-run backend and local infrastructure.
+# The URL is explicit so enabling a worker cannot silently use an unverified sandbox.
+judge:
+  worker:
+    enabled: true
+    # Re-evaluate the consumer count every 3 s (code default 15 s) so a burst scales up in seconds;
+    # DEC-2026-1108-autoscale-faster.
+    scale-delay-ms: 3000
+  go-judge:
+    base-url: ${ALGOPREP_WORKER_ENGINE_URL}
+
+spring:
+  datasource:
+    hikari:
+      maximum-pool-size: 48

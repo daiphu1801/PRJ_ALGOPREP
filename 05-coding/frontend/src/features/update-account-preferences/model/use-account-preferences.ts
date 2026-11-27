@@ -104,6 +104,11 @@ export function useAccountPreferences(
       // The caller turns this outcome into toasts (success / partial failure / failure).
       return {
         settingsOk: results[0]!.status === "fulfilled",
+        // The reason for a failed settings call, so the caller can show the backend's own message.
+        settingsError:
+          results[0]!.status === "rejected"
+            ? (results[0] as PromiseRejectedResult).reason
+            : null,
         // null = the interview group was not sent at all.
         interviewOk: saveInterview
           ? results[1]!.status === "fulfilled"

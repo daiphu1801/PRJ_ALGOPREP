@@ -140,7 +140,7 @@ thứ phải giống nhau xuyên `01-rd` → `02-bd` → `03-dd` theo luật ch�
 | Quản trị | `ADM` | A3 |
 | Dùng chung nhiều vai trò | `SHR` | A1 / A2 / A3 |
 
-### Bảng mã (37 màn)
+### Bảng mã (38 màn)
 
 | Mã | Tên file | Slug chính tắc | Tên màn | Nhóm |
 | :--- | :--- | :--- | :--- | :--- |
@@ -168,6 +168,7 @@ thứ phải giống nhau xuyên `01-rd` → `02-bd` → `03-dd` theo luật ch�
 | `INS0204` | `INS0204_class_student_detail.md` | `class_student_detail` | Chi tiết học viên | Lớp học |
 | `INS0205` | `INS0205_class_detail.md` | `class_detail` | Chi tiết lớp (thêm 2026-10-11, `DEC-2026-1011-class-detail-page`) | Lớp học |
 | `INS0206` | `INS0206_submission_management.md` | `submission_management` | Danh sách bài nộp của giảng viên (thêm 2026-10-14, `DEC-2026-1013-instructor-submissions-list`) | Lớp học |
+| `INS0207` | `INS0207_class_assign_problems.md` | `class_assign_problems` | Giao bài cho lớp: chọn bài đã xuất bản, lọc, giao một lần (thêm 2026-11-23, `DEC-2026-1123-assign-problems-dedicated-screen`) | Lớp học |
 | ~~`INS0301`~~ | `INS0301_grading.md` (chỉ còn thông báo gỡ) | ~~`instructor_grading`~~ | **Đã bỏ 2026/10/13** (`DEC-2026-1013-remove-instructor-manual-grading`), mã không dùng lại | ~~Chấm bài~~ |
 | `ADM0101` | `ADM0101_overview.md` | `admin_overview` | Tổng quan quản trị | Tổng quan |
 | `ADM0201` | `ADM0201_user_management.md` | `admin_user_management` | Quản lý người dùng | Người dùng và quyền |
@@ -188,7 +189,7 @@ thứ phải giống nhau xuyên `01-rd` → `02-bd` → `03-dd` theo luật ch�
 | `SHR0302` | `SHR0302_interview_question_authoring.md` | `interview_question_authoring` | Biên soạn câu hỏi phỏng vấn | Nội dung câu hỏi |
 | `SHR0303` | `SHR0303_interview_question_info.md` | `interview_question_info` | Chi tiết câu hỏi phỏng vấn | Nội dung câu hỏi |
 
-Cập nhật 2026-10-23: nhóm 07 "Lớp học" của khu Người học (`USR07xx`) là nhóm mới, cấp theo quy tắc "nhóm mới lấy số nhóm kế tiếp trong khu vực" bên dưới; `INS02xx` cũng có nhóm "Lớp học" nhưng thuộc khu Giảng viên, hai nhóm cùng tên khác khu. Bảng này từ 35 lên 37 màn.
+Cập nhật 2026-10-23: nhóm 07 "Lớp học" của khu Người học (`USR07xx`) là nhóm mới, cấp theo quy tắc "nhóm mới lấy số nhóm kế tiếp trong khu vực" bên dưới; `INS02xx` cũng có nhóm "Lớp học" nhưng thuộc khu Giảng viên, hai nhóm cùng tên khác khu. Bảng này từ 35 lên 37 màn; 2026-11-23 thêm `INS0207` (lên 38 màn).
 
 Quy tắc bổ sung:
 - **Mã đã cấp thì không đổi, không tái sử dụng.** Màn bị cắt khỏi phạm vi thì mã đó bỏ trống vĩnh viễn.

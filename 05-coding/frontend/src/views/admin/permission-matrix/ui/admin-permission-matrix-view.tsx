@@ -1,4 +1,5 @@
-// PROTOTYPE — no DD yet. See 06-plan/PROTOTYPE_DEBT.md section 9.
+// PROTOTYPE with a real API behind it (task 12, 03-dd/api/F1_identity.md #30 to #34); see
+// 06-plan/PROTOTYPE_DEBT.md section 9.
 //
 // Layout follows 09-layoutBase/Admin - Ma trận phân quyền.dc.html: sticky header (:149-159), a
 // standing note about what the matrix does and does not govern (:161-163), then one card holding
@@ -25,6 +26,7 @@ import {
   ACTION_KEYS,
   FUNCTION_KEYS,
   grantsFor,
+  usePermissionActions,
   usePermissionMatrixPage,
   type ActionKey,
   type BaseCategory,
@@ -32,12 +34,12 @@ import {
   type PermissionMatrixPage,
   type Role,
 } from "../api";
-import { useT } from "@/shared/i18n";
+import { useApiErrorMessage, useT } from "@/shared/i18n";
+import { useMediaQuery } from "@/shared/lib/use-media-query";
 import { toast, toastFirstError } from "@/shared/lib/toast-store";
 import {
   ROLE_NAME_MAX,
   checkCellToggle,
-  roleKeyFor,
   validateRoleName,
 } from "../model/guards";
 import {
@@ -46,13 +48,14 @@ import {
   ConfirmDialog,
   DataTable,
   NoticeTile,
+  PageContainer,
   PageHeader,
   QueryBoundary,
-  SegmentedTabs,
   SelectField,
   TextField,
   type DataTableColumn,
 } from "@/shared/ui";
+import { PermissionRoleFilter } from "./permission-role-filter";
 
 export function AdminPermissionMatrixView() {
   return (
@@ -64,7 +67,20 @@ export function AdminPermissionMatrixView() {
 
 function PermissionMatrixInner({ initial }: { initial: PermissionMatrixPage }) {
   const t = useT("adminPermissionMatrix");
+  const compact = useMediaQuery("(max-width: 880px)");
+  const apiMessage = useApiErrorMessage();
+  const actions = usePermissionActions();
   const [page, setPage] = useState(initial);
+  const [seenInitial, setSeenInitial] = useState(initial);
+  // A fresh page from the server (after an action) replaces the local copy. Adjusted during render, not
+  // in an effect, so stale cells are never painted first.
+  if (seenInitial !== initial) {
+    setSeenInitial(initial);
+    setPage(initial);
+  }
+  // Cells waiting for the server: only that one cell is locked meanwhile (BD ADM0202 BR-SC-01).
+  const [busyCells, setBusyCells] = useState<ReadonlySet<string>>(new Set());
+  const [saving, setSaving] = useState(false);
   const [activeRoleKey, setActiveRoleKey] = useState("INSTRUCTOR");
   const [addingRole, setAddingRole] = useState(false);
   const [newRoleName, setNewRoleName] = useState("");
@@ -97,32 +113,50 @@ function PermissionMatrixInner({ initial }: { initial: PermissionMatrixPage }) {
     );
     if (check.blockedLastMatrixAdmin) toast.warning(t("lastMatrixAdminBody"));
     else if (check.revokesOwnRole) setPendingSelf({ functionKey, action });
-    else applyToggle(functionKey, action);
+    else void applyToggle(functionKey, action);
   }
 
-  function applyToggle(functionKey: FunctionKey, action: ActionKey) {
-    setPage((previous) => {
-      const current = grantsFor(
-        previous.permissions,
-        activeRole.key,
-        functionKey,
-      );
-      return {
-        ...previous,
-        permissions: {
-          ...previous.permissions,
-          [activeRole.key]: {
-            ...previous.permissions[activeRole.key],
-            [functionKey]: { ...current, [action]: !current[action] },
+  async function applyToggle(functionKey: FunctionKey, action: ActionKey) {
+    const role = activeRole;
+    const cellKey = `${role.key}:${functionKey}:${action}`;
+    if (busyCells.has(cellKey)) return;
+    const wanted = !grantsFor(page.permissions, role.key, functionKey)[action];
+    setBusyCells((previous) => new Set(previous).add(cellKey));
+    try {
+      const saved = await actions.toggleCell({
+        roleId: role.id,
+        functionId: page.functionIds?.[functionKey] ?? functionKey,
+        actionId: page.actionIds?.[action] ?? action,
+        granted: wanted,
+      });
+      // The server's stored value is the state of record (DD ADM0202 section 3).
+      setPage((previous) => {
+        const current = grantsFor(previous.permissions, role.key, functionKey);
+        return {
+          ...previous,
+          permissions: {
+            ...previous.permissions,
+            [role.key]: {
+              ...previous.permissions[role.key],
+              [functionKey]: { ...current, [action]: saved.granted },
+            },
           },
-        },
-      };
-    });
+        };
+      });
+    } catch (error) {
+      toast.error(apiMessage(error));
+    } finally {
+      setBusyCells((previous) => {
+        const next = new Set(previous);
+        next.delete(cellKey);
+        return next;
+      });
+    }
   }
 
   const nameError = validateRoleName(newRoleName, page.roles);
 
-  function createRole() {
+  async function createRole() {
     setNameTouched(true);
     if (nameError) {
       toastFirstError([
@@ -131,25 +165,28 @@ function PermissionMatrixInner({ initial }: { initial: PermissionMatrixPage }) {
       return;
     }
     const name = newRoleName.trim();
-    const key = roleKeyFor(name);
-    setPage((previous) => ({
-      ...previous,
+    setSaving(true);
+    let created: Role;
+    try {
       // Owner 2026-10-08 (ADM0202 Q6, hướng 1): the form picks the category, STUDENT by default. The
       // cells stay editable for every custom role because `readOnly` keys off the system role STUDENT,
       // not off this category; BD Sheet 6 says otherwise, which is the part of Q6 still open.
-      roles: [
-        ...previous.roles,
-        {
-          key,
-          label: name,
-          system: false,
-          baseCategory: newRoleCategory,
-          userCount: 0,
-        },
-      ],
-      permissions: { ...previous.permissions, [key]: {} },
+      created = await actions.createRole({
+        name,
+        baseCategory: newRoleCategory,
+      });
+    } catch (error) {
+      toast.error(apiMessage(error));
+      return;
+    } finally {
+      setSaving(false);
+    }
+    setPage((previous) => ({
+      ...previous,
+      roles: [...previous.roles, created],
+      permissions: { ...previous.permissions, [created.key]: {} },
     }));
-    setActiveRoleKey(key);
+    setActiveRoleKey(created.key);
     setAddingRole(false);
     setNewRoleName("");
     setNewRoleCategory("STUDENT");
@@ -157,22 +194,36 @@ function PermissionMatrixInner({ initial }: { initial: PermissionMatrixPage }) {
     toast.success(t("createRoleDone", { role: name }));
   }
 
-  function deleteActiveRole() {
+  async function deleteActiveRole() {
+    const role = activeRole;
+    setConfirmingDelete(false);
+    setSaving(true);
+    try {
+      await actions.deleteRole({ roleId: role.id });
+    } catch (error) {
+      // Blocked or failed: the tab and the role stay, the reason comes from the error code.
+      toast.error(apiMessage(error));
+      return;
+    } finally {
+      setSaving(false);
+    }
     setPage((previous) => {
       const permissions = { ...previous.permissions };
-      delete permissions[activeRole.key];
+      delete permissions[role.key];
       return {
         ...previous,
-        roles: previous.roles.filter((role) => role.key !== activeRole.key),
+        roles: previous.roles.filter((candidate) => candidate.key !== role.key),
         permissions,
       };
     });
     setActiveRoleKey("INSTRUCTOR");
-    toast.success(t("deleteRoleDone", { role: activeRole.label }));
-    setConfirmingDelete(false);
+    toast.success(t("deleteRoleDone", { role: role.label }));
   }
 
-  const columns: DataTableColumn<FunctionKey>[] = [
+  const columns: [
+    DataTableColumn<FunctionKey>,
+    ...DataTableColumn<FunctionKey>[],
+  ] = [
     {
       key: "function",
       header: t("columnFunction"),
@@ -202,7 +253,10 @@ function PermissionMatrixInner({ initial }: { initial: PermissionMatrixPage }) {
           <input
             type="checkbox"
             checked={granted}
-            disabled={readOnly}
+            disabled={
+              readOnly ||
+              busyCells.has(`${activeRole.key}:${functionKey}:${action}`)
+            }
             onChange={() => requestToggle(functionKey, action)}
             aria-label={t("cellLabel", {
               action: t(`action.${action}`),
@@ -215,29 +269,31 @@ function PermissionMatrixInner({ initial }: { initial: PermissionMatrixPage }) {
       },
     })),
   ];
+  const [functionColumn, ...actionColumns] = columns;
 
   return (
-    <div>
-      <PageHeader title={t("title")} description={t("subtitle")} />
+    <PageContainer
+      variant="content"
+      className="permission-matrix-page @container min-h-min"
+    >
+      <PageHeader
+        title={t("title")}
+        description={t("subtitle")}
+        className="static [&_h1]:whitespace-normal [&_p]:whitespace-normal"
+      />
 
       <NoticeTile tone="info" title={t("scopeNoticeTitle")} className="mb-4">
         {t("scopeNoticeBody")}
       </NoticeTile>
 
-      <Card className="min-w-0 px-[18px] py-4">
-        <div className="mb-4 flex flex-wrap items-center gap-2">
-          <SegmentedTabs
-            label={t("roleSwitcherLabel")}
-            value={activeRoleKey}
-            onValueChange={setActiveRoleKey}
-            options={page.roles.map((role) => ({
-              value: role.key,
-              label: role.label,
-            }))}
-          />
-
-          {addingRole ? (
-            <span className="flex items-center gap-2">
+      <PermissionRoleFilter
+        roles={page.roles}
+        value={activeRole.key}
+        onValueChange={setActiveRoleKey}
+        onAddRole={() => setAddingRole(true)}
+        addRoleFields={
+          addingRole ? (
+            <div className="flex min-w-0 flex-wrap items-center gap-2">
               <TextField
                 label={t("newRoleLabel")}
                 hideLabel
@@ -246,8 +302,8 @@ function PermissionMatrixInner({ initial }: { initial: PermissionMatrixPage }) {
                 onChange={(event) => setNewRoleName(event.target.value)}
                 maxLength={ROLE_NAME_MAX + 10}
                 invalid={nameTouched && Boolean(nameError)}
-                wrapperClassName="w-[170px]"
-                className="h-8"
+                wrapperClassName="w-full min-w-0 @min-[480px]:w-[170px]"
+                className="h-9"
               />
               <SelectField
                 label={t("newRoleCategoryLabel")}
@@ -262,14 +318,14 @@ function PermissionMatrixInner({ initial }: { initial: PermissionMatrixPage }) {
                     label: t(`baseCategory.${value}`),
                   }),
                 )}
-                wrapperClassName="w-[190px]"
-                className="h-8"
+                wrapperClassName="w-full min-w-0 @min-[480px]:w-[190px]"
+                className="h-9"
               />
               <Button
                 variant="cta"
                 size="sm"
-                onClick={createRole}
-                disabled={!newRoleName.trim()}
+                onClick={() => void createRole()}
+                disabled={!newRoleName.trim() || saving}
               >
                 {t("createRole")}
               </Button>
@@ -285,19 +341,11 @@ function PermissionMatrixInner({ initial }: { initial: PermissionMatrixPage }) {
               >
                 {t("cancel")}
               </Button>
-            </span>
-          ) : (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setAddingRole(true)}
-              className="border border-dashed border-[var(--color-border)]"
-            >
-              {t("addRole")}
-            </Button>
-          )}
-
-          {activeRole.system ? (
+            </div>
+          ) : null
+        }
+        roleAction={
+          activeRole.system ? (
             <span className="ml-auto text-xs text-[var(--color-text-subtle)]">
               {t("systemRoleNote")}
             </span>
@@ -322,9 +370,10 @@ function PermissionMatrixInner({ initial }: { initial: PermissionMatrixPage }) {
             >
               {t("deleteRole")}
             </Button>
-          )}
-        </div>
-
+          )
+        }
+      />
+      <Card className="min-w-0 grow px-[18px] py-4">
         {readOnly ? (
           <NoticeTile
             tone="info"
@@ -335,14 +384,43 @@ function PermissionMatrixInner({ initial }: { initial: PermissionMatrixPage }) {
           </NoticeTile>
         ) : null}
 
-        <DataTable
-          caption={t("tableCaption", { role: activeRole.label })}
-          columns={columns}
-          rows={FUNCTION_KEYS}
-          rowKey={(functionKey) => functionKey}
-          emptyMessage={t("emptyFunctions")}
-          minWidth={640}
-        />
+        {compact ? (
+          <ul
+            aria-label={t("tableCaption", { role: activeRole.label })}
+            className="grid gap-2.5 @min-[520px]:grid-cols-2"
+          >
+            {FUNCTION_KEYS.map((functionKey) => (
+              <li
+                key={functionKey}
+                className="glass-surface min-w-0 rounded-xl border border-[var(--color-border)] p-3"
+              >
+                <div className="[overflow-wrap:anywhere]">
+                  {functionColumn.render(functionKey)}
+                </div>
+                <div className="mt-2 grid grid-cols-4 gap-1 border-t border-[var(--color-border)] pt-2">
+                  {actionColumns.map(({ key, header, render }) => (
+                    <label
+                      key={key}
+                      className="flex min-h-11 min-w-0 cursor-pointer flex-col items-center justify-center gap-1.5 rounded-md text-center text-xs text-[var(--color-text-muted)] hover:bg-[var(--color-row-hover)] has-[:disabled]:cursor-not-allowed"
+                    >
+                      {render(functionKey)}
+                      {header}
+                    </label>
+                  ))}
+                </div>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <DataTable
+            caption={t("tableCaption", { role: activeRole.label })}
+            columns={columns}
+            rows={FUNCTION_KEYS}
+            rowKey={(functionKey) => functionKey}
+            emptyMessage={t("emptyFunctions")}
+            minWidth={640}
+          />
+        )}
       </Card>
 
       <ConfirmDialog
@@ -350,7 +428,7 @@ function PermissionMatrixInner({ initial }: { initial: PermissionMatrixPage }) {
         onClose={() => setPendingSelf(null)}
         onConfirm={() => {
           if (pendingSelf)
-            applyToggle(pendingSelf.functionKey, pendingSelf.action);
+            void applyToggle(pendingSelf.functionKey, pendingSelf.action);
           setPendingSelf(null);
         }}
         title={t("selfRevokeTitle")}
@@ -364,7 +442,7 @@ function PermissionMatrixInner({ initial }: { initial: PermissionMatrixPage }) {
       <ConfirmDialog
         open={confirmingDelete}
         onClose={() => setConfirmingDelete(false)}
-        onConfirm={deleteActiveRole}
+        onConfirm={() => void deleteActiveRole()}
         title={t("confirmDeleteTitle", { role: activeRole.label })}
         confirmLabel={t("deleteRole")}
         cancelLabel={t("cancel")}
@@ -372,6 +450,6 @@ function PermissionMatrixInner({ initial }: { initial: PermissionMatrixPage }) {
       >
         {t("confirmDeleteBody")}
       </ConfirmDialog>
-    </div>
+    </PageContainer>
   );
 }

@@ -1,7 +1,7 @@
 // Smoke test (PROTOTYPE lane): the read-only page loads the problem and its edit button points at /edit.
 import { describe, expect, it, vi } from "vitest";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { ProblemInfoView } from "./problem-info-view";
 
 vi.mock("@/shared/i18n", () => ({
@@ -48,13 +48,19 @@ describe("ProblemInfoView spec block (read-only, SHR0202 Q20)", () => {
       </QueryClientProvider>,
     );
 
-    expect(await screen.findByText("specTitle")).toBeInTheDocument();
+    fireEvent.click(await screen.findByRole("button", { name: "sectionSpec" }));
+    expect(screen.getByText("specTitle")).toBeInTheDocument();
     expect(
       screen.getByText("def min_window(s: str, t: str) -> str:"),
     ).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "spec.language.java" }));
+    expect(
+      screen.queryByText("def min_window(s: str, t: str) -> str:"),
+    ).toBeNull();
     expect(
       screen.getByText("public String minWindow(String s, String t)"),
     ).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "spec.language.cpp" }));
     expect(
       screen.getByText("string minWindow(string s, string t)"),
     ).toBeInTheDocument();

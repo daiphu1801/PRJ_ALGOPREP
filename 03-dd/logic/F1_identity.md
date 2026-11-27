@@ -1,5 +1,11 @@
 # DD — Logic module `identity` (F1)
 
+**D1, owner chốt 2026-11-02:** cổng vào nội bộ `RecordSystemAuditUseCase.record(AuditEntry)`;
+handler mới dùng REQUIRED và gọi `AuditLogPort` có sẵn. Caller tự khai cổng ra, adapter dịch
+tại bootstrap, không route HTTP hoặc REQUIRES_NEW/event cho audit cần cùng giao dịch.
+`DEC-2026-1102-cross-module-audit-required`, plan F2 `261102-0926-f2-s1-taxonomy`.
+Handler F1 cũ không đổi; chỉ các caller liên module mới dùng inbound này.
+
 ## BR-21 — Đăng ký, Admin tạo tài khoản và đăng nhập đầu tiên (xác thực email, buộc đổi mật khẩu mềm)
 
 **Thêm 2026-10-22 (đồng bộ DB vòng 2, `DEC-2026-1022-db-sync-round2` mục 1 và 4).** Số BR-21 là số tiếp theo còn trống; không đổi
@@ -38,12 +44,15 @@ theo DEC.
 - **CSV xuất (#40; chủ dự án chốt 2026-10-28)**: cột `content` dựng câu từ `messageKey` của `actionType` và `safeParams` đã che; không serialize `before_json`/`after_json` vào CSV. Dùng `Accept-Language` `vi` hoặc `en`, thiếu thì `vi`; cùng action/params phải cho cùng câu trong một locale.
 - **Hành động mới thêm 2026-10-11**: `USER_CREATED` cùng các hành động tạo/khoá/mở khoá/đổi vai trò người dùng thuộc `PERMISSION` (Ma trận quyền) theo quyết định owner 2026-10-25; `AUDIT_LOG_SETTINGS_CHANGED` thuộc `CONFIG` (Cấu hình). Không thêm nhóm `USER` thứ năm.
 - **Xoá role tuỳ biến (chủ dự án chốt 2026-10-28)**: `ROLE_DELETED` thuộc `PERMISSION`, `target_type=ROLE`, `target_id` là role vừa xoá; `before_json` giữ id/tên/baseCategory/isSystem và không chứa dữ liệu nhạy cảm, `after_json` không có role. Ghi cùng giao dịch xoá.
+- **Hành động triển khai 2026-11-01**: `ROLE_PERMISSION_CHANGED`, `ROLE_CREATED` (cùng `ROLE_DELETED`) thuộc `PERMISSION`, `target_type=ROLE`; `AUDIT_LOG_EXPORTED` thuộc `CONFIG` (mỗi lần xuất #40 ghi một dòng, trước body); `AUDIT_LOG_SETTINGS_CHANGED` thuộc `CONFIG`, `target_type=AUDIT_LOG_SETTINGS`, `target_id=audit_log`. Loại hành động chưa ánh xạ rơi về `CONFIG`/`system`. Tham số của câu lấy từ `after_json`, không có thì `before_json`.
 - **Hành động mới thêm 2026-10-23 (do `interview-bank` ghi, `03-dd/logic/F6_interview-bank.md:237`)**, tất cả thuộc nhóm **Nội dung** (nhóm đóng 4 giá trị của `02-bd/screens/admin/ADM0403_system_log.md`, tab "Nội dung"; chọn nhóm theo ý nghĩa quản trị kho nội dung `[SoT: Suy luận]`):
   `INTERVIEW_QUESTION_CREATED`, `INTERVIEW_QUESTION_UPDATED`, `INTERVIEW_QUESTION_RETIRED`, `INTERVIEW_QUESTION_IMPORTED` (`target_type = INTERVIEW_QUESTION`);
   `INTERVIEW_TOPIC_CREATED`, `INTERVIEW_TOPIC_UPDATED`, `INTERVIEW_TOPIC_REORDERED`, `INTERVIEW_TOPIC_DELETED` (`INTERVIEW_TOPIC`);
   `INTERVIEW_LEVEL_CREATED`, `INTERVIEW_LEVEL_RENAMED`, `INTERVIEW_LEVEL_REORDERED`, `INTERVIEW_LEVEL_DELETED` (`INTERVIEW_LEVEL`).
+  Rà lại 2026-11-08 theo `03-dd/api/F6_interview-bank.md` D10 và `03-dd/logic/F6_interview-bank.md:238`: đủ 12 giá trị, khớp từng tên; khi dựng enum `AuditAction` phải có đủ 12 (chưa có trong code). `03-dd/api/F1_identity.md` không có bảng ánh xạ riêng, BR-19 là nơi duy nhất.
 - **Hành động F2 theo BR-27 của `03-dd/logic/F2_problem-bank.md`**, đều thuộc nhóm `CONTENT`: `PROBLEM_TOPIC_CREATED`, `PROBLEM_TOPIC_RENAMED`, `PROBLEM_TOPIC_REORDERED`, `PROBLEM_TOPIC_DELETED` (`PROBLEM_TOPIC`); `PROBLEM_LEVEL_CREATED`, `PROBLEM_LEVEL_RENAMED`, `PROBLEM_LEVEL_REORDERED`, `PROBLEM_LEVEL_DELETED` (`PROBLEM_LEVEL`); `PROBLEM_PUBLISHED`, `PROBLEM_UNPUBLISHED`, `PROBLEM_DIFFICULTY_CHANGED`, `PROBLEM_TOPIC_ASSIGNED`, `PROBLEM_DUPLICATED`, `PROBLEM_DELETED` (`PROBLEM`). Dùng chính `actionType` làm khoá i18n của mẫu câu; `safeParams` chỉ mang id, tên, mức và trạng thái, không mang nội dung bài/testcase.
 - **Hành động F2 đổi trần sinh testcase AI**: `AI_TESTCASE_GENERATION_LIMIT_CHANGED` (`PROBLEM_BANK_SETTINGS`), nhóm `CONFIG`, `safeParams` chỉ có `maxPerProblem` cũ/mới; cùng quy tắc audit thay đổi hạn mức F5. [Owner 2026-10-25]
+- **Hành động F5 phát hành prompt (triển khai 2026-11-10, F5-3a)**: `AI_PROMPT_PUBLISHED` thuộc nhóm `CONFIG`, `target_type=PROMPT_TEMPLATE`, `target_id` là mã tính năng (`SOLUTION_REVIEW`, `MOCK_INTERVIEW`, `GENERATE_TESTCASE`); `before_json` và `after_json` chỉ có `version` và `modelId`, **không** chứa nguyên văn chỉ thị hệ thống (`03-dd/logic/F5_ai-review.md` BR-AI-13 bước 7). Do `ai-review` ghi qua cổng audit của F1 cùng giao dịch (`DEC-2026-1102-cross-module-audit-required`); các hành động quản trị ngân sách F5 (triển khai 2026-11-10, F5-3b): `AI_BUDGET_LIMIT_CHANGED` (endpoint 19, `before_json` và `after_json` chỉ có `limitTokens`) và `AI_BUDGET_UNLOCKED` (endpoint 20, chỉ có `locked` và `limitTokens`), cùng nhóm `CONFIG`, `target_type=AI_TOKEN_BUDGET`, `target_id=1` (dòng singleton). Đúng tên DD F5 Q9 đã chốt; đổi giới hạn tần suất và đơn giá mô hình **không** ghi nhật ký quản trị, JOB-AI-03 chỉ ghi log `INFO`.
 
 ## BR-20 — Dọn nhật ký quá hạn
 
@@ -51,6 +60,7 @@ theo DEC.
 - **Hành vi**: `expired_policy = DELETE` thì xoá dòng có `created_at < now() - retention_days` theo lô (ví dụ 5.000
   dòng mỗi lô). `ARCHIVE` **hoãn**: không xoá, ghi cảnh báo "chính sách nén chưa hỗ trợ". Lý do giữ thay vì xoá: tính
   bất biến của dấu vết kiểm toán (bậc 6, `.claude/rules/ponytail-criteria.md`).
+- **Triển khai 2026-11-01:** `ARCHIVE` chỉ ghi cảnh báo và giữ mọi dòng. Một lượt chạy xoá tối đa 20 lô, mỗi lô 5.000 dòng (tối đa 100.000 dòng); phần còn lại chờ lượt sau. Không ghi audit cho từng dòng bị dọn và không ghi dòng tổng kết (`actor_user_id` NOT NULL).
 - **Đồng bộ BR-15**: tự khoá và tự hạ vai trò là cảnh báo xác nhận của giao diện theo BD `ADM0201` Q6; máy chủ vẫn bảo vệ ADMIN hoạt động cuối cùng bằng `IDT-432`.
 
 > Các khối quy tắc nghiệp vụ (BR) trải dài nhiều sự kiện/endpoint. Không lặp lại nội dung đã chốt ở
@@ -69,8 +79,8 @@ theo DEC.
   3. Nếu đăng nhập sai → `INCR` key, đặt `EXPIRE` 15 phút nếu là lần đầu trong cửa sổ.
   4. Đăng nhập đúng → xoá key (`DEL`), không giữ lịch sử đếm cho lần sau.
 - **Kết quả**: chặn dò mật khẩu theo cả email lẫn IP mà không khoá tài khoản vĩnh viễn.
-- **Xử lý lỗi**: Redis down → **fail-open** (cho phép đăng nhập, không rate-limit) — đúng nguyên tắc F1-F4
-  không phụ thuộc một thành phần phụ trợ để hoạt động; ghi log cảnh báo mức WARN.
+- **Nguồn IP (soát độc lập F1, C1, chốt 2026-11-03):** IP là địa chỉ socket của kết nối tới backend. Khi trình duyệt đi qua rewrite của Next, đó luôn là IP của Next, nên khoá `(email, IP)` thực tế là khoá theo email: một người ẩn danh gửi 5 lần sai khoá được tài khoản bất kỳ trong 15 phút. **Không** bật `server.forward-headers-strategy`: Next không làm sạch `X-Forwarded-For` (giữ nguyên giá trị client tự gửi), nên tin header này cho phép giả IP để né khoá, yếu hơn hiện tại. Rủi ro được chấp nhận cho bản demo (ponytail bậc 3). Khi triển khai thật, đặt một reverse proxy do mình kiểm soát (nginx) ghi đè `X-Forwarded-For` bằng IP thật rồi mới bật `forward-headers-strategy=native` cùng `server.tomcat.remoteip.internal-proxies` chỉ nhận proxy đó.
+- **Xử lý lỗi (SEC-02, 2026-11-15):** Redis thiếu, down/timeout, counter hỏng hoặc thao tác ghi/xóa không hoàn tất → fail-closed có kiểm soát, `503 IDT-510`, không tiếp tục kiểm mật khẩu khi precheck lỗi. Lỗi ghi counter không biến thành `401`; lỗi xóa counter làm giao dịch tạo phiên rollback và không phát cookie/token. `ChangeMyPassword` dùng chung `LoginAttemptPort`, nên cũng trả `503 IDT-510` và không đổi mật khẩu nếu limiter lỗi. Không ghi email/IP/key hoặc nguyên nhân hạ tầng vào phản hồi. Thay thế fail-open cũ theo đợt khắc phục ZAP được chủ dự án cho phép; đánh đổi: các thao tác cần limiter tạm không khả dụng khi Redis lỗi, không bỏ kiểm soát brute force.
 
 ## BR-02 — Refresh token rotation và phát hiện tái sử dụng
 
@@ -107,6 +117,7 @@ theo DEC.
 
 - Ngưỡng cụ thể (10 phút, 5 lần sai, cooldown 60 giây) đã chốt ở BD [SoT: `02-bd/architecture/F1_identity.md:124-126`].
 - **Owner chốt 2026-10-27:** tài khoản chỉ có OAuth nhận email hướng dẫn đăng nhập qua provider ở `forgot`, **không phát OTP**. Phản hồi `forgot` vẫn là câu chung. `verify-otp` và `reset` với email này trả cùng `IDT-107` như mã không hợp lệ; không trả lỗi riêng tiết lộ loại tài khoản.
+- **Ngân sách đoán theo tài khoản (sửa 2026-11-03, soát độc lập F1, C2):** cấp lại mã không đặt lại ngân sách. Ngoài 5 lần sai cho mỗi mã, mọi lần sai ở `verify-otp`/`reset` còn cộng vào một bộ đếm theo `userId` (`identity:pwreset:budget:<userId>`, sống 1 giờ kể từ lần sai đầu); từ 10 lần sai trong giờ đó, mọi lần kiểm tiếp theo trả `IDT-107` kể cả mã đúng. Chặn kịch bản xin mã mới mỗi 60 giây để có thêm 5 lần đoán (khoảng 7.200 lần mỗi ngày). OTP xác thực email (BR-21) dùng cùng cách (`identity:emailverify:budget:<userId>`).
 - Trong cooldown gửi lại OTP của `POST /auth/password/forgot`, vẫn trả `200` và thông báo chung như lần đầu; không gửi mail, không thay OTP hoặc TTL cũ. Chốt 2026-10-27 để không lộ tài khoản qua status.
 - `POST /auth/password/verify-otp` (#60) dùng cùng phép so khớp và bộ đếm sai Redis của bước reset, trả chung `IDT-107` khi mã không hợp lệ; đúng thì **giữ mã và TTL gốc**, để #8 kiểm lại và chỉ tiêu thụ lúc đặt mật khẩu thành công. Hai request đồng thời kiểm sai dùng thao tác nguyên tử, không vượt ngưỡng 5 lần. [SoT: `DEC-2026-1025-dd-auth-recovery-contracts`]
 - **Các bước `POST /auth/password/reset`**:
@@ -126,13 +137,15 @@ theo DEC.
 - **BR-05 (đặt mật khẩu lần đầu, tài khoản chỉ OAuth)**: `POST /me/password` không có trường
   `currentPassword`. Điều kiện kích hoạt biến thể này: `password_hash IS NULL`. Không yêu cầu OTP — phiên
   đăng nhập hợp lệ là đủ [SoT: `07-review/bd_open_questions_with_solutions_260924.md:135`]. Sau khi đặt:
-  gửi email "tài khoản vừa được đặt mật khẩu", ghi `system_audit_logs`.
+  gửi email "tài khoản vừa được đặt mật khẩu", ghi `system_audit_logs`. **Triển khai 2026-11-07 (AC-15):**
+  `currentPassword` thiếu, rỗng hoặc có gửi đều bị bỏ qua `[SoT: Suy luận]`; luật mật khẩu, băm, thu hồi
+  phiên khác và audit `PASSWORD_CHANGED` giống BR-06; không tính vào ngân sách `pwchange:`.
 - **BR-06 (đổi mật khẩu, tài khoản đã có mật khẩu)**: bắt buộc `currentPassword`, đối chiếu BCrypt trước
   khi cho đổi. Sau khi đổi thành công: `UPDATE refresh_tokens SET revoked_at = now() WHERE user_id = :id
   AND id <> :currentSessionTokenId AND revoked_at IS NULL` — giữ lại đúng phiên đang thao tác, thu hồi mọi
   phiên khác [SoT: `07-review/...:137`]. Trả về một thông báo duy nhất, không liệt kê số phiên bị thu hồi.
   Nếu `currentPassword` sai, trả `422 IDT-115` (mã riêng chốt 2026-10-27); không đổi hash/timestamp,
-  không thu hồi phiên, không gửi email hoặc ghi audit thành công.
+  không thu hồi phiên, không gửi email hoặc ghi audit thành công. **Sửa 2026-11-03 (soát độc lập F1, M6):** sai `currentPassword` tính vào ngân sách 5 lần/15 phút theo tài khoản (khoá `pwchange:<userId>` trên cổng `LoginAttemptPort`, giống BR-01); vượt thì `429 IDT-103` trước khi so mật khẩu; đúng thì xoá bộ đếm.
 
 ## BR-07 — Lưu cài đặt (ĐÃ ĐỔI 2026-10-22, DEC-2026-1022-db-sync-round4 ID-23: ~~vắt qua hai module~~, nay `identity` lưu cả tham số phỏng vấn)
 
@@ -150,9 +163,11 @@ theo DEC.
 
 ## BR-08 — Tự xoá tài khoản và ẩn danh hoá sau ân hạn
 
+> **Sửa 2026-11-17 (`DEC-2026-1117-user-avatar-upload`, owner chốt Q-AV-1):** ở bước thời điểm xoá, **cùng giao dịch** với `UPDATE users ... DEACTIVATED` còn xoá dòng `user_avatars` của user; sau khi commit thì xoá đối tượng ảnh trong MinIO (BR-26). Job ẩn danh hoá **không** còn việc gì với ảnh. Khôi phục tài khoản trong 30 ngày ân hạn (`POST /auth/deactivation/restore`, #61) không lấy lại ảnh.
+
 - **Input**: `POST /me/account/delete` với `{ "emailConfirmation": string }` phải khớp `email` hiện tại
   [SoT: `07-review/...:150`].
-- **Điều kiện**: không khớp → `422 IDT-201`, không đổi trạng thái.
+- **Điều kiện**: không khớp → `422 IDT-201`, không đổi trạng thái. Email gõ lại được trim hai đầu rồi so không phân biệt hoa thường (D38 của màn Cài đặt). Nếu người gọi là ADMIN hoạt động duy nhất → `422 IDT-432` (bất biến BR-15, cùng khoá `FOR UPDATE` trên các dòng admin đang hoạt động), kiểm sau khi email khớp và trước bước 1; ADMIN còn admin khác thì được xoá. [Chủ dự án chốt 2026-11-01]
 - **Các bước (thời điểm xoá)**:
   1. `UPDATE users SET status = 'DEACTIVATED', deactivation_source = 'SELF', deactivated_at = now() WHERE id = :id`.
      **Sửa 2026-10-22 (đồng bộ DB, phase 5, `DEC-2026-1022-identity-schema-sync` mục 1):** thêm `deactivation_source = 'SELF'`
@@ -189,7 +204,7 @@ theo DEC.
 
 - **Input**: `code` từ `POST /classes/join`.
 - **Các bước**:
-  1. Tra `class_invite_codes WHERE code = :code AND expires_at > now()`.
+  1. Tra `class_invite_codes WHERE code = :code AND expires_at > now()`, nối `classes` với `users` của giảng viên và chỉ nhận khi `users.status = 'ACTIVE'` (`DEC-2026-1126-class-join-needs-active-instructor`, BR-30).
   2. Không tìm thấy/hết hạn → `422 IDT-410`.
   3. Tìm thấy → ĐÃ CHỐT 2026-10-14 (DEC-2026-1014-class-leave-details): `INSERT class_enrollments (class_id, student_id, joined_at) ... ON CONFLICT (class_id, student_id) DO UPDATE SET left_at = NULL WHERE class_enrollments.left_at IS NOT NULL`. Ba trường hợp: (a) chưa có dòng → tạo mới; (b) dòng đang `left_at IS NULL` → không đổi gì, trả `200` idempotent (không báo lỗi trùng); (c) dòng cũ đã rời (`left_at` khác rỗng) → **dùng lại dòng cũ**, đặt `left_at` = NULL, `joined_at` giữ nguyên, không sinh dòng thứ hai, trả `200`. ~~`ON CONFLICT (class_id, student_id) DO NOTHING` trả `200` idempotent nếu đã tham gia trước đó~~ (câu cũ làm học viên đã bị gỡ không vào lại được vì dòng cũ vẫn còn).
   4. Học viên quay lại xuất hiện lại trong "học viên của lớp" và được tính lại vào tổng số, tiến độ, số liệu `INS0202`.
@@ -228,7 +243,7 @@ tiên khớp điều kiện thắng):
 - **Xử lý lỗi**: publish thất bại (RabbitMQ down) → dùng outbox pattern tương tự `judge-orchestration` nếu
   cần đảm bảo at-least-once; ở quy mô đồ án, chấp nhận log lỗi + retry thủ công qua endpoint idempotent nếu
   message mất — không xây outbox riêng cho `identity` chỉ vì một sự kiện này (ponytail: chấp nhận rủi ro
-  mất một message hiếm gặp, nâng cấp lên outbox khi có sự kiện phát ra thứ hai cần đảm bảo tương tự).
+  mất một message hiếm gặp). Cập nhật 2026-11-11: chỉ ClassDeleted được nâng lên Outbox ở BR-22; StudentRemovedFromClass chưa có consumer, giữ best-effort ngoài phạm vi đóng F2.
   **Chốt 2026-10-27:** khi gọi lại endpoint sau commit, không đổi `left_at`, trả `200` và phát lại
   `StudentRemovedFromClass` với `occurredAt = left_at` gốc. Lần gọi lại có thể tạo bản sao event nếu
   lần phát trước đã thành công; consumer xử lý idempotent theo `(classId, studentId, occurredAt)`.
@@ -241,9 +256,9 @@ tiên khớp điều kiện thắng):
 - **Điều kiện**: `classes.instructor_id = :callerId`, sai chủ lớp thì từ chối như các thao tác lớp khác (BR-11).
 - **Các bước**:
   1. Trong một giao dịch: `DELETE FROM classes WHERE id = :classId`. Cơ sở dữ liệu tự xử lý: `class_invite_codes` và `class_enrollments` xoá theo (`ON DELETE CASCADE`); `identity_recent_activity.scope_class_id` về `NULL` (`ON DELETE SET NULL`). Lịch sử làm bài của học viên không bị đụng (nằm ở `judge`).
-  2. Sau khi commit, publish `ClassDeleted { classId, occurredAt }` lên RabbitMQ, cùng kiểu với `StudentRemovedFromClass` ở BR-11.
+  2. Ghi phong bì `ClassDeleted` vào `identity.outbox_events` trong cùng giao dịch xóa lớp: UUID `eventId`, `occurredAt`, `payload.classId`, routing key `class.deleted`. Relay phát sau commit tới exchange `algoprep.identity.events`; chỉ ghi `published_at` sau publisher confirm không có mandatory return.
   3. `problem-bank` nhận sự kiện và đặt `class_assignments.removed_at = now()` cho các dòng của lớp (xoá mềm, idempotent). `identity` không ghi vào schema `problem-bank`.
-- **Xử lý lỗi**: publish thất bại thì giữ cách của BR-11 (log lỗi, chấp nhận mất hiếm gặp, chưa có outbox riêng cho `identity`). Hệ quả nếu mất: dòng `class_assignments` của lớp đã xoá còn `removed_at = NULL` (tham chiếu treo mềm, không vỡ khoá vì không có FK chéo schema). Đây là sự kiện phát ra thứ hai, tức đã đạt điều kiện "nâng lên outbox" mà BR-11 ghi; đề xuất cân nhắc outbox cho `identity` `[SoT: Suy luận]`.
+- **Xử lý lỗi — cập nhật 2026-11-11**: ghi Outbox lỗi thì rollback cả xóa lớp; broker lỗi sau commit giữ pending và retry cùng `eventId`. F2 queue `problem-bank.class-deleted` nhận sự kiện; điều kiện `removed_at IS NULL` bảo đảm idempotent tự nhiên. Không xóa problem/submission, không audit hoặc phát `ProblemUnassignedFromClass` (BR-19 F2). `StudentRemovedFromClass` giữ best-effort BR-11, hiện không có consumer, không mở rộng sang Outbox trong đợt F2. `DEC-2026-1110-class-deleted-durable-outbox` thay phần ClassDeleted của quyết định hoãn cũ.
 - **Kết quả**: không để lại dòng nào của `identity` trỏ vào lớp đã xoá.
 
 ## BR-12 — Tỉ lệ hoàn thành của lớp (`completionPct`, tính khi đọc)
@@ -278,6 +293,7 @@ tiên khớp điều kiện thắng):
   4. Sau commit, publish Redis pub/sub `identity:permcache:invalidate` với `{roleId,permissionVersion}` [SoT: `07-review/...:383` cho kênh; version theo `DEC-2026-1028-qa-f1-permission-immediate`]. Subscriber xoá cache Caffeine cục bộ; message chậm/mất không làm sai quyết định quyền.
 - **Guard quyền Lớp 2**: trên mỗi request có gác `Function:Action`, đọc `roles.permission_version` bằng truy vấn mới tới PostgreSQL **primary** trước khi tin cache Caffeine/Redis. Cache chỉ dùng nếu giữ cùng version; khác version thì đọc ma trận mới từ primary, cập nhật cache và quyết định. Không đọc được version hoặc ma trận thì từ chối trước use case (fail closed), không dùng cache cũ. Bước đọc xảy ra sau khi request bắt đầu và trước mọi side effect của use case. Với request bắt đầu sau response PATCH thành công, version đã commit nên không thể dùng quyền cũ, kể cả Redis chưa giao invalidate.
 - **Từ chối thiếu quyền**: request đã xác thực nhưng thiếu ô `Function:Action` theo version hiện tại trả `403 IDT-445`; use case được gác không chạy và không ghi side effect (chủ dự án chốt 2026-10-28).
+- **Triển khai 2026-11-01:** hiệu lực ngay đạt được nhờ `IdentityJwtAuthenticationConverter` đọc lại `roles.permission_version` ở mỗi request và chỉ dùng lại cache theo role khi version còn khớp, nên thay đổi áp ở request kế tiếp. Bước 4 (publish Redis `identity:permcache:invalidate`) **không được xây**: DD đã nêu mất tin nhắn không ảnh hưởng quyết định phân quyền. Lặp lại giá trị hiện tại thì không tăng version và không ghi audit (`changed=false`). Chống tranh chấp: khoá role đích cộng mọi role gốc ADMIN theo thứ tự id bằng `FOR UPDATE` trước khi kiểm IDT-420.
 - **Phạm vi seed** (sửa 2026-10-23, `DEC-2026-1023-db-actor-review-fixes`): ma trận gồm **11 function** (thêm `LANGUAGE_CONFIG`, F4-11), seed 3 role × 11 function × 4 action = **132** dòng `permissions` [SoT: `02-bd/database/F1_identity.md:66`]; mặc định `LANGUAGE_CONFIG` chỉ `ADMIN` có quyền.
 - **Ràng buộc bất biến (BR-14)**: không cho xoá role khi `is_system = true`, hoặc còn ≥ 1 user gán
   (`role_id` FK) [SoT: `02-bd/architecture/F1_identity.md:78-79`]. Role tuỳ biến: áp dụng cùng điều kiện "còn
@@ -288,6 +304,7 @@ tiên khớp điều kiện thắng):
 - **Ràng buộc bất biến bổ sung**: không cho gỡ ô `PERMISSION_MATRIX:UPDATE = false` nếu đó là ô cuối cùng
   còn `granted = true` trong toàn bộ role có `base_category = ADMIN`
   [SoT: `07-review/bd_open_questions_with_solutions_260924.md:281`] — trả `422 IDT-420` nếu vi phạm.
+  **Sửa 2026-11-03 (soát độc lập F1, C3):** bất biến đúng là "sau thao tác còn ít nhất một **tài khoản ACTIVE** thuộc role gốc ADMIN nắm ô". Đếm role chưa đủ: một role ADMIN trống người giữ ô khiến role thật gỡ ô của mình rồi không ai sửa được ma trận qua ứng dụng. Máy chủ đếm tài khoản `ACTIVE` ở các role ADMIN **khác** role đang gỡ ô; bằng 0 thì `IDT-420`.
 
 ## BR-15 — Bảo vệ tài khoản ADMIN (`ChangeUserRole` / `ChangeUserStatus`)
 
@@ -299,14 +316,17 @@ tiên khớp điều kiện thắng):
   FOR UPDATE OF u` rồi đếm số dòng trả về (khoá dòng admin đang đếm; `FOR UPDATE` không dùng được với `COUNT(*)` gộp) trong
   cùng transaction với câu `UPDATE`, đảm bảo đếm và ghi nguyên tử. **Sửa 2026-10-22 (phase 5):** `base_category` nằm ở
   `roles`, không có trên `users`, nên bắt buộc `JOIN roles` [SoT: `02-bd/database/F1_identity.md:17, 52`].
+- **Dùng chung bất biến (2026-11-01)**: cùng kiểm tra và cùng khoá `FOR UPDATE` này bảo vệ #18 tự xoá tài khoản: ADMIN hoạt động duy nhất bị `422 IDT-432` (BR-08).
+- **Người sửa ma trận cuối (sửa 2026-11-03, soát độc lập F1, C3):** "ADMIN cuối" nay có hai nghĩa cùng bị chặn bằng `IDT-432`: tài khoản ADMIN hoạt động duy nhất, hoặc tài khoản ADMIN hoạt động duy nhất mà role nắm ô `PERMISSION_MATRIX:UPDATE`. Do đó #36 cũng bị gác khi đổi một ADMIN hoạt động sang role **không** nắm ô đó, kể cả role vẫn thuộc nhóm ADMIN (trường hợp admin duy nhất tự đổi sang một role ADMIN trống), và #37 khoá, #18 tự xoá áp cùng quy tắc. Ngoài hai trường hợp trên, `isLastActiveAdmin` không khoá hàng admin khi người gọi không phải admin hoạt động.
 - **Audit**: ghi `system_audit_logs` cho mọi lần gọi thành công, kể cả khi ADMIN thao tác trên ADMIN khác
   [SoT: `02-bd/security/F1_identity.md:55-57`].
 
 ## BR-16 — Che dữ liệu nhạy cảm khi xuất/hiển thị audit log
 
 - **Danh sách khoá che** trong `before_json`/`after_json` khi hiển thị hoặc xuất CSV: `password_hash`,
-  `token_hash`, bất kỳ khoá nào khớp regex `(?i)password|secret|token` — thay giá trị bằng `"***"`, giữ
+  `token_hash`, ~~bất kỳ khoá nào khớp regex `(?i)password|secret|token` — thay giá trị bằng `"***"`~~ (thay bằng quy tắc ở dòng kế tiếp, chủ dự án chốt 2026-11-01), giữ
   nguyên cấu trúc JSON còn lại.
+- **Quy tắc che (chốt 2026-11-01, thay quy tắc regex chung ở trên)**: mặc định vẫn an toàn trước (fail-safe): mọi khoá khớp `(?i)password|secret|token` ở bất kỳ độ sâu nào đều bị che bằng `"***"`, **trừ** các khoá bộ đếm/ngân sách không phải bí mật, khớp mẫu cho phép `(?i)(max|total|input|output|prompt|completion|budget|remaining)[_-]?tokens|tokens?[_-]?(budget|limit|count|used|usage)` (ví dụ `maxTokens`, `tokenBudget`, `total_tokens`). Ngoại lệ chỉ áp cho nhóm `token`: khoá chứa `password` hoặc `secret` luôn bị che dù có chữ `tokens` đi kèm (`AuditLogMasker`, mã `AuditLogMaskerTest`). Phạm vi trả ra giữ nguyên bên dưới: không endpoint nào đưa `before_json`/`after_json` thô vào response.
 - **Áp dụng**: tại tầng serializer chung dùng cho cả `GET /admin/audit-logs` lẫn
   `GET /admin/audit-logs/export` — một chỗ, không lặp lại logic che ở hai endpoint
   [SoT: `07-review/bd_open_questions_with_solutions_260924.md:329`].
@@ -355,10 +375,65 @@ ghi `identity_recent_activity` theo lịch**. Nhãn `ABSENT` vẫn tồn tại n
 
 **Thêm 2026-10-23** (`DEC-2026-1023-db-actor-review-decisions`; nguồn BD: `02-bd/architecture/F1_identity.md` mục 3.3).
 
-- **Chữ ký**: `record(actorUserId, actionType, targetType, targetId, beforeJson, afterJson)`, do `identity` (`algoprep-identity`) cung cấp, ghi một dòng `identity.system_audit_logs`.
+- **Chữ ký** (sửa 2026-10-31, `DEC-2026-1031-audit-log-port-entry-record`): `record(AuditEntry entry)`, do `identity` (`algoprep-identity`) cung cấp, ghi một dòng `identity.system_audit_logs`. `AuditEntry` là record bất biến gồm đúng sáu trường cũ theo thứ tự `actorUserId, actionType, targetType, targetId, beforeJson, afterJson`; ngữ nghĩa từng trường không đổi. Bản đầu của mục này ghi sáu tham số rời, nhưng Checkstyle của dự án giới hạn năm tham số mỗi phương thức. Module khác gọi `record(new AuditEntry(...))`.
 - **Giao dịch**: gọi trong cùng JVM và **cùng giao dịch DB** với thay đổi nghiệp vụ của module gọi (`Propagation.REQUIRED`, không `REQUIRES_NEW`): rollback nghiệp vụ thì dòng nhật ký cũng mất; lỗi ghi nhật ký làm hỏng cả giao dịch (không nuốt lỗi).
 - **Người gọi**: `problem-bank` (quản lý `topics`, `problem_levels` và các hành động ghi trên bài ở màn quản lý theo F2 BR-27), `interview-bank` (quản lý `topics`, `levels`), `judge-orchestration` (ghi `language_configs`, `grading_defaults`, `sandbox_settings`, `generator_sandbox_settings`, `cluster_settings`).
 - **Ràng buộc**: `actorUserId` bắt buộc (không null); module khác không viết trực tiếp vào schema `identity`; `beforeJson`/`afterJson` là snapshot tự do, che khoá nhạy cảm ở tầng đọc (BR-16). Phân loại hiển thị theo BR-19; `actionType` mới của các module gọi phải bổ sung vào bảng ánh xạ BR-19.
+
+## Bổ sung 2026-11-17 — ảnh đại diện (BR-25 đến BR-28, F1-35)
+
+> Theo `DEC-2026-1117-user-avatar-upload`. Hợp đồng endpoint ở `03-dd/api/F1_identity.md` mục 0.9; luật kiểm ở `03-dd/validation/F1_identity.md` mục 15; thiết kế lưu trữ ở `02-bd/storage/F1_identity.md`.
+
+## BR-25 — Tải lên hoặc thay ảnh đại diện (#74)
+
+- **Trigger**: `PUT /me/avatar`.
+- **Điều kiện**: người gọi đã xác thực; mã người dùng lấy từ JWT, không nhận từ client; qua bộ kiểm ở validation mục 15 (một part, kích thước, byte đầu tệp, điểm ảnh); chưa vượt 10 lần đổi hoặc xoá trong giờ (`IDT-452`).
+- **Các bước**:
+  1. Kiểm hạn mức theo khoá Redis `identity:avatar:rate:<userId>` (đếm, TTL 1 giờ kể từ lần đầu trong cửa sổ). Redis lỗi thì **bỏ qua kiểm hạn mức** (fail open) và ghi log WARN `[SoT: Suy luận — đây không phải kiểm bảo mật nhạy cảm như BR-01]`.
+  2. Đọc luồng tối đa 512 KB (+1 byte để phát hiện vượt), kiểm byte đầu tệp và kích thước điểm ảnh; sai thì dừng, chưa chạm MinIO.
+  3. Sinh `avatar_id` mới (UUID); khoá đối tượng `users/<user_id>/<avatar_id>.<ext>`, `ext` ∈ `png`, `jpg`, `webp` theo định dạng phát hiện.
+  4. Ghi đối tượng vào bucket `algoprep-avatars`. Lỗi → `503 IDT-511`, dừng.
+  5. Giao dịch PostgreSQL: `INSERT ... ON CONFLICT (user_id) DO UPDATE` bảng `user_avatars` (`object_key`, `content_type`, `size_bytes`, `updated_at = greatest(now(), cũ + 1 ms)`). Lỗi → xoá đối tượng vừa ghi (cố gắng hết sức), trả `503`.
+  6. Sau khi commit, nếu có khoá cũ thì xoá đối tượng cũ; lỗi xoá chỉ ghi log WARN kèm khoá (đối tượng mồ côi chấp nhận, `02-bd/storage/F1_identity.md` mục 4).
+- **Hậu điều kiện**: một dòng `user_avatars` cho user, `avatarVersion` tăng. **Không** ghi `system_audit_logs` (đó là nhật ký hành động quản trị).
+- **Sự kiện phát ra**: không.
+
+## BR-26 — Xoá ảnh đại diện: tự xoá (#75), admin gỡ (#77), xoá tài khoản (BR-08)
+
+- **Trigger**: `DELETE /me/avatar`; `DELETE /admin/users/{userId}/avatar`; bước xoá tài khoản ở BR-08.
+- **Điều kiện**: #75 theo mã người dùng trong JWT; #77 cần `ROLE_ADMIN` cộng `USER_MANAGEMENT:UPDATE` và `userId` có thật (`404 IDT-450`).
+- **Các bước**:
+  1. Giao dịch PostgreSQL: đọc rồi xoá dòng `user_avatars` của user. Không có dòng thì kết thúc `204`, **không** ghi nhật ký, không gọi MinIO.
+  2. Riêng #77 khi có dòng: ghi một dòng `system_audit_logs` (`action_type = USER_AVATAR_REMOVED`, `target_type = USER`, `target_id` là người bị gỡ, `before_json = {"hadAvatar": true}`) **trong cùng giao dịch**; ghi audit lỗi thì rollback, ảnh giữ nguyên.
+  3. Sau khi commit, xoá đối tượng theo `object_key` đã đọc; lỗi xoá chỉ ghi log WARN.
+- **Hậu điều kiện**: user không còn dòng `user_avatars`, `avatarVersion = null`; mọi nơi hiện chữ viết tắt.
+- **Hạn mức**: #75 dùng chung bộ đếm 10 lần mỗi giờ với #74; #77 không bị đếm.
+- **Xoá tài khoản (BR-08)**: bước 1 trên chạy trong cùng giao dịch với `status = DEACTIVATED`; không ghi audit; MinIO xoá sau commit. Không có hạn mức.
+
+## BR-27 — Đọc ảnh đại diện (#76)
+
+- **Trigger**: `GET /users/{userId}/avatar`.
+- **Điều kiện**: người gọi đã đăng nhập (JWT hợp lệ); không kiểm lớp hay vai trò (owner chốt D2b).
+- **Các bước**:
+  1. `userId` sai dạng UUID → trả `404 IDT-451` (cùng phản hồi với không có ảnh).
+  2. Đọc `user_avatars` JOIN `users`; không có dòng, hoặc `users.status = 'DEACTIVATED'`, hoặc `anonymized_at` khác NULL → `404 IDT-451`.
+  3. `If-None-Match` khớp `ETag` (`avatar_id`) → `304`.
+  4. Đọc đối tượng từ MinIO rồi trả byte kèm các tiêu đề ở API mục 0.9.3. Lỗi MinIO → `503 IDT-511`.
+- **Hậu điều kiện**: chỉ đọc, không ghi gì.
+- **Chống dò**: ba nhánh `404` ở bước 1 và 2 có cùng thân; không chạm MinIO ở các nhánh này nên thời gian gần như nhau.
+
+## BR-28 — Nhập ảnh từ nhà cung cấp OAuth lần liên kết đầu
+
+- **Trigger**: ngay sau khi `identity` **liên kết lần đầu** một `oauth_identities` mới vào một tài khoản (BR-03), kể cả khi tạo tài khoản mới qua OAuth.
+- **Điều kiện**: tài khoản chưa có dòng `user_avatars`; nhà cung cấp trả URL ảnh trong phản hồi userinfo của chính luồng OAuth (Google `picture`, GitHub `avatar_url`).
+- **Các bước** (chạy **sau khi** phiên đăng nhập đã được cấp, không chặn phản hồi đăng nhập; chạy trên luồng nền của `identity`):
+  1. Chuẩn hoá URL xin bản 256 điểm ảnh: Google thêm hoặc thay hậu tố `=s256-c`; GitHub thêm `s=256` vào truy vấn. `[SoT: Suy luận]`.
+  2. Kiểm theo BD security mục 6.5: chỉ `https`; máy chủ khớp chính xác `lh3.googleusercontent.com` hoặc `avatars.githubusercontent.com`; phân giải tên miền và từ chối địa chỉ loopback, link-local, dải riêng, rồi kết nối đúng địa chỉ đã kiểm; không đi theo chuyển hướng sang máy chủ khác; hết hạn kết nối 3 giây, đọc 5 giây; dừng đọc ở 512 KB.
+  3. Cùng bộ kiểm tệp ở validation mục 15 (byte đầu tệp, điểm ảnh) rồi lưu bằng các bước 3 đến 5 của BR-25 (không tính hạn mức).
+  4. Tải hoặc kiểm lỗi ở bất kỳ bước nào: **bỏ qua**, ghi log WARN (chỉ tên máy chủ, **không** ghi toàn bộ URL), người dùng thấy chữ viết tắt. Đăng nhập không bao giờ thất bại vì bước này.
+- **Hậu điều kiện**: có hoặc không có dòng `user_avatars`; không ghi audit.
+- **Triển khai 2026-11-17:** `OAuthLoginFinisher` xếp việc nhập ảnh sau khi phiên đã được cấp, chỉ khi liên kết lần đầu; `OAuthAvatarImporter` chạy sau commit trên luồng ảo riêng, bỏ qua nếu tài khoản đã có ảnh. Cổng tải `AvatarImageFetchPort`, bộ tải `HttpAvatarImageFetcher` tự viết trao đổi HTTP/1.1 qua TLS tới đúng địa chỉ đã kiểm (không dùng `HttpClient` vì nó tự phân giải tên miền lần hai) `[SoT: Suy luận]`. Danh sách máy chủ và các hằng số ở `AvatarImportRules`. Mọi 3xx là thất bại. Lưu bằng `OAuthAvatarSaver`: ghi MinIO trước, dòng `user_avatars` sau, không đè ảnh có sẵn.
+- **Việc đồng bộ ở tài liệu khác (không sửa ở đây)**: `03-dd/api/F4_judge-orchestration.md` cần thêm `avatarVersion` vào danh sách bài nộp của giảng viên và ngữ cảnh bài nộp (lấy qua cổng đọc của `identity`); làm cùng lát backend số 6 của plan v2.
 
 ## Tham chiếu
 
@@ -367,3 +442,25 @@ ghi `identity_recent_activity` theo lịch**. Nhãn `ABSENT` vẫn tồn tại n
 `07-review/bd_open_questions_with_solutions_260924.md`,
 `DEC-2026-0921-class-completion-owned-by-identity`, `DEC-2026-0921-teacher-screens-conflict-resolutions`,
 `DEC-2026-0922-users-and-admin-conflict-resolutions`.
+
+## Bổ sung 2026-11-15 — thu hồi phiên khi logout
+
+- `LogoutCommandHandler` tìm family qua cookie refresh, kể cả token đã rotate, rồi ghi thu hồi family và phát `SessionRevoked` qua port `SessionRevocationPublisher`.
+- `JdbcRefreshTokenRepository` ghi tombstone PostgreSQL `identity.session_revocations(family_id, revoked_at)` trong cùng transaction; truy vấn refresh cũng nhận diện tombstone. Không dùng Redis làm nguồn thu hồi thứ hai.
+- `IdentityJwtAuthenticationConverter` yêu cầu claim `sid` dạng UUID và kiểm tombstone cùng trạng thái tài khoản trong truy vấn xác thực. Token của family bị thu hồi không còn qua được HTTP hoặc outbound WebSocket.
+- Adapter sự kiện chỉ publish sau commit; rollback không đóng socket. Bootstrap nhận sự kiện và đóng socket family tương ứng, giữ các family khác. Gate outbound vẫn kiểm account/quyền/expiry.
+- Migration `identity/V1.005__session_revocations.sql` phải chạy trước khi nhận request theo bản mới; giữ tombstone khi dữ liệu refresh hết hạn được dọn. Thiết kế dọn tombstone theo thời hạn token tối đa là công việc vận hành riêng, chưa thêm lịch xoá trong patch.
+
+## BR-29 — Thu hồi mã mời và tên lớp duy nhất (F1-23, F1-25)
+
+Nguồn: `DEC-2026-1126-class-invite-revoke`, `DEC-2026-1126-class-name-unique`. BR mới (số tiếp theo sau BR-28).
+
+- **Thu hồi (#78)**: chỉ giảng viên sở hữu lớp. Xoá đúng một dòng `class_invite_codes` của lớp đó trong một giao dịch; không phát sự kiện, không đổi ghi danh. Mã không còn thì thao tác vẫn thành công. Sau khi xoá, BR-09 bước 1 không tìm thấy mã nên trả `IDT-410`, cùng câu trả lời với mã sai để không lộ một mã từng tồn tại.
+- **Tên lớp**: tên đã được cắt hai đầu bởi `ClassValidation` trước khi ghi. Ràng buộc nằm ở DB: chỉ mục duy nhất `(instructor_id, lower(btrim(name)))`. Vi phạm ràng buộc khi `INSERT` hoặc `UPDATE` được đổi thành `409 IDT-417`; không có bước kiểm-rồi-ghi riêng nên không có khe hở giữa hai request.
+
+## BR-30 — Mã mời chỉ dùng được khi giảng viên còn hoạt động; nhãn học viên không còn hoạt động (F1-23)
+
+Nguồn: `DEC-2026-1126-class-join-needs-active-instructor`, `DEC-2026-1126-roster-inactive-account-label`. BR mới (số tiếp theo sau BR-29).
+
+- **Tham gia (#25)**: câu tra mã nối `classes.instructor_id` với `users` và chỉ nhận khi `users.status = 'ACTIVE'`. Giảng viên `DEACTIVATED` (tự xoá hoặc bị khoá) hoặc `PENDING_VERIFICATION` làm mã không tìm thấy, nên trả `422 IDT-410` và tính vào bộ đếm thử sai như mã sai. Học viên đã ghi danh không bị đổi; khi giảng viên `ACTIVE` lại thì mã dùng được lại.
+- **Danh sách học viên (#26)**: mỗi dòng có `accountInactive = (users.status <> 'ACTIVE')`. Dòng vẫn nằm trong danh sách; không đổi `studentCount`, `completionPercent` hay mẫu số nào. Các endpoint khác (#28, #29, #56 đến #59) không thêm trường này.

@@ -5,11 +5,18 @@
 //   - the "Hàng đợi chấm lại" latency row is gone, and so is job priority altogether (BD ADM0401 Q4):
 //     latency is one average-wait figure.
 //   - infrastructure events live in entities/infra-event now.
+import { countRecentInfraAlerts } from "@/entities/infra-event";
+import { createSettingsStore } from "@/shared/lib/settings-store";
+import { queueSettings } from "../../model/settings";
 import type {
   ClusterControls,
+  JobsPage,
   QueueJob,
   QueueLatency,
   QueuePage,
+  QueueState,
+  QueueSummary,
+  QueueTab,
   Worker,
 } from "../../model/types";
 
@@ -137,5 +144,79 @@ export function fetchQueuePage(): QueuePage {
     workerCount: 4,
     maxWorkers: 8,
     generatedAt: Date.now(),
+  };
+}
+
+/** The two cluster switches, kept in memory so a toggle survives a refresh within the session. */
+export const mockControls = createSettingsStore<ClusterControls>({
+  ...CONTROLS,
+});
+
+export function fetchQueueSummary(): QueueSummary {
+  const page = fetchQueuePage();
+  const controls = mockControls.get();
+  const settings = queueSettings.get();
+  const waiting = page.jobs.filter((job) => job.status === "waiting").length;
+  // Priority: paused > an overloaded worker > backlog at or above the autoscale threshold.
+  let state: QueueState = "ok";
+  if (controls.paused) state = "paused";
+  else if (page.workers.some((worker) => worker.status === "overloaded"))
+    state = "overloaded";
+  else if (waiting >= settings.autoscaleThreshold) state = "backlog";
+  return {
+    state,
+    pendingCount: waiting,
+    controls,
+    latency: page.latency,
+    settings,
+    workers: page.workers,
+    workerCount: page.workerCount,
+    maxWorkers: page.maxWorkers,
+    // The mock keeps its illustrative worker list; the real "Luồng chấm" block has no mock (BR-SC-05).
+    grading: null,
+    generatedAt: page.generatedAt,
+    infra: countRecentInfraAlerts(),
+  };
+}
+
+/** Client-side tab, sort and paging over the fixture, like the server would do it. */
+export function fetchQueueJobs(
+  tab: QueueTab,
+  pageNumber: number,
+  direction: "asc" | "desc",
+): JobsPage {
+  const all = fetchQueuePage().jobs;
+  const counts = {
+    waiting: all.filter((job) => job.status === "waiting").length,
+    failed: all.filter((job) => job.status === "sandboxError").length,
+    all: all.length,
+  };
+  const factor = direction === "asc" ? 1 : -1;
+  // Failed jobs always sink to the bottom: they carry waitSeconds -1, so a plain numeric sort
+  // put them first when ascending (BD ADM0401 F NO10, UX review B3).
+  const visible = all
+    .filter((job) =>
+      tab === "waiting"
+        ? job.status === "waiting"
+        : tab === "failed"
+          ? job.status === "sandboxError"
+          : true,
+    )
+    .sort((a, b) => {
+      const aFailed = a.status === "sandboxError";
+      const bFailed = b.status === "sandboxError";
+      if (aFailed !== bFailed) return aFailed ? 1 : -1;
+      return (a.waitSeconds - b.waitSeconds) * factor;
+    });
+  const { jobsPerPage } = queueSettings.get();
+  const lastPage = Math.max(1, Math.ceil(visible.length / jobsPerPage));
+  const page = Math.min(pageNumber, lastPage);
+  return {
+    items: visible.slice((page - 1) * jobsPerPage, page * jobsPerPage),
+    page,
+    pageSize: jobsPerPage,
+    total: visible.length,
+    counts,
+    sortable: true,
   };
 }

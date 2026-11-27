@@ -23,6 +23,7 @@ let profile: UserProfile = {
   schoolOrCompany: "Đại học Cần Thơ",
   currentPosition: "Sinh viên năm 4",
   targetPosition: "Middle Backend",
+  phone: null,
   hasPassword: true,
   passwordChangedAt: "2026-06-12",
   linkedProviders: ["GOOGLE"],
@@ -51,14 +52,19 @@ let profileEdited = false;
 /** Same account, shown with the identity fields that fit the area it is opened from. */
 const AREA_IDENTITY: Record<
   "instructor" | "admin",
-  Pick<UserProfile, "schoolOrCompany" | "currentPosition" | "targetPosition">
+  Pick<
+    UserProfile,
+    "roleName" | "schoolOrCompany" | "currentPosition" | "targetPosition"
+  >
 > = {
   instructor: {
+    roleName: "Giảng viên",
     schoolOrCompany: "Khoa Công nghệ thông tin, Đại học Cần Thơ",
     currentPosition: "Giảng viên",
     targetPosition: "Giảng viên chính",
   },
   admin: {
+    roleName: "Quản trị viên",
     schoolOrCompany: "AlgoPrep",
     currentPosition: "Quản trị hệ thống",
     targetPosition: "Quản trị hệ thống",
@@ -68,12 +74,11 @@ const AREA_IDENTITY: Record<
 export function fakeGetMyProfile(
   area: "student" | "instructor" | "admin" = "student",
 ): Promise<UserProfile> {
-  // Once the user saves the form, their own values win over the per-area sample identity.
-  return delay(
-    area === "student" || profileEdited
-      ? profile
-      : { ...profile, ...AREA_IDENTITY[area] },
-  );
+  if (area === "student") return delay(profile);
+
+  const { roleName, ...sampleWork } = AREA_IDENTITY[area];
+  // A profile edit replaces the sample work details but keeps the role of this mock session.
+  return delay({ ...profile, ...(!profileEdited && sampleWork), roleName });
 }
 
 export function fakeUpdateMyProfile(
@@ -85,7 +90,11 @@ export function fakeUpdateMyProfile(
     displayName: input.displayName,
     schoolOrCompany: input.schoolOrCompany || null,
     currentPosition: input.currentPosition || null,
-    targetPosition: input.targetPosition || null,
+    targetPosition:
+      input.targetPosition === undefined
+        ? profile.targetPosition
+        : input.targetPosition || null,
+    phone: input.phone || null,
   };
   return delay(profile, 600);
 }
@@ -113,7 +122,9 @@ export function fakeConfirmEmailChange(
 
 export function fakeChangeMyPassword(
   input: ChangePasswordInput,
-): Promise<{ ok: true } | { ok: false; message: string }> {
+): Promise<
+  { ok: true; noticeEmailFailed?: boolean } | { ok: false; message: string }
+> {
   if (profile.hasPassword && input.currentPassword !== "correct-password") {
     // Prototype convention: "correct-password" is the one value that passes the current-password
     // check, matching entities/auth's canned-credential approach (no real hashing to compare against).
@@ -175,9 +186,40 @@ export function fakeDeleteMyAccount(
 ): Promise<{ ok: true } | { ok: false; message: string }> {
   // Same rule as the client: trim + case-insensitive (D38).
   if (
-    emailConfirmation.trim().toLowerCase() !== profile.email.trim().toLowerCase()
+    emailConfirmation.trim().toLowerCase() !==
+    profile.email.trim().toLowerCase()
   ) {
     return delay({ ok: false, message: "errors.confirmPhraseMismatch" }, 400);
   }
   return delay({ ok: true }, 600);
+}
+
+// Avatar mock (F1 #74 to #77): the picture lives in memory so the real flow can be seen in mock mode.
+let mockAvatarBlob: Blob | null = null;
+
+export async function fakeUploadMyAvatar(
+  blob: Blob,
+): Promise<{ avatarVersion: number }> {
+  mockAvatarBlob = blob;
+  const avatarVersion = Math.max(Date.now(), (profile.avatarVersion ?? 0) + 1);
+  profile = { ...profile, avatarVersion };
+  return delay({ avatarVersion }, 400);
+}
+
+export function fakeRemoveMyAvatar(): Promise<void> {
+  mockAvatarBlob = null;
+  profile = { ...profile, avatarVersion: null };
+  return delay(undefined, 300);
+}
+
+export function fakeRemoveUserAvatar(): Promise<void> {
+  return delay(undefined, 300);
+}
+
+/** Only the signed-in mock user can have a picture; anyone else rejects like the real 404. */
+export function fakeGetUserAvatar(userId: string): Promise<Blob> {
+  if (userId === profile.userId && mockAvatarBlob) {
+    return Promise.resolve(mockAvatarBlob);
+  }
+  return Promise.reject(new Error("no avatar"));
 }

@@ -1,12 +1,43 @@
 import { expect, test } from "@playwright/test";
 
+for (const width of [1440, 390]) {
+  test(`role filter stays at the top while scrolling at ${width}px`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width, height: width >= 1024 ? 380 : 560 });
+    await page.goto("/admin/permissions");
+    const roles = page.getByRole("group", { name: "Chọn vai trò" });
+    await expect(roles).toBeVisible();
+    const viewport = page.locator("[data-page-viewport]");
+
+    await page.evaluate((desktop) => {
+      const scroller = desktop
+        ? document.querySelector("[data-page-viewport]")
+        : document.scrollingElement;
+      if (scroller) scroller.scrollTop = 420;
+    }, width >= 1024);
+
+    await expect
+      .poll(async () => {
+        const groupTop = (await roles.boundingBox())?.y ?? Infinity;
+        const viewportTop =
+          width >= 1024 ? ((await viewport.boundingBox())?.y ?? 0) : 0;
+        return Math.abs(groupTop - viewportTop);
+      })
+      .toBeLessThan(15);
+    await expect(
+      page.getByRole("button", { name: "+ Vai trò mới" }),
+    ).toBeInViewport();
+  });
+}
+
 /**
  * PROTOTYPE screen check for admin_permission_matrix. Guards the two rules that make the matrix
- * safe: the function list is fixed seed data matching F1-12 (ten entries, no REJUDGE_MANAGEMENT
+ * safe: the function list is fixed seed data matching F1-12 plus the F6 interview-bank function (eleven entries, no REJUDGE_MANAGEMENT
  * after DEC-2026-0828-remove-rejudge-scope), and STUDENT's cells are read-only because its basic
  * rights live outside the matrix (F1-05).
  */
-test("exactly the ten F1-12 functions, with no rejudge row", async ({
+test("exactly the eleven seeded functions, with no rejudge row", async ({
   page,
 }) => {
   await page.goto("/admin/permissions");
@@ -16,7 +47,8 @@ test("exactly the ten F1-12 functions, with no rejudge row", async ({
   );
 
   const rows = page.getByRole("table").locator("tbody tr");
-  await expect(rows).toHaveCount(10);
+  await expect(rows).toHaveCount(11);
+  await expect(page.getByText("INTERVIEW_BANK_MANAGEMENT")).toBeVisible();
   await expect(page.getByText("REJUDGE_MANAGEMENT")).toHaveCount(0);
   await expect(page.getByText("PERMISSION_MATRIX")).toBeVisible();
 });
@@ -29,17 +61,17 @@ test("STUDENT cells are read-only, INSTRUCTOR cells are not", async ({
   const roleSwitcher = page.getByRole("group", { name: "Chọn vai trò" });
 
   const instructorCell = page.getByRole("checkbox", {
-    name: "Sửa trên Quản lý tài khoản người dùng cho vai trò INSTRUCTOR",
+    name: "Sửa trên Quản lý tài khoản người dùng cho vai trò Giảng viên",
   });
   await expect(instructorCell).toBeEnabled();
   await expect(instructorCell).not.toBeChecked();
   await instructorCell.check();
   await expect(instructorCell).toBeChecked();
 
-  await roleSwitcher.getByRole("button", { name: "STUDENT" }).click();
+  await roleSwitcher.getByRole("button", { name: "Người học" }).click();
   // `exact` matters: the table's sr-only caption also contains the role name.
   await expect(
-    page.getByText("Vai trò STUDENT", { exact: true }),
+    page.getByText("Ma trận quyền của vai trò Người học", { exact: true }),
   ).toBeVisible();
   await expect(page.getByRole("checkbox").first()).toBeDisabled();
 });

@@ -1,5 +1,77 @@
 # BD — Kiến trúc module `judge-orchestration` (F4)
 
+**Triển khai 2026-11-03, D02m — worker persistence:** năm cổng nội bộ cho
+COMPILING/JUDGING, token, kết quả testcase và finalization chung worker/sweep tương lai.
+REQUIRES_NEW/READ_COMMITTED, heartbeat guarded trước INSERT/consume; giữ pinned version,
+duplicate/terminal-safe, privacy snippet; finalizer row lock, đủ N/first-failure/HALF_UP3,
+Graded/Accepted Outbox nguyên tử và STOMP sau commit. Exception cố định không SQL/cause.
+Focused verify 338 test đạt, ba mutation mới; Checkstyle0/SpotBugs0. Bootstrap coverage
+chỉ suite chọn. Chưa consumer/ack, job lease, đọc cấu hình/snapshot, compile/run orchestration,
+relay/sweep; không đóng D02 tổng/D03/D04/B2/B4/B3. Report261103-f4-worker-persistence.
+Owner chốt khóa phiên riêng/job, giao dịch ghi ngắn; sweep khóa giao dịch
+(DEC-2026-1103-f4-worker-job-lease); phần lease sẽ triển khai ở lát sau.
+
+
+**Triển khai 2026-11-03, D02l — API submit #3:** POST /api/v1/judge/problems/{problemId}/submissions
+đã nối CreateSubmissionUseCase→admission commit→Rabbit confirm. STUDENT/JWT owner,
+typed JSON/UTF-8/file/quota, ticket201; queue failure thắng thì guarded SYSTEM_ERROR+
+Outbox đã commit, STOMP owner-only seq3/nullscore và503 JDG-503 có ID. Worker thắng
+thì201 ticket theo trạng thái đã commit, không ghi đè/push lỗi giả. Owner chốt503 JDG-505 cho lỗi database/F2/
+finalizer; không tự nộp lại khi kết quả ghi chưa rõ (DEC-2026-1103-f4-admission-unavailable).
+Focused verify 292 test đạt, hai mutation mới; Checkstyle0/SpotBugs0. Không phải full
+backend regression; coverage bootstrap chỉ từ suite chọn. Chưa worker/relay/progress REST/
+history/FE; không đóng D02 tổng/D03/D04/B2/B4/B3. Report261103-f4-submit-http.
+
+
+**Triển khai 2026-11-03, D02k — STOMP progress transport:** GET /ws, CONNECT1.2
+JWT RS256/exp và account live; STUDENT chỉ exact /user/queue/submissions; admin exact
+/topic/admin/queue cần ADMIN + JUDGE_QUEUE_MONITOR:READ kiểm lại tại SUBSCRIBE và đóng
+socket tại exp. Mọi SEND/đích khác trả ERROR generic rồi đóng. Typed payload không có
+source/input/output/stderr; seq tất định, lỗi CE/SYSTEM_ERROR có score/count null.
+SubmissionProgressPort có adapter thật, afterCommit/rollback-safe/best-effort WARN.
+Broker giữ thứ tự gửi; bearer header được bỏ trước validation/logging. Chỉ transport:
+caller trusted phải lấy owner từ submissions; chưa nối HTTP submit/worker, progress REST,
+FE recovery hoặc QUEUE_BATCH5s. Report `261103-f4-stomp-progress`.
+
+**Triển khai 2026-11-03, D02j — queue dispatch kernel:** QueueSubmissionUseCase
+gọi admission commit rồi publisher Rabbit thật (3 attempts,3s/lượt,200/500ms), message chỉID,
+durable queue/persistent message/mandatory/ACK và không có return. Queue failure chỉ đổi
+PENDING thành SYSTEM_ERROR/QUEUE_UNAVAILABLE; Graded Outbox cùng transaction mới, không
+ghi đè worker/terminal đã thắng. Payload schema1/null scores/firstAttempt tuple(submittedAt,id).
+262 test đạt,12 mutation mới; report `261103-1126-f4-queue-dispatch-core`.
+Chỉ trusted kernel, chưa STOMP/HTTP/worker/relay; result trả trạng thái đã commit để caller
+realtime/HTTP tương lai nối. B4 mới có nhánh lỗi queue persisted, chưa đóng B4 toàn luồng.
+
+
+**Triển khai 2026-11-03, D02i — admission kernel:** có trusted internal
+RecordPendingSubmissionUseCase; caller tương lai xác thực STUDENT/lấy userId từ JWT.
+Kiểm đầu vào/source UTF-8/file, published/approved/snapshot, enabled/wrapper; ghim phiên bản
+testcase vào PENDING. Khóa advisory theo user/problem, đếm cửa sổ >1h rồi INSERT cùng
+giao dịch riêng READ COMMITTED; đọc đồng hồ DB sau khóa. Quota riêng hoặc property mặc
+định60, mọi status tính lượt. Program/command toString không in code/file; lỗi DB kể cả
+commit bị chặn ở ngoài TransactionTemplate, không kèm SQL/cause. Chưa HTTP, queue confirms,
+failure finalization/Outbox/STOMP hoặc worker. Report `261103-1105-f4-pending-admission-core`.
+
+
+**Grading dependency 2026-11-02:** ProblemGradingSpecPort/DTO/typed failure và bootstrap bridge
+đã nối inbound F2/JDBC/MinIO thật. Metadata không có byte/key; nội dung chỉ ở DTO trusted với
+array/list immutable và toString không in content. Phân biệt SPEC_UNAVAILABLE/SANDBOX_FAULT
+cho worker tương lai; chưa state machine/persistence/finalize/Rabbit consumer trong lát này.
+Report `261102-2340-f2-f4-grading-readers`.
+
+**B1 assignment read, 2026-11-02:** F4 khai ClassAssignmentReadPort và ClassAssignment DTO,
+bootstrap bridge gọi inbound F2 ListClassAssignmentsUseCase. Không import F2 từ judge,
+không đọc chéo bảng hoặc gọi F1 từ F2. Port trả mọi khoảng giao/gỡ cho lớp caller đã kiểm
+phạm vi; DB failure ném lỗi, không trả rỗng giả và không lộ raw SQL/cause qua bridge.
+Chưa BR-JD-10 consumer hoặc P1 metrics; report `261102-1636-class-assignment-read-port`.
+
+**Checkpoint component D02e 2026-11-01:** port compile/run được hiện thực bằng một scope
+AutoCloseable: compile một lần, giữ artifact/fileId trên đúng instance, run từng testcase,
+xóa cache trong close kể cả lỗi. EvaluateProgramUseCase là component nhận typed input, gọi
+F3 mapping/matching qua port do F4 khai và bootstrap bridge; không phụ thuộc harness module.
+Không có submission endpoint/worker/persistence/finalize/token/outbox trong lát này; state
+machine và callback contract bên dưới chưa được hiện thực chỉ từ scope execution độc lập.
+
 > Trạng thái: **BD lần đầu**, 2026-09-12. Module thứ tư theo
 > `06-plan/260912-1055-bd-rollout-order.md`. Đọc cùng `02-bd/architecture/F3_harness.md` (định dạng gói tin
 > harness đóng ra) và `02-bd/database/F2_problem-bank.md` mục 1.6 (versioning testcase, sự kiện
@@ -20,6 +92,32 @@ duy nhất** phụ thuộc một dịch vụ ngoài monolith [SoT: `dependency-m
 
 **Không dùng MinIO riêng** — xác nhận ở mục 7 (Storage).
 
+### 1.1. Quy ước gom nhóm package theo tính năng
+
+Các thư mục phẳng trong `algoprep-judge` có quá nhiều file (trước khi gom: `application/ports/in` 56, `domain/model` 37, `application/command` 32, `application/dto` 31) nên được gom thành package con theo tính năng (Bảng 1.1). Việc gom chỉ là di chuyển file, không đổi logic và không đổi ranh giới module Maven. Bảng ánh xạ từng class cũ sang mới nằm ở `06-plan/reports/p6-moves-judge.tsv`.
+
+Bảng 1.1: Nhóm tính năng dùng để chia package trong `algoprep-judge`, kèm ví dụ class ở từng tầng (`ports.in` là `application/ports/in`, `command` là `application/command`, `dto` là `application/dto`, `model` là `domain/model`; dấu gạch là tầng không có class của nhóm).
+
+| Nhóm | Nội dung | `ports.in` | `command` | `dto` | `model` |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `execution` | Worker chấm, chạy mẫu, chạy chương trình, hoàn tất bài nộp | `EvaluateProgramUseCase`, `FinalizeSubmissionUseCase` | `ProcessQueuedSubmissionCommandHandler`, `RunSampleCommandHandler` | `WorkerPreparation`, `SampleRun` | `WorkerJob`, `SampleSettings` |
+| `grading` | Giới hạn chạy, mặc định chấm, ảnh chụp bài đã đạt | `GetEffectiveExecutionLimitsUseCase`, `ReadGradingDefaultsUseCase` | - | `ExecutionLimitsView` | `GradingDefaults`, `GeneratorSandboxLimits` |
+| `infra` | Tổng quan và sự kiện hạ tầng cho admin | `GetInfraSummaryUseCase`, `ListInfraEventsUseCase` | - | `InfraEventQuery`, `InfraEventMessages` | `InfraEvents` |
+| `language` | Cấu hình ngôn ngữ, hệ số nhân thời gian | `GetEnabledJudgeLanguagesUseCase`, `UpdateAdminLanguageConfigUseCase` | `UpdateAdminLanguageConfigCommandHandler` | `AdminConfigFields` | `AdminLanguageConfig`, `LanguageMultipliers` |
+| `maintenance` | Quét bài kẹt, dọn dữ liệu cũ | `SweepStaleSubmissionsUseCase`, `PurgeTestcaseDetailsUseCase` | `SweepStaleSubmissionsCommandHandler`, `JudgeRetention` | - | - |
+| `metrics` | Số liệu nộp bài cho admin, học viên, giảng viên | `GetAdminSubmissionsByDayUseCase`, `GetMySubmissionMetricsUseCase` | - | `MySubmissionMetrics`, `AssignedProblemMetricsQuery` | `AdminSubmissionStats`, `ClassMetricsScope` |
+| `outbox` | Relay outbox sự kiện của F4 | `RelayJudgeOutboxUseCase` | `RelayJudgeOutboxCommandHandler` | - | `OutboxEvent` |
+| `queue` | Giám sát và điều khiển hàng đợi (tạm dừng, cấu hình, xử lý lỗi) | `ChangeQueuePauseUseCase`, `GetQueueMonitorBatchUseCase` | `ChangeQueuePauseCommandHandler`, `BroadcastQueueMonitorCommandHandler` | `QueueMonitorBatch`, `QueuePauseChange` | `AdminQueueSettings`, `QueueMonitoring` |
+| `read` | Đọc bài nộp, tiến độ, lịch sử của học viên và giảng viên | `GetOwnedSubmissionDetailUseCase`, `ListMySubmissionHistoryUseCase` | - | `SubmissionReads`, `LearnerSubmissionLists` | `HistoryWindow`, `ScopedSubmission` |
+| `submission` | Tiếp nhận bài nộp, ghi `PENDING`, đẩy vào hàng đợi | `CreateSubmissionUseCase`, `QueueSubmissionUseCase` | `CreateSubmissionCommandHandler`, `RecordPendingSubmissionCommandHandler` | `PendingSubmissionTicket`, `QueuedSubmissionResult` | `PendingSubmission` |
+
+Quy tắc áp dụng:
+
+- Chỉ thư mục có hơn khoảng 30 file mới được gom: `application/ports/in`, `application/command`, `application/dto`, `domain/model`. Các thư mục nhỏ (`application/query`, `application/ports/out`, `domain/ports/out`, `domain/exception`, `infrastructure/persistence`, `presentation/controller`) giữ phẳng.
+- Cùng một tên nhóm dùng ở mọi tầng có class của nhóm đó, để cổng vào `application.ports.in.queue` khớp handler `application.command.queue`.
+- Class dùng chung nhiều nhóm ở lại package cha của tầng và là `public` ở đó: `ResolveQueueFailureUseCase` (`ports.in`); `FinalizeSubmissionCommandHandler`, `SubmissionAdmissionValidation`, `SubmissionFinalizationPolicy`, `WorkerSubmissionEvents`, `WorkerTransactions` (`command`); `ClassAssignment`, `GradingSpecification`, `GradingTestcase`, `SubmissionProgress`, `TestcaseProgress`, `RecordPendingSubmissionCommand` cùng một số kiểu khác (`dto`); `AcceptedSubmissionSnapshot`, `InstructorReadWindow`, `JudgeAuditEntry` (`model`).
+- Không giữ file `package-info.java` trong module này.
+
 ## 2. Phạm vi nghiệp vụ module này bao trùm
 
 Đọc từ `01-rd/req/F4_judge-orchestration.md` (F4-01 → F4-13):
@@ -32,7 +130,7 @@ duy nhất** phụ thuộc một dịch vụ ngoài monolith [SoT: `dependency-m
 | Sweep timeout | F4-07 | Ngưỡng 5 phút (`DEC-2026-0831-outside-screens-closures`) |
 | Đẩy trạng thái thời gian thực | F4-08 | WebSocket/STOMP, kênh riêng theo `submissionId` |
 | ~~Chấm lại~~ | ~~F4-09a→e~~ | **Đã loại bỏ khỏi phạm vi** (`DEC-2026-0828-remove-rejudge-scope`) — không thiết kế lại ở đây |
-| Giám sát + điều khiển cụm | F4-10 | Bao gồm pause/resume tiêu thụ hàng đợi, bật/tắt autoscale worker (`DEC-2026-0831-judge-orchestration-ops-details`); sweep bỏ qua `PENDING` lúc đang tạm dừng (mục 5.3). **Cập nhật owner 2026-10-25:** bỏ bảng worker chi tiết vì go-judge không xuất các metric từng worker; snapshot chỉ lấy số liệu job/độ trễ từ DB và cấu hình F4 (`DEC-2026-1025-dd-drop-worker-detail`) |
+| Giám sát + điều khiển cụm | F4-10 | Bao gồm pause/resume tiêu thụ hàng đợi, bật/tắt autoscale worker (`DEC-2026-0831-judge-orchestration-ops-details`); sweep bỏ qua `PENDING` lúc đang tạm dừng (mục 5.3). **Cập nhật owner 2026-10-25:** bỏ bảng worker chi tiết vì go-judge không xuất các metric từng worker; snapshot chỉ lấy số liệu job/độ trễ từ DB và cấu hình F4 (`DEC-2026-1025-dd-drop-worker-detail`). **Cập nhật 2026-11-22** (`DEC-2026-1122-f4-queue-consumers-and-throughput-on-adm0401`): snapshot thêm số luồng chấm do worker báo (mục 8b), tốc độ chấm và ước lượng hết hàng đợi; vẫn không có số liệu từng worker |
 | Cấu hình ngôn ngữ và giới hạn tài nguyên | F4-11 | 3 tham số sandbox go-judge: mạng (mặc định chặn), giới hạn tiến trình con, có trả `stderr` hay không |
 | Chỉ số "Beats" | F4-12 | Chỉ hiện với `ACCEPTED`, so cùng bài + cùng ngôn ngữ |
 
@@ -309,6 +407,57 @@ Làm tròn tới số nguyên gần nhất (không thập phân) `[SoT: Suy lu�
 nêu, chốt ở DD nếu cần đổi. Rỗng (`—`) cho mọi verdict khác `ACCEPTED` — đúng RD dòng 75. Xem
 `07-review/bd_open_questions_260913.md` mục 2 câu #5.
 
+## 8a. Vị trí trong hàng đợi và thời gian chờ ước tính khi `PENDING` (F4-14)
+
+**Hiện trạng bản dựng (2026-11-16):** backend và FE đều đã có mã; FE nối với máy chủ thật và đã kiểm trong trình duyệt thật 2026-11-16 (`06-plan/reports/261116-0100-f4-14-browser-check/report.md`; ảnh chụp bằng script Playwright, không phải `pnpm e2e`). Phía FE dùng một thành phần chung `05-coding/frontend/src/entities/submission/ui/queue-notice.tsx:11` cho cả `USR0201` và `USR0102`. Phần backend: `05-coding/backend/algoprep-judge/src/main/java/com/algoprep/judge/application/query/SubmissionReadProjection.java:143` (`queue`, bắt lỗi trả `null`, log WARN) và `:157` (`estimate`, hằng số trong mã), hai truy vấn đếm tại `infrastructure/persistence/JdbcSubmissionReadRepository.java:101` và `:115`, DTO `application/dto/read/SubmissionReads.java:105`. Truy vấn tốc độ lọc `updated_at` (cùng chỉ mục `(status, updated_at)`), không thêm migration.
+
+**Nguồn yêu cầu:** `01-rd/req/F4_judge-orchestration.md` F4-14, bổ sung 2026-11-15 theo quyết định của chủ dự án (đo tải: máy demo chấm khoảng 2 bài nộp mỗi giây, một bài có thể nằm ở `PENDING` 40 đến 90 giây). Tiêu chí ponytail bậc 1 (có quyết định của chủ dự án). **Trạng thái: đã dựng (backend và FE), đã kiểm trình duyệt thật 2026-11-16.** Chủ dự án chốt 2026-11-16: không ẩn ước tính khi lớn (chỉ chặn trần 3600 giây, bậc 5) và giảng viên không thấy dòng này (endpoint trả `403 JDG-301` cho token giảng viên; kiểm gián tiếp vì giảng viên tổng hợp chưa phụ trách lớp nào).
+
+Bảng 8a.1 tóm tắt các quyết định kiến trúc của tính năng; mỗi hàng là một câu hỏi thiết kế cùng câu trả lời đã chọn.
+
+| Câu hỏi | Quyết định |
+| :--- | :--- |
+| Hiển thị qua đường nào | **Không thêm endpoint, không thêm bản tin STOMP.** Mở rộng ảnh chụp tiến trình (endpoint #6, `SubmissionProgressDto`) bằng một đối tượng tuỳ chọn `queue`, chỉ khác `null` khi `status = PENDING`. Hợp đồng đầy đủ ở `03-dd/api/F4_judge-orchestration.md` mục 9 (hợp đồng API chỉ định nghĩa một nơi) |
+| Tính ở đâu | Trong chính module `judge-orchestration`, ở use case đọc tiến trình của endpoint #6, qua cổng truy vấn đọc `judge.submissions` mà use case này đã dùng. **Không gọi module khác, không đọc schema khác, không dùng RabbitMQ Management API** `[SoT: Suy luận]`: số liệu lấy từ DB để cùng nguồn với trạng thái bài nộp |
+| Số bài phía trước (`ahead`) | Đếm bài nộp `status = PENDING` có `(submitted_at, id)` nhỏ hơn bài đang xem. **Gần đúng**: RabbitMQ giao gần đúng thứ tự nộp, không bảo đảm; con số là gợi ý hiển thị, không phải cam kết thứ tự chấm |
+| Thời gian chờ ước tính | `ceil(ahead / tốc độ chấm)`, tốc độ = số bài nộp vào một trong sáu trạng thái cuối trong 60 giây gần nhất chia cho 60. Rỗng (`null`) khi dưới 3 bài kết thúc trong cửa sổ đó hoặc `ahead = 0`; chặn trên 3600 giây. Công thức và ngưỡng ở `03-dd/logic/F4_judge-orchestration.md` BR-JD-17 |
+| Dữ liệu và chỉ mục | Bảng `judge.submissions`, chỉ mục `submissions_status_updated_idx (status, updated_at)` đã có (mục 2 của `02-bd/database/F4_judge-orchestration.md`, `V4.001__create_judge_tables.sql:134`). **Không thêm bảng, cột, chỉ mục hay Redis cache** (tiêu chí ponytail bậc 4 và 5) |
+| Hằng số | Cửa sổ 60 giây, ngưỡng 3 mẫu, trần 3600 giây nằm trong mã dưới dạng hằng số, không vào `application.yml` (ponytail bậc 5; không thêm trường cấu hình mới) |
+| Bảo mật | Giữ nguyên quyền của endpoint #6: JWT, `STUDENT`, chỉ chủ bài nộp, ngược lại `JDG-110`. `ahead` chỉ là một số đếm, không lộ dữ liệu của người khác |
+| Khi tính lỗi | Lỗi tính hàng đợi **không làm hỏng** ảnh chụp: trả `queue = null`, phần còn lại của DTO giữ nguyên. Khác với lỗi đọc chính (503 `JDG-506`, không đổi) |
+| Phía client | Khi trạng thái đang biết là `PENDING`, client đọc lại endpoint #6 mỗi 5 giây (STOMP không có bản tin cho `PENDING`, mục 2.3 file DD API); `STATUS_CHANGED` vẫn kích hoạt đọc ngay; dừng khi trạng thái rời `PENDING` |
+
+Bảng 8a.1: Quyết định kiến trúc của F4-14.
+
+**Đánh đổi chấp nhận được:** không có bộ nhớ đệm, mỗi lần đọc chạy hai truy vấn nhỏ (đếm bài chờ phía trước, đếm bài vừa kết thúc). Với quy mô đồ án và chu kỳ 5 giây mỗi bài nộp đang chờ, tải này nhỏ; nếu đo thấy nặng thì thêm bộ nhớ đệm ngắn trong tiến trình (nâng cấp có chủ đích, ghi ở DD). Độ chính xác bị chặn bởi thứ tự gần đúng của RabbitMQ và tốc độ chấm thay đổi theo tải; vì thế giao diện luôn gọi đây là "ước tính khoảng".
+
+**Khi Admin tạm dừng tiêu thụ hàng đợi (F4-10):** các bài `PENDING` đứng yên, tốc độ chấm trong 60 giây tụt về 0 nên ước tính trở thành `null` (dưới 3 mẫu) và client chỉ hiện số bài phía trước. Không cần xử lý riêng `[SoT: Suy luận]`.
+
+## 8b. Luồng chấm, tốc độ chấm và ước lượng hết hàng đợi trên `ADM0401`
+
+**Trạng thái (2026-11-22): đã dựng** (backend `mvn verify` module judge đạt, frontend `pnpm check` đạt; chưa xem trên màn hình thật bằng tài khoản quản trị); mục "Hiện trạng bản dựng" của BD màn `ADM0401` sẽ cập nhật khi có mã.
+
+**Nguồn yêu cầu:** RD `01-rd/screens/admin/ADM0401_queue_monitor.md` mục 2.2, REQ-07 đến REQ-09; quyết định `DEC-2026-1122-f4-queue-consumers-and-throughput-on-adm0401` (chủ dự án duyệt 2026-11-22), đảo lại phần "số liệu cụm đọc từ Prometheus, không thêm bảng" của `DEC-2026-1010-admin-operations-regroup`. Tiêu chí ponytail bậc 1 (yêu cầu của chủ dự án), bậc 2 (nguồn thật: số consumer của `JOB-JD-05` và `judge.submissions`), bậc 4 (dùng lại công thức F4-14 và ô cụm worker cũ), bậc 5 (hằng số trong mã). Bảng 8b.1 tóm tắt các quyết định kiến trúc.
+
+| Câu hỏi | Quyết định |
+| :--- | :--- |
+| Số luồng chấm lấy từ đâu | Từ **chính worker**: worker được bầu (giữ khoá leader, JOB-JD-05) ghi `consumers_target`, `consumers_active` và lần đổi gần nhất vào bảng một dòng `judge.worker_status` (`02-bd/database/F4_judge-orchestration.md` mục 1.11), **sau mỗi lần `scale()`** |
+| Vì sao bảng, không Prometheus hay bộ nhớ tiến trình | API và worker có thể là hai tiến trình khác nhau (JOB-JD-05 chạy đúng một tiến trình worker chuyên trách), nên API không đọc được trạng thái trong bộ nhớ của worker. Prometheus đã bị loại khỏi phụ thuộc của màn: giả định "go-judge xuất được metric" chưa từng kiểm, và một màn quản trị không nên hỏng khi máy chủ đo đạc không với tới được. Gauge `judge_grading_consumers_target` và `judge_grading_consumers_active` vẫn xuất như cũ cho Grafana, API **không** đọc chúng |
+| Dòng cũ | Dòng có `reported_at` cũ hơn 60 giây (hằng số trong mã) hoặc không có dòng nào: snapshot trả `consumers = null`, không dựng số từ lần báo cũ. Worker chết, chưa khởi động hay tiến trình API tách riêng chưa có worker đều rơi vào trường hợp này |
+| Lỗi ghi | Ghi trạng thái là việc phụ: lỗi ghi **không** làm dừng, chậm hay đảo kết quả `scale()` (số liệu giám sát không được chạm luồng chấm `[SoT: Suy luận]`). Worker ghi log cảnh báo, chu kỳ kế ghi lại |
+| Tốc độ chấm | `finishedLastMinute` = số bài nộp vào một trong sáu trạng thái cuối trong 60 giây gần nhất. **Dùng lại** `SubmissionReadRepository.finishedLastMinute()` của F4-14 (mục 8a), không thêm SQL, không thêm chỉ mục |
+| Ước lượng hết hàng đợi | `estimatedClearSeconds` = `ceil(pendingCount / (finishedLastMinute / 60))`, `null` khi dưới 3 mẫu hoặc không có job chờ, trần 3600 giây. **Dùng lại** `SubmissionReadProjection.estimate(pending, finishedLastMinute)` (mục 8a, `DEC-2026-1115-f4-queue-wait-in-progress-snapshot`). Khác F4-14 ở đầu vào: F4-14 đếm bài phía trước **một** bài nộp, ở đây đầu vào là **toàn bộ** số job `PENDING` |
+| Trần tối đa | `workerAutoscaleMax` đã có trong snapshot (`judge.autoscale.max-workers`); khối hiện "đang chạy / tối đa" từ trường này |
+| Đường đến màn | Không thêm endpoint hay kênh mới. Snapshot (`GET /admin/queue/snapshot`, mục 16 của file DD API) và lô STOMP `/topic/admin/queue` (`snapshot` trong lô) thêm ba trường; trường cũ giữ nguyên |
+| Quyền | Giữ nguyên `JUDGE_QUEUE_MONITOR:READ`; số liệu không chứa dữ liệu người học |
+| Không làm | Bấm dòng job (ảnh chụp cố ý không mang dữ liệu học viên, bài hay testcase); tải % hay uptime từng worker; lịch sử nhiều lần đổi số luồng (đóng Q5 RD); đưa Prometheus vào API |
+
+Bảng 8b.1: Quyết định kiến trúc của khối "Luồng chấm".
+
+**Luồng báo và đọc** (một chiều, không có callback): worker được bầu chạy `scale()` mỗi chu kỳ (mặc định 15 giây) → đổi hoặc giữ mục tiêu consumer → upsert `worker_status` → (tiến trình API) snapshot đọc `worker_status`, so `reported_at` với giờ DB, ghép với đếm `submissions` → trả `consumers` (hoặc `null`) cùng `finishedLastMinute`, `estimatedClearSeconds`.
+
+**Đánh đổi chấp nhận được:** mỗi 15 giây thêm một câu ghi một dòng (không đáng kể so với tải chấm); số "đang chạy" và "mục tiêu" có thể chậm tới một chu kỳ so với thực tế, và gauge cùng bảng không là một ảnh chụp nguyên tử (đã ghi ở JOB-JD-05). Tốc độ chấm đếm theo `updated_at` của bài ở trạng thái cuối nên là xấp xỉ (cùng giới hạn F4-14).
+
 ## 9. Việc còn mở — chuyển sang DD
 
 - Tên/chữ ký cụ thể `ProblemGradingSpecPort` (mục 3.2).
@@ -316,6 +465,7 @@ nêu, chốt ở DD nếu cần đổi. Rỗng (`—`) cho mọi verdict khác `
 - ~~Xác nhận công thức F4-12 với chủ dự án~~ — đã đóng 2026-09-13, xem mục 8.
 - Định dạng `RunRequest`/`RunResult` thật (JSON shape gửi/nhận go-judge) — chốt cùng `harness` khi cả hai
   vào DD, vì `harness` là bên tạo payload.
+- Tên cổng truy vấn và chữ ký phương thức đếm của F4-14 (mục 8a); có thêm bộ nhớ đệm ngắn trong tiến trình hay không khi đo tải thấy nặng.
 - Chu kỳ quét sweep 60 giây (mục 5.3) và giới hạn cắt `stderr_snippet` 4KB (mục 7) — số đề xuất, chủ dự án
   xác nhận hoặc đổi số cụ thể.
 - Chữ ký thật của `GetClassStudentSubmissionMetrics` và `GetMySubmissionMetrics` (mục 3.3): tên tham số,
@@ -327,7 +477,7 @@ nêu, chốt ở DD nếu cần đổi. Rỗng (`—`) cho mọi verdict khác `
 
 ## 10. Tham chiếu
 
-- `01-rd/req/F4_judge-orchestration.md` — đặc tả F4-01 → F4-13.
+- `01-rd/req/F4_judge-orchestration.md` — đặc tả F4-01 → F4-14.
 - `.nexa/domain-registry.json` — domain `judge-orchestration`, scope liệt kê bảng dữ liệu dự kiến.
 - `.nexa/control/dependency-map.md` mục 2-4 — hạ tầng, luồng đồng bộ go-judge, thứ tự build (stage 2 cùng
   `harness`).
@@ -341,3 +491,98 @@ nêu, chốt ở DD nếu cần đổi. Rỗng (`—`) cho mọi verdict khác `
 - `02-bd/architecture/F1_identity.md` mục 3.1 — tên sự kiện `SubmissionGraded`/`SubmissionAccepted` đã được
   phía `identity` dự kiến trước, file này xác nhận khớp tên.
 - `06-plan/260912-1055-bd-rollout-order.md` — thứ tự triển khai BD.
+
+
+## Ghi nhận triển khai D02n — 2026-11-03
+
+Worker runtime D02n nối queue ID-only → lease phiên/job → F2 spec + snapshot đã ghim → F3 prepare → go-judge compile/run-all → persistence D02m → Outbox/STOMP. Không giữ transaction lúc gọi engine; lease dùng kết nối riêng qua các commit. Chỉ bật listener bằng `judge.worker.enabled=true`, Hikari tối thiểu 10 kết nối (8 job + leader + ghi). API mặc định không bật listener. Chưa có Compose/rollout, relay, sweep, multi-instance STOMP hoặc metrics lớp/admin; không coi cả F4 hoàn tất.
+
+
+## D02n1 — Đóng nợ worker local (2026-11-03)
+
+Đã có profile worker yêu cầu URL engine, Compose sandbox tùy chọn độc lập và runbook local một backend HTTP/WebSocket/worker. Có metric và drain, chặn tái dùng instance mất leader. Chưa dùng STOMP nội bộ cho topology nhiều process; production rollout/network-enabled theo phạm vi đã ghi.
+
+
+## Triển khai D02q — 2026-11-04: API đọc kết quả/progress/lịch sử
+
+**D02q — Task 7: API kết quả/progress/lịch sử F4, 2026-11-04:** 7 API học viên/giảng viên và cổng F1/F2 thật; 1,976 test focused đạt, 12/12 mutation bị bắt; Checkstyle/SpotBugs 0, coverage đạt. Khóa kép Sample, stderr, retention 90 ngày, Beats, phạm vi lớp và snapshot/seq worker đã kiểm. Owner chốt 503 JDG-506. FE/browser và thống kê B2/B3 còn mở; tiếp theo task 8 Run Code/Sample và execution limits. Chưa stage/commit/push. [Report](F:/prj_algoprep/06-plan/reports/261104-f4-submission-reads/report.md).
+
+Bảy endpoint #4/#5/#6/#7/#10/#11/#12 đã nối PostgreSQL và cổng F1/F2 thật. Owner/JDG-110,
+CLASS_MANAGEMENT:READ và khoảng ghi danh/giao bài được kiểm ở backend; metadata-only list,
+chi tiết Sample khóa kép/stderr, retention 90 ngày và Beats đúng tập. Query nhiều bước
+REPEATABLE_READ; metadata F2 tùy chọn REQUIRES_NEW để lỗi SQL không làm hỏng kết quả đã lưu.
+REST progress có seq khớp worker, kể cả SYSTEM_ERROR giữa chừng; chưa nối client/browser.
+Owner chốt JDG-506 theo DEC-2026-1104-f4-submission-read-unavailable.
+
+[SoT: Suy luận — chi tiết SQL]: JSONB recordset truyền các cửa sổ đã đọc qua port thay
+unnest mảng trong ví dụ DD; giữ nguyên predicate, chọn lớp trước lọc/phân trang. Không đổi
+schema, quyền hay quy tắc nghiệp vụ. Không đóng AC màn hình, B2/B3, API admin hoặc toàn F3/F4.
+
+
+## Triển khai D02r — 2026-11-04: Run Code/Sample và execution limits
+
+**D02r — Task 8: Run Code/Sample và execution limits, 2026-11-04:** hai API backend dùng F2/F3/sandbox thật; 14 unit mới + 18 integration mới đạt, cùng 29 test hợp đồng trực tiếp/kiến trúc (61 test liên quan); 8/8 mutation bị bắt. Spotless/Checkstyle/SpotBugs đạt; LINE của từng file mới được đo ≥80%. Chỉ test lát và phụ thuộc trực tiếp theo owner; full regression chờ mốc clear. FE/browser, network-enabled và production nhiều instance còn hoãn. [Report](F:/prj_algoprep/06-plan/reports/261104-f4-run-sample/report.md).
+
+API #1/#2 dùng dữ liệu F2/F3/cấu hình/sandbox thật; STUDENT/JWT, chỉ Sample approved từ SQL,
+không ghi submission/progress/outbox. Redis Lua 60/60 phút/user, fail-open chỉ phần quota;
+semaphore JVM 8 theo quyết định single-instance. JDG-107 có retryAfterSeconds, JDG-502 busy
+hoàn mốc, JDG-501 hoàn mốc hạ tầng, compile error tính lượt. Deadline 60 giây và cancellation
+giữ slot đến khi task thực sự dừng. Output/stderr qua kernel privacy hiện có, HALF_UP giới hạn.
+[SoT: Suy luận — chi tiết lifecycle]: Future/virtual thread và callback hoàn quota một lần,
+trạng thái hủy tách interrupt để xử lý race; không đổi hợp đồng/schema/auth. GET limits giữ
+hợp đồng lỗi phụ thuộc hiện có của §4.5, không mở rộng mã JDG-506 từ D02q. Source/gates/log/hash
+có trong report. Chỉ test phần mới và hợp đồng trực tiếp theo owner; coverage BUNDLE/full
+regression, FE/browser và nghiệm thu module tổng chưa thực hiện ở lát này.
+
+
+**D02v — 2026-11-04:** F4 B2 cổng thống kê lớp đã xong: đúng cửa sổ ghi danh/giao/gỡ, tuần đủ UTC+7, best theo lần giao, cache15 phút/fallback. 24 test liên quan đạt (16 mới), 4/4 mutation bị bắt; 124/124 dòng logic mới, static gates đạt. Không sửa F1/F2 hoặc chạy full regression. B3 đã chốt 7 khối, chưa triển khai. [Report](F:/prj_algoprep/06-plan/reports/261104-1540-f4-class-metrics/report.md).
+
+
+**D02w — 2026-11-04:** B3 backend F4 có đủ7 cổng thống kê admin theo owner; SQL đúng UTC+7/cửa sổ/trạng thái/scope bài. 23 test liên quan đạt (15 mới), 4/4 mutation, 191/191 dòng logic mới và static gates đạt. Chưa nối F1 HTTP/cache/catalogue hoặc FE; không chạy full regression/merge. [Report](F:/prj_algoprep/06-plan/reports/261104-1604-f4-admin-stats/report.md).
+
+
+**D02x — 2026-11-04:** F4 GET metrics cá nhân và P5 topic đã xong; SQL/principal thật, range/streak/ratio/đọc topic lịch sử, không callback F2 từ P5. Owner chốt503 JDG-507. 29 test liên quan duy nhất đạt (21 mới),5/5 mutation, static gates đạt; coverage7 file logic không đổi115/115 dòng từ unit đầu. Không full regression/merge. [Report](F:/prj_algoprep/06-plan/reports/261104-1653-f4-my-metrics/report.md).
+
+
+**D02y — 2026-11-05:** F4 P6/P7 backend xong: current-members/class attribution trước tab, cửa sổ giao/ghi danh; P7 principal STUDENT và trạng thái từng lần giao, không callback F2. 28 test liên quan đạt (16 mới),7/7 mutation,80/80 dòng logic mới; static gates đạt. Consumer F2/FE chưa nối, chưa full regression/merge. [Report](F:/prj_algoprep/06-plan/reports/261105-1020-f4-assignment-metrics/report.md).
+
+
+P6/P7 là cổng SELECT nội bộ mới, không HTTP/quyền/schema mới. P6 kiểm ownership F1 và chỉ học viên còn ghi danh, rank mọi lớp trước tab; P7 lấy principal STUDENT, F2 kiểm membership đầu vào. Không callback F2, không source/testcase, không ghi dữ liệu; lỗi dependency cố định/no cause, caller F2 map theo DD. Các bound và kiểu cụ thể ghi tại DD API §26.6/26.7 và report D02y.
+
+
+**D02z — 2026-11-05:** F4 P3 provider đủ generator limits/enabled languages/multipliers và defaults có sẵn; P4 snapshot7 trường chỉAC, lỗi missing/notAccepted riêng, no testcase/source trong log. 22 test liên quan đạt (14 mới),5/5 mutation,37/37 dòng logic mới; static gates đạt, Spotless judge/bootstrap apply+check đầy đủ. Consumer mới F2/F5/FE chưa nối; chưa full regression/merge. [Report](F:/prj_algoprep/06-plan/reports/261105-1045-f4-config-snapshot-reads/report.md).
+
+P3 mới đọc DB mỗi lần, không fallback/cache ở F4; unknown language lỗi cổng. P4 chỉAccepted, snapshot7 trường và source redacted trong toString; không owner guard theo DD, F5 phải kiểm userId và map lỗi. Không testcase/quyền/schema/HTTP mới. Chi tiết chữ ký và test tại report D02z và DD API §26.3/26.4.
+
+
+**D02aa — 2026-11-05:** API F4#8/#23/#24 xong: latest-own/withdrawn trước limit, Accepted history và enabled languages đúng thứ tự/quyền.30 test liên quan đạt (18 mới),6/6 mutation,83/83 dòng logic mới; static gates/Spotless judge+bootstrap đạt. F4-2 backend đóng; còn admin config/queue và nghiệm thu BE cuối, FE riêng. Chưa full regression/merge. [Report](F:/prj_algoprep/06-plan/reports/261105-1110-f4-learner-list-apis/report.md).
+
+#8/#23 không nhận userId trong chữ ký usecase; STUDENT current principal và SQL own-only. #8 latest trước lọc status, metadata withdrawn trước limit, keyset32; F2 lỗi optional thìproblem=null. #23 giữAC lịch sử, metadata4 trường, khôngsource/testcase. #24 roleSTUDENT/INSTRUCTOR/P3 currentDB, thứ tựPYTHON/JAVA/CPP, khôngadminconfig. 400JDG-V14 cho limit1..20;503chung khôngthêmmã, khôngmởrộng506/507. Không write/audit/cache, không sửa schema. SoT chi tiết và giới hạn admin#21 tại report D02aa.
+
+
+**D02ab — 2026-11-05:** API #21/#22 cấu hình ngôn ngữ/limits/sandbox/generator đã có backend thật; quyền riêng READ/UPDATE, khóa/version từng dòng, một audit diff và rollback hai chiều. 29 test liên quan đạt (21 mới), 6/6 mutation, 96/97 dòng logic mới; Spotless judge/bootstrap, Checkstyle phạm vi F4/bootstrap và SpotBugs đạt. F4-3 còn queue/infra/STOMP admin; chưa full regression/merge, FE riêng. [Report](F:/prj_algoprep/06-plan/reports/261105-1204-f4-admin-language-config/report.md).
+
+
+**D02ac — 2026-11-05:** API #16–19 pause/resume, autoscale và queue settings có backend thật; resume tái dùng kernel heartbeat D02p, quyền ADMIN riêng với Function READ cho GET, stale409, no-op và audit REQUIRED. 34 test liên quan đạt (22 mới),9/9 mutation,73/73 dòng logic mới; Spotless judge/bootstrap, Checkstyle đúng phạm vi và SpotBugs đạt. F4-3 còn snapshot/jobs/infra/STOMP admin, runtime cuối ở FINAL; chưa full regression/merge, FE riêng. [Report](F:/prj_algoprep/06-plan/reports/261105-1547-f4-queue-controls/report.md).
+
+
+**D02ad — 2026-11-05:** Backend snapshot queue #13 và danh sách job #14 xong: trạng thái/độ trễ từ SQL, counts và phân trang theo config thật, retention không xóa submission, quyền READ. 23 test liên quan đạt (14 mới),6/6 mutation,46/47 dòng logic mới; Spotless judge/bootstrap, scoped Checkstyle và SpotBugs đạt. F4-3 còn infra-summary/events và admin STOMP, rồi FINAL BE; chưa full regression/merge, FE riêng. [Report](F:/prj_algoprep/06-plan/reports/261105-1802-f4-queue-snapshot-jobs/report.md).
+
+
+**D02ae — 2026-11-05:** Backend infra-summary #15 và infra-events #20 xong: cùng nguồn SQL thật, counts24h/danh sách90 ngày, message an toàn, lọc/ngày UTC+7 và cursor20 dòng. 20 test liên quan đạt (12 mới),6/6 mutation,78/78 dòng logic mới; Spotless judge/bootstrap, scoped Checkstyle và SpotBugs đạt. F4-3 còn admin STOMP W2, rồi FINAL BE; chưa full regression/merge, FE/QA riêng. [Report](F:/prj_algoprep/06-plan/reports/261105-f4-infra-summary-events/report.md).
+
+
+**D02af — 2026-11-05:** STOMP admin W2 có QUEUE_BATCH thật theo chu kỳ5s, một lô chung cho mọi admin, không query khi không có subscriber hợp lệ. Snapshot/counts/infra-summary cùng transaction RR; outbound chặn phiên hết JWT hoặc đã unsubscribe.64 test liên quan đạt (18 mới),6/6 mutation,28/28 dòng logic mới; Spotless/Checkstyle/SpotBugs phạm vi chọn đạt. Backend F4-3 đủ API và W2; tiếp theo FINAL BE/full regression khi clear. FE/browser/C08 và production nhiều process giữ mốc riêng. Chưa commit/merge. [Report](F:/prj_algoprep/06-plan/reports/261105-f4-admin-queue-stream/report.md).
+
+
+## 11. Lịch sử sửa đổi
+
+Bảng 11.1: Lịch sử sửa đổi BD kiến trúc `judge-orchestration`.
+
+| Ngày | Nội dung | Căn cứ |
+| :--- | :--- | :--- |
+| 2026-09-12 | BD lần đầu | `06-plan/260912-1055-bd-rollout-order.md` |
+| 2026-11-15 | Thêm mục 1.1: quy ước gom nhóm package theo tính năng, class dùng chung ở lại package cha, bỏ `package-info.java`; cập nhật đường dẫn gói sau khi gom thư mục con | owner duyệt Phase 6, `06-plan/261114-1645-sonarqube-clear-coverage-90.md`, `06-plan/reports/p6-moves-judge.tsv` |
+| 2026-11-15 | Thêm mục 8a: vị trí trong hàng đợi và thời gian chờ ước tính khi `PENDING` (F4-14), mở rộng ảnh chụp tiến trình endpoint #6, trạng thái dự kiến | quyết định chủ dự án 2026-11-15, `01-rd/req/F4_judge-orchestration.md` F4-14 |
+| 2026-11-16 | Mục 8a: đổi trạng thái từ dự kiến sang đã dựng (backend và FE), thêm bằng chứng kiểm trình duyệt thật và hai quyết định đã chốt (không ẩn ước tính lớn; giảng viên không thấy dòng này) | quyết định chủ dự án 2026-11-16, `06-plan/reports/261116-0100-f4-14-browser-check/report.md` |
+| 2026-11-22 | Thêm mục 8b: worker báo số luồng chấm vào `judge.worker_status` sau mỗi lần `scale()`, API snapshot đọc bảng (thay ý "số liệu cụm đọc từ Prometheus"), thêm tốc độ chấm và ước lượng hết hàng đợi dùng lại công thức F4-14; trạng thái đã thiết kế, chưa dựng | `DEC-2026-1122-f4-queue-consumers-and-throughput-on-adm0401`, `06-plan/nexa-plan/261122-1840-f4-adm0401-luong-cham-thong-luong.md` |

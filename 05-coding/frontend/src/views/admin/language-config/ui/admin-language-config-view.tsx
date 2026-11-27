@@ -39,14 +39,16 @@ import {
   newlyDisabled,
   validateLanguageConfig,
 } from "../model/validation";
-import { useLocale, useT } from "@/shared/i18n";
+import { useApiErrorMessage, useLocale, useT } from "@/shared/i18n";
 import { useUnsavedChangesGuard } from "@/shared/lib";
+import { useMediaQuery } from "@/shared/lib/use-media-query";
 import { toast } from "@/shared/lib/toast-store";
 import {
   Card,
   ConfirmDialog,
   DataTable,
   ErrorState,
+  PageContainer,
   PageHeader,
   SaveBar,
   SegmentedTabs,
@@ -84,9 +86,11 @@ export function AdminLanguageConfigView() {
 }
 
 function LanguageConfigForm({ initial }: { initial: LanguageConfigPage }) {
+  const errorMessage = useApiErrorMessage();
   const t = useT("adminLanguageConfig");
   const tCommon = useT("common");
   const locale = useLocale();
+  const compact = useMediaQuery("(max-width: 850px)");
 
   // `saved` is the baseline the change count compares against: it starts as the loaded page and moves
   // to the draft once a save succeeds.
@@ -140,13 +144,15 @@ function LanguageConfigForm({ initial }: { initial: LanguageConfigPage }) {
   /** The success toast sits inside the try, after the await: a failed save must not report success. */
   async function commit(): Promise<boolean> {
     try {
-      await saveConfig.mutateAsync(draft);
-      setSaved(draft);
+      const response = await saveConfig.mutateAsync(draft);
+      const persisted = response ?? draft;
+      setSaved(persisted);
+      setDraft(persisted);
       setAttempted(false);
       toast.success(t("saveDone"));
       return true;
-    } catch {
-      toast.error(t("saveFailed"));
+    } catch (error) {
+      toast.error(errorMessage(error));
       return false;
     }
   }
@@ -162,8 +168,8 @@ function LanguageConfigForm({ initial }: { initial: LanguageConfigPage }) {
 
   const disabledNow = newlyDisabled(saved, draft);
 
-  const columns: DataTableColumn<LanguageConfig>[] = [
-    {
+  const columns = {
+    language: {
       key: "language",
       header: t("columnLanguage"),
       render: (language) => (
@@ -185,14 +191,14 @@ function LanguageConfigForm({ initial }: { initial: LanguageConfigPage }) {
         </div>
       ),
     },
-    {
+    multipliers: {
       key: "multipliers",
       header: t("columnMultipliers"),
-      width: "230px",
+      width: "250px",
       render: (language) => (
-        <span className="flex items-center gap-2">
+        <span className="flex flex-wrap items-center gap-2">
           <MultiplierField
-            tag={t("multiplierTime")}
+            tag={t(compact ? "multiplierTimeFull" : "multiplierTime")}
             label={t("timeMultiplierFor", { language: language.name })}
             value={language.timeMultiplier}
             disabled={saving}
@@ -206,7 +212,7 @@ function LanguageConfigForm({ initial }: { initial: LanguageConfigPage }) {
             }
           />
           <MultiplierField
-            tag={t("multiplierMemory")}
+            tag={t(compact ? "multiplierMemoryFull" : "multiplierMemory")}
             label={t("memoryMultiplierFor", { language: language.name })}
             value={language.memoryMultiplier}
             disabled={saving}
@@ -222,10 +228,10 @@ function LanguageConfigForm({ initial }: { initial: LanguageConfigPage }) {
         </span>
       ),
     },
-    {
+    effective: {
       key: "effective",
       header: t("columnEffective"),
-      width: "170px",
+      width: "220px",
       render: (language) => (
         <span className="font-mono text-[12.5px] whitespace-nowrap">
           {t("effectiveLimit", {
@@ -235,10 +241,10 @@ function LanguageConfigForm({ initial }: { initial: LanguageConfigPage }) {
         </span>
       ),
     },
-    {
+    enabled: {
       key: "enabled",
       header: t("columnEnabled"),
-      width: "64px",
+      width: "152px",
       align: "right",
       render: (language) => (
         <Toggle
@@ -251,7 +257,7 @@ function LanguageConfigForm({ initial }: { initial: LanguageConfigPage }) {
         />
       ),
     },
-  ];
+  } satisfies Record<string, DataTableColumn<LanguageConfig>>;
 
   const defaultFields: { key: keyof JudgeDefaults; unit: string }[] = [
     { key: "timeLimitMs", unit: t("unitMs") },
@@ -267,7 +273,7 @@ function LanguageConfigForm({ initial }: { initial: LanguageConfigPage }) {
   ];
 
   return (
-    <div>
+    <PageContainer variant="content" className="@container">
       <PageHeader
         title={t("title")}
         description={t("subtitle")}
@@ -285,7 +291,7 @@ function LanguageConfigForm({ initial }: { initial: LanguageConfigPage }) {
         label={t("tabsLabel")}
         value={tab}
         onValueChange={setTab}
-        className="mb-4 w-fit"
+        className="mb-4 w-fit shrink-0 flex-wrap"
         options={[
           { value: "languages", label: t("tabLanguages") },
           { value: "advanced", label: t("tabAdvanced") },
@@ -293,53 +299,78 @@ function LanguageConfigForm({ initial }: { initial: LanguageConfigPage }) {
       />
 
       {tab === "languages" ? (
-        <Card
-          title={t("languagesTitle")}
-          description={t("languagesSubtitle")}
-          className="min-w-0"
-        >
-          <fieldset className="mb-4 rounded-2xl border border-[var(--color-border)] px-3.5 py-2.5">
-            <legend className="px-1.5 text-[12.5px] font-semibold text-[var(--color-text-muted)]">
-              {t("defaultsTitle")} · {t("defaultsSubtitle")}
-            </legend>
-            <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+        <div className="flex grow flex-col gap-3">
+          <Card
+            title={t("defaultsTitle")}
+            description={t("defaultsSubtitle")}
+            className="min-w-0"
+          >
+            <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,108px),1fr))] items-end gap-2.5">
               {defaultFields.map(({ key, unit }) => (
-                <span key={key} className="flex items-center gap-1.5">
-                  <span className="text-[12.5px] font-medium whitespace-nowrap">
-                    {t(`defaults.${key}.label`)}
-                  </span>
-                  <TextField
-                    label={t(`defaults.${key}.label`)}
-                    hideLabel
-                    type="number"
-                    min={1}
-                    value={draft.defaults[key]}
-                    disabled={saving}
-                    onChange={(event) =>
-                      patchDefaults({ [key]: Number(event.target.value) })
-                    }
-                    invalid={attempted && badDefault(draft.defaults[key])}
-                    className="h-8 w-24 font-mono"
-                    wrapperClassName="w-auto"
-                  />
-                  <span className="font-mono text-xs text-[var(--color-text-muted)]">
-                    {unit}
-                  </span>
-                </span>
+                <TextField
+                  key={key}
+                  label={t(`defaults.${key}.label`)}
+                  type="number"
+                  min={1}
+                  value={draft.defaults[key]}
+                  disabled={saving}
+                  onChange={(event) =>
+                    patchDefaults({ [key]: Number(event.target.value) })
+                  }
+                  invalid={attempted && badDefault(draft.defaults[key])}
+                  className="font-mono pr-9"
+                  trailing={
+                    <span className="pointer-events-none mr-2 font-mono text-xs text-[var(--color-text-muted)]">
+                      {unit}
+                    </span>
+                  }
+                />
               ))}
             </div>
-          </fieldset>
-          <DataTable
-            caption={t("languagesTitle")}
-            columns={columns}
-            rows={draft.languages}
-            rowKey={(language) => language.key}
-            emptyMessage={tCommon("empty")}
-            minWidth={620}
-          />
-        </Card>
+          </Card>
+          <Card
+            title={t("languagesTitle")}
+            description={t("languagesSubtitle")}
+            className="min-w-0 grow"
+          >
+            {compact && draft.languages.length > 0 ? (
+              <ul
+                className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,234px),1fr))] gap-2.5"
+                aria-label={t("languagesTitle")}
+              >
+                {draft.languages.map((language) => (
+                  <li
+                    key={language.key}
+                    className="glass-surface min-w-0 space-y-3 rounded-xl border border-[var(--color-border)] p-3"
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      {columns.language.render(language)}
+                      {columns.enabled.render(language)}
+                    </div>
+                    {columns.multipliers.render(language)}
+                    <div className="border-t border-[var(--color-border)] pt-2">
+                      <p className="text-xs text-[var(--color-text-muted)]">
+                        {t("columnEffective")}
+                      </p>
+                      {columns.effective.render(language)}
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <DataTable
+                caption={t("languagesTitle")}
+                columns={Object.values(columns)}
+                rows={draft.languages}
+                rowKey={(language) => language.key}
+                emptyMessage={tCommon("empty")}
+                minWidth={620}
+              />
+            )}
+          </Card>
+        </div>
       ) : (
-        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        <div className="grid grow grid-cols-1 gap-4 lg:grid-cols-2">
           <Card title={t("sandboxTitle")} className="min-w-0">
             <div className="flex flex-col gap-2.5">
               {sandboxFields.map(({ key }) => (
@@ -374,6 +405,7 @@ function LanguageConfigForm({ initial }: { initial: LanguageConfigPage }) {
               <SettingRow
                 label={t("generator.runtime.label")}
                 description={t("generator.runtime.meta")}
+                className="@max-[500px]:flex-wrap @max-[500px]:[&>div:first-child]:basis-full"
               >
                 <span className="flex items-center gap-1.5">
                   <TextField
@@ -403,6 +435,7 @@ function LanguageConfigForm({ initial }: { initial: LanguageConfigPage }) {
               <SettingRow
                 label={t("generator.output.label")}
                 description={t("generator.output.meta")}
+                className="@max-[500px]:flex-wrap @max-[500px]:[&>div:first-child]:basis-full"
               >
                 <span className="flex items-center gap-1.5">
                   <TextField
@@ -485,7 +518,7 @@ function LanguageConfigForm({ initial }: { initial: LanguageConfigPage }) {
       >
         {t("unsaved.body")}
       </UnsavedChangesDialog>
-    </div>
+    </PageContainer>
   );
 }
 
@@ -509,7 +542,7 @@ function MultiplierField({
     <span className="flex items-center gap-1">
       <span
         aria-hidden="true"
-        className="text-[11px] font-semibold text-[var(--color-text-subtle)]"
+        className="text-[11px] font-semibold whitespace-nowrap text-[var(--color-text-subtle)]"
       >
         {tag}
       </span>

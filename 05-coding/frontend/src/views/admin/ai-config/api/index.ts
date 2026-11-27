@@ -12,3 +12,4 @@ export {
   type GuardSet,
 } from "../model/types";
 export { useAiConfigPage } from "./queries";
+export { usePublishPrompts, useSavePromptDraft } from "./mutations";

@@ -1,0 +1,218 @@
+<div id="queue-monitor-preview" lang="vi">
+  <div class="qp-scenarios" role="group" aria-label="Tình huống minh họa">
+    <span>Tình huống mẫu</span>
+    <button type="button" data-scenario="normal" aria-pressed="true">Bình thường</button>
+    <button type="button" data-scenario="backlog" aria-pressed="false">Hàng đợi dồn</button>
+    <button type="button" data-scenario="stale" aria-pressed="false">Dữ liệu cũ</button>
+  </div>
+  <div class="qp-app">
+    <header class="qp-header">
+      <div><p class="qp-context">AlgoPrep Admin / Vận hành</p><h2>Hàng đợi chấm</h2></div>
+      <button type="button" class="qp-button" data-refresh><i data-lucide="refresh-cw" aria-hidden="true"></i> Làm mới</button>
+    </header>
+    <div class="qp-health" data-tone="ok">
+      <div><span class="qp-dot" aria-hidden="true"></span><strong data-status role="status">Bình thường</strong></div>
+      <span data-updated>Cập nhật lúc 23:42:24</span>
+    </div>
+    <dl class="qp-metrics" aria-label="Số liệu vận hành">
+      <div><dt>Luồng chấm</dt><dd data-metric="threads">1 / 8</dd></div>
+      <div><dt>Tốc độ chấm</dt><dd data-metric="speed">0 lượt/phút</dd></div>
+      <div><dt>Chờ trung bình</dt><dd data-metric="wait">Chưa có số liệu</dd></div>
+      <div><dt>Dự kiến hết hàng đợi</dt><dd data-metric="eta">Chưa đủ dữ liệu</dd></div>
+    </dl>
+    <section class="qp-jobs" aria-labelledby="qp-jobs-title">
+      <h3 id="qp-jobs-title">Bài nộp trong hàng đợi</h3>
+      <div class="qp-filters" role="group" aria-label="Lọc bài nộp">
+        <button type="button" data-filter="waiting" aria-pressed="true">Đang chờ <b>0</b></button>
+        <button type="button" data-filter="failed" aria-pressed="false">Lỗi <b>0</b></button>
+        <button type="button" data-filter="all" aria-pressed="false">Tất cả <b>0</b></button>
+      </div>
+      <p class="qp-empty" data-empty role="status">Không có bài nộp đang chờ.</p>
+      <table data-table hidden aria-label="Bài nộp trong hàng đợi">
+        <thead><tr><th scope="col">Lượt nộp</th><th scope="col">Ngôn ngữ</th><th scope="col">Trạng thái</th><th scope="col">Chờ</th></tr></thead>
+        <tbody></tbody>
+      </table>
+      <p class="qp-note" data-more hidden></p>
+    </section>
+    <div class="qp-secondary">
+      <details data-events>
+        <summary><span>Sự kiện hạ tầng <span class="qp-note">(24 giờ)</span></span><strong data-event-count>0 cảnh báo, 0 lỗi</strong></summary>
+        <p data-event-detail>Không ghi nhận cảnh báo hoặc lỗi trong 24 giờ qua.</p>
+      </details>
+      <details data-operations>
+        <summary><span>Điều khiển và thông tin luồng chấm</span></summary>
+        <dl class="qp-details">
+          <div><dt>Nhận bài mới</dt><dd>Đang bật</dd></div>
+          <div><dt>Tự động mở rộng</dt><dd>Đang bật</dd></div>
+          <div><dt>Mục tiêu số luồng</dt><dd data-target>1</dd></div>
+          <div><dt>Lần đổi gần nhất</dt><dd data-scale>19:10:09 · giảm từ 2 xuống 1 vì hàng đợi trống</dd></div>
+        </dl>
+      </details>
+    </div>
+  </div>
+</div>
+<style>
+  #queue-monitor-preview {
+    --qp-base: light-dark(#ffffff, #15201f);
+    --qp-soft: light-dark(#f3f7f6, #1d2c29);
+    --qp-ink: light-dark(#152925, #e5f2ed);
+    --qp-muted: light-dark(#4c625d, #b5c7c0);
+    --qp-line: light-dark(#d7e3df, #394b45);
+    --qp-teal: light-dark(#075e53, #9de4d4);
+    --qp-warn: light-dark(#754100, #ffd08b);
+    --qp-warn-bg: light-dark(#fff4df, #392b1a);
+    color: var(--qp-ink);
+    font: 14px/1.45 "Segoe UI", system-ui, sans-serif;
+  }
+  #queue-monitor-preview * { box-sizing: border-box; }
+  #queue-monitor-preview [hidden] { display: none !important; }
+  #queue-monitor-preview :is(p, h2, h3, dl, dd) { margin: 0; }
+  #queue-monitor-preview .qp-app { background: var(--qp-base); border: 1px solid var(--qp-line); border-radius: 14px; padding: clamp(14px, 3vw, 28px); }
+  #queue-monitor-preview .qp-scenarios { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 0 0 12px; }
+  #queue-monitor-preview .qp-scenarios > span { margin-right: 6px; }
+  #queue-monitor-preview button { font: inherit; color: inherit; background: transparent; border: 1px solid var(--qp-line); border-radius: 7px; padding: 7px 10px; cursor: pointer; }
+  #queue-monitor-preview button[aria-pressed="true"] { background: var(--qp-soft); border-color: var(--qp-teal); color: var(--qp-teal); font-weight: 600; }
+  #queue-monitor-preview .qp-header { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 10px; margin-bottom: 15px; }
+  #queue-monitor-preview .qp-button { display: inline-flex; align-items: center; gap: 6px; }
+  #queue-monitor-preview .qp-button svg { width: 15px; height: 15px; }
+  #queue-monitor-preview .qp-context { color: var(--qp-muted); font-size: 12px; }
+  #queue-monitor-preview h2 { color: inherit; font-size: clamp(23px, 4vw, 31px); font-weight: 650; }
+  #queue-monitor-preview h3 { color: inherit; font-size: 17px; font-weight: 650; margin-bottom: 10px; }
+  #queue-monitor-preview .qp-health { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 4px 14px; padding: 10px 12px; background: var(--qp-soft); border-radius: 7px; color: var(--qp-teal); }
+  #queue-monitor-preview .qp-health[data-tone="warn"] { color: var(--qp-warn); background: var(--qp-warn-bg); }
+  #queue-monitor-preview .qp-health > div { display: flex; align-items: center; gap: 8px; }
+  #queue-monitor-preview .qp-dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; flex: none; }
+  #queue-monitor-preview .qp-metrics { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; padding: 16px 0; border-bottom: 1px solid var(--qp-line); }
+  #queue-monitor-preview dt, #queue-monitor-preview .qp-note { color: var(--qp-muted); font-size: 12px; }
+  #queue-monitor-preview .qp-metrics dd { margin-top: 3px; font-variant-numeric: tabular-nums; font-weight: 650; }
+  #queue-monitor-preview .qp-jobs { margin-top: 18px; }
+  #queue-monitor-preview .qp-filters { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+  #queue-monitor-preview .qp-empty { padding: 9px 0 14px; color: var(--qp-muted); }
+  #queue-monitor-preview table { border-collapse: collapse; width: 100%; color: inherit; font-size: 13px; }
+  #queue-monitor-preview :is(th, td) { text-align: left; border-top: 1px solid var(--qp-line); padding: 7px 4px; overflow-wrap: anywhere; }
+  #queue-monitor-preview :is(th, td):last-child { text-align: right; }
+  #queue-monitor-preview [data-more] { margin: 8px 0; }
+  #queue-monitor-preview details { border-top: 1px solid var(--qp-line); }
+  #queue-monitor-preview summary { padding: 10px 0; cursor: pointer; }
+  #queue-monitor-preview summary strong { margin-left: 5px; font-size: 12px; font-weight: 600; color: var(--qp-muted); }
+  #queue-monitor-preview details[data-attention] summary strong { color: var(--qp-warn); }
+  #queue-monitor-preview details > :is(p, dl) { margin: 0 0 12px 16px; }
+  #queue-monitor-preview .qp-details { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 14px; }
+  @media (max-width: 520px) {
+    #queue-monitor-preview .qp-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    #queue-monitor-preview .qp-scenarios > span { flex-basis: 100%; }
+  }
+  @media (pointer: coarse) {
+    #queue-monitor-preview :is(button, summary) { min-height: 44px; }
+  }
+</style>
+<script>
+(() => {
+  const root = document.getElementById("queue-monitor-preview");
+  const get = selector => root.querySelector(selector);
+  const scenarios = {
+    normal: {
+      status: "Bình thường", time: "23:42:24", tone: "ok",
+      metrics: ["1 / 8", "0 lượt/phút", "Chưa có số liệu", "Chưa đủ dữ liệu"],
+      counts: [0, 0, 0], eventCount: "0 cảnh báo, 0 lỗi",
+      eventDetail: "Không ghi nhận cảnh báo hoặc lỗi trong 24 giờ qua.",
+      target: "1", scale: "19:10:09 · giảm từ 2 xuống 1 vì hàng đợi trống"
+    },
+    backlog: {
+      status: "Hàng đợi đang dồn", time: "23:44:16", tone: "warn",
+      metrics: ["3 / 8", "12 lượt/phút", "35 giây", "Khoảng 2 phút"],
+      counts: [24, 2, 27], eventCount: "1 cảnh báo, 2 lỗi",
+      eventDetail: "23:43:58 · go-judge · Một lượt chấm gặp lỗi môi trường chạy.",
+      target: "4", scale: "23:43:10 · tăng từ 2 lên 3 vì hàng đợi dồn"
+    }
+  };
+  const rows = [
+    ["#4821", "Python", "Đang chờ", "1 phút 12 giây", "waiting"],
+    ["#4822", "C++", "Đang chờ", "58 giây", "waiting"],
+    ["#4823", "Java", "Đang chờ", "42 giây", "waiting"],
+    ["#4818", "Python", "Lỗi hệ thống", "—", "failed"],
+    ["#4816", "C++", "Lỗi hệ thống", "—", "failed"],
+    ["#4819", "Java", "Đang chấm", "—", "grading"]
+  ];
+  const emptyText = {
+    waiting: "Không có bài nộp đang chờ.",
+    failed: "Không có lượt chấm lỗi.",
+    all: "Chưa có bài nộp trong danh sách."
+  };
+  let current = "normal";
+  let filter = "waiting";
+  let refreshedAt = "";
+  const eventDetails = get("[data-events]");
+  const operationDetails = get("[data-operations]");
+  function render() {
+    const stale = current === "stale";
+    const data = scenarios[current] ?? scenarios.backlog;
+    get(".qp-health").dataset.tone = stale ? "warn" : data.tone;
+    get("[data-status]").textContent = stale ? "Dữ liệu cũ" : data.status;
+    get("[data-updated]").textContent = (stale ? "Dữ liệu lần cuối lúc " : "Cập nhật lúc ") + (refreshedAt || data.time);
+    root.querySelectorAll("[data-metric]").forEach((element, index) => {
+      element.textContent = data.metrics[index];
+    });
+    const filters = [...root.querySelectorAll("[data-filter]")];
+    filters.forEach((button, index) => {
+      button.setAttribute("aria-pressed", String(button.dataset.filter === filter));
+      button.querySelector("b").textContent = data.counts[index];
+    });
+    const selectedRows = current === "normal" ? [] : rows.filter(row => filter === "all" || row[4] === filter);
+    const table = get("[data-table]");
+    table.tBodies[0].replaceChildren(...selectedRows.map(row => {
+      const tr = document.createElement("tr");
+      row.slice(0, 4).forEach(value => {
+        tr.insertCell().textContent = value;
+      });
+      return tr;
+    }));
+    table.hidden = !selectedRows.length;
+    get("[data-empty]").hidden = selectedRows.length > 0;
+    get("[data-empty]").textContent = emptyText[filter];
+    const count = data.counts[filters.findIndex(button => button.dataset.filter === filter)];
+    get("[data-more]").hidden = count <= selectedRows.length;
+    get("[data-more]").textContent = "Minh họa " + selectedRows.length + " trong " + count + " bài nộp";
+    eventDetails.toggleAttribute("data-attention", current !== "normal");
+    get("[data-event-count]").textContent = data.eventCount;
+    get("[data-event-detail]").textContent = data.eventDetail;
+    get("[data-target]").textContent = data.target;
+    get("[data-scale]").textContent = data.scale;
+    root.querySelectorAll("[data-scenario]").forEach(button => {
+      button.setAttribute("aria-pressed", String(button.dataset.scenario === current));
+    });
+  }
+  function remember() {
+    window.openai?.setWidgetState?.({ modelContent: { scenario: current, filter }, privateContent: {} })?.catch(() => {});
+  }
+  function restore(state) {
+    if (!state) return;
+    const { scenario, filter: savedFilter } = state.modelContent ?? {};
+    if (["normal", "backlog", "stale"].includes(scenario)) current = scenario;
+    if (Object.hasOwn(emptyText, savedFilter)) filter = savedFilter;
+    render();
+  }
+  root.querySelectorAll("[data-scenario]").forEach(button => button.addEventListener("click", () => {
+    current = button.dataset.scenario;
+    filter = "waiting";
+    refreshedAt = "";
+    eventDetails.open = false;
+    operationDetails.open = false;
+    render();
+    remember();
+  }));
+  root.querySelectorAll("[data-filter]").forEach(button => button.addEventListener("click", () => {
+    filter = button.dataset.filter;
+    render();
+    remember();
+  }));
+  get("[data-refresh]").addEventListener("click", () => {
+    if (current === "stale") current = "backlog";
+    refreshedAt = new Intl.DateTimeFormat("vi-VN", {hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false}).format(new Date());
+    render();
+    remember();
+  });
+  restore(window.openai?.widgetState);
+  window.addEventListener("openai:set_globals", event => restore(event.detail?.globals?.widgetState));
+})();
+</script>

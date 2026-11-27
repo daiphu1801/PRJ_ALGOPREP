@@ -1,27 +1,79 @@
 {
-  "_": "Nguồn: 01-rd/req/user_stories/a1_student.md:8-34; 03-dd/api/F1_identity.md:24-41; 03-dd/logic/F1_identity.md:89-103 (BR-03); 02-bd/database/F1_identity.md (users, oauth_identities). [SoT: Suy luận] Tên OAuthService, OAuthStateStore, OAuthProviderPort, UserRepository, OAuthIdentityRepository và chữ ký phương thức là thiết kế đề xuất từ luồng DD. UserAccount/OAuthIdentity là kiểu dữ liệu ở repository, để sơ đồ model F1 dùng chung. Không vẽ chi tiết callback HTTP và token provider.",
+  "_": "Nguồn tiêu chí: 01-rd/req/user_stories/a1_student.md:20-22. Nguồn mã nguồn: 05-coding/backend/algoprep-identity/src/main/java/com/algoprep/identity/presentation/controller/OAuthController.java và application/command/CompleteOAuthLoginCommandHandler.java.",
   "kind": "class",
   "title": "A1 — Đăng nhập và liên kết tài khoản OAuth",
-  "covers": ["F1-15"],
+  "covers": [
+    "F1-15"
+  ],
   "class": {
     "legend": "shared",
     "classes": [
-      {"id": "service", "name": "OAuthService", "methods": ["+ start(provider : OAuthProvider) : String", "+ complete(provider : OAuthProvider, code : String, state : String)"]},
-      {"id": "states", "name": "OAuthStateStore", "methods": ["+ consume(state : String) : boolean"]},
-      {"id": "provider", "name": "OAuthProviderPort", "kind": "interface", "methods": ["+ verifiedEmail(code : String) : String"]},
-      {"id": "users", "name": "UserRepository", "methods": ["+ findByEmail(email : String) : UserAccount"]},
-      {"id": "links", "name": "OAuthIdentityRepository", "methods": ["+ save(identity : OAuthIdentity)"]}
+      {
+        "id": "oauthController",
+        "name": "OAuthController",
+        "methods": [
+          "+ redirect(provider : String) : OAuthStart",
+          "+ callback(provider : String, code : String, state : String) : ResponseEntity<LoginResponse>"
+        ]
+      },
+      {
+        "id": "oauthHandler",
+        "name": "CompleteOAuthLoginCommandHandler",
+        "methods": [
+          "+ complete(provider : String, code : String, state : String) : LoginResult"
+        ]
+      },
+      {
+        "id": "exchangeService",
+        "name": "OAuthExchangeService",
+        "methods": [
+          "+ exchangeCode(provider : OAuthProvider, code : String) : OAuthProfile"
+        ]
+      },
+      {
+        "id": "providerPort",
+        "name": "OAuthProviderPort",
+        "kind": "interface",
+        "methods": [
+          "+ fetchProfile(code : String) : OAuthProfile"
+        ]
+      },
+      {
+        "id": "userRepo",
+        "name": "UserAccountRepository",
+        "kind": "interface",
+        "methods": [
+          "+ findByOAuth(provider : OAuthProvider, providerUserId : String) : Optional<UserAccount>",
+          "+ linkOAuth(userId : UUID, profile : OAuthProfile)"
+        ]
+      }
     ],
     "externals": [],
     "relations": [
-      {"from": "service", "to": "states", "kind": "dependency", "label": "kiểm state"},
-      {"from": "service", "to": "provider", "kind": "dependency", "label": "xác minh"},
-      {"from": "service", "to": "users", "kind": "dependency", "label": "tìm email"},
-      {"from": "service", "to": "links", "kind": "dependency", "label": "liên kết"}
+      {
+        "from": "oauthController",
+        "to": "oauthHandler",
+        "kind": "dependency"
+      },
+      {
+        "from": "oauthHandler",
+        "to": "exchangeService",
+        "kind": "dependency"
+      },
+      {
+        "from": "exchangeService",
+        "to": "providerPort",
+        "kind": "dependency"
+      },
+      {
+        "from": "oauthHandler",
+        "to": "userRepo",
+        "kind": "dependency"
+      }
     ],
     "notes": [
-      "Chỉ liên kết khi email provider đã xác minh; email trùng dùng lại tài khoản hiện có.",
-      "[SoT: Suy luận] Tên lớp và chữ ký phương thức là thiết kế backend từ DD."
+      "OAuthController xử lý chuyển hướng đăng nhập và tiếp nhận callback từ GitHub hoặc Google.",
+      "CompleteOAuthLoginCommandHandler đối chiếu email, tự động liên kết hoặc tạo tài khoản sinh viên mới."
     ]
   }
 }

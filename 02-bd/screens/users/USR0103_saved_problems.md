@@ -49,11 +49,11 @@
 | Tên vật lý (slug) | `saved_problems` |
 | Trục tài liệu | Màn hình (`02-bd/screens/`) |
 | Actor | A1 (`STUDENT`) |
-| Phiên bản | V0.10 |
+| Phiên bản | V0.11 |
 | Người tạo | Nhóm phát triển AlgoPrep |
 | Ngày tạo | 2026/09/22 |
 | Người cập nhật | Claude |
-| Ngày cập nhật | 2026/10/21 |
+| Ngày cập nhật | 2026/11/06 |
 
 ---
 
@@ -72,6 +72,7 @@
 | V0.8 | Sheet 4 (Hiện trạng bản dựng), 9 (NO 4), Câu hỏi mở Q8 | Owner chốt 2026/10/19 (`DEC-2026-1019-usr-fe-audit-fixes`, chốt nốt câu hỏi mở còn lại sau rà prototype). Chỉ tài liệu, không đổi code, chưa duyệt hình. Thêm Q8 và đóng ngay: EVT-9, EVT-10, EVT-14 giữ là nợ prototype (ponytail bậc 3). Bỏ yêu cầu toast khi ô tìm kiếm chạm 100 ký tự: `maxLength` của trình duyệt dừng việc nhập là đủ (owner 2026/10/19, ponytail bậc 3); Sheet 9 dòng độ dài từ khoá đổi `[Tiêu điểm]` còn viền ô, không còn câu thông báo. | 2026/10/19 | Claude |
 | V0.9 | Sheet 3, 4 (4.4, Hiện trạng bản dựng, 4.5), 5 (Khu vực A NO 1, 2; Khu vực C NO 11), 6, 7, 8 (EVT-13), Câu hỏi mở (Q9) | Đồng bộ bản dựng 2026/10/20 (`DEC-2026-1020-student-workspace-split-and-password-in-settings`): bỏ khung `PageHeader`, đầu trang là hàng tiêu đề thường (`<h1>` và dòng phụ "{N} bài đã lưu, {M} bài đã giải"). Liên kết tên bài và nút vào giải vẫn sang `/problems/{id}`, nay là trang tổng quan chỉ-đọc `problem_overview` (`USR0104`), không còn là màn soạn mã `problem_detail` (`USR0102`, `/workspace/{id}`). Thêm Q9: chữ "điểm lưu duy nhất là `problem_detail`" của Q1 chưa khớp `USR0104` (nút Lưu có ở cả hai màn); không tự sửa quyết định owner. Làm mới số dòng `saved-problems-view.tsx` (`:280-283` thành `:294-299`, `:94-96` thành `:83-85`, `:98-118` thành `:87-107`, `:138-144` thành `:128-135`, `:44-47` thành `:43-46`, `:45` thành `:44`, `:46` thành `:45`, `:86-92` thành `:75-81`, `:150-175,266-275` thành `:143-165,257-266`, `:146-276` thành `:137-290`, `:286-318` thành `:302-335`, `:359-361` thành `:337-338`, `:88`/`:157` thành `:150`/`:274`) và trích dẫn lệch: `F1_identity.md:156` thành `:156`; `F2_problem-bank.md` `:11-29` thành `:11-31`, `:37-39` thành `:55-64`, `:31-33` thành `:33-35`, `:130-134` thành `:184-188`, `:132-134` thành `:186-188`; `USR0101_problem_list.md` mọi số dòng làm mới theo bản V1.0 (`:606` thành `:650`, `:601` thành `:645`, `:303` thành `:156`, `:136` thành `:161`, `:217` thành `:251-259`, `:223-226` thành `:256-259`, `:262` thành `:296`, `:282-283` thành `:334`, `:332` thành `:381`, `:321` thành `:371`, `:337` thành `:386`, `:521` thành `:564`, `:530` thành `:574`, `:542-547` thành `:586-591`, `:583` thành `:627`, `:584` thành `:628`, `:587` thành `:631`, `:580` thành `:624`). Chưa duyệt hình | 2026/10/20 | Claude |
 | V0.10 | Sheet 5 (Khu vực C NO 11), 9 (NO 13), Câu hỏi mở (Q1 đọc lại, đóng Q9) | Owner chốt 2026/10/21: điểm lưu bài ở hai màn (`problem_overview` và `problem_detail`); nhãn nút vào giải đổi thành "Mở bài" (đã dựng); chỉ tên bài và nút mở được bấm, không bấm cả dòng. Chưa duyệt hình | 2026/10/21 | Claude |
+| V0.11 | Sheet 4 (Hiện trạng bản dựng), Câu hỏi mở | Nối màn với API thật (2026-11-06, F2-6 phần 1, **chưa duyệt hình**): danh sách `#8`, bỏ lưu `#10`, sửa ghi chú và Hoàn tác `#9`; mock trả cùng hợp đồng. Dòng mô tả tiêu đề lấy `meta.savedTotal` và `meta.solvedCount`; `solveState=null` hiện "Chưa rõ" thay vì "Chưa làm"; `solvedCount=null` thì dòng mô tả chỉ còn số bài đã lưu. Hoàn tác tạo lại bookmark với ngày lưu mới và báo `PRB-010` nếu bài đã rút trong lúc đó (mất ghi chú). **Owner chấp nhận 2026-11-06, đã đóng.** Không đổi RD, DTO hay endpoint | 2026/11/06 | Claude |
 
 ---
 
@@ -262,6 +263,8 @@ Bố cục **một cột**, không có cột phụ bên phải — đây là kh�
 (tiêu đề + mô tả) nằm trên, phần còn lại nằm gọn trong một khung duy nhất có viền: lọc, bảng, trạng thái
 rỗng và chân bảng đều là các phần của cùng một `section` (`:111-178`). Giữ nguyên cấu trúc này khi dựng
 Next.js; không quy định màu sắc, khoảng cách hay typography ở BD.
+
+**Hiện trạng bản dựng nối API thật (2026-11-06, F2-6 phần 1, kiểm lúc viết, trích theo tên tệp; chưa duyệt hình):** `saved-problems-view.tsx` chạy trên `#8` đến `#10` khi `NEXT_PUBLIC_MOCK_DATA=false`; mock trả cùng hợp đồng. Máy chủ lọc và phân trang 20 dòng (`useSavedProblemsPage`, mới lưu trước; ô tìm trễ 300 ms). Bỏ lưu: `DELETE` rồi toast Hoàn tác giữ ghi chú trong closure; Hoàn tác `PUT` với `createIfMissing=true` (ngày lưu thành ngày tạo lại, `PRB-010` nếu bài đã rút trong lúc đó, ghi chú mất theo bookmark). Sửa ghi chú: `PUT` với `createIfMissing=false`; `PRB-014` (đã bỏ lưu ở nơi khác) đóng ô sửa và tải lại, `PRB-001` giữ ô sửa mở. Suy giảm: `solveState=null` hiện "Chưa rõ"; `meta.solvedCount=null` thì dòng mô tả chỉ còn "N bài đã lưu", có dòng thông báo và bộ lọc trạng thái chưa áp dụng. Chưa làm: Q8 (nợ đã chốt), bộ nhớ đệm bookmark dùng chung với `USR0102`/`USR0104` (`#11`, thuộc màn khác).
 
 **Hiện trạng bản dựng** (đọc lại `05-coding/frontend/src/views/users/saved-problems/ui/saved-problems-view.tsx`
 ngày 2026-10-20, số dòng đã làm mới; lệch so với prototype ở dải chỉ số là chủ ý của owner, các lệch khác là nợ prototype).

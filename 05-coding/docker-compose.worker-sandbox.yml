@@ -1,0 +1,32 @@
+# Optional toolchain sandbox. The infrastructure-only docker-compose.yml is unchanged.
+# Build/verify the local image from judge-engine/Dockerfile before enabling a worker.
+name: algoprep-worker-sandbox
+
+services:
+  worker-sandbox:
+    image: ${ALGOPREP_WORKER_ENGINE_IMAGE:-algoprep-judge-toolchain:f3-20261101}
+    pull_policy: never
+    privileged: true
+    cgroup: host
+    shm_size: 256m
+    command:
+      - -http-addr=0.0.0.0:5050
+      - -parallelism=8
+      - -output-limit=67108864
+    ports:
+      - "127.0.0.1:${ALGOPREP_WORKER_ENGINE_PORT:-5055}:5050"
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+    healthcheck:
+      test:
+        - CMD
+        - bash
+        - -c
+        - >-
+          exec 3<>/dev/tcp/127.0.0.1/5050 &&
+          printf 'GET /version HTTP/1.0\r\n\r\n' >&3 &&
+          head -n 1 <&3 | grep -q '200'
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 5s

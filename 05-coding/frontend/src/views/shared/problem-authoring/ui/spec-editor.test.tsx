@@ -1,6 +1,7 @@
 // The "Đặc tả" tab body: one shared signature with a stub preview per language, stdin/stdout formats,
 // matching strategy.
 import { useState } from "react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
   act,
   fireEvent,
@@ -13,8 +14,10 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { ProblemSpec } from "@/entities/problem";
 import { toast, useToasts } from "@/shared/lib/toast-store";
 import { SpecEditor } from "./spec-editor";
+import type { ProblemKind } from "./problem-kind-card";
 
 vi.mock("@/shared/i18n", () => ({
+  useApiErrorMessage: () => () => "apiError",
   useT: () => (key: string, params?: Record<string, unknown>) =>
     params ? `${key} ${JSON.stringify(params)}` : key,
 }));
@@ -35,20 +38,31 @@ const initial: ProblemSpec = {
   epsilon: "",
 };
 
-function Harness() {
+function Harness({ startKind = "function" }: { startKind?: ProblemKind }) {
   const [spec, setSpec] = useState(initial);
+  const [kind, setKind] = useState<ProblemKind>(startKind);
+  const [client] = useState(() => new QueryClient());
   return (
-    <>
-      <SpecEditor spec={spec} onChange={setSpec} />
+    <QueryClientProvider client={client}>
+      <SpecEditor
+        spec={spec}
+        onChange={setSpec}
+        kind={kind}
+        onKindChange={setKind}
+      />
       <output data-testid="spec">{JSON.stringify(spec)}</output>
-    </>
+    </QueryClientProvider>
   );
 }
 
 const current = (): ProblemSpec =>
   JSON.parse(screen.getByTestId("spec").textContent!);
-const row = (language: string) =>
-  screen.getByRole("listitem", { name: `spec.language.${language}` });
+const row = (language: string) => {
+  fireEvent.click(
+    screen.getByRole("button", { name: `spec.language.${language}` }),
+  );
+  return screen.getByRole("listitem", { name: `spec.language.${language}` });
+};
 
 beforeEach(() => act(() => toast.clear()));
 
@@ -248,5 +262,24 @@ describe("SpecEditor", () => {
       message: "spec.errorUnorderedSet",
     });
     expect(current().signature.returnType.kind).toBe("INT");
+  });
+
+  it("a stdin program shows no signature at all, only the formats and the matching", () => {
+    render(<Harness startKind="stdio" />);
+
+    expect(screen.queryByLabelText("spec.functionName")).toBeNull();
+    expect(screen.queryByLabelText("spec.returnType")).toBeNull();
+    expect(screen.getByLabelText("spec.stdinFormat")).toBeInTheDocument();
+    expect(screen.getByLabelText("spec.matchingStrategy")).toBeInTheDocument();
+  });
+
+  it("picking Function brings the signature back, picking stdin hides it again", () => {
+    render(<Harness startKind="stdio" />);
+
+    fireEvent.click(screen.getByRole("button", { name: "kind.function" }));
+    expect(screen.getByLabelText("spec.functionName")).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "kind.stdio" }));
+    expect(screen.queryByLabelText("spec.functionName")).toBeNull();
   });
 });

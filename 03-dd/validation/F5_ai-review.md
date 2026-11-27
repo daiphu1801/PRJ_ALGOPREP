@@ -80,9 +80,10 @@ Các giới hạn "tối đa 10 phần tử" là `[SoT: Suy luận]`: Sheet 5 c�
 | `expectedTurnCount` | số nguyên không âm, **bắt buộc** | `AIR-V09` | 400 | Presentation | file API mục 2.4 |
 | `expectedTurnCount` khớp | bằng `interview_sessions.turn_count` hiện tại | `AIR-112` | 409 | Application | |
 | Phiên đang chạy | `stage IN ('EXPLAIN','CHALLENGE','SCALE_UP')` | `AIR-111` | 409 | Application, và điều kiện `UPDATE` ở DB | `DB5:114` |
-| Một lượt mỗi phiên | khoá tư vấn theo `sessionId` | `AIR-113` | 409 | Application | |
+| Một lượt mỗi phiên | khoá Redis theo `sessionId` | `AIR-113` | 409 | Application | |
 | Chưa đủ lượt tối đa | `turn_count < max_turns` (khi có) và chưa đạt trần giai đoạn cuối | `AIR-114` | 409 | Application | `U302` EVT-14 bước 7 |
 | `hint_allowed` | phải là `true` (NULL của `SUBMISSION` coi là không) | `AIR-115` | 422 | Application | F5-28 |
+| Số lần gợi ý | `hint_count < ai.interview.max-hints-per-session` (mặc định 3) | `AIR-117` | 422 | Application | F5-05, đổi mã từ `AIR-116` 2026-11-08 |
 | Có thể chấm | `turn_count >= 1` | `AIR-116` | 422 | Application | Q4 |
 | `turn_count <= max_turns` | bất biến | | | Domain | `DB5:115` |
 | `turn_index` | duy nhất theo phiên | | | DB unique `(interview_session_id, turn_index)` | `DB5:140` |
@@ -118,7 +119,7 @@ Script là mã **không tin cậy**: `ai-review` không thực thi, không phân
 | :--- | :--- | :--- | :-: | :--- | :--- |
 | `featureCode` | `SOLUTION_REVIEW`, `MOCK_INTERVIEW`, `GENERATE_TESTCASE` | `AIR-V11` | 400 | Presentation | `DB5:19` |
 | `systemInstruction` | sau khi bỏ khoảng trắng đầu cuối không rỗng; tối đa 20.000 ký tự | `AIR-V12` | 400 | Presentation | `A301` Sheet 9 NO 5; trần `[SoT: Suy luận]` |
-| `modelId` | thuộc `ai.models.allowed`, so khớp **chính xác**, tối đa 50 ký tự; máy chủ không tin giá trị từ client | `AIR-202` | 422 | Application | `SEC5:88`, `DB5:24` |
+| `modelId` | là bí danh `default` hoặc thuộc `ai.models.allowed`, so khớp **chính xác**, tối đa 50 ký tự; máy chủ không tin giá trị từ client | `AIR-202` | 422 | Application | `SEC5:88`, `DB5:24` |
 | `responseGuards` | `GENERATE_TESTCASE`: bắt buộc `null`; hai feature kia: object đúng ba khoá boolean `citeLines`, `answerInVietnamese`, `noFullSolution`, **không khoá lạ**; `noFullSolution` nhận cả `true` lẫn `false` (không ép) | `AIR-V13` | 400 | Presentation | `DB5:25`, `DEC-2026-1011-ai-no-full-solution-can-be-turned-off` |
 | `changes[]` | 1 đến 3 phần tử, không trùng `featureCode` | `AIR-V14` | 400 | Presentation | `A301` EVT-13 |
 | `expectedActivePromptId` | UUID, khớp id `ACTIVE` hiện tại | `AIR-201` | 409 | Application, dưới `FOR UPDATE` | `A301` Sheet 9 NO 6 |
@@ -145,6 +146,9 @@ Câu chống chèn và câu theo `response_guards` là **văn bản cố định
 | `usdPerMillionTokens` | số không âm, tối đa 4 chữ số thập phân, giá trị `<= 999999.9999`; DB `CHECK (>= 0)` | `AIR-V18` | 400 | Presentation, DB | `DB5:230`; giao diện tự đưa âm hoặc không phải số về 0 (`A303` Q4), máy chủ vẫn kiểm |
 | `priceId`, `alertId` | UUID có thật | `AIR-121`, `AIR-120` | 404 | Application | |
 | `rangeDays` | `7`, `14`, `30`; mặc định `14` | `AIR-V19` | 400 | Presentation | `A302` EVT-1 |
+| `page`, `size` (mục 31A) | `page` từ 1 mặc định 1; `size` 1 đến 50 mặc định 20 | `AIR-V20` | 400 | Presentation | `[SoT: Suy luận]` |
+| `entryType`, `status`, `level`, `scoreBand`, `sort`, `order` (mục 31A) | `status` chỉ `COMPLETED`, `ABANDONED`; `sort` `startedAt` hoặc `score`; `order` `asc` hoặc `desc`; không phân biệt hoa thường với enum | `AIR-V21` | 400 | Presentation | `[SoT: Suy luận]` |
+| `q` (mục 31A) | cắt khoảng trắng, tối đa 100 ký tự, dài hơn thì cắt | | | Presentation | `[SoT: Suy luận]` |
 | Quyền ngân sách | `AI_TOKEN_BUDGET:UPDATE` cho 19, 20, 29; `AI_TOKEN_BUDGET:READ` cho 27 đến 31; 18 và 21 chấp nhận `AI_TOKEN_BUDGET:READ` hoặc `AI_CONFIG:READ`; 22 đến 26 đòi `AI_CONFIG:UPDATE` (23 đòi `AI_CONFIG:READ`); mọi endpoint kèm `baseCategory = ADMIN` | `AIR-301` | 403 | Application | `SEC5:68-75` |
 | Singleton | `ai_token_budget_configs.id = 1` (`CHECK (id = 1)`) | | | DB | `DB5:208` |
 

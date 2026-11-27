@@ -19,7 +19,9 @@ Bảng 1: Quy ước áp dụng cho mọi endpoint.
 
 ### 1.1. Phong bì lỗi
 
-Mọi lỗi trả về dạng `{ "error": { "code": "<tiền tố>-<số>", "message": "<chuỗi dự phòng>", "details": { ... }, "traceId": "<uuid>" } }`. `code` bắt buộc và là giá trị enum thật, `message` là chuỗi dự phòng, `details` tuỳ mã lỗi, `traceId` do máy chủ sinh để tra log. Backend trả `code`; giao diện dịch qua `messages/{locale}.json`, không dựa vào `message`. Phong bì này hợp nhất hai cách viết của `problem-bank` và `judge-orchestration` `[SoT: Suy luận]` (identity chỉ nêu `error.code`); ba module đang dùng chung.
+Mọi lỗi trả về theo RFC 9457 (`application/problem+json`), phẳng, do `GlobalExceptionHandler` của `algoprep-bootstrap` sinh ra: `{ "type": "about:blank", "title": "<tên trạng thái HTTP>", "status": <số>, "detail": "<chuỗi cho log>", "instance": "<đường dẫn>", "errorCode": "<tiền tố>-<số>", "details": { ... } }`. `errorCode` bắt buộc và là giá trị enum thật; `details` chỉ có ở mã lỗi cần kèm dữ liệu (ví dụ `IDT-104` kèm `restoreTicket`). Backend trả `errorCode`; giao diện dịch qua `messages/{locale}.json` (namespace `apiErrors`), không hiển thị `detail`. Các cột `error.code` ở bảng lỗi của file hợp đồng từng module nghĩa là trường `errorCode` này.
+
+**Sửa 2026-10-31 (`DEC-2026-1031-error-body-rfc9457`):** trước đây mục này ghi phong bì lồng `{ "error": { "code", "message", "details", "traceId" } }` `[SoT: Suy luận]`; backend đã chạy theo RFC 9457 từ nền bảo mật F1 và được kiểm bằng test, nên DD sửa theo code. `traceId` chưa có, bổ sung khi có quan sát hệ thống (không bắt buộc cho đợt này). Frontend vẫn đọc được cả dạng lồng cũ trong lúc các module khác chưa viết code.
 
 ### 1.2. Tiền tố mã lỗi
 
@@ -52,6 +54,9 @@ Bảng 3: Endpoint của `identity`. Cột # là số thứ tự trong `03-dd/ap
 | 8 | POST | `/api/v1/identity/auth/password/reset` | Xác nhận OTP + đặt mật khẩu mới (F1-17) |
 | 9 | GET | `/api/v1/identity/me/profile` | Tải hồ sơ, trạng thái mật khẩu, danh sách provider đã liên kết |
 | 10 | PATCH | `/api/v1/identity/me/profile` | Cập nhật hồ sơ, **trừ** `email` |
+| 74 | PUT | `/api/v1/identity/me/avatar` | Tải lên hoặc thay ảnh đại diện của chính mình (F1-35) |
+| 75 | DELETE | `/api/v1/identity/me/avatar` | Xoá ảnh đại diện của chính mình |
+| 76 | GET | `/api/v1/identity/users/{userId}/avatar` | Byte ảnh đại diện của một người, cho mọi người dùng đã đăng nhập |
 | 11 | POST | `/api/v1/identity/me/email-change/request` | Yêu cầu đổi email, gửi OTP tới email mới |
 | 12 | POST | `/api/v1/identity/me/email-change/confirm` | Xác nhận OTP, đổi `email` |
 | 13 | POST | `/api/v1/identity/me/password` | Đổi mật khẩu (đã có) hoặc đặt mật khẩu lần đầu (tài khoản chỉ OAuth) |
@@ -81,13 +86,14 @@ Bảng 3: Endpoint của `identity`. Cột # là số thứ tự trong `03-dd/ap
 | 35 | GET | `/api/v1/identity/admin/users?status=&role=&q=&page=&pageSize=` | Danh sách người dùng, lọc + phân trang |
 | 36 | PATCH | `/api/v1/identity/admin/users/{userId}/role` | Đổi vai trò (F1-13) |
 | 37 | PATCH | `/api/v1/identity/admin/users/{userId}/status` | Khoá/mở khoá tài khoản (F1-13) |
+| 77 | DELETE | `/api/v1/identity/admin/users/{userId}/avatar` | Gỡ ảnh đại diện của một người khác (F1-35) |
 | 38 | POST | `/api/v1/identity/admin/users/{userId}/reset-password` | Đặt lại mật khẩu hộ (F1-13) |
 | 39 | GET | `/api/v1/identity/admin/audit-logs` | Tìm/lọc nhật ký bằng cursor |
 | 40 | GET | `/api/v1/identity/admin/audit-logs/export` | Xuất CSV streaming, sáu cột tuỳ chọn |
 | 41 | GET | `/api/v1/identity/admin/dashboard/summary` | Thẻ người dùng hoạt động 30 ngày |
 | 42 | GET | `/api/v1/identity/admin/dashboard/user-growth` | Người dùng mới/quay lại trong sáu tháng |
 | 43 | GET | `/api/v1/identity/admin/dashboard/cross-module` | Thẻ tổng lượt nộp |
-| 44 | GET | `/api/v1/identity/instructor/dashboard/summary` | Legacy, không còn màn DD tiêu thụ; `INS0101` dùng #56 |
+| ~~44~~ | ~~GET~~ | ~~`/api/v1/identity/instructor/dashboard/summary`~~ | Đã thay bởi #56 (Owner chốt 2026-11-07); không có controller, không xây |
 | 45 | GET | `/api/v1/identity/instructor/dashboard/recent-activity?classId=` | Feed "Hoạt động gần đây", lọc theo lớp qua `scope_class_id` |
 | 46 | GET | `/api/v1/identity/me/recent-activity` | "Hoạt động gần đây" của cá nhân (10 mục, 90 ngày) |
 | 47 | GET | `/api/v1/identity/me/progress/summary` | Best-attempt theo bài, tỉ lệ Accepted, "Đúng ngay lần đầu", ngôn ngữ dùng nhiều nhất |
@@ -120,7 +126,7 @@ Bảng 3: Endpoint của `identity`. Cột # là số thứ tự trong `03-dd/ap
 
 ### 2.2. `problem-bank` (58 endpoint)
 
-Bảng 4: Endpoint của `problem-bank`. Cột Mục là số mục trong `03-dd/api/F2_problem-bank.md`; đường dẫn đầy đủ gồm base `/api/v1/problem-bank`.
+Bảng 4: Endpoint của `problem-bank`. Cột Mục là số mục trong `03-dd/api/F2_problem-bank.md`; đường dẫn đầy đủ gồm base `/api/v1/problem-bank`. Bốn endpoint đọc bài đã xuất bản (mục 2, 3, 7, 8) mở cho khách không có phiên (`DEC-2026-1126-guest-browse-published-problems`, `F2_problem-bank.md` mục 0A); các endpoint còn lại cần phiên.
 
 | Mục | Method | Path | Operation |
 | :--- | :--- | :--- | :--- |
@@ -176,7 +182,7 @@ Bảng 4: Endpoint của `problem-bank`. Cột Mục là số mục trong `03-dd
 | 49 | POST | `/api/v1/problem-bank/authoring/problems/{problemId}/testcases/generate` | `GenerateTestcasesWithAi` |
 | 50 | GET | `/api/v1/problem-bank/instructor/class-assignments` | `ListClassAssignments` |
 | 51 | GET | `/api/v1/problem-bank/instructor/class-assignments/summary` | `GetInstructorAssignmentSummary` |
-| 52 | GET | `/api/v1/problem-bank/instructor/classes/{classId}/assignable-problems` | `ListAssignableProblems` |
+| 52 | GET | `/api/v1/problem-bank/instructor/classes/{classId}/assignable-problems` | `ListAssignableProblems` (từ 2026-11-23: tham số `levelCode`, `topic`, trường `assigned`, liệt kê cả bài đã giao; hợp đồng đầy đủ ở `03-dd/api/F2_problem-bank.md` mục 52, backend đang triển khai) |
 | 53 | POST | `/api/v1/problem-bank/instructor/classes/{classId}/assignments` | `AssignProblemsToClass` |
 | 54 | DELETE | `/api/v1/problem-bank/instructor/classes/{classId}/assignments/{problemId}` | `RemoveClassAssignment` |
 | 55 | GET | `/api/v1/problem-bank/instructor/assigned-problems/top` | `ListMyAssignedProblems` |
@@ -210,7 +216,7 @@ Bảng 6: Endpoint của `judge-orchestration`. Cột Mục là số mục trong
 | 13 | GET | `/api/v1/judge/instructor/submissions` | |
 | 14 | GET | `/api/v1/judge/instructor/submissions/{submissionId}` | |
 | 15 | GET | `/api/v1/judge/instructor/classes/{classId}/students/{studentId}/submissions` | |
-| 16 | GET | `/api/v1/judge/admin/queue/snapshot` | |
+| 16 | GET | `/api/v1/judge/admin/queue/snapshot` | Thêm 2026-11-22: `finishedLastMinute`, `estimatedClearSeconds`, `consumers { target, active, reportedAt, lastScaling }` (nullable); hợp đồng ở mục 16 của file F4, không thêm mã lỗi |
 | 17 | GET | `/api/v1/judge/admin/queue/jobs` | |
 | 18 | GET | `/api/v1/judge/admin/queue/infra-summary` | |
 | 19 | PUT | `/api/v1/judge/admin/queue/consumption` | |
@@ -239,6 +245,7 @@ Bảng 6a: Endpoint của `ai-review`. Cột Mục là số mục trong `03-dd/a
 | 11 | POST | `/api/v1/ai/interview-sessions/{sessionId}/hint` | `RequestInterviewHint` |
 | 12 | POST | `/api/v1/ai/interview-sessions/{sessionId}/complete` | `CompleteInterviewSession` |
 | 13 | GET | `/api/v1/ai/me/interview-sessions/summary` | `GetMyInterviewSummary` |
+| 31A | GET | `/api/v1/ai/me/interview-sessions` | `ListMyInterviewSessions` |
 | 14 | GET | `/api/v1/ai/admin/prompt-templates` | `ListPromptTemplates` |
 | 15 | GET | `/api/v1/ai/admin/prompt-templates/{featureCode}/history` | `GetPromptTemplateHistory` |
 | 16 | PUT | `/api/v1/ai/admin/prompt-templates/{featureCode}/draft` | `UpdatePromptTemplateDraft` |

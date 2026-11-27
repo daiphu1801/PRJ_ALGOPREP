@@ -8,7 +8,7 @@
   mục 7.3 và các ghi chú quy ước.
 - Mã màn `INS0202` theo bảng mã ở `02-bd/_rules/bd-template-9sheet.md` mục 8 dòng 152; tên file mang tiền
   tố mã.
-- Màn này không có màn con. Popup: Xác nhận gỡ bài khỏi lớp, và popup "Giao bài cho lớp" (nút "+ Gán từ ngân hàng bài toán" mở popup ngay trên màn này từ V0.4, `DEC-2026-1011-class-assignment-popup-on-assignments-screen`).
+- Màn con: **Giao bài cho lớp (`INS0207`)**, mở từ nút "+ Gán từ ngân hàng bài toán" (V0.18, `DEC-2026-1123-assign-problems-dedicated-screen`; trước đó là popup từ V0.4 rồi liên kết sang danh sách bài từ V0.17, cả hai đã bị thay). Popup còn lại của màn này: Xác nhận gỡ bài khỏi lớp.
 - Khung điều hướng bên trái **không mô tả lại ở đây** — dùng chung `02-bd/screens/teacher/_shell.md`.
   Khu Giảng viên **không có toolbar dùng chung**, nên hàng đầu tiên trong `<main>` là item của chính màn
   này và được mô tả ở Khu vực A [Nguồn: 02-bd/screens/teacher/_shell.md:30,113-114].
@@ -21,6 +21,7 @@
 > **Không thiết kế** việc soạn hay quản lý bản thân bài toán — thuộc hai màn dùng chung
 > `problem_management` và `problem_authoring` [Nguồn: DEC-2026-0825-shared-content-authoring-screens].
 > **Đã đổi 2026-10-11 (V0.4, V0.5; xác nhận 2026/10/14 khi đóng Q7):** việc giao bài là popup "Giao bài cho lớp" **ngay trên màn này** theo `DEC-2026-1011-class-assignment-popup-on-assignments-screen`, thay cho vị trí `problem_list` của `DEC-2026-0831-class-assignments-round2` (modal chọn lớp trên từng dòng `problem_list` không còn là hướng thiết kế). Các đoạn bên dưới còn ghi "sang `problem_list`" được đánh dấu lỗi thời tại chỗ.
+> **Đổi lần nữa 2026-11-23 (V0.18, chưa duyệt hình):** ~~popup "Giao bài cho lớp" ngay trên màn này~~ và ~~liên kết sang danh sách bài `/instructor/problems?assignTo=` (V0.17)~~ đều bị `DEC-2026-1123-assign-problems-dedicated-screen` thay: nút "+ Gán từ ngân hàng bài toán" là liên kết sang **màn con riêng `INS0207`** (`/instructor/assignments/new?classId=<id>`), thiết kế ở `02-bd/screens/teacher/INS0207_class_assign_problems.md`. Yêu cầu nghiệp vụ không đổi.
 > **Không thiết kế** bất kỳ giao diện chấm lại nào — tính năng đã loại hoàn toàn khỏi phạm vi
 > [Nguồn: DEC-2026-0828-remove-rejudge-scope].
 
@@ -45,11 +46,11 @@
 | Tên vật lý (slug) | `class_assignments` |
 | Trục tài liệu | Màn hình (`02-bd/screens/`) |
 | Actor | A2 (`INSTRUCTOR`) |
-| Phiên bản | V0.13 |
+| Phiên bản | V0.19 |
 | Người tạo | Nhóm phát triển AlgoPrep |
 | Ngày tạo | 2026/09/21 |
 | Người cập nhật | Nhóm phát triển AlgoPrep |
-| Ngày cập nhật | 2026/10/18 |
+| Ngày cập nhật | 2026/11/23 |
 
 ---
 
@@ -70,6 +71,12 @@
 | V0.11 | Sheet 7.2 (ghi chú sau bảng) | Áp `DEC-2026-1014-keep-learning-history-on-leave`: sửa câu "khác hẳn luồng gỡ học viên F1-26" vì gỡ học viên nay cũng giữ lịch sử (chỉ đặt `left_at`). Không đổi item, EVT. ~~**Còn mở:** các số đếm lượt nộp/tỉ lệ AC "của học viên thuộc lớp" (Sheet 4 NO 8, Sheet 5 C) có tính học viên đã rời lớp hay không chưa được quyết định nêu rõ `[SoT: Suy luận]`~~ **ĐÃ CHỐT 2026-10-14 (`DEC-2026-1014-class-leave-details`), xem V0.12** | 2026/10/14 | AI |
 | V0.12 | Sheet 4 (NO 8), 5 (B NO 4, C NO 9, 10), 6 (DTO NO 5, 12, 13), 7.2 (NO 8, ghi chú), 7.3 (NO 4) | Áp `DEC-2026-1014-class-leave-details` (tiêu chí ponytail bậc 5): cột "Lượt nộp", cột "AC" và thẻ "AC trung bình" chỉ đếm lượt nộp của học viên **đang trong lớp** (`class_enrollments.left_at IS NULL`), thống nhất với tổng số học viên và tiến độ lớp; học viên vào lại bằng mã mời thì được tính lại. Đóng điểm còn mở của V0.11. Nhu cầu cho DD `judge-orchestration`: tổng hợp theo lớp phải lọc theo ghi danh còn hiệu lực lấy từ `identity`. Không đổi item, EVT | 2026/10/14 | AI |
 | V0.13 | Sheet 4 (4.4, mục Hiện trạng bản dựng mới) | Dựng prototype Phase 4-5 (bài giao theo lớp, phân trang 20, from=). Chỉ ghi hiện trạng, không đổi yêu cầu hay quyết định thiết kế. Bản dựng đã có: trạng thái danh sách nằm trên URL, 20 dòng mỗi trang cố định, cột "Chủ đề" theo Q5, cột "Lượt nộp"/"AC" theo lớp đang chọn (Q11), popup gỡ chỉ hỏi lớp ở tab "Tất cả" (Q6), nút "Gỡ khỏi lớp" sau "Chi tiết" (Q7). Cập nhật số dòng trích dẫn mã ở 4.4. **Chưa duyệt hình.** Thẻ "AC trung bình" vẫn chưa dựng | 2026/10/18 | AI |
+| V0.14 | Hiện trạng bản dựng | Nối API thật của F2 (2026-11-06, F2-6 phần 2, **chưa duyệt hình**, chưa chạy trình duyệt với backend thật): Nối `#49` đến `#53`: danh sách do máy chủ lọc theo lớp và tên, phân trang 20 (tìm kiếm trễ 300 ms, giữ trang cũ khi nạp trang mới); `submissionCount` và `acRate` là `null` thì hiện `-`; dòng mô tả chỉ có số khi `#50` đã trả lời. Giao bài (`#52`) báo từng kết quả: mới, bỏ qua (đã giao), bị từ chối kèm lý do từ mã `PRB-037`, `PRB-010`, `PRB-056`; hộp chọn bài (`#51`) phân trang và tìm theo máy chủ, giữ lựa chọn khi sang trang. Gỡ (`#53`): `PRB-025` hiện chữ riêng và nạp lại danh sách. `PRB-005`, `PRB-002`, `PRB-058` dịch qua `apiErrors`. Lỗi tải danh sách hiện thông báo lỗi riêng. Còn mock: `useClassAssignments()` không phân trang của INS0101 và INS0204; `#54` (khối Bài tập của tôi của INS0101). Không đổi RD, DTO hay endpoint | 2026/11/06 | Claude |
+| V0.15 | Sheet 4 (4.4, hàng "Thẻ AC trung bình"), Câu hỏi mở | Hiển thị `avgAcRatePercent` của `#50` (**chưa duyệt hình**): bản dựng không vẽ dải thẻ (quy tắc owner 2026-10-13, không dải thẻ nhỏ ở màn danh sách), nên con số nằm ở dòng mô tả đầu màn, sau số bài đã gán: "{n} bài đã gán cho lớp ... · AC trung bình {x}%". `null` hiện "-", không bao giờ 0% bịa ra; 0 thật hiện "0%". Chỗ đặt này là `[SoT: Suy luận]`: Sheet 5 khu vực B NO 4 mô tả một thẻ riêng, bản dựng gộp vào dòng tóm tắt để khỏi tạo dải thẻ; chờ owner xem hình, nếu muốn thẻ riêng thì phải đổi quy tắc 2026-10-13. Mã: `05-coding/frontend/src/views/teacher/class-assignments/ui/class-assignments-view.tsx:196-212`; khoá `classAssignments.header.avgAcRate`. Không đổi RD, DTO | 2026/11/07 | Claude |
+| V0.16 | Hiện trạng bản dựng (bảng bài đã gán) | Sửa 2026-11-22, **chưa duyệt hình, RD không đổi**, chỉ trình bày: bảng không còn thanh cuộn ngang (bỏ `minWidth`, tên bài tự xuống dòng); cột "AC" làm tròn số nguyên ("22%" thay vì "22.22222222222222%"), dòng tóm tắt đầu trang cũng làm tròn; cột "Gán cho lớp" hiện lớp đầu kèm "+n", đầy đủ ở tooltip (cùng quy ước cột "Chủ đề", Q5); hai nút chữ "Chi tiết" và "Gỡ khỏi lớp" thành hai icon (xem, gỡ) có tooltip, tên truy cập giữ nguyên; thẻ bảng dãn hết chiều cao còn lại (padding do layout shared giữ), thanh phân trang ẩn khi chỉ có một trang. Menu "Lọc theo lớp" mở lệch về bên trái nên không bị cắt ở mép phải (`FilterMenu align="end"`, cũng áp cho `INS0203` và bộ lọc kết quả của `INS0206`). Mã: `05-coding/frontend/src/views/teacher/class-assignments/ui/class-assignments-view.tsx`, `src/shared/ui/data/filter-menu.tsx` | 2026/11/22 | Claude |
+| V0.17 | Sheet 3 (chuyển màn), 4, 5 (nút "Gán từ ngân hàng bài toán"), 8 (sự kiện mở popup), hiện trạng bản dựng | **Đã bị V0.18 thay (2026-11-23, `DEC-2026-1123-assign-problems-dedicated-screen`).** ~~Áp `DEC-2026-1122-assign-from-problem-list` (tiêu chí ponytail bậc 4, chủ dự án chọn 2026-11-22), **chưa duyệt hình**: popup "Giao bài cho lớp" trên màn này **bỏ**. Nút "+ Gán từ ngân hàng bài toán" nay là liên kết tới `/instructor/problems?assignTo=<classId>` (rỗng khi bộ lọc lớp là "Tất cả"). Ở danh sách Quản lý bài tập (`SHR0201`) giảng viên tick bài rồi bấm "Giao cho lớp" trên thanh thao tác; hộp nhỏ chỉ chọn lớp (mặc định lớp từ `assignTo`, nếu không thì lớp đầu tiên) và xác nhận "Giao n bài"; danh sách mở sẵn bộ lọc "Đã xuất bản" khi có `assignTo`. Kết quả báo theo từng loại như cũ (giao mới, đã giao từ trước bị bỏ qua, bị từ chối vì chưa xuất bản `PRB-037`...), rồi chuyển về `/instructor/assignments?classId=<id>`. Hợp đồng `AssignProblemsToClass` (F2 #52) không đổi; `ListAssignableProblems` không còn nơi gọi ở frontend. **Các phần Sheet còn mô tả popup (Sheet 4 hộp thoại, item popup, EVT mở popup) cần sửa theo khi chủ dự án duyệt hình**; RD `INS0202` và DD `problem-bank` cũng vậy. Mã: `05-coding/frontend/src/features/assign-problems/ui/assign-to-class-dialog.tsx`, `src/views/shared/problem-management/ui/problem-management-view.tsx`, `src/views/teacher/class-assignments/ui/class-assignments-view.tsx`~~ | 2026/11/22 | Claude |
+| V0.18 | Phương châm, Sheet 1, 3 (chuyển màn, sơ đồ), 4 (4.1, 4.4, 4.5), 5 (A NO 3), 6 (A NO 2, 3), 8 (EVT-2), 9 (NO 1), Câu hỏi mở Q7, Q12 | Áp `DEC-2026-1123-assign-problems-dedicated-screen` (chủ dự án duyệt 2026-11-23, tiêu chí ponytail bậc 3 và bậc 4), **chưa duyệt hình**: nút "+ Gán từ ngân hàng bài toán" là liên kết sang **màn con `INS0207` "Giao bài cho lớp"** (`/instructor/assignments/new?classId=<id>`; tab "Tất cả" thì liên kết không kèm lớp). Bỏ cách giao ở danh sách Quản lý bài tập (V0.17: thao tác "Giao cho lớp", `?assignTo`, hộp chọn lớp) và popup (V0.4). Màn con có BD riêng; màn này chỉ còn nút, bảng và popup gỡ bài. Sau khi giao, người dùng về `/instructor/assignments?classId=<id>`. Hợp đồng `AssignProblemsToClass` (F2 #52) không đổi; `ListAssignableProblems` (F2 #51) được mở rộng, xem `03-dd/api/F2_problem-bank.md` mục 52. Mã: `05-coding/frontend/src/views/teacher/class-assignments/ui/class-assignments-view.tsx:232-242`, `src/views/teacher/class-assign-problems/ui/class-assign-problems-view.tsx` | 2026/11/23 | AI |
+| V0.19 | Câu hỏi mở Q12 | Chủ dự án chốt 2026/11/23 (**chưa duyệt hình**): sau khi giao xong, ứng dụng quay về tab của lớp vừa giao (`/instructor/assignments?classId=<lớp vừa giao>`), đúng hành vi hiện tại, không đổi. Q12 đóng | 2026/11/23 | AI |
 
 ---
 
@@ -98,7 +105,7 @@ viên [Nguồn: 02-bd/screens/teacher/_shell.md:75,78]; nhãn theo mã [Nguồn:
 
 #### Giao bài cho lớp → Ngân hàng bài toán (`problem_list`, góc nhìn giảng viên) — LỖI THỜI từ V0.4
 
-[Đã đóng 2026/10/14, `DEC-2026-1014-instructor-batch3-4-contracts-and-removal` (Q7 nửa sau)] Nút "+ Gán từ ngân hàng bài toán" mở popup "Giao bài cho lớp" ngay trên màn này theo `DEC-2026-1011-class-assignment-popup-on-assignments-screen`; **không** còn điều hướng sang `problem_list` và không còn truyền lớp đang lọc sang màn khác (lớp được chọn ngay trong popup). Đoạn mô tả dưới đây giữ làm lịch sử.
+[Đã đóng 2026/10/14, `DEC-2026-1014-instructor-batch3-4-contracts-and-removal` (Q7 nửa sau)] Nút "+ Gán từ ngân hàng bài toán" mở popup "Giao bài cho lớp" ngay trên màn này theo `DEC-2026-1011-class-assignment-popup-on-assignments-screen` (~~popup~~ từ V0.18 là màn con `INS0207`, xem mục kế tiếp); **không** còn điều hướng sang `problem_list` và không còn truyền lớp đang lọc sang màn khác (lớp được chọn ngay trong popup). Đoạn mô tả dưới đây giữ làm lịch sử.
 
 [Điều kiện mở] Bấm nút "+ Gán từ ngân hàng bài toán" ở hàng đầu
 [Nguồn: 09-layoutBase/Giáo viên - Bài tập của tôi.dc.html:120].
@@ -114,6 +121,20 @@ lớp đó để modal bên kia chọn sẵn — đề xuất của BD, xem Câu
 
 [Khi thành công] Rời màn hiện tại sang `problem_list`. Màn này không có thay đổi chưa lưu nên không hỏi
 xác nhận.
+
+[Khi huỷ] Không có.
+
+#### Giao bài cho lớp → Giao bài cho lớp (màn con `INS0207`)
+
+[Điều kiện mở] Bấm nút "+ Gán từ ngân hàng bài toán" ở hàng đầu; nút là liên kết, chỉ hiện khi có `CLASS_MANAGEMENT:UPDATE` (V0.18, DEC-2026-1123-assign-problems-dedicated-screen).
+
+[Chế độ mở] Mở màn con `INS0207` (`/instructor/assignments/new`) trong cùng khung Giảng viên, thay cho popup (V0.4) và cho việc giao ở danh sách Quản lý bài tập (V0.17).
+
+[Thông tin truyền] `classId` của tab lớp đang chọn, qua tham số `?classId=`. Tab "Tất cả" thì không truyền lớp; màn con tự chọn lớp đầu tiên trong danh sách lớp phụ trách.
+
+[Giá trị trả về] Không có giá trị trả về trực tiếp. Màn con tự đưa người dùng về `/instructor/assignments?classId=<id>` sau khi giao xong hoặc khi bấm mũi tên quay lại.
+
+[Khi thành công] Rời màn hiện tại sang `INS0207`. Màn này không có thay đổi chưa lưu nên không hỏi xác nhận; khi quay về thì tải lại bảng và dòng tóm tắt.
 
 [Khi huỷ] Không có.
 
@@ -157,7 +178,8 @@ lúc gỡ, nhưng **lịch sử nộp bài, điểm và tiến độ của học
 ```mermaid
 flowchart LR
     nav["Khung điều hướng Giảng viên<br/>mục Bài giao cho lớp"] -->|"chọn Bài giao cho lớp"| main["Giao bài cho lớp<br/>class_assignments"]
-    main -->|"+ Gán từ ngân hàng bài toán"| bank["Popup Giao bài cho lớp"]
+    main -->|"+ Gán từ ngân hàng bài toán"| bank["Giao bài cho lớp (màn con)<br>class_assign_problems"]
+    bank -->|"Giao xong hoặc quay lại"| main
     main -->|"Chi tiết"| detail["Chi tiết bài tập<br/>problem_detail"]
     main -->|"Gỡ khỏi lớp"| rm["Popup Xác nhận gỡ bài khỏi lớp"]
     rm --> main
@@ -166,9 +188,9 @@ flowchart LR
     classDef screen fill:#E3F2FD,stroke:#3B82F6,color:#000
     classDef popup fill:#FFF7CC,stroke:#D4A72C,color:#000
 
-    class nav,detail source
+    class nav,detail,bank source
     class main screen
-    class rm,bank popup
+    class rm popup
 ```
 
 [Nguồn: 09-layoutBase/Giáo viên - Bài tập của tôi.dc.html:115-121,152-167; 01-rd/screens/teacher/INS0202_class_assignments.md:63-86,122-124]
@@ -192,7 +214,7 @@ toán để gán thêm, và gỡ một bài khỏi một lớp
 2. **Lọc và tìm**: gõ từ khoá vào ô "Tìm theo tên bài" và/hoặc chọn một tab lớp. Hai bộ lọc cộng dồn
    (AND), số kết quả hiển thị ở góc phải hàng lọc
    [Nguồn: 09-layoutBase/Giáo viên - Bài tập của tôi.dc.html:279-284].
-3. **Gán thêm bài**: bấm "+ Gán từ ngân hàng bài toán" để mở popup "Giao bài cho lớp" ngay trên màn này; việc chọn lớp và chọn bài diễn ra trong popup (V0.4, `DEC-2026-1011-class-assignment-popup-on-assignments-screen`; trước đó ghi sang `problem_list`, theo `DEC-2026-0831-class-assignments-round2`, đã thay).
+3. **Gán thêm bài**: bấm "+ Gán từ ngân hàng bài toán" để sang màn con `INS0207` "Giao bài cho lớp" (V0.18, `DEC-2026-1123-assign-problems-dedicated-screen`); việc chọn lớp, lọc, chọn nhiều bài và xác nhận một lần diễn ra ở màn con, xong thì về lại màn này. Trước đó: popup trên màn này (V0.4) rồi danh sách Quản lý bài tập (V0.17), cả hai đã thay.
 4. **Xem chi tiết một bài**: bấm "Chi tiết" để sang `problem_detail`.
 5. **Gỡ bài khỏi lớp**: bấm "Gỡ khỏi lớp" (sau nút "Chi tiết", luôn hiện) trên một dòng; **một lớp mỗi lần**, ở tab "Tất cả" thì chọn lớp trong popup xác nhận. Gỡ là
    **ẩn mềm**: dòng `class_assignments` được đặt `removed_at`, không xoá dòng và không đụng tới lịch sử
@@ -207,14 +229,14 @@ toán để gán thêm, và gỡ một bài khỏi một lớp
   Bài đã gỡ không hiển thị; không có chế độ xem lịch sử gán/gỡ ở màn này.
 - **Không** tạo, sửa, xoá bản thân bài toán — thuộc `problem_authoring` và `problem_management`
   [Nguồn: DEC-2026-0825-shared-content-authoring-screens].
-- ~~Không chọn bài và chọn lớp để gán tại màn này — thao tác gán nằm trên `problem_list`~~ **Đã đổi (V0.4, V0.5):** thao tác gán là popup "Giao bài cho lớp" ngay trên màn này, `DEC-2026-1011-class-assignment-popup-on-assignments-screen`.
+- ~~Không chọn bài và chọn lớp để gán tại màn này — thao tác gán nằm trên `problem_list`~~ ~~**Đã đổi (V0.4, V0.5):** thao tác gán là popup "Giao bài cho lớp" ngay trên màn này~~ **Đổi lần nữa (V0.18):** màn này **không** chọn bài và chọn lớp để gán; thao tác gán nằm ở màn con `INS0207`, `DEC-2026-1123-assign-problems-dedicated-screen`.
 - **Không** quản lý lớp hay học viên — thuộc `class_management` [Nguồn: DEC-2026-0828-split-class-management-assignments].
 - **Không** có giao diện chấm lại [Nguồn: DEC-2026-0828-remove-rejudge-scope].
 - **Không** hiển thị dữ liệu của học viên cụ thể; số liệu ở màn này ở mức bài toán, không ở mức người học.
 
 [Quyền sử dụng]
 - Xem: được, khi có `CLASS_MANAGEMENT:READ`.
-- Thêm: không — việc gán bài xảy ra ở màn `problem_list`.
+- Thêm: không tại màn này — việc gán bài xảy ra ở màn con `INS0207`; nút mở màn con chỉ hiện khi có `CLASS_MANAGEMENT:UPDATE` (V0.18; trước đó câu này ghi `problem_list`, đã lỗi thời).
 - Sửa: được — gỡ bài khỏi lớp là thao tác `CLASS_MANAGEMENT:UPDATE` (ẩn mềm, không phải xoá)
   [Nguồn: DEC-2026-0831-class-assignments-round2].
 - Xoá: không. Màn này không có thao tác xoá thật nào.
@@ -274,8 +296,9 @@ Bảng 4.4a: Hiện trạng bản dựng của INS0202 (đối chiếu với `cl
 | Cột "Lượt nộp" và "AC" theo phạm vi lớp (Q11) | `statsFor`: tab lớp thì lấy `classStats[classId]`, tab "Tất cả" lấy tổng của bài; `classStats` là tuỳ chọn trong kiểu. Số theo lớp trong mock chỉ là chia tổng ra các lớp; endpoint thật tổng hợp theo lớp, không tính học viên đã rời lớp | `class-assignments-view.tsx:105-107`; `entities/class-assignment/model/types.ts:16-30`; `entities/class-assignment/api/__mock__/class-assignment-mocks.ts:94,116` | Dựng (số liệu mock), chưa duyệt hình |
 | Popup gỡ bài (Q6) | Ô chọn lớp chỉ hiện ở tab "Tất cả" khi bài gán cho hơn một lớp, gỡ một lớp mỗi lần; ở tab lớp thì lớp là lớp của tab | `class-assignments-view.tsx:177-182,308-320` | Dựng, chưa duyệt hình |
 | Vị trí nút "Gỡ khỏi lớp" (Q7) | Nút chữ sau "Chi tiết", luôn hiện | `class-assignments-view.tsx:167-186` | Dựng, chưa duyệt hình |
-| Thẻ "AC trung bình" | Chưa dựng: view chỉ dùng `assignedCount` của `summary` cho dòng tóm tắt; thẻ "Lượt nộp tuần này" đã bỏ theo quyết định | `class-assignments-view.tsx:191-199` | Chưa dựng |
+| Thẻ "AC trung bình" | Dựng dạng chữ trong dòng tóm tắt đầu màn (V0.15), không phải thẻ riêng; `null` hiện "-"; thẻ "Lượt nộp tuần này" đã bỏ theo quyết định | `class-assignments-view.tsx:196-212` | Dựng, `[SoT: Suy luận]` về chỗ đặt, chưa duyệt hình |
 | Bộ lọc lớp | Dựng bằng `FilterMenu` (danh sách chọn một lớp), không phải cụm tab như mô tả ở thiết kế | `class-assignments-view.tsx:224-237` | Khác thiết kế về hình thức, chờ chủ dự án xem |
+| Nút giao bài sang màn con (V0.18) | Nút "+ Gán từ ngân hàng bài toán" là liên kết tới `/instructor/assignments/new?classId=<id>`; tab "Tất cả" thì liên kết `/instructor/assignments/new` không kèm lớp. Không còn popup giao bài | `views/teacher/class-assignments/ui/class-assignments-view.tsx:232-242` | Dựng, chưa duyệt hình |
 
 Kiểm thử: `class-assignments-view.test.tsx` có 3 test mới cho Q5, Q11, Q6 (dòng 29, 36, 46) [Nguồn: 05-coding/frontend/src/views/teacher/class-assignments/ui/class-assignments-view.test.tsx:29-56].
 
@@ -298,6 +321,7 @@ Hai điều khiển dưới đây **không có trong prototype** và do BD này 
 | Bảng bài đã gán | `widgets/class-assignment-table` + `entities/class-assignment` | Prototype `:136-171` |
 | Tab lọc theo lớp | Dùng lại `entities/class` | Đã khai ở `02-bd/screens/teacher/INS0201_class_management.md:298-300`, không định nghĩa lại |
 | Popup gỡ bài | `features/class-assignment-remove` | BD này thiết kế bổ sung |
+| Màn con giao bài (V0.18) | `views/teacher/class-assign-problems`, route `app/(instructor)/instructor/assignments/new/page.tsx` | Thiết kế ở `INS0207`, không thuộc slice của màn này [Nguồn: 05-coding/frontend/src/app/(instructor)/instructor/assignments/new/page.tsx:1-5] |
 
 `[Suy luận]` — ánh xạ slice do BD đề xuất, DD màn hình chốt lại. `entities/class` và
 `entities/class-student` là tài sản chung của cụm lớp, màn này chỉ dùng lại `entities/class`.
@@ -318,7 +342,7 @@ Hai điều khiển dưới đây **không có trong prototype** và do BD này 
 | Hàng đầu | | | | | | | | | | | | | |
 | | 1 | Tiêu đề màn | `classAssignments.header.title` | - | - | Label | String | - | - | O | Bài giao cho lớp | - | Tên màn hiển thị cố định<br>[Nguồn giá trị] Nhãn tĩnh i18n<br>[EVT liên quan] - |
 | | 2 | Dòng tóm tắt | `classAssignments.header.summary` | `problem.class_assignments` | `id` | Label | String | - | - | O | - | `{số} bài đã gán cho lớp · từ ngân hàng bài toán chung` | Tổng quy mô bài đã giao của người đang đăng nhập<br>[Công thức] Đếm `problem_id` phân biệt trong `class_assignments` có `removed_at IS NULL` và `class_id` thuộc các lớp người đăng nhập phụ trách<br>[EVT liên quan] EVT-1 |
-| | 3 | Gán từ ngân hàng bài toán | `classAssignments.header.btnAssignFromBank` | - | - | Button | - | - | - | I | - | `+ Gán từ ngân hàng bài toán` | ~~Điều hướng sang `problem_list` ở góc nhìn giảng viên~~ **Từ V0.4 mở popup "Giao bài cho lớp" ngay trên màn này** (`DEC-2026-1011-class-assignment-popup-on-assignments-screen`); chi tiết popup nằm ở EVT-2<br>[Nguồn giá trị] -<br>[EVT liên quan] EVT-2 |
+| | 3 | Gán từ ngân hàng bài toán | `classAssignments.header.btnAssignFromBank` | - | - | Link | - | - | - | I | - | `+ Gán từ ngân hàng bài toán` | Liên kết sang màn con `INS0207` "Giao bài cho lớp" (V0.18, `DEC-2026-1123-assign-problems-dedicated-screen`); mang theo `?classId=` của tab lớp đang chọn, tab "Tất cả" thì không kèm lớp. ~~Điều hướng sang `problem_list`~~ ~~mở popup (V0.4)~~ ~~sang danh sách Quản lý bài tập (V0.17)~~ đều đã thay<br>[Nguồn giá trị] Nhãn tĩnh i18n; tham số lấy từ tab lọc lớp (C NO 2)<br>[EVT liên quan] EVT-2 |
 
 ### Khu vực B — Thẻ số liệu
 
@@ -373,8 +397,8 @@ Hai điều khiển dưới đây **không có trong prototype** và do BD này 
 | :--- | --: | :--- | :-: | :--- |
 | Hàng đầu | | | | |
 | | 1 | Tiêu đề màn | Có | - |
-| | 2 | Dòng tóm tắt | Có | [Tự động đặt] Tính lại sau mỗi lần gỡ bài thành công và sau mỗi lần quay lại màn từ `problem_list`. Trong lúc tải hiển thị khung chờ một dòng. |
-| | 3 | Gán từ ngân hàng bài toán | Điều kiện | [Điều kiện hiển thị] Chỉ hiển thị khi người dùng có `CLASS_MANAGEMENT:UPDATE` — thao tác gán bài diễn ra ở màn đích nhưng nút này là đường vào duy nhất từ đây.<br>[Điều kiện kích hoạt] Luôn kích hoạt, kể cả khi bảng đang tải: nút không phụ thuộc dữ liệu của màn. |
+| | 2 | Dòng tóm tắt | Có | [Tự động đặt] Tính lại sau mỗi lần gỡ bài thành công và sau mỗi lần quay lại màn từ `INS0207`. Trong lúc tải hiển thị khung chờ một dòng. |
+| | 3 | Gán từ ngân hàng bài toán | Điều kiện | [Điều kiện hiển thị] Chỉ hiển thị khi người dùng có `CLASS_MANAGEMENT:UPDATE` — thao tác gán bài diễn ra ở màn con `INS0207` nhưng nút này là đường vào duy nhất từ đây.<br>[Điều kiện kích hoạt] Luôn kích hoạt, kể cả khi bảng đang tải: nút không phụ thuộc dữ liệu của màn. |
 
 ### Khu vực B — Thẻ số liệu
 
@@ -490,7 +514,7 @@ gọi lại đúng tên, không đặt tên mới.
 | NO | Loại | Sự kiện | Chi tiết | Chuyển màn | Gọi API | Tên xử lý | Ghi chú |
 | --: | :--- | :--- | :--- | :-: | :-: | :--- | :--- |
 | 1 | Màn hình | Khởi tạo màn | Vào màn thì tải số liệu tổng, danh sách lớp và bảng bài đã gán. | Không | Có | `GetInstructorAssignmentSummary`, `ListInstructorClasses`, `ListClassAssignments` | [Các bước]<br>1. Kiểm tra quyền `CLASS_MANAGEMENT:READ`.<br>2. Hiển thị khung chờ cho dải thẻ và bảng.<br>3. Tải song song ba nhóm dữ liệu, bộ lọc mặc định "Tất cả", ô tìm kiếm rỗng.<br>[Khi thành công] Hiển thị đủ hàng đầu, dải thẻ số liệu, hàng lọc và bảng bài đã gán.<br>[Khi lỗi] Hiển thị lỗi tại đúng khối tải thất bại kèm nút "Thử lại"; các khối tải được vẫn hiển thị bình thường, không rời màn. |
-| 2 | Nút | Mở popup Giao bài cho lớp | Bấm "+ Gán từ ngân hàng bài toán". | Không | Không | - | [Các bước]<br>1. Mở popup "Giao bài cho lớp" ngay trên màn này: chọn một lớp, tick các bài đã xuất bản chưa giao cho lớp đó, nút "Giao n bài", toast kết quả; có ô tìm theo tên bài trong popup (V0.4, `DEC-2026-1011-class-assignment-popup-on-assignments-screen`).<br>[Khi thành công] Ở lại màn. ~~Điều hướng sang `problem_list` kèm `id` lớp đang lọc~~ đã thay; nửa câu hỏi "truyền lớp đang lọc sang `problem_list`" của Q7 đóng 2026/10/14 vì không còn điều hướng. Chi tiết trường và API của popup do DD chốt, không mô tả thêm ở BD này `[SoT: Suy luận]`. |
+| 2 | Liên kết | Mở màn Giao bài cho lớp | Bấm "+ Gán từ ngân hàng bài toán". | Có | Không | - | [Các bước]<br>1. Điều hướng sang `INS0207` (`/instructor/assignments/new`), kèm `?classId=` của tab lớp đang chọn; tab "Tất cả" thì không kèm lớp (V0.18, `DEC-2026-1123-assign-problems-dedicated-screen`).<br>[Khi thành công] Mở màn con; việc chọn lớp, lọc, chọn bài và giao nằm ở BD `INS0207`, API do DD chốt (`03-dd/api/F2_problem-bank.md` mục 52, 53). ~~Mở popup "Giao bài cho lớp" ngay trên màn này (V0.4)~~ ~~sang danh sách Quản lý bài tập (V0.17)~~ đã thay. Nửa câu hỏi "truyền lớp đang lọc" của Q7 nay có câu trả lời "có" (qua `?classId=`). |
 | 3 | Ô nhập | Tìm theo tên bài | Gõ hoặc xoá từ khoá trong ô tìm kiếm. | Không | Có | `ListClassAssignments` | [Các bước]<br>1. Chờ ngưng gõ rồi mới gửi yêu cầu, tránh gọi mỗi ký tự.<br>2. Tải lại bảng với từ khoá hiện tại và tab lọc hiện tại, hai điều kiện cộng dồn.<br>3. Cập nhật số kết quả.<br>[Khi thành công] Bảng chỉ còn dòng khớp; không còn dòng nào thì hiển thị "Không có bài nào khớp bộ lọc" kèm nút xoá bộ lọc.<br>[Khi lỗi] Giữ nguyên bảng cũ và hiển thị lỗi phía trên bảng, không xoá trắng dữ liệu đang xem. |
 | 4 | Nút | Chọn tab lọc lớp | Bấm một tab trong cụm tab lọc theo lớp. | Không | Có | `ListClassAssignments` | [Các bước]<br>1. Đặt trạng thái lọc bằng tab được chọn, giữ nguyên từ khoá tìm kiếm.<br>2. Tải lại bảng.<br>3. Ẩn hoặc hiện lại cột "Gán cho lớp" theo tab.<br>[Khi thành công] Bảng hiển thị đúng phạm vi tab; chọn "Tất cả" thì hiện lại cột "Gán cho lớp".<br>[Khi lỗi] Giữ nguyên tab cũ và bảng cũ, hiển thị lỗi phía trên bảng. |
 | 5 | Liên kết | Mở chi tiết bài tập | Bấm "Chi tiết" trên một dòng. | Có | Không | - | [Các bước]<br>1. Điều hướng sang `/instructor/problems/{id}` kèm `id` bài toán (chốt 2026-10-11, `DEC-2026-1011-a2-read-published-problems-of-others`; trước đó ghi `problem_detail` của học viên).<br>[Khi thành công] Mở `problem_info` ở chế độ chỉ đọc; bài đã xuất bản của người khác xem được, bản nháp của người khác trả 404. Đích **không phải** màn câu hỏi phỏng vấn như liên kết cũ trong prototype [Nguồn: 01-rd/screens/teacher/INS0202_class_assignments.md:123]. |
@@ -511,7 +535,7 @@ gọi lại đúng tên, không đặt tên mới.
 
 | NO | Loại | Tóm tắt kiểm | Chi tiết | Mức | Mã thông báo | Ghi chú | EVT gọi | Thứ tự |
 | --: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :-: |
-| 1 | Kiểm quyền | Quyền truy cập màn | [Nội dung kiểm] Người dùng không có Function `CLASS_MANAGEMENT` thì không được vào màn.<br>[Nơi thực thi] Chặn ở cả tầng định tuyến phía giao diện và tầng phân quyền phía máy chủ, không chỉ ẩn giao diện. | Lỗi | Chưa có mã thông báo | Nội dung "Bạn không có quyền truy cập chức năng này." [Nguồn: 01-rd/req/F1_identity.md:57] | EVT-1 | 1 |
+| 1 | Kiểm quyền | Quyền truy cập màn | [Nội dung kiểm] Người dùng không có Function `CLASS_MANAGEMENT` thì không được vào màn.<br>[Nơi thực thi] Chặn ở cả tầng định tuyến phía giao diện và tầng phân quyền phía máy chủ, không chỉ ẩn giao diện. | Lỗi | Chưa có mã thông báo | Nội dung "Bạn không có quyền truy cập chức năng này." [Nguồn: 01-rd/req/F1_identity.md:57]. Nút "+ Gán từ ngân hàng bài toán" chỉ hiện khi có `CLASS_MANAGEMENT:UPDATE`; máy chủ vẫn kiểm lại ở #51 và #52 | EVT-1, EVT-2 | 1 |
 | 2 | Kiểm quyền | Phạm vi lớp phụ trách | [Nội dung kiểm] Chỉ trả về và chỉ cho gỡ các dòng `class_assignments` có `class_id` thuộc lớp người đang đăng nhập phụ trách.<br>[Nơi thực thi] Máy chủ, trên từng yêu cầu — không dựa vào việc giao diện chỉ hiển thị lớp của mình. Kiểm quyền sở hữu lớp phải hỏi `identity` qua cổng ra vì `problem-bank` không giữ `instructor_id`. | Lỗi | Chưa có mã thông báo | Nội dung "Bạn không phụ trách lớp này." Áp cho cả `ListClassAssignments`, `GetInstructorAssignmentSummary` và `RemoveClassAssignment`. | EVT-1, EVT-3, EVT-4, EVT-8 | 1 |
 | 3 | Kiểm nhập liệu | Độ dài từ khoá tìm kiếm | [Nội dung kiểm] Từ khoá quá 100 ký tự thì cắt bớt và không gửi phần thừa.<br>[Nơi thực thi] Màn hình và máy chủ.<br>[Tiêu điểm] Ô "Tìm theo tên bài". | Cảnh báo | Chưa có mã thông báo | Nội dung "Từ khoá tìm kiếm quá dài." Giới hạn 100 ký tự là đề xuất của BD `[Suy luận]` — dài hơn tên bài dài nhất trong ngân hàng mà vẫn chặn được chuỗi bất thường; DD chốt lại. | EVT-3 | 1 |
 | 4 | Kiểm nghiệp vụ | Xác nhận gỡ bài khỏi lớp | [Nội dung kiểm] Không được gọi gỡ khi chưa qua popup xác nhận; popup **bắt buộc** nêu rõ lịch sử nộp bài không bị xoá.<br>[Nơi thực thi] Màn hình. | Cảnh báo | Chưa có mã thông báo | Nội dung "Gỡ bài sẽ ẩn bài này khỏi danh sách được giao của lớp {tên lớp} kể từ bây giờ. Lịch sử nộp bài, điểm và tiến độ của học viên vẫn được giữ nguyên." Hai thao tác gỡ bài (ẩn mềm bài khỏi lớp) và gỡ **học viên** ở `class_management` (đặt `left_at`) nay đều giữ lịch sử làm bài, câu chữ cần nêu đúng đối tượng của mỗi thao tác [Nguồn: DEC-2026-0831-class-assignments-round2] | EVT-6, EVT-8 | 1 |
@@ -537,8 +561,9 @@ Cột `Thứ tự` là thứ tự kiểm trong cùng một sự kiện.
 | Q4 | ~~"Cần chấm tay" đếm theo lớp bằng endpoint nào?~~ **Đã đóng: màn bị bỏ (2026/10/13, `DEC-2026-1013-remove-instructor-manual-grading`).** Không còn thẻ hay endpoint `CountPendingManualGrading`. | - | Đã đóng |
 | Q5 | **ĐÃ CHỐT 2026-10-14 (`DEC-2026-1014-instructor-batch5-6-nav-pagination-rubric`, tiêu chí ponytail bậc 5): chủ đề đầu theo thứ tự chữ cái kèm "+{n}", danh sách đầy đủ trong tooltip.** Nội dung gốc: Cột "Chủ đề" chỉ có một ô, nhưng `problem_topics` là quan hệ N-N nên một bài có thể có nhiều chủ đề [Nguồn: 02-bd/database/F2_problem-bank.md:35-39]. Prototype luôn để đúng một giá trị nên không lộ vấn đề. Đề xuất: hiển thị chủ đề đầu tiên theo thứ tự chữ cái, thừa thì thêm hậu tố "+{n}" và đưa danh sách đầy đủ vào `title` khi rê chuột. | Prototype dùng dữ liệu mẫu một chủ đề mỗi bài [Nguồn: 09-layoutBase/Giáo viên - Bài tập của tôi.dc.html:197-215] | Đã đóng |
 | Q6 | **ĐÃ CHỐT 2026-10-14 (`DEC-2026-1014-instructor-batch3-4-contracts-and-removal`, tiêu chí ponytail bậc 5, bậc 6): gỡ một lớp mỗi lần; ở tab "Tất cả" lớp được chọn trong popup xác nhận.** Nội dung gốc: Khi tab lọc là "Tất cả" và một bài đang gán cho nhiều lớp, bấm "Gỡ khỏi lớp" phải gỡ khỏi lớp nào? BD này thiết kế popup buộc chọn một lớp, gỡ đúng một lớp mỗi lần. Phương án khác là cho gỡ nhiều lớp cùng lúc bằng hộp chọn. Đề xuất: **giữ một lớp mỗi lần** — thao tác gỡ hàng loạt là thao tác nguy hiểm mà không có hoàn tác, và giảng viên hiếm khi gỡ nhiều lớp cùng lúc. | Prototype không có nút gỡ nên không có bằng chứng nào về hành vi này; quyết định chốt hành động gỡ nhưng không nói phạm vi [Nguồn: DEC-2026-0831-class-assignments-round2] | Đã đóng |
-| Q7 | **ĐÃ CHỐT 2026-10-14 (`DEC-2026-1014-instructor-batch3-4-contracts-and-removal`, `DEC-2026-1011-class-assignment-popup-on-assignments-screen`, tiêu chí ponytail bậc 4, bậc 6): (a) nút "Gỡ khỏi lớp" đặt sau "Chi tiết", luôn hiện; (b) nửa câu hỏi "truyền lớp đang lọc sang `problem_list`" đóng vì popup giao bài nằm ngay trên màn này, không còn điều hướng sang `problem_list`.** Nội dung gốc: Prototype **không có** nút gỡ bài khỏi lớp, chỉ có nút "Chi tiết" [Nguồn: 09-layoutBase/Giáo viên - Bài tập của tôi.dc.html:164-166], trong khi quyết định ngày 2026-08-31 đã chốt là phải có. BD đề xuất: đặt nút "Gỡ khỏi lớp" ngay sau "Chi tiết" trong cụm nút cuối dòng, hiện rõ chứ không ẩn theo rê chuột (cụm nút này đã có sẵn chỗ). Cần chủ dự án xác nhận vị trí trước khi dựng. Câu hỏi kèm theo: nút "+ Gán từ ngân hàng bài toán" có truyền kèm lớp đang lọc sang `problem_list` không — BD đề xuất **có**, để giảng viên không phải chọn lại lớp trong modal bên kia. | Prototype vẽ trước quyết định 2026-08-31 | Đã đóng |
+| Q7 | **ĐÃ CHỐT 2026-10-14 (`DEC-2026-1014-instructor-batch3-4-contracts-and-removal`, `DEC-2026-1011-class-assignment-popup-on-assignments-screen`, tiêu chí ponytail bậc 4, bậc 6): (a) nút "Gỡ khỏi lớp" đặt sau "Chi tiết", luôn hiện; (b) nửa câu hỏi "truyền lớp đang lọc sang `problem_list`" đóng vì popup giao bài nằm ngay trên màn này, không còn điều hướng sang `problem_list`.** Nội dung gốc: Prototype **không có** nút gỡ bài khỏi lớp, chỉ có nút "Chi tiết" [Nguồn: 09-layoutBase/Giáo viên - Bài tập của tôi.dc.html:164-166], trong khi quyết định ngày 2026-08-31 đã chốt là phải có. BD đề xuất: đặt nút "Gỡ khỏi lớp" ngay sau "Chi tiết" trong cụm nút cuối dòng, hiện rõ chứ không ẩn theo rê chuột (cụm nút này đã có sẵn chỗ). Cần chủ dự án xác nhận vị trí trước khi dựng. Câu hỏi kèm theo: nút "+ Gán từ ngân hàng bài toán" có truyền kèm lớp đang lọc sang `problem_list` không — BD đề xuất **có**, để giảng viên không phải chọn lại lớp trong modal bên kia. **V0.18 (2026-11-23): nửa "popup giao bài trên `INS0202`" bị thay bởi màn con `INS0207`, `DEC-2026-1123-assign-problems-dedicated-screen`.** | Prototype vẽ trước quyết định 2026-08-31 | Đã đóng |
 | Q8 | **ĐÃ ĐÓNG 2026-10-14 vì lỗi thời (`DEC-2026-1014-instructor-batch5-6-nav-pagination-rubric`): RD đã ghi đây là lỗi copy-paste của mockup [Nguồn: 01-rd/screens/teacher/INS0202_class_assignments.md:93,139] và đích của nút "Chi tiết" là `/instructor/problems/{id}` (đã chốt 2026-10-11, `DEC-2026-1011-a2-read-published-problems-of-others`, xem Sheet 3 và EVT-5).** Nội dung gốc: RD mục 2 điểm 6 ghi nút "Chi tiết" trỏ nhầm sang `Câu hỏi phỏng vấn.dc.html` [Nguồn: 01-rd/screens/teacher/INS0202_class_assignments.md:80-84], nhưng prototype hiện tại trỏ sang `./Workspace giải bài.dc.html` [Nguồn: 09-layoutBase/Giáo viên - Bài tập của tôi.dc.html:165] — mô tả trong RD đã cũ so với prototype. Kết luận nghiệp vụ không đổi (đích là `problem_detail`), nhưng RD nên được sửa lại cho khớp. BD này **không** sửa file RD. | Hai nguồn mô tả cùng một liên kết khác nhau; RD chưa được cập nhật sau khi prototype đổi | Đã đóng |
 | Q9 | Bảng bài đã gán có phân trang không? Prototype đổ thẳng 18 dòng, không có điều khiển phân trang [Nguồn: 09-layoutBase/Giáo viên - Bài tập của tôi.dc.html:156]. `class_progress` đã chốt phân trang [Nguồn: DEC-2026-0830-class-progress-dashboard]. Đề xuất: phân trang cùng kiểu, 20 dòng mỗi trang — số bài gán tích luỹ theo học kỳ, không dừng ở 18. **ĐÃ CHỐT 2026-10-14 (`DEC-2026-1014-instructor-batch5-6-nav-pagination-rubric`, tiêu chí ponytail bậc 5, bậc 4):** bảng gộp nhiều dòng phân trang **20 dòng mỗi trang**, cùng quy ước với bảng học viên gộp ở `INS0201`; bảng học viên trong một lớp (`INS0205`) không phân trang; danh sách bài nộp sau này dùng cùng quy ước. | Quyết định của chủ dự án | Đã đóng |
 | Q10 | ~~Một bài đã gán cho lớp rồi sau đó bị rút xuất bản hoặc bị ẩn mềm ở `problem_management` thì hiện thế nào ở màn này?~~ **ĐÃ CHỐT 2026-10-11 (chủ dự án duyệt) theo `DEC-2026-1011-teacher-screens-open-questions-closed`:** bài **vẫn hiện** trong bảng với nhãn **"Đã rút xuống"**, **không cho giao thêm**; học viên không còn thấy bài ở `problem_list`; lượt nộp và bookmark giữ nguyên (US-A2-01b). Nội dung câu hỏi gốc, giữ làm lịch sử: [Nguồn: 02-bd/database/F2_problem-bank.md:18,19]. Học viên sẽ không còn thấy bài, nhưng dòng `class_assignments` vẫn còn. Đề xuất: **vẫn hiển thị**, gắn nhãn cảnh báo "Đã rút khỏi ngân hàng", vì giấu đi sẽ khiến giảng viên tưởng lớp vẫn còn bài đó. Phương án ngược lại là ẩn khỏi danh sách nhưng khi đó số "Bài đã gán" và thực tế học viên thấy sẽ lệch nhau mà không ai biết. | Không có nguồn nào mô tả tương tác giữa vòng đời bài toán và bảng gán bài | Đã đóng |
 | Q11 | ~~Khi tab lọc đang chọn một lớp, cột "Lượt nộp" và "AC" tính theo riêng lớp đó hay vẫn gộp mọi lớp của giảng viên?~~ **ĐÃ CHỐT 2026-10-14** bởi `DEC-2026-1014-instructor-batch2-weekly-rules`: tab lớp thì tính riêng cho lớp đó, tab "Tất cả" gộp mọi lớp của giảng viên (đúng đề xuất cũ của BD, không còn là `[SoT: Suy luận]`). Sheet 5 D NO 9, 10, Sheet 7.1 và 7.2 đã cập nhật. | Đã đóng | Đã đóng |
+| Q12 | ~~Sau khi giao xong, người dùng về `/instructor/assignments?classId=<lớp vừa giao>`, tức tab lớp có thể khác tab lúc bấm nút (nhất là khi bấm từ tab "Tất cả" rồi chọn lớp ở màn con). Có chấp nhận, hay quay về đúng tab ban đầu? Phát sinh V0.18 `[SoT: Suy luận]`, bám bản dựng [Nguồn: 05-coding/frontend/src/views/teacher/class-assign-problems/ui/class-assign-problems-view.tsx:144]~~ | **Đã chốt 2026/11/23:** quay về tab của lớp vừa giao, giữ nguyên hành vi hiện tại (bản dựng chọn tab lớp vừa giao) | Chủ dự án |

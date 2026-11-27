@@ -7,50 +7,40 @@
 // Boundary kept from BD ADM0401: these are machine logs, not administrative actions — the caption
 // links to the system log for the latter. Rows are a timeline (not a DataTable) with a coloured left
 // rule per level, like the system log, and "Tải thêm" instead of numbered pages.
+//
+// One render tree for mock and real data (2026-11-14): `useInfraEventFeed` returns the same shape in
+// both modes. The real feed pages by cursor and does not know the total, so "n / tổng" is hidden there.
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import {
   INFRA_LEVELS,
-  useInfraEvents,
-  type InfraEvent,
+  useInfraEventFeed,
+  type InfraFilters,
   type InfraLevel,
 } from "@/entities/infra-event";
 import { useT } from "@/shared/i18n";
 import { toast } from "@/shared/lib/toast-store";
 import {
-  Badge,
   Button,
   Card,
-  EmptyState,
   FilterBar,
   FilterMenu,
+  PageContainer,
   PageHeader,
-  QueryBoundary,
-  TextField,
-  type BadgeVariant,
+  QueryError,
+  Skeleton,
 } from "@/shared/ui";
+import { DateRangeFields, EventRow } from "./infra-event-parts";
 
-const PAGE_SIZE = 20;
-
-const LEVEL_VARIANT: Record<InfraLevel, BadgeVariant> = {
-  error: "negative",
-  warn: "warn",
-  info: "blue",
+const NO_FILTERS: InfraFilters = {
+  q: "",
+  level: "all",
+  service: "all",
+  from: "",
+  to: "",
 };
-
-const LEVEL_COLOR_VAR: Record<InfraLevel, string> = {
-  error: "--color-admin-negative",
-  warn: "--color-admin-warn",
-  info: "--color-accent-blue",
-};
-
-/** "2026-10-08" -> "08/10". */
-function formatDay(date: string): string {
-  const [, month, day] = date.split("-");
-  return `${day}/${month}`;
-}
 
 /** `initialLevel` seeds the level filter, e.g. from `?level=error` on the queue screen link. */
 export function AdminInfraEventsView({
@@ -58,94 +48,39 @@ export function AdminInfraEventsView({
 }: {
   initialLevel?: InfraLevel | "all";
 }) {
-  const query = useInfraEvents();
-  return (
-    <QueryBoundary query={query}>
-      {(all) => (
-        <AdminInfraEventsViewInner
-          all={all}
-          initialLevel={initialLevel}
-          onRefresh={() => void query.refetch()}
-        />
-      )}
-    </QueryBoundary>
-  );
-}
-
-function AdminInfraEventsViewInner({
-  all,
-  initialLevel,
-  onRefresh,
-}: {
-  all: InfraEvent[];
-  initialLevel: InfraLevel | "all";
-  onRefresh: () => void;
-}) {
   const t = useT("adminInfraEvents");
-  const [query, setQuery] = useState("");
-  const [level, setLevel] = useState<InfraLevel | "all">(initialLevel);
-  const [service, setService] = useState("all");
-  const [from, setFrom] = useState("");
-  const [to, setTo] = useState("");
-  const [shown, setShown] = useState(PAGE_SIZE);
+  const [filters, setFilters] = useState<InfraFilters>({
+    ...NO_FILTERS,
+    level: initialLevel,
+  });
+  const feed = useInfraEventFeed(filters);
+  const { events, total } = feed;
 
-  const rangeInvalid = from !== "" && to !== "" && from > to;
-  const filtered = useMemo(() => {
-    const needle = query.trim().toLowerCase();
-    return all.filter(
-      (event) =>
-        (level === "all" || event.level === level) &&
-        (service === "all" || event.service === service) &&
-        !rangeInvalid &&
-        (!from || event.date >= from) &&
-        (!to || event.date <= to) &&
-        (!needle ||
-          `${event.message} ${event.service} ${event.id}`
-            .toLowerCase()
-            .includes(needle)),
-    );
-  }, [all, query, level, service, from, to, rangeInvalid]);
-  const events = filtered.slice(0, shown);
+  function change(patch: Partial<InfraFilters>) {
+    const next = { ...filters, ...patch };
+    setFilters(next);
+    if (next.from && next.to && next.from > next.to)
+      toast.warning(t("rangeInvalid"));
+  }
 
-  const services = useMemo(
-    () => [...new Set(all.map((event) => event.service))].sort(),
-    [all],
+  const rangeInvalid = Boolean(
+    filters.from && filters.to && filters.from > filters.to,
+  );
+  const filtered = Boolean(
+    filters.q.trim() ||
+    filters.level !== "all" ||
+    filters.service !== "all" ||
+    filters.from ||
+    filters.to,
   );
 
-  // Any filter change goes back to the first page of results.
-  function filterChange<V>(set: (value: V) => void) {
-    return (value: V) => {
-      set(value);
-      setShown(PAGE_SIZE);
-    };
-  }
-
-  function changeFrom(next: string) {
-    filterChange(setFrom)(next);
-    if (next && to && next > to) toast.warning(t("rangeInvalid"));
-  }
-
-  function changeTo(next: string) {
-    filterChange(setTo)(next);
-    if (next && from && from > next) toast.warning(t("rangeInvalid"));
-  }
-
-  function clearFilters() {
-    setQuery("");
-    setLevel("all");
-    setService("all");
-    setFrom("");
-    setTo("");
-    setShown(PAGE_SIZE);
-  }
-
   return (
-    <div>
+    <PageContainer variant="content">
       <PageHeader
         title={t("title")}
         description={t("subtitle")}
         actions={
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             {/* BD ADM0404 A NO3 / EVT-5: back to the queue screen (UX review B6). */}
             <Button
               asChild
@@ -158,9 +93,9 @@ function AdminInfraEventsViewInner({
             <Button
               variant="cta"
               size="sm"
+              disabled={rangeInvalid || feed.isFetching}
               onClick={() => {
-                onRefresh();
-                setShown(PAGE_SIZE);
+                void feed.refetch();
                 toast.success(t("refreshDone"));
               }}
             >
@@ -170,7 +105,7 @@ function AdminInfraEventsViewInner({
         }
       />
 
-      <Card className="min-w-0 px-[18px] py-4">
+      <Card className="flex min-w-0 grow flex-col px-[18px] py-4">
         <p className="mb-3 text-[12.5px] text-[var(--color-text-muted)]">
           {t("caption")}{" "}
           <Link
@@ -184,18 +119,15 @@ function AdminInfraEventsViewInner({
           search={{
             label: t("searchLabel"),
             placeholder: t("searchPlaceholder"),
-            value: query,
-            onChange: filterChange(setQuery),
+            value: filters.q,
+            onChange: (q) => change({ q }),
+            maxLength: 100,
           }}
-          resultCount={t("resultCount", {
-            shown: events.length,
-            total: filtered.length,
-          })}
         >
           <FilterMenu
             label={t("levelFilterLabel")}
-            value={level}
-            onValueChange={filterChange(setLevel)}
+            value={filters.level}
+            onValueChange={(level) => change({ level })}
             options={[
               { value: "all" as const, label: t("levelAll") },
               ...INFRA_LEVELS.map((key) => ({
@@ -206,116 +138,94 @@ function AdminInfraEventsViewInner({
           />
           <FilterMenu
             label={t("serviceFilterLabel")}
-            value={service}
-            onValueChange={filterChange(setService)}
+            value={filters.service}
+            onValueChange={(service) => change({ service })}
             options={[
               { value: "all", label: t("serviceAll") },
-              ...services.map((name) => ({ value: name, label: name })),
+              ...feed.services.map((name) => ({ value: name, label: name })),
             ]}
           />
-          {/* One unit, so the two ends wrap to the next line together rather than splitting. */}
-          <span className="flex flex-wrap items-center gap-x-4 gap-y-2">
-            <span className="flex items-center gap-1.5 text-[12.5px] font-medium whitespace-nowrap text-[var(--color-text-muted)]">
-              {t("dateFrom")}:
-              <TextField
-                label={t("dateFrom")}
-                hideLabel
-                type="date"
-                value={from}
-                max={to || undefined}
-                onChange={(event) => changeFrom(event.target.value)}
-                wrapperClassName="w-[140px]"
-                className="h-[34px]"
-              />
-            </span>
-            <span className="flex items-center gap-1.5 text-[12.5px] font-medium whitespace-nowrap text-[var(--color-text-muted)]">
-              {t("dateTo")}:
-              <TextField
-                label={t("dateTo")}
-                hideLabel
-                type="date"
-                value={to}
-                min={from || undefined}
-                onChange={(event) => changeTo(event.target.value)}
-                invalid={rangeInvalid}
-                wrapperClassName="w-[140px]"
-                className="h-[34px]"
-              />
-            </span>
-          </span>
+          {filtered && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setFilters(NO_FILTERS)}
+            >
+              {t("clearFilters")}
+            </Button>
+          )}
         </FilterBar>
 
-        {events.length === 0 ? (
-          <EmptyState>
-            <span className="flex flex-col items-center gap-2">
-              {t("emptyFiltered")}
-              <Button variant="ghost" size="sm" onClick={clearFilters}>
-                {t("clearFilters")}
-              </Button>
-            </span>
-          </EmptyState>
-        ) : (
-          <ul aria-label={t("listLabel")} className="flex flex-col gap-0.5">
-            {events.map((event) => (
-              <EventRow
-                key={event.id}
-                event={event}
-                levelLabel={t(`level.${event.level}`)}
-              />
-            ))}
-          </ul>
-        )}
+        <details className="mb-3 rounded-lg border border-[var(--color-border)] px-3 py-2">
+          <summary className="cursor-pointer text-sm font-medium">
+            {filters.from || filters.to
+              ? t("dateRangeActive", {
+                  from: filters.from || "…",
+                  to: filters.to || "…",
+                })
+              : t("dateRange")}
+          </summary>
+          <div className="mt-2">
+            <DateRangeFields
+              from={filters.from}
+              to={filters.to}
+              fromLabel={t("dateFrom")}
+              toLabel={t("dateTo")}
+              onFromChange={(from) => change({ from })}
+              onToChange={(to) => change({ to })}
+              invalid={rangeInvalid}
+            />
+          </div>
+        </details>
 
-        <div className="mt-1.5 flex items-center gap-3 border-t border-[var(--color-border)] px-2.5 pt-3">
-          <span className="text-[12.5px] text-[var(--color-text-muted)]">
-            {t("pageLabel", { shown: events.length, total: filtered.length })}
-          </span>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="ml-auto border border-[var(--color-border)]"
-            onClick={() => setShown((previous) => previous + PAGE_SIZE)}
-            disabled={shown >= filtered.length}
-          >
-            {t("loadMore", { count: PAGE_SIZE })}
-          </Button>
+        <div className="grow border-t border-[var(--color-border)] pt-3">
+          {feed.error ? (
+            <QueryError query={feed.query} />
+          ) : feed.isLoading ? (
+            <div className="flex flex-col gap-2" role="status">
+              {Array.from({ length: 8 }, (_, index) => (
+                <Skeleton key={index} className="h-[52px] w-full" />
+              ))}
+            </div>
+          ) : events.length === 0 ? (
+            <p
+              role="status"
+              className="rounded-lg bg-[var(--color-track)] px-3 py-6 text-center text-sm text-[var(--color-text-muted)]"
+            >
+              {t(filtered ? "emptyFiltered" : "emptyUnfiltered")}
+            </p>
+          ) : (
+            <ul aria-label={t("listLabel")} className="flex flex-col gap-0.5">
+              {events.map((event) => (
+                <EventRow
+                  key={event.id}
+                  event={event}
+                  levelLabel={t(`level.${event.level}`)}
+                />
+              ))}
+            </ul>
+          )}
         </div>
-      </Card>
-    </div>
-  );
-}
 
-/** One timeline entry. The left rule only repeats the badge, so the badge carries the accessible text. */
-function EventRow({
-  event,
-  levelLabel,
-}: {
-  event: InfraEvent;
-  levelLabel: string;
-}) {
-  return (
-    <li
-      className="grid grid-cols-[66px_84px_minmax(180px,1fr)] items-start gap-3 rounded-xl border-l-2 px-2.5 py-2.5 hover:bg-[var(--color-row-hover)]"
-      style={{ borderLeftColor: `var(${LEVEL_COLOR_VAR[event.level]})` }}
-    >
-      <span className="pt-px font-mono text-xs text-[var(--color-text-subtle)]">
-        {event.time}
-        <span className="block text-[10.5px]">{formatDay(event.date)}</span>
-      </span>
-      <Badge
-        variant={LEVEL_VARIANT[event.level]}
-        className="w-full justify-center font-mono"
-      >
-        {levelLabel}
-      </Badge>
-      <span className="min-w-0">
-        <span className="block text-[13px] font-semibold text-pretty">
-          {event.message}
-        </span>
-        <span className="mt-0.5 block font-mono text-[11.5px] text-[var(--color-text-subtle)]">
-          {event.service}
-        </span>
-      </span>
-    </li>
+        {events.length > 0 && (
+          <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-[var(--color-border)] pt-3">
+            <span className="text-[12.5px] text-[var(--color-text-muted)]">
+              {total == null
+                ? t("loadedCount", { count: events.length })
+                : t("pageLabel", { shown: events.length, total })}
+            </span>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="ml-auto border border-[var(--color-border)]"
+              onClick={feed.loadMore}
+              disabled={!feed.hasMore || feed.loadingMore}
+            >
+              {t("loadMore", { count: 20 })}
+            </Button>
+          </div>
+        )}
+      </Card>
+    </PageContainer>
   );
 }

@@ -6,6 +6,7 @@ import { expect, test } from "@playwright/test";
  * three locked languages, and rejudge stays out of scope (DEC-2026-0828-remove-rejudge-scope).
  */
 test("language table matches the locked scope", async ({ page }) => {
+  await page.setViewportSize({ width: 1367, height: 730 });
   await page.goto("/admin/language-config");
 
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(
@@ -14,6 +15,34 @@ test("language table matches the locked scope", async ({ page }) => {
 
   const table = page.getByRole("table", { name: "Ngôn ngữ được hỗ trợ" });
   await expect(table).toBeVisible();
+
+  const tabs = page.getByRole("group", { name: "Nhóm cấu hình" });
+  await expect
+    .poll(() =>
+      tabs.evaluate((group) => {
+        const bounds = group.getBoundingClientRect();
+        return Array.from(group.querySelectorAll("button")).every((button) => {
+          const rect = button.getBoundingClientRect();
+          return rect.top >= bounds.top && rect.bottom <= bounds.bottom;
+        });
+      }),
+    )
+    .toBe(true);
+
+  const submissionColumn = table.getByRole("columnheader", {
+    name: "Cho phép nộp bài",
+  });
+  await expect(submissionColumn).toBeVisible();
+  await expect
+    .poll(() =>
+      submissionColumn.evaluate((header) => {
+        const text = document.createRange();
+        text.selectNodeContents(header);
+        return new Set(Array.from(text.getClientRects(), (rect) => rect.top))
+          .size;
+      }),
+    )
+    .toBe(1);
 
   // Exactly three languages, no "add language" affordance (README section 6, PROTOTYPE_DEBT 1.1).
   await expect(table.getByRole("row")).toHaveCount(4); // header + 3
@@ -92,7 +121,9 @@ test("sandbox and generator limits sit on the second tab", async ({ page }) => {
   await page.goto("/admin/language-config");
   await expect(page.getByText("Cho phép truy cập mạng")).toHaveCount(0);
 
-  await page.getByRole("button", { name: "Sandbox và sinh testcase" }).click();
+  await page
+    .getByRole("button", { name: "Môi trường chấm và tạo dữ liệu" })
+    .click();
   await expect(page.getByText("Cho phép truy cập mạng")).toBeVisible();
   await expect(page.getByLabel("Thời gian chạy tối đa")).toHaveValue("30");
 });

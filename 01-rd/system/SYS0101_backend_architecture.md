@@ -189,7 +189,24 @@ algoprep-judge/src/main/java/com/algoprep/judge/
 
 #### 5.3.B Vì sao mỗi cổng vào chỉ một phương thức
 
-Một interface một phương thức thì bề mặt của module đọc được bằng cách liệt kê `application/ports/in`: có bao nhiêu file là có bấy nhiêu ca sử dụng. Nhồi mười phương thức vào một `SubmissionService` thì bề mặt biến thành một cục, và mọi nơi gọi đều phụ thuộc vào cả mười thứ dù chỉ dùng một.
+Một interface một phương thức thì bề mặt của module đọc được bằng cách liệt kê `application/ports/in` (kể cả các thư mục nhóm con ở mục 5.3.C): có bao nhiêu file là có bấy nhiêu ca sử dụng. Nhồi mười phương thức vào một `SubmissionService` thì bề mặt biến thành một cục, và mọi nơi gọi đều phụ thuộc vào cả mười thứ dù chỉ dùng một.
+
+#### 5.3.C Gom thư mục lớn thành nhóm con theo tính năng
+
+Bố cục ở mục 5.3 là bố cục **theo tầng**. Khi một thư mục tầng có quá nhiều file (từ khoảng 30 file trở lên) thì chia tiếp thành các thư mục **nhóm con theo khái niệm nghiệp vụ**. Bảng 5.3.1 nêu quy ước này; ví dụ đã áp dụng là `02-bd/architecture/F5_ai-review.md` mục 1.1.
+
+Bảng 5.3.1: Quy ước gom nhóm con trong một tầng.
+
+| Quy ước | Nội dung |
+| :--- | :--- |
+| Ngưỡng | Chỉ thư mục tầng có trên khoảng 30 file mới chia nhóm; thư mục nhỏ hơn giữ nguyên phẳng |
+| Tầng áp dụng | `application/ports/in`, `application/command`, `application/dto`, `domain/model`, và khi đủ lớn là `application/query`, `domain/exception`, `presentation/controller` |
+| Tên nhóm | Đặt theo khái niệm nghiệp vụ (ví dụ `budget`, `queue`, `catalog`), **cùng một tên ở mọi tầng**, để từ một cổng vào tìm ngay được handler tương ứng |
+| Lớp dùng chung | Lớp được từ hai nhóm trở lên dùng, hoặc không thuộc rõ một nhóm nào, ở lại thư mục cha của tầng và là `public`; lớp chỉ một nhóm dùng giữ `package-private` trong nhóm đó |
+| `package-info.java` | Không giữ; các file này chỉ chứa Javadoc |
+| Ranh giới module | Không đổi: gom nhóm chỉ là thư mục con trong một module, không tạo module Maven mới |
+
+Quy ước này không đổi bốn luật của tầng ở mục 5.3.A: nhóm con chỉ là cách chia thư mục trong cùng một tầng, và hướng phụ thuộc giữa các tầng giữ nguyên. Bố cục chi tiết của từng module nằm ở `02-bd/architecture/F<n>_<module>.md`, mục 1.1 của tài liệu đó.
 
 ---
 

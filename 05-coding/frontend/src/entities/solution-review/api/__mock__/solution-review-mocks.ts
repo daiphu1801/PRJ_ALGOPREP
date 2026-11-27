@@ -11,9 +11,9 @@
 // matching entities/admin-dashboard's withMockData + ApiError convention.
 import { ApiError } from "@/shared/api";
 import {
-  AI_BUDGET_LOCKED_CODE,
-  AI_PROVIDER_TIMEOUT_CODE,
-  REVIEW_NOT_FOUND_CODE,
+  AIR_BUDGET_LOCKED,
+  AIR_PROVIDER_UNAVAILABLE,
+  AIR_SUBMISSION_NOT_FOUND,
   type SolutionReviewDemoOutcome,
 } from "../../model/review-errors";
 import type { SolutionReviewDetail } from "../../model/types";
@@ -26,25 +26,28 @@ const SOLUTION_REVIEW_MOCK: SolutionReviewDetail = {
   submissionId: "SUB-2841",
   problemId: "1",
   languageKey: "python",
-  submissionModel: "function",
-  problemTitle: "1. Two Sum",
-  difficulty: "EASY",
   schemaVersion: "1",
   approachTitle: "hash map",
   verdict: "OPTIMAL",
   isApproachOptimal: true,
   readabilityScore: 4,
+  source: {
+    problemTitle: "1. Two Sum",
+    difficulty: "EASY",
+    withdrawn: false,
+    submissionModel: "function",
+    sourceCode: [
+      "def two_sum(nums, target):",
+      "    seen = {}",
+      "    for i, x in enumerate(nums):",
+      "        need = target - x",
+      "        if need in seen:",
+      "            return [seen[need], i]",
+      "        seen[x] = i",
+      "    return []",
+    ],
+  },
   createdAt: "2026-08-20T21:15:00+07:00",
-  sourceCode: [
-    "def two_sum(nums, target):",
-    "    seen = {}",
-    "    for i, x in enumerate(nums):",
-    "        need = target - x",
-    "        if need in seen:",
-    "            return [seen[need], i]",
-    "        seen[x] = i",
-    "    return []",
-  ],
   complexity: {
     actualTime: "O(n)",
     optimalTime: "O(n)",
@@ -95,17 +98,17 @@ export async function fetchSolutionReviewMock(
   submissionId: string,
 ): Promise<SolutionReviewDetail> {
   if (!KNOWN_ID.test(submissionId)) {
-    throw new ApiError(REVIEW_NOT_FOUND_CODE, 404, "Submission not found");
+    throw new ApiError(AIR_SUBMISSION_NOT_FOUND, 404, "Submission not found");
   }
   if (demo === "errorBudgetLocked") {
     throw new ApiError(
-      AI_BUDGET_LOCKED_CODE,
+      AIR_BUDGET_LOCKED,
       429,
       "AI review budget exhausted for today",
     );
   }
   if (demo === "errorTransient") {
-    throw new ApiError(AI_PROVIDER_TIMEOUT_CODE, 503, "AI provider timed out");
+    throw new ApiError(AIR_PROVIDER_UNAVAILABLE, 503, "AI provider timed out");
   }
   return delay({ ...SOLUTION_REVIEW_MOCK, submissionId });
 }

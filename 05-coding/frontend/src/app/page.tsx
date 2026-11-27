@@ -1,18 +1,9 @@
-import { redirect } from "next/navigation";
+import { RootRedirect } from "@/widgets/app-shell";
 
 /**
- * The root route has no dedicated Landing screen — `01-rd/screens/` has no such screen among
- * its 25.
- *
- * Full behavior per `01-rd/screens/shared/auth.md:90` (Q3): not logged in goes to `/login`;
- * logged in goes to the role-based destination (`entities/user` → `HOME_PATH_BY_ROLE`), and if
- * the user arrived from a link that required login first, prefer returning to that exact URL.
- *
- * At this base-scaffold stage only the NOT-LOGGED-IN branch is implemented, since there is no
- * real session yet (`app/providers/auth-provider.tsx` is still a TODO, needs
- * `03-dd/api/F1_identity.md`). The role-based branch and returnUrl belong to `middleware.ts` — to
- * be built alongside real auth, not guessed at ahead of time.
+ * Trang gốc không có màn riêng: khách vào danh sách bài `/problems`, người đã đăng nhập về trang
+ * theo vai trò (SHR0101 Q3). Việc quyết định cần token trong RAM nên nằm ở component client.
  */
 export default function RootPage() {
-  redirect("/login");
+  return <RootRedirect />;
 }

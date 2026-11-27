@@ -86,25 +86,12 @@ describe("ClassAssignmentsView", () => {
     expect(toasts.result.current[0]!.message).not.toMatch(/^toast\./);
   });
 
-  it("assigns a bank problem to a class from the popup", async () => {
-    const toasts = renderHook(() => useToasts());
-    act(() => toast.clear());
+  it("links to the assign-problems screen for a class", async () => {
     render(withTestProviders(<ClassAssignmentsView />));
 
     await screen.findByText("Two Sum");
-    expect(screen.queryByText("Binary Search")).not.toBeInTheDocument();
-    fireEvent.click(
-      screen.getByRole("button", { name: "+ Gán từ ngân hàng bài toán" }),
-    );
-    const dialog = await screen.findByRole("dialog");
-    fireEvent.click(await within(dialog).findByLabelText(/Binary Search/));
-    fireEvent.click(within(dialog).getByRole("button", { name: "Giao 1 bài" }));
-
-    expect(await screen.findByText("Binary Search")).toBeInTheDocument();
-    await waitFor(() =>
-      expect(toasts.result.current.map((item) => item.tone)).toContain(
-        "success",
-      ),
-    );
+    expect(
+      screen.getByRole("link", { name: "+ Gán từ ngân hàng bài toán" }),
+    ).toHaveAttribute("href", "/instructor/assignments/new");
   });
 });

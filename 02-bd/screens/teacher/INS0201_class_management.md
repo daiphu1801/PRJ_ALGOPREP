@@ -50,11 +50,11 @@
 | Tên vật lý (slug) | `class_management` |
 | Trục tài liệu | Màn hình (`02-bd/screens/`) |
 | Actor | A2 (`INSTRUCTOR`) |
-| Phiên bản | V0.13 |
+| Phiên bản | V0.18 |
 | Người tạo | Nhóm phát triển AlgoPrep |
 | Ngày tạo | 2026/09/21 |
 | Người cập nhật | Nhóm phát triển AlgoPrep |
-| Ngày cập nhật | 2026/10/18 |
+| Ngày cập nhật | 2026/11/23 |
 
 ---
 
@@ -76,6 +76,11 @@
 | V0.11 | Sheet 3 (popup gỡ học viên), 4 (quyền Xoá), 5 (A NO 2, C NO 4, D NO 3, Popup NO 5), 7.1 (NO 17, 18), 7.2 (NO 3 và ghi chú), 9 (NO 6) | Áp `DEC-2026-1014-keep-learning-history-on-leave` (tiêu chí ponytail bậc 6): gỡ học viên **chỉ đánh dấu đã rời lớp** (`class_enrollments.left_at`), **giữ** lịch sử làm bài, giảng viên vẫn đọc được bài nộp làm lúc còn trong lớp (`INS0206`). Câu cảnh báo cũ "xoá luôn lịch sử làm bài" thay bằng câu nêu học viên chỉ rời lớp, lịch sử được giữ. Số học viên ở dòng tóm tắt, thẻ lớp, tab lọc và bảng chỉ đếm ghi danh còn hiệu lực (`left_at IS NULL`). Giữ nguyên các điều đã chốt: icon cuối dòng luôn hiện, toast "Đã gỡ học viên khỏi lớp." Xoá lớp (F1-24) vẫn là xoá thật, không đổi. Chưa đối chiếu prototype (xem `06-plan/PROTOTYPE_DEBT.md`, tài liệu khác phụ trách) | 2026/10/14 | AI |
 | V0.12 | Sheet 7.1 (NO 6), 7.2 (ghi chú gỡ học viên) | Áp `DEC-2026-1014-class-leave-details` (tiêu chí ponytail bậc 5): câu xác nhận của popup gỡ học viên đã được chủ dự án duyệt nguyên văn (bỏ `[SoT: Suy luận]`); endpoint gỡ ở DD `identity` đổi từ DELETE sang `POST .../leave` (ngữ nghĩa vẫn là đặt `left_at`); học viên vào lại bằng mã mời thì dòng ghi danh cũ được dùng lại (`left_at` = NULL) nên được đếm lại ở các số đếm của màn. Không đổi item, EVT | 2026/10/14 | AI |
 | V0.13 | Sheet 4 (4.4, mục Hiện trạng bản dựng mới) | Dựng prototype Phase 4-5 (bài giao theo lớp, phân trang 20, from=). Chỉ ghi hiện trạng: quy tắc "bấm lại thẻ lớp đang chọn thì bỏ chọn" (V0.10) chưa áp dụng được vì bản dựng không có chọn thẻ lớp; sau khi tạo lớp bản dựng chuyển sang trang chi tiết lớp, nút Quay lại về danh sách lớp (đúng Q2 của `INS0205`). Không đổi yêu cầu hay quyết định thiết kế. **Chưa duyệt hình** | 2026/10/18 | AI |
+| V0.14 | Sheet 4 (Hiện trạng bản dựng), 5 Khu vực C | Sửa 2026-11-02 (task #12, nối FE với API thật). (1) Màn gọi F1 #19 đến #22; hộp thoại tạo/sửa giữ nội dung khi máy chủ từ chối. (2) Ba cột hoàn thành, điểm TB, vắng bài chỉ hiện khi có số liệu F4 (#56 chưa làm). Không có câu hỏi mở mới. |
+| V0.15 | Sheet 4 (Hiện trạng bản dựng), 5 Khu vực C | Sửa 2026-11-07 (F1-7, nối FE). Màn đọc F1 #56 (`useInstructorClassSummary`): ba cột hoàn thành, điểm TB, vắng bài hiện với API thật. Lớp chưa giao bài có `completionPercent = null` nên cột hiện "-", không phải 0%. Khi F4 lỗi (`503 IDT-507`) màn lùi về danh sách #19 và ẩn ba cột. Chưa duyệt hình. Câu hỏi mở còn lại: `INS0101` vẫn đọc #19 (chưa đổi sang #56). |
+| V0.16 | Sheet 5 Khu vực D NO 4, 7.1 NO 20 | Sửa 2026-11-18 (owner chốt): bỏ ô chữ cái đầu sinh ở giao diện khỏi mô tả cột "Học viên"; màn này không hiện ảnh đại diện (F1-35), việc hiện ảnh ở INS0203, INS0204, INS0205 không đổi. Chưa duyệt hình. |
+| V0.17 | Hiện trạng bản dựng | Sửa 2026-11-22. **Chưa duyệt hình, RD không đổi, chỉ trình bày.** Gốc trang là `PageContainer variant="content"` và thẻ bảng `grow`, nên bảng dãn tới sát chân trang, padding do layout shared giữ (cùng cách Admin). Dòng phụ dưới tên lớp chỉ còn ngày, giờ, phòng (`formatClassScheduleBrief`); ngày bắt đầu/kết thúc và ghi chú xem ở trang chi tiết lớp. | 2026/11/22 | Claude |
+| V0.18 | Sheet 4 (4.4, Hiện trạng bản dựng) | Sửa 2026/11/23, **chưa duyệt hình, RD không đổi, chỉ trình bày**: bảng danh sách lớp bỏ cuộn ngang (`DataTable minWidth={0}`, trước là 860). Ở cửa sổ rộng 1100px bảng không còn cuộn ngang; chữ dài xuống dòng (tối đa hai dòng). Thêm một hàng ở Bảng 4.4a; dòng prototype `min-width: 700px` ở bảng 4.4 chỉ là bằng chứng của `.dc.html`. Mã: `05-coding/frontend/src/views/teacher/class-management/ui/class-management-view.tsx:217`. Ảnh chụp: `06-plan/reports/261123-0030-giao-bai-man-rieng/img-cuon-ngang/` (`ins0201`) | 2026/11/23 | AI |
 
 ---
 
@@ -309,7 +314,7 @@ design system cuối cùng.
 | Dải thẻ số liệu | `:123-134`, dữ liệu `:253-258` | Lưới `auto-fit minmax(200px, 1fr)`; prototype vẽ 4 thẻ (Tổng số lớp, Hoàn thành TB, Cần chấm tay, Học viên vắng bài), thiết kế từ 2026/10/13 còn 3 (bỏ Cần chấm tay) |
 | Lưới thẻ lớp | `:136-157`, dữ liệu `:260-265` | Lưới `auto-fit minmax(300px, 1fr)`; mỗi thẻ có tên lớp, lịch học, huy hiệu số học viên, thanh tiến độ, và 3 số ở chân thẻ trong prototype: Điểm TB, Cần chấm, Vắng bài; thiết kế từ 2026/10/13 còn 2 (bỏ Cần chấm) |
 | Khối "Danh sách học viên" — hàng tiêu đề | `:160-167`, dữ liệu tab `:267-272` | Tiêu đề khối bên trái, cụm tab lọc theo lớp bên phải (Tất cả + tên từng lớp) |
-| Khối "Danh sách học viên" — bảng | `:169-187`, dữ liệu `:274-284` | Lưới 6 cột `minmax(160px,1.4fr) 120px 90px 90px 120px 110px`, `min-width: 700px`, cuộn ngang khi hẹp |
+| Khối "Danh sách học viên" — bảng | `:169-187`, dữ liệu `:274-284` | Lưới 6 cột `minmax(160px,1.4fr) 120px 90px 90px 120px 110px`, `min-width: 700px`, cuộn ngang khi hẹp (**chỉ là prototype `.dc.html`**; bản dựng Next.js không còn cuộn ngang từ 2026/11/23, xem Bảng 4.4a) |
 | Chân trang | không có | Cả 5 prototype khu Giảng viên đều không có `<footer>` [Nguồn: 02-bd/screens/teacher/_shell.md:31] |
 
 **Hiện trạng bản dựng (2026/10/18, Phase 4-5, chưa duyệt hình).** Bảng 4.4a ghi hai điểm của bản dựng Next.js liên quan tới quy tắc chọn thẻ lớp và điều hướng sau khi tạo lớp.
@@ -320,6 +325,7 @@ Bảng 4.4a: Hiện trạng bản dựng của INS0201.
 | :--- | :--- | :--- | :--- |
 | Bấm lại thẻ lớp đang chọn thì bỏ chọn, trở về "Tất cả" (V0.10) | **Chưa áp dụng được: bản dựng không có chọn thẻ lớp.** Danh sách lớp là một bảng thường trong thẻ (mỗi dòng có liên kết tên lớp sang chi tiết lớp); khối "Danh sách học viên" đã chuyển sang `INS0203`, và liên kết mở danh sách học viên theo lớp (`/instructor/students?classId=`) nằm ở trang chi tiết lớp | `views/teacher/class-management/ui/class-management-view.tsx:1-12,78-83`; `views/teacher/class-detail/ui/class-detail-view.tsx:246` | Chưa áp dụng được |
 | Sau khi tạo lớp, về đâu (Q2 của `INS0205`) | Tạo lớp thành công thì toast rồi `router.push` sang `/instructor/classes/{id}` (chi tiết lớp); nút mũi tên Quay lại ở chi tiết lớp là `IconAction` với `href="/instructor/classes"` nên về danh sách lớp | `class-management-view.tsx:234-239`; `views/teacher/class-detail/ui/class-detail-view.tsx:73-77` | Dựng, chưa duyệt hình |
+| Bảng danh sách lớp không cuộn ngang (2026/11/23) | `DataTable minWidth={0}` (trước là 860): ở cửa sổ rộng 1100px bảng vừa khung, không có thanh cuộn ngang; chữ dài xuống dòng (tối đa hai dòng). Chứng cứ: ảnh chụp `ins0201` trong `06-plan/reports/261123-0030-giao-bai-man-rieng/img-cuon-ngang/` | `class-management-view.tsx:217` | Dựng, chưa duyệt hình |
 
 Bốn nhóm điều khiển dưới đây **không có trong prototype** và do BD này thiết kế bổ sung, vì yêu cầu F1-24
 tới F1-27 đã chốt mà prototype vẽ trước thời điểm đó [Nguồn: 01-rd/screens/teacher/INS0201_class_management.md:70-74]:
@@ -397,7 +403,7 @@ học viên, và liên kết tên học viên sang `class_student_detail`. Vị 
 | | 1 | Tiêu đề khối | `classManagement.studentList.title` | - | - | Label | String | - | - | O | Danh sách học viên | - | Tiêu đề khối bảng học viên<br>[Nguồn giá trị] Nhãn tĩnh i18n<br>[EVT liên quan] - |
 | | 2 | Tab lọc theo lớp | `classManagement.studentList.classTabs` | `identity.classes` | `id`, `name` | Button | List | - | - | I/O | Tất cả | - | Cụm tab: mục "Tất cả" cố định cộng một mục cho mỗi lớp phụ trách<br>[Nguồn giá trị] Mục "Tất cả" là nhãn tĩnh i18n; các mục còn lại lấy `classes.name`<br>[EVT liên quan] EVT-15 |
 | | 3 | Bảng học viên | `classManagement.studentList.table` | `identity.class_enrollments` | - | List | List | - | - | O | rỗng | - | Học viên **còn trong lớp** (`left_at IS NULL`, V0.11) thuộc các lớp phụ trách, lọc theo tab đang chọn; phân trang 20 dòng mỗi trang (V0.10, NO 11)<br>[Nguồn giá trị] Kết quả gọi `ListClassStudents`<br>[EVT liên quan] EVT-1, EVT-14, EVT-15, EVT-20 |
-| | 4 | Học viên | `classManagement.studentList.col.studentName` | `identity.users` | `display_name` | Link | String | 100 | - | O | - | Chữ cái đầu + tên | Tên hiển thị kèm ô chữ cái đầu; bấm vào mở màn `class_student_detail` (F1-27)<br>[Công thức] Ô chữ cái đầu ghép từ hai ký tự đầu của hai từ cuối trong `display_name`; ảnh đại diện thật chưa có nguồn nên dùng chữ cái đầu `[Suy luận]`<br>[EVT liên quan] EVT-16 |
+| | 4 | Học viên | `classManagement.studentList.col.studentName` | `identity.users` | `display_name` | Link | String | 100 | - | O | - | Tên | Tên hiển thị, màn này không hiện ảnh đại diện; bấm vào mở màn `class_student_detail` (F1-27)<br>[Nguồn giá trị] `display_name`; không dùng ảnh đại diện ở màn này (chốt 2026-11-18, tiêu chí ponytail bậc 3), ảnh học viên hiện ở INS0203, INS0204, INS0205<br>[EVT liên quan] EVT-16 |
 | | 5 | Lớp | `classManagement.studentList.col.className` | `identity.classes` | `name` | ListColumn | String | 120 | - | O | - | - | Lớp mà dòng này thuộc về<br>[Nguồn giá trị] Cột `name` của lớp gắn với dòng `class_enrollments`<br>[EVT liên quan] - |
 | | 6 | Điểm TB | `classManagement.studentList.col.avgScore` | `judge.submissions` | `status`, `problem_id`, `user_id` | ListColumn | Number | 4 | - | O | - | Một chữ số thập phân, thang 10 | Điểm trung bình của học viên<br>[Công thức] `accepted_count` chia `total_submissions` rồi nhân 10 [Nguồn: DEC-2026-0830-class-progress-dashboard]. Chưa có bài nộp nào thì hiển thị `-`. Read model toàn cục, xem Q4<br>[EVT liên quan] - |
 | | 7 | Hoàn thành | `classManagement.studentList.col.completion` | - | - | ListColumn | Number | 3 | - | O | - | `{số}%` | Tỉ lệ bài đã giao mà học viên đã Accepted<br>[Công thức] Số bài đã giao cho lớp mà học viên Accepted ít nhất một lần chia tổng số bài đã giao [Nguồn: DEC-2026-0830-class-progress-dashboard]. Xem Q2<br>[EVT liên quan] - |
@@ -528,7 +534,7 @@ học viên, và liên kết tên học viên sang `class_student_detail`. Vị 
 | 17 | `ClassInviteCodeDto` | `expiresAt` | Date | `identity.class_invite_codes` | `expires_at` | Popup "Mã mời" | Có | [Chuyển đổi] Hiển thị "Hết hạn {ngày}"; đã quá hạn thì hiển thị nhãn "Hết hạn". Hạn dùng **cố định 7 ngày** kể từ lúc tạo, máy chủ tự đặt, không có ô nhập hạn (V0.10, `DEC-2026-1014-instructor-batch3-4-contracts-and-removal`, Q5 đóng). |
 | 18 | `ClassInviteCodeDto` | `createdAt` | Date | `identity.class_invite_codes` | `created_at` | Popup "Mã mời" | Có | [Chuyển đổi] Dùng để sắp xếp giảm dần. |
 | 19 | `ClassStudentRowDto` | `studentId` | UUID | `identity.class_enrollments` | `student_id` | - | Không | [Đích] Tham số của `RemoveStudentFromClass` và của điều hướng sang `class_student_detail`. |
-| 20 | `ClassStudentRowDto` | `displayName` | String | `identity.users` | `display_name` | Bảng "Học viên" | Có | [Chuyển đổi] Sinh thêm ô chữ cái đầu ở phía giao diện, không lưu trong DB. |
+| 20 | `ClassStudentRowDto` | `displayName` | String | `identity.users` | `display_name` | Bảng "Học viên" | Có | [Chuyển đổi] Không có; màn này không hiện ảnh đại diện. |
 | 21 | `ClassStudentRowDto` | `classId`, `className` | UUID, String | `identity.classes` | `id`, `name` | Bảng "Lớp" | Có | [Chuyển đổi] Cột ẩn khi đang lọc theo một lớp cụ thể. |
 | 22 | `ClassStudentRowDto` | `avgScore` | Number | `judge.submissions` | `status`, `problem_id`, `user_id` | Bảng "Điểm TB" | Có | [Chuyển đổi] Chưa có lượt nộp nào thì trả rỗng, giao diện hiển thị `-`. |
 | 23 | `ClassStudentRowDto` | `completionPercent` | Number | - | - | Bảng "Hoàn thành" | Có | [Nguồn] Cùng nguồn với NO 3, tính theo cặp học viên và lớp. |

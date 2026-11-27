@@ -3,25 +3,25 @@ import { useQuery } from "@tanstack/react-query";
 import { withMockData } from "@/shared/api";
 import type { ProgressRange } from "../model/types";
 import {
-  fakeGetDailySubmissions,
   fakeGetDifficultyBreakdown,
   fakeGetInterviewSummary,
   fakeGetProgressOverview,
   fakeGetTopicProgress,
 } from "./__mock__/progress-mocks";
+import {
+  realGetDifficultyBreakdown,
+  realGetProgressOverview,
+  realGetTopicProgress,
+} from "./real-progress";
+import { realGetInterviewSummary } from "./real-interview-summary";
 
 const QUERY_OPTIONS = { staleTime: 30_000, retry: false } as const;
-
-function notImplemented(): never {
-  throw new Error(
-    "03-dd/api/F1_identity.md / api/F5_ai-review.md don't define these endpoints yet",
-  );
-}
 
 export const useProgressOverview = () =>
   useQuery({
     queryKey: ["progress", "overview"],
-    queryFn: () => withMockData(fakeGetProgressOverview, notImplemented),
+    queryFn: () =>
+      withMockData(fakeGetProgressOverview, realGetProgressOverview),
     ...QUERY_OPTIONS,
   });
 
@@ -29,30 +29,29 @@ export const useTopicProgress = (range: ProgressRange) =>
   useQuery({
     queryKey: ["progress", "topics", range],
     queryFn: () =>
-      withMockData(() => fakeGetTopicProgress(range), notImplemented),
-    ...QUERY_OPTIONS,
-  });
-
-export const useDailySubmissions = (range: ProgressRange) =>
-  useQuery({
-    queryKey: ["progress", "daily-submissions", range],
-    queryFn: () =>
-      withMockData(() => fakeGetDailySubmissions(range), notImplemented),
+      withMockData(
+        () => fakeGetTopicProgress(range),
+        () => realGetTopicProgress(range),
+      ),
     ...QUERY_OPTIONS,
   });
 
 export const useDifficultyBreakdown = () =>
   useQuery({
     queryKey: ["progress", "difficulty"],
-    queryFn: () => withMockData(fakeGetDifficultyBreakdown, notImplemented),
+    queryFn: () =>
+      withMockData(fakeGetDifficultyBreakdown, realGetDifficultyBreakdown),
     ...QUERY_OPTIONS,
   });
 
 /** `range` filters the whole summary (count, average, weakest, recent sessions); default "all". */
-export const useInterviewSummary = (range: ProgressRange = "all") =>
+export const useInterviewSummary = (range: ProgressRange = "all", limit = 3) =>
   useQuery({
-    queryKey: ["progress", "interview-summary", range],
+    queryKey: ["progress", "interview-summary", range, limit],
     queryFn: () =>
-      withMockData(() => fakeGetInterviewSummary(range), notImplemented),
+      withMockData(
+        () => fakeGetInterviewSummary(range, limit),
+        () => realGetInterviewSummary(range, limit),
+      ),
     ...QUERY_OPTIONS,
   });

@@ -1,5 +1,5 @@
 {
-  "_": "Nguồn tiêu chí: 01-rd/req/user_stories/a1_student.md:176; 01-rd/req/user_stories/a1_student.md:178; 01-rd/req/user_stories/a1_student.md:181. Nguồn thiết kế: 03-dd/logic/F2_problem-bank.md; 03-dd/api/F2_problem-bank.md. [SoT: Suy luận] Tên lớp và chữ ký phương thức là thiết kế đề xuất từ hợp đồng DD vì backend nghiệp vụ chưa hiện thực đầy đủ. Mỗi phương thức ở lớp điều phối nối với đúng một tiêu chí theo thứ tự trong bảng truy vết; không hàm ý một endpoint riêng cho mỗi tiêu chí. Bỏ DTO HTTP, getter/setter, nhánh lỗi chi tiết.",
+  "_": "Nguồn tiêu chí: 01-rd/req/user_stories/a1_student.md:176-181. Nguồn mã nguồn: 05-coding/backend/algoprep-problem-bank/src/main/java/com/algoprep/problembank/application/command/MyBookmarksHandler.java và domain/ports/out/BookmarkRepository.java.",
   "kind": "class",
   "title": "A1 — Bookmark và ghi chú riêng",
   "covers": [
@@ -9,47 +9,51 @@
     "legend": "shared",
     "classes": [
       {
-        "id": "service",
-        "name": "BookmarkService",
+        "id": "handler",
+        "name": "MyBookmarksHandler",
         "methods": [
-          "+ save(studentId : UUID, problemId : UUID, note : String)",
-          "+ getPrivateNote(studentId : UUID, problemId : UUID) : String",
-          "+ listMine(studentId : UUID) : List<Bookmark>"
+          "+ list(userId : UUID, params : Map<String, String>) : BookmarkList",
+          "+ save(userId : UUID, problemId : UUID, note : String) : BookmarkSaveResult",
+          "+ delete(userId : UUID, problemId : UUID)",
+          "+ find(userId : UUID, problemId : UUID) : Optional<Bookmark>"
         ]
       },
       {
-        "id": "port1",
+        "id": "bookmarkRepo",
         "name": "BookmarkRepository",
-        "kind": "class",
-        "methods": [
-          "+ findByOwnerAndProblem(ownerId : UUID, problemId : UUID) : Bookmark"
-        ]
-      },
-      {
-        "id": "port2",
-        "name": "ProblemReadPort",
         "kind": "interface",
         "methods": [
-          "+ getSummary(problemId : UUID) : ProblemSummary"
+          "+ list(userId : UUID) : List<Bookmark>",
+          "+ save(bookmark : Bookmark)",
+          "+ delete(userId : UUID, problemId : UUID)",
+          "+ find(userId : UUID, problemId : UUID) : Optional<Bookmark>"
+        ]
+      },
+      {
+        "id": "solvePort",
+        "name": "SolveStatePort",
+        "kind": "interface",
+        "methods": [
+          "+ mine(userId : UUID) : Optional<SolveStates>"
         ]
       }
     ],
     "externals": [],
     "relations": [
       {
-        "from": "service",
-        "to": "port1",
+        "from": "handler",
+        "to": "bookmarkRepo",
         "kind": "dependency"
       },
       {
-        "from": "service",
-        "to": "port2",
+        "from": "handler",
+        "to": "solvePort",
         "kind": "dependency"
       }
     ],
     "notes": [
-      "Mọi truy vấn ghi chú luôn nhận ownerId từ danh tính đã xác thực; dữ liệu bookmark ở server.",
-      "[SoT: Suy luận] Tên lớp/phương thức là thiết kế backend từ DD."
+      "MyBookmarksHandler quản lý bookmark và ghi chú riêng cho từng bài toán của sinh viên.",
+      "Ghi chú bookmark bảo mật theo tài khoản người sở hữu; trạng thái đã giải được tra cứu qua SolveStatePort."
     ]
   }
 }

@@ -15,6 +15,7 @@ vi.mock("@/shared/i18n", () => ({
   useT: () => (key: string, params?: Record<string, unknown>) =>
     params ? `${key} ${JSON.stringify(params)}` : key,
   useLocale: () => "vi",
+  useApiErrorMessage: () => () => "apiError",
 }));
 
 function withQuery(ui: ReactElement) {

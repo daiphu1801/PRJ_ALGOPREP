@@ -5,9 +5,12 @@ import { expect, test } from "@playwright/test";
  * (login -> open problem -> run -> submit -> realtime result -> Accepted -> AI flow) is specified in
  * 01-rd/system/SYS0301_environment.md section 3.B, and can only be stood up once a real backend exists.
  */
-test("root route redirects to the login screen", async ({ page }) => {
+// DEC-2026-1126-guest-browse-published-problems: "/" no longer forces a sign-in.
+test("root route opens the problem list for a visitor without a role", async ({
+  page,
+}) => {
   await page.goto("/");
-  await expect(page).toHaveURL(/\/login$/);
+  await expect(page).toHaveURL(/\/problems$/);
 });
 
 test("student area renders the AppShell", async ({ page }) => {

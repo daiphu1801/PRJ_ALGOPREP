@@ -44,6 +44,19 @@ Các tiêu chí dưới đây kiểm hành vi màn hình và phối hợp giữa
 | **Kết quả mong đợi** | Mỗi lối mở đúng màn đích. Thẻ bài đã rút hoặc không còn thông tin bài không tạo liên kết sai; khi không có bài dở, khối này được ẩn. |
 | **Nguồn** | [SoT: 03-dd/screens/users/USR0101_problem_list.md] mục 3, 7 |
 
+### PL-AC-05 — Khách xem được danh sách, các phần theo người dùng ẩn hẳn
+
+| Mục | Nội dung |
+| :--- | :--- |
+| **Tiền đề** | Người xem không có phiên; có bài đã xuất bản. |
+| **Hành động** | Mở `/problems` (cũng thử `/problems?status=SOLVED`), bấm "Bài ngẫu nhiên", rồi bấm "Bài đã lưu". |
+| **Kết quả mong đợi** | Không bị chuyển sang `auth`; thấy bảng, thanh chủ đề (chỉ tên), tìm kiếm, tab độ khó; không có khối "Bài đang làm dở", khối "Bài tập lớp", tiến độ chủ đề, tab và cột trạng thái, nhãn Solution Review; không lời gọi cá nhân nào; "Bài ngẫu nhiên" mở một bài; "Bài đã lưu" mở hộp thoại "Cần đăng nhập" dẫn tới `/login?redirect=/saved`. |
+| **Nguồn** | [SoT: 03-dd/screens/users/USR0101_problem_list.md] mục 3, 4 (BR-SC-07), 7 |
+
+### PL-AC-06 — Đọc và mở đề trên màn hình hẹp
+
+Mở `/problems` ở chiều rộng 390 px. Người xem đọc tên, độ khó và chủ đề nếu có, rồi mở đúng đề bằng **Xem đề** mà không cuộn ngang. Tìm theo một mã đã biết trả đúng bài, còn trong dòng kết quả chỉ hiện tên và metadata. Đổi sắp xếp trên điện thoại cập nhật URL như ở desktop.
+
 ## 3. Truy vết
 
 | AC | Luồng DD | Test case | Trạng thái |
@@ -52,4 +65,6 @@ Các tiêu chí dưới đây kiểm hành vi màn hình và phối hợp giữa
 | PL-AC-02 | Mục 3, 7; điểm kiểm DD: T-PL-07–14 | [TC-USR0101-PLAC02-01](../../testcases/screens/users/USR0101_problem_list.md) | Chưa thực hiện |
 | PL-AC-03 | Mục 3, 7; điểm kiểm DD: T-PL-16–17 | [TC-USR0101-PLAC03-01](../../testcases/screens/users/USR0101_problem_list.md) | Chưa thực hiện |
 | PL-AC-04 | Mục 3, 7; điểm kiểm DD: T-PL-18–22 | [TC-USR0101-PLAC04-01](../../testcases/screens/users/USR0101_problem_list.md) | Chưa thực hiện |
+| PL-AC-05 | Mục 3, 4 (BR-SC-07), 7; điểm kiểm DD: T-PL-24–26 | `problem-list-guest.test.tsx`; `e2e/guest-browse-real.spec.ts` | Đạt (2026-11-26) |
+| PL-AC-06 | Mục 6 | Playwright trên bản demo tại cổng 3000, kích thước 390 px và tìm `AP001` | Đạt (2026-11-26) |
 

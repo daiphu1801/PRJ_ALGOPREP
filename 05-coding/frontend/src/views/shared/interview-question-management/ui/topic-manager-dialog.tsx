@@ -1,4 +1,4 @@
-// PROTOTYPE — no DD yet. See 06-plan/PROTOTYPE_DEBT.md
+// F6 #9, #11 to #14 (03-dd/api/F6_interview-bank.md); in-memory store in mock mode.
 //
 // "Quản lý chủ đề" for interview questions (DEC-2026-1001-admin-configurable-settings): the shared
 // ManagedListDialog plus one extra control per row — the STAR-framework switch that replaced the old
@@ -6,11 +6,7 @@
 "use client";
 
 import {
-  addInterviewTopic,
-  moveInterviewTopic,
-  removeInterviewTopic,
-  renameInterviewTopic,
-  setInterviewTopicStar,
+  useInterviewTopicActions,
   useInterviewTopics,
 } from "@/entities/interview-question";
 import { useT } from "@/shared/i18n";
@@ -27,6 +23,7 @@ type Props = {
 export function TopicManagerDialog({ open, onClose, usage }: Props) {
   const t = useT("interviewQuestionManagement");
   const topics = useInterviewTopics();
+  const actions = useInterviewTopicActions();
 
   return (
     <ManagedListDialog
@@ -34,15 +31,17 @@ export function TopicManagerDialog({ open, onClose, usage }: Props) {
       onClose={onClose}
       items={topics}
       usage={usage}
-      onAdd={addInterviewTopic}
-      onRename={renameInterviewTopic}
-      onRemove={removeInterviewTopic}
-      onMove={moveInterviewTopic}
+      onAdd={actions.add}
+      onRename={actions.rename}
+      onRemove={actions.remove}
+      onMove={actions.move}
       renderExtra={(topic) => (
         <Toggle
           checked={topic.usesStarFramework}
-          onCheckedChange={(checked) => {
-            setInterviewTopicStar(topic.key, checked);
+          onCheckedChange={async (checked) => {
+            // A refused write already showed its own error toast; no success toast then.
+            if ((await actions.setStar(topic.key, checked)) === "reported")
+              return;
             toast.success(
               t(
                 checked

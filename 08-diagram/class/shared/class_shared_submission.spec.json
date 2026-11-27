@@ -1,5 +1,5 @@
 {
-  "_": "Nguồn thuộc tính và liên kết: 02-bd/database/F4_judge-orchestration.md:12-154. [SoT: Suy luận] Ánh xạ bảng dữ liệu sang tên class Java là thiết kế đề xuất; bội số theo FK/unique của BD. Bỏ thuộc tính thứ cấp và getter/setter.",
+  "_": "Nguồn thuộc tính và liên kết: 05-coding/backend/algoprep-judge/src/main/java/com/algoprep/judge/domain/model/WorkerRecords.java và ExecutionModels.java. Biểu diễn trạng thái bài nộp (SubmissionState), kết quả từng testcase (TestcaseWrite), token chống ghi đè (RunToken) và phán quyết (Verdict).",
   "kind": "class",
   "title": "F4 — Mô hình bài nộp và kết quả testcase",
   "covers": [],
@@ -7,49 +7,68 @@
     "legend": "shared",
     "classes": [
       {
-        "id": "submission",
-        "name": "Submission",
+        "id": "state",
+        "name": "SubmissionState",
         "attributes": [
           "+ id : UUID",
-          "+ userId : UUID",
-          "+ problemId : UUID",
-          "+ status : SubmissionStatus",
-          "+ submissionModel : SubmissionModel",
-          "+ testcaseSetVersionAtGrading : int [0..1]",
-          "+ scoreRatio : Decimal [0..1]"
+          "+ language : String",
+          "+ model : String",
+          "+ status : String",
+          "+ total : Integer",
+          "+ passed : int",
+          "+ runtime : Integer",
+          "+ memory : Integer",
+          "+ submittedAt : Instant"
         ],
         "methods": []
       },
       {
-        "id": "result",
-        "name": "SubmissionCaseResult",
+        "id": "write",
+        "name": "TestcaseWrite",
         "attributes": [
-          "+ id : UUID",
+          "+ submissionId : UUID",
           "+ testcaseId : UUID",
-          "+ isSample : boolean",
-          "+ testcaseOrder : int",
-          "+ verdict : Verdict",
-          "+ runtimeMs : int"
+          "+ tokenId : UUID",
+          "+ order : int",
+          "+ sample : boolean",
+          "+ verdict : String",
+          "+ runtime : Integer",
+          "+ memory : Integer"
         ],
         "methods": []
       },
       {
         "id": "token",
-        "name": "JudgeRunToken",
+        "name": "RunToken",
         "attributes": [
-          "+ token : UUID",
-          "+ testcaseId : UUID",
-          "+ consumedAt : Instant [0..1]"
+          "+ id : UUID",
+          "+ value : UUID"
         ],
         "methods": []
       },
       {
-        "id": "public",
+        "id": "result",
         "name": "PublicCaseResult",
         "attributes": [
-          "+ verdict : Verdict",
-          "+ runtimeMs : int",
-          "+ memoryKb : int"
+          "+ order : int",
+          "+ verdict : String",
+          "+ runtime : Integer",
+          "+ memory : Integer"
+        ],
+        "methods": []
+      },
+      {
+        "id": "verdict",
+        "name": "Verdict",
+        "kind": "interface",
+        "attributes": [
+          "AC",
+          "WA",
+          "TLE",
+          "MLE",
+          "RE",
+          "COMPILE_ERROR",
+          "SYSTEM_ERROR"
         ],
         "methods": []
       }
@@ -57,35 +76,41 @@
     "externals": [],
     "relations": [
       {
-        "from": "submission",
-        "to": "result",
+        "from": "state",
+        "to": "write",
         "kind": "composition",
         "from_mult": "1",
         "to_mult": "0..*"
       },
       {
-        "from": "submission",
+        "from": "state",
         "to": "token",
         "kind": "association",
         "from_mult": "1",
         "to_mult": "0..*"
       },
       {
-        "from": "result",
+        "from": "write",
         "to": "token",
         "kind": "association",
-        "from_mult": "0..1",
+        "from_mult": "1",
         "to_mult": "1"
       },
       {
-        "from": "result",
-        "to": "public",
+        "from": "write",
+        "to": "verdict",
         "kind": "dependency"
+      },
+      {
+        "from": "write",
+        "to": "result",
+        "kind": "dependency",
+        "label": "chiếu che dữ liệu"
       }
     ],
     "notes": [
-      "Run Sample không tạo Submission; mỗi testcase chỉ ghi một kết quả; PublicCaseResult không chứa input/expected/diff của Hidden.",
-      "[SoT: Suy luận] Tên class Java đề xuất từ schema BD."
+      "SubmissionState, TestcaseWrite, RunToken, PublicCaseResult là các Java 21 Record bất biến từ WorkerRecords.",
+      "RunToken bảo đảm ghi idempotent một lần cho mỗi ca chấm; PublicCaseResult lọc bỏ input/expected/stderr của testcase ẩn."
     ]
   }
 }

@@ -35,6 +35,20 @@ Các tiêu chí màn này kiểm hành vi quan sát được và phối hợp c�
 
 - **Nguồn**: [SoT: 03-dd/screens/users/USR0104_problem_overview.md] mục 3, 7.
 
+### AC-SC-04 — Khách đọc được đề, hành động cần phiên nhắc đăng nhập
+
+- **Tiền điều kiện:** người xem không có phiên; bài đã xuất bản.
+- **Hành động:** mở `/problems/{problemId}` trực tiếp; bấm "Giải bài toán"; đóng hộp thoại; bấm "Lưu bài"; chọn Đăng nhập.
+- **Kết quả mong đợi:** khách xem được đề và ví dụ. Bảng giới hạn, bài nộp gần đây và Solution Review yêu cầu phiên. "Giải bài toán" và "Lưu bài" mở hộp thoại "Cần đăng nhập". Chọn Đăng nhập dẫn tới `/login?redirect=/problems/{problemId}` và đăng nhập xong quay lại đúng bài.
+
+- **Nguồn**: [SoT: 03-dd/screens/users/USR0104_problem_overview.md] mục 3, 4A, 7.
+
+### AC-SC-05 — Bố cục đọc đề và ví dụ trên màn hình rộng và hẹp
+
+- **Tiền điều kiện** Mở một bài đã xuất bản có ít nhất một ví dụ.
+- **Hành động** Mở màn ở 390 px và 1440 px, dùng liên kết Đến ví dụ và bấm Sao chép đầu vào.
+- **Kết quả mong đợi** Ở 390 px, Giải bài toán xuất hiện trước phần đề, hai khối ví dụ xếp dọc và trang không cuộn ngang. Ở 1440 px, hai khối cùng ví dụ nằm cạnh nhau. Liên kết đưa người đọc đến mục Ví dụ và sao chép giữ nguyên dữ liệu gốc.
+
 ## 3. Truy vết
 
 | AC | Luồng DD | Test case | Trạng thái |
@@ -42,3 +56,5 @@ Các tiêu chí màn này kiểm hành vi quan sát được và phối hợp c�
 | AC-SC-01 | [DD màn](../../../03-dd/screens/users/USR0104_problem_overview.md) mục 3, 7 | [TC-USR0104-SCAC01-01](../../testcases/screens/users/USR0104_problem_overview.md) | Chưa thực hiện |
 | AC-SC-02 | [DD màn](../../../03-dd/screens/users/USR0104_problem_overview.md) mục 3, 7 | [TC-USR0104-SCAC02-01](../../testcases/screens/users/USR0104_problem_overview.md) | Chưa thực hiện |
 | AC-SC-03 | [DD màn](../../../03-dd/screens/users/USR0104_problem_overview.md) mục 3, 7 | [TC-USR0104-SCAC03-01](../../testcases/screens/users/USR0104_problem_overview.md) | Chưa thực hiện |
+| AC-SC-04 | [DD màn](../../../03-dd/screens/users/USR0104_problem_overview.md) mục 3, 4A, 7; điểm kiểm DD: SC-08–10 | `problem-overview-guest.test.tsx`; `e2e/guest-browse-real.spec.ts` | Đạt (2026-11-26) |
+| AC-SC-05 | [DD màn](../../../03-dd/screens/users/USR0104_problem_overview.md) BR-SC-05 | [Kiểm tra Chromium và ảnh thực tế](../../../06-plan/reports/261126-1513-ui-tong-quan-bai-toan/report.md) | Đạt (2026-11-26) |

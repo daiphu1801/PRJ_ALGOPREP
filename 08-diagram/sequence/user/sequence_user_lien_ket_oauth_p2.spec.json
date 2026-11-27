@@ -2,34 +2,116 @@
   "_": "Trang 2a/3 callback từ frontend, bắt buộc kiểm state trước khi hỏi nhà cung cấp. Nguồn: 03-dd/api/F1_identity.md endpoint #6; 03-dd/logic/F1_identity.md BR-03. OAuthCallbackCmd = HandleOAuthCallbackCommandHandler; OAuthStatePort = OAuthStateStorePort; RedisStateAdapter = OAuthStateRedisAdapter [SoT: Suy luận về tên lớp]. Provider chuyển code/state về route frontend, frontend gọi backend với hai giá trị; sau khi gọi, frontend xóa code/state khỏi thanh địa chỉ và log theo DD. State sai/hết hạn từ chối trước khi đổi code; state đúng được tiêu thụ một lần rồi sang trang 2b. Redis lỗi không được bỏ qua chốt state. Không đưa provider token, access token của AlgoPrep hoặc restore ticket vào URL.",
   "kind": "sequence",
   "title": "Sơ đồ tuần tự chi tiết - Đối chiếu mã chống giả mạo (2a/3)",
-  "covers": ["F1-15"],
+  "covers": [
+    "F1-15"
+  ],
   "mode": "color",
   "sequence": {
     "detail": true,
     "participants": [
-      {"name": "Sinh viên", "role": "actor"},
-      {"name": "AuthController", "role": "controller", "stereo": "presentation"},
-      {"name": "OAuthCallbackCmd", "role": "service", "stereo": "application command"},
-      {"name": "OAuthStatePort", "role": "repository", "stereo": "output port"},
-      {"name": "RedisStateAdapter", "role": "repository", "stereo": "infrastructure"},
-      {"name": "Redis", "role": "datastore", "stereo": "state 10 phút"}
+      {
+        "name": "Sinh viên",
+        "role": "actor"
+      },
+      {
+        "name": "OAuthController",
+        "role": "controller",
+        "stereo": "presentation"
+      },
+      {
+        "name": "CompleteOAuthLoginCommandHandler",
+        "role": "service",
+        "stereo": "application command"
+      },
+      {
+        "name": "OAuthStatePort",
+        "role": "repository",
+        "stereo": "output port"
+      },
+      {
+        "name": "RedisStateAdapter",
+        "role": "repository",
+        "stereo": "infrastructure"
+      },
+      {
+        "name": "Redis",
+        "role": "datastore",
+        "stereo": "state 10 phút"
+      }
     ],
     "messages": [
-      {"phase": "Giai đoạn 2a - Kiểm nguồn callback trước khi lấy hồ sơ"},
-      {"from": "Sinh viên", "to": "AuthController", "text": "Gửi code và mã chống giả mạo nhận được"},
-      {"from": "AuthController", "to": "OAuthCallbackCmd", "text": "Yêu cầu hoàn tất đăng nhập ngoài"},
-      {"from": "OAuthCallbackCmd", "to": "OAuthStatePort", "text": "Kiểm mã có đúng và còn hạn"},
-      {"from": "OAuthStatePort", "to": "RedisStateAdapter", "text": "Đối chiếu và chỉ dùng một lần"},
-      {"from": "RedisStateAdapter", "to": "Redis", "text": "Lấy mã đã lưu"},
-      {"from": "Redis", "to": "RedisStateAdapter", "text": "Đúng hoặc không hợp lệ", "kind": "return"},
-      {"from": "RedisStateAdapter", "to": "OAuthStatePort", "text": "Kết quả kiểm", "kind": "return"},
-      {"from": "OAuthStatePort", "to": "OAuthCallbackCmd", "text": "Kết quả kiểm", "kind": "return"},
-      {"alt": {"label": "Mã chống giả mạo hợp lệ?", "then": [
-        {"from": "OAuthCallbackCmd", "to": "OAuthCallbackCmd", "text": "Tiếp tục đổi code ở trang 2b"}
-      ], "else": [
-        {"from": "OAuthCallbackCmd", "to": "AuthController", "text": "Dừng trước khi hỏi nhà cung cấp", "kind": "return"},
-        {"from": "AuthController", "to": "Sinh viên", "text": "Báo phiên liên kết không hợp lệ", "kind": "return"}
-      ]}}
+      {
+        "phase": "Giai đoạn 2a - Kiểm nguồn callback trước khi lấy hồ sơ"
+      },
+      {
+        "from": "Sinh viên",
+        "to": "OAuthController",
+        "text": "Gửi code và mã chống giả mạo nhận được"
+      },
+      {
+        "from": "OAuthController",
+        "to": "CompleteOAuthLoginCommandHandler",
+        "text": "Yêu cầu hoàn tất đăng nhập ngoài"
+      },
+      {
+        "from": "CompleteOAuthLoginCommandHandler",
+        "to": "OAuthStatePort",
+        "text": "Kiểm mã có đúng và còn hạn"
+      },
+      {
+        "from": "OAuthStatePort",
+        "to": "RedisStateAdapter",
+        "text": "Đối chiếu và chỉ dùng một lần"
+      },
+      {
+        "from": "RedisStateAdapter",
+        "to": "Redis",
+        "text": "Lấy mã đã lưu"
+      },
+      {
+        "from": "Redis",
+        "to": "RedisStateAdapter",
+        "text": "Đúng hoặc không hợp lệ",
+        "kind": "return"
+      },
+      {
+        "from": "RedisStateAdapter",
+        "to": "OAuthStatePort",
+        "text": "Kết quả kiểm",
+        "kind": "return"
+      },
+      {
+        "from": "OAuthStatePort",
+        "to": "CompleteOAuthLoginCommandHandler",
+        "text": "Kết quả kiểm",
+        "kind": "return"
+      },
+      {
+        "alt": {
+          "label": "Mã chống giả mạo hợp lệ?",
+          "then": [
+            {
+              "from": "CompleteOAuthLoginCommandHandler",
+              "to": "CompleteOAuthLoginCommandHandler",
+              "text": "Tiếp tục đổi code ở trang 2b"
+            }
+          ],
+          "else": [
+            {
+              "from": "CompleteOAuthLoginCommandHandler",
+              "to": "OAuthController",
+              "text": "Dừng trước khi hỏi nhà cung cấp",
+              "kind": "return"
+            },
+            {
+              "from": "OAuthController",
+              "to": "Sinh viên",
+              "text": "Báo phiên liên kết không hợp lệ",
+              "kind": "return"
+            }
+          ]
+        }
+      }
     ]
   }
 }

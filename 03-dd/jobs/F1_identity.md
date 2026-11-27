@@ -13,6 +13,7 @@ Bảng 1 liệt kê toàn bộ job của `identity`. Lịch chạy là giá tr�
 | JOB-ID-03 | Dọn feed hoạt động quá 90 ngày | định kỳ hằng ngày | `identity_recent_activity` | `02-bd/architecture/F1_identity.md:130` |
 | JOB-ID-04 | Dọn refresh token hết hạn/thu hồi quá 6 tháng | định kỳ hằng ngày | `refresh_tokens` | `02-bd/database/F1_identity.md:102-103` |
 | JOB-ID-05 | Dọn nhật ký hệ thống quá hạn | định kỳ hằng ngày | `system_audit_logs` | BR-20 (`03-dd/logic/F1_identity.md:41-46`) |
+| JOB-ID-06 | Dọn tài khoản tự đăng ký chưa xác thực email | định kỳ hằng ngày | `users`, `user_preferences`, `oauth_identities`, `refresh_tokens` | soát độc lập F1 (M1); chủ dự án chốt 2026-11-03 |
 
 Nguyên tắc chung cho JOB-ID-02 đến JOB-ID-05: chạy bằng `@Scheduled` trong một instance (nếu triển khai nhiều instance thì dùng khoá tư vấn Postgres `pg_try_advisory_xact_lock(hashtext(<mã job>))` đầu giao dịch, không lấy được khoá thì bỏ lượt; chốt 2026-10-23, `DEC-2026-1023-open-questions-closed`, cùng cơ chế với `judge-orchestration` và `ai-review`); không tạo dòng `system_audit_logs` vì không có người thao tác (`actor_user_id` NOT NULL); mỗi lô một giao dịch riêng để lô lỗi không kéo lô đã xong; ghi log mức INFO số dòng xử lý mỗi lần chạy. Việc chạy job không phụ thuộc đường AI (`CLAUDE.md`: AI chết không được ảnh hưởng F1-F4).
 
@@ -82,8 +83,23 @@ AND (expires_at < now() OR revoked_at IS NOT NULL)
 
 ## 5. JOB-ID-05 — Dọn nhật ký hệ thống quá hạn
 
-Giữ nguyên đặc tả ở BR-20 (`03-dd/logic/F1_identity.md:41-46`): hằng ngày, đọc `system_settings` (`retention_days`, `expired_policy`), `DELETE` thì xoá dòng `created_at < now() - retention_days` theo lô 5.000; `ARCHIVE` hoãn, chỉ ghi cảnh báo. Lịch đề xuất 04:30 (`cron = "0 30 4 * * *"`) `[SoT: Suy luận]`. Mục này chỉ để bảng 1 đủ các job của module; không đặc tả lại.
+Giữ nguyên đặc tả ở BR-20 (`03-dd/logic/F1_identity.md:41-46`): hằng ngày, đọc `system_settings` (`retention_days`, `expired_policy`), `DELETE` thì xoá dòng `created_at < now() - retention_days` theo lô 5.000; `ARCHIVE` hoãn, chỉ ghi cảnh báo. Lịch đề xuất 04:30 (`cron = "0 30 4 * * *"`) `[SoT: Suy luận]`. Mục này chỉ để bảng 1 đủ các job của module; không đặc tả lại. **Triển khai 2026-11-01:** cron `0 30 4 * * *`; một câu CTE `FOR UPDATE SKIP LOCKED`; 5.000 dòng mỗi lô, tối đa 20 lô (100.000 dòng) mỗi lượt; không `@Transactional`; không ghi audit từng dòng bị dọn và không ghi dòng tổng kết (`actor_user_id` NOT NULL); `ARCHIVE` chỉ ghi cảnh báo và giữ mọi dòng (BR-20).
+
+## 6. JOB-ID-06 — Dọn tài khoản tự đăng ký chưa xác thực email
+
+- **Mục đích**: không để một đăng ký chưa hoàn tất giữ chỗ email mãi mãi và để bảng `users` không phình vì đăng ký rác (soát độc lập F1, M1; chủ dự án chốt 7 ngày, 2026-11-03).
+- **Lịch**: hằng ngày 04:30 (`cron = "0 30 4 * * *"`); hạn là `algoprep.identity.pending-account-ttl`, mặc định `7d`.
+- **Điều kiện chọn**: `status = 'PENDING_VERIFICATION' AND must_change_password = false AND created_at <= now() - ttl` và chưa có dòng `system_audit_logs` hay `identity_recent_activity` nào của tài khoản. `must_change_password = false` loại các tài khoản Admin tạo (cũng đang `PENDING_VERIFICATION` nhưng mang mật khẩu tạm).
+- **Hành động**: xoá cứng theo lô 500, một câu lệnh mỗi lô (xoá `user_preferences`, `oauth_identities`, `refresh_tokens` của các tài khoản đó rồi `users`), `FOR UPDATE SKIP LOCKED`.
+- **Idempotent**: có. **Lỗi**: log ERROR, lần sau chạy tiếp. Không ghi audit (không có người thao tác).
+- **Kiểm chứng**: `FirstAdminAndTokenPurgeTest#pendingPurgeRemovesOnlyOldSelfRegisteredAccountsAndTheirRows`.
+- **Còn mở**: một người vẫn có thể đăng ký trước một email mà họ không sở hữu rồi chờ nạn nhân xác thực (xem báo cáo soát độc lập F1, M1); job chỉ giới hạn thời gian giữ chỗ, chưa buộc đổi mật khẩu khi kích hoạt.
 
 ## Tham chiếu
 
 `03-dd/logic/F1_identity.md` (BR-08, BR-20, BR-23), `02-bd/database/F1_identity.md` (mục 1.1, 1.6, 1.11, 4), `02-bd/architecture/F1_identity.md` (mục 5), `04-tdd/modules/F1_identity.md` (AC-42, AC-46, AC-47), `DEC-2026-1023-db-actor-review-fixes`. Các file job khác: `03-dd/jobs/F4_judge-orchestration.md`, `03-dd/jobs/F5_ai-review.md`.
+
+
+## Bổ sung 2026-11-11 — Identity ClassDeleted Outbox
+
+`IdentityOutboxJobs` relay mỗi 2 giây (`identity.outbox.relay-delay-ms=2000`, batch 100), đọc pending theo `created_at,id` với `FOR UPDATE SKIP LOCKED`. Phát phong bì nguyên vẹn tới `algoprep.identity.events`, routing `class.deleted`, giữ eventId. Chỉ publisher confirm không có mandatory return mới ghi published_at; mỗi lần thử tăng publish_attempts. Lỗi giữ pending, không bỏ theo số lần thử. Cleanup mỗi 24 giờ, chỉ xóa dòng published quá 90 ngày, mỗi lô tối đa 1000; lỗi rollback lô. Cấu hình tại `application-outbox.yml`, bật/tắt scheduler qua `identity.outbox.enabled`. StudentRemovedFromClass giữ BR-11, không tạo pending khi chưa có consumer.

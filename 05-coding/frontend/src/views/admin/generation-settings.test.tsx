@@ -5,6 +5,7 @@ import {
   render,
   renderHook,
   screen,
+  waitFor,
 } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { aiGenerationSettings } from "@/entities/problem";
@@ -15,6 +16,7 @@ import { toast, useToasts } from "@/shared/lib/toast-store";
 vi.mock("@/shared/i18n", () => ({
   useT: () => (key: string) => key,
   useLocale: () => "vi",
+  useApiErrorMessage: () => () => "apiError",
 }));
 
 vi.mock("next/navigation", () => ({ useRouter: () => ({ push: vi.fn() }) }));
@@ -35,25 +37,44 @@ afterEach(() => {
 });
 
 describe("per-problem generation cap on the AI limits screen", () => {
-  it("starts at 2 and the stepper moves the shared setting within 1 to 10", () => {
-    render(<AdminAiLimitsView />);
+  it("starts at 2 and the stepper moves the shared setting within 1 to 10", async () => {
+    render(withQuery(<AdminAiLimitsView />));
     expect(aiGenerationSettings.get().maxPerProblem).toBe(2);
 
     fireEvent.click(
-      screen.getByRole("button", { name: "testcaseGen.increment" }),
+      await screen.findByRole("button", { name: "testcaseGen.increment" }),
     );
-    expect(aiGenerationSettings.get().maxPerProblem).toBe(3);
+    await waitFor(() =>
+      expect(aiGenerationSettings.get().maxPerProblem).toBe(3),
+    );
+    await waitFor(() =>
+      expect(
+        screen.getByRole("button", { name: "testcaseGen.decrement" }),
+      ).toBeEnabled(),
+    );
 
     fireEvent.click(
       screen.getByRole("button", { name: "testcaseGen.decrement" }),
     );
+    await waitFor(() =>
+      expect(aiGenerationSettings.get().maxPerProblem).toBe(2),
+    );
+    await waitFor(() =>
+      expect(
+        screen.getByRole("button", { name: "testcaseGen.decrement" }),
+      ).toBeEnabled(),
+    );
     fireEvent.click(
       screen.getByRole("button", { name: "testcaseGen.decrement" }),
     );
-    expect(aiGenerationSettings.get().maxPerProblem).toBe(1);
-    expect(
-      screen.getByRole("button", { name: "testcaseGen.decrement" }),
-    ).toBeDisabled();
+    await waitFor(() =>
+      expect(aiGenerationSettings.get().maxPerProblem).toBe(1),
+    );
+    await waitFor(() =>
+      expect(
+        screen.getByRole("button", { name: "testcaseGen.decrement" }),
+      ).toBeDisabled(),
+    );
   });
 });
 

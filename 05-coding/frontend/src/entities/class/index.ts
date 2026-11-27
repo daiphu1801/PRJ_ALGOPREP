@@ -2,24 +2,33 @@ export type {
   AttentionItem,
   ClassActivity,
   ClassForm,
+  ClassRosterRow,
   ClassSchedule,
   ClassScoreTrend,
   ClassStudent,
+  ClassStudentDetail,
   ClassSummary,
+  InstructorStudentPage,
   InviteCode,
+  JoinedClass,
   MyClass,
   MyClassAssignment,
   StudentStatus,
 } from "./model/types";
-export { initialsOfClassStudent } from "./model/types";
-export { formatClassSchedule } from "./model/schedule";
+export {
+  formatClassSchedule,
+  formatClassScheduleBrief,
+  classScheduleParts,
+} from "./model/schedule";
 export { STUDENT_STATUS_VARIANT } from "./model/status";
 export {
   useClassActivity,
-  useClassAttention,
-  useClassScoreTrend,
+  useClassRoster,
   useClassStudentDetail,
   useClassStudents,
+  useInstructorClassSummary,
+  useInstructorClassTotals,
+  useInstructorStudentPage,
   useCreateClass,
   useCreateInviteCode,
   useDeleteClass,
@@ -29,5 +38,6 @@ export {
   useMyClass,
   useMyClasses,
   useRemoveStudent,
+  useRevokeInviteCode,
   useUpdateClass,
 } from "./api/queries";

@@ -15,12 +15,12 @@
         "role": "actor"
       },
       {
-        "name": "AssignmentController",
+        "name": "ClassAssignmentController",
         "role": "controller",
         "stereo": "presentation"
       },
       {
-        "name": "AssignProblemsToClass",
+        "name": "ClassAssignmentCommandHandler",
         "role": "service",
         "stereo": "application command"
       },
@@ -35,7 +35,7 @@
         "stereo": "output port"
       },
       {
-        "name": "ProblemDbAdapter",
+        "name": "JdbcClassAssignmentRepository",
         "role": "repository",
         "stereo": "persistence adapter"
       },
@@ -51,22 +51,22 @@
       },
       {
         "from": "Giảng viên",
-        "to": "AssignmentController",
+        "to": "ClassAssignmentController",
         "text": "Chọn lớp và tối đa 50 bài để giao"
       },
       {
-        "from": "AssignmentController",
-        "to": "AssignProblemsToClass",
+        "from": "ClassAssignmentController",
+        "to": "ClassAssignmentCommandHandler",
         "text": "Gửi danh sách bài và lớp"
       },
       {
-        "from": "AssignProblemsToClass",
+        "from": "ClassAssignmentCommandHandler",
         "to": "InstructorClassPort",
         "text": "Kiểm lớp do giảng viên phụ trách"
       },
       {
         "from": "InstructorClassPort",
-        "to": "AssignProblemsToClass",
+        "to": "ClassAssignmentCommandHandler",
         "text": "Lớp thuộc hoặc ngoài phạm vi",
         "kind": "return"
       },
@@ -75,84 +75,84 @@
           "label": "Lớp thuộc phạm vi phụ trách?",
           "then": [
             {
-              "from": "AssignProblemsToClass",
+              "from": "ClassAssignmentCommandHandler",
               "to": "ClassAssignmentRepository",
               "text": "Đọc trạng thái bài và dòng giao còn hiệu lực"
             },
             {
               "from": "ClassAssignmentRepository",
-              "to": "ProblemDbAdapter",
+              "to": "JdbcClassAssignmentRepository",
               "text": "Tìm bài và lần giao hiện tại"
             },
             {
-              "from": "ProblemDbAdapter",
+              "from": "JdbcClassAssignmentRepository",
               "to": "PostgreSQL",
               "text": "Đọc bài và lần giao trong lớp"
             },
             {
               "from": "PostgreSQL",
-              "to": "ProblemDbAdapter",
+              "to": "JdbcClassAssignmentRepository",
               "text": "Trạng thái bài và lần giao",
               "kind": "return"
             },
             {
-              "from": "ProblemDbAdapter",
+              "from": "JdbcClassAssignmentRepository",
               "to": "ClassAssignmentRepository",
               "text": "Trạng thái bài và lần giao",
               "kind": "return"
             },
             {
               "from": "ClassAssignmentRepository",
-              "to": "AssignProblemsToClass",
+              "to": "ClassAssignmentCommandHandler",
               "text": "Trạng thái bài và lần giao",
               "kind": "return"
             },
             {
-              "from": "AssignProblemsToClass",
-              "to": "AssignProblemsToClass",
+              "from": "ClassAssignmentCommandHandler",
+              "to": "ClassAssignmentCommandHandler",
               "text": "Bài chưa xuất bản vào danh sách lỗi; bài đã giao vào danh sách bỏ qua"
             },
             {
-              "from": "AssignProblemsToClass",
+              "from": "ClassAssignmentCommandHandler",
               "to": "ClassAssignmentRepository",
               "text": "Giao các bài hợp lệ còn lại"
             },
             {
               "from": "ClassAssignmentRepository",
-              "to": "ProblemDbAdapter",
+              "to": "JdbcClassAssignmentRepository",
               "text": "Tạo dòng giao và sự kiện cùng giao dịch từng bài"
             },
             {
-              "from": "ProblemDbAdapter",
+              "from": "JdbcClassAssignmentRepository",
               "to": "PostgreSQL",
               "text": "Ghi lần giao mới và hộp thư sự kiện"
             },
             {
               "from": "PostgreSQL",
-              "to": "ProblemDbAdapter",
+              "to": "JdbcClassAssignmentRepository",
               "text": "Kết quả từng bài",
               "kind": "return"
             },
             {
-              "from": "ProblemDbAdapter",
+              "from": "JdbcClassAssignmentRepository",
               "to": "ClassAssignmentRepository",
               "text": "Thành công hoặc lỗi từng bài",
               "kind": "return"
             },
             {
               "from": "ClassAssignmentRepository",
-              "to": "AssignProblemsToClass",
+              "to": "ClassAssignmentCommandHandler",
               "text": "Kết quả giao và lỗi riêng",
               "kind": "return"
             },
             {
-              "from": "AssignProblemsToClass",
-              "to": "AssignmentController",
+              "from": "ClassAssignmentCommandHandler",
+              "to": "ClassAssignmentController",
               "text": "Trả danh sách đã giao, bỏ qua và lỗi",
               "kind": "return"
             },
             {
-              "from": "AssignmentController",
+              "from": "ClassAssignmentController",
               "to": "Giảng viên",
               "text": "Hiển thị kết quả từng bài",
               "kind": "return"
@@ -160,13 +160,13 @@
           ],
           "else": [
             {
-              "from": "AssignProblemsToClass",
-              "to": "AssignmentController",
+              "from": "ClassAssignmentCommandHandler",
+              "to": "ClassAssignmentController",
               "text": "Từ chối vì không phụ trách lớp",
               "kind": "return"
             },
             {
-              "from": "AssignmentController",
+              "from": "ClassAssignmentController",
               "to": "Giảng viên",
               "text": "Hiển thị lỗi quyền lớp",
               "kind": "return"

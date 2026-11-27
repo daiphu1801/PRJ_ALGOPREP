@@ -11,7 +11,7 @@ Bảng 0.1 là bìa.
 | Prototype | `05-coding/frontend/src/views/teacher/class-detail/` |
 | Module | F1 identity #19, #21–24, #26–27 |
 | TDD | `04-tdd/modules/F1_identity.md` AC-20b, AC-21–22, AC-43; `04-tdd/screens/teacher/INS0205_class_detail.md` |
-| Phiên bản, ngày | V0.1, 2026-10-24 |
+| Phiên bản, ngày | V0.2, 2026-11-02 (nối API thật, task #12); V0.1, 2026-10-24 |
 
 Bảng 0.2 ghi lịch sử.
 
@@ -109,8 +109,23 @@ Bảng 7.1 bao phủ EVT-1–9; TDD module bảo đảm giao dịch server.
 | SC-05 | Boundary | EVT-5 clipboard từ chối; EVT-6 tạo mã không mất mã cũ | Vitest | `class_detail` AC-SC-02 |
 | SC-06 | Normal | EVT-8/9 gỡ sau xác nhận, giữ lịch sử, lỗi rollback | Vitest | F1 AC-21; `class_detail` AC-SC-02 |
 
+**Triển khai 2026-11-02 (task #12, lát 4).** Màn nối API thật ở chế độ `NEXT_PUBLIC_MOCK_DATA=false` cho F1 #19, #21, #22, #23, #24, #26, #27.
+- **Vị trí mã.** Giữ trong `entities/class/api/` (`real-class.ts`, `queries.ts`): cụm lớp có nhiều màn dùng chung nên đặt ở `entities` đúng bảng mục 1; các hook của màn này dùng `useQuery`/`useMutation` kèm `withMockData`. Chế độ mock giữ nguyên.
+- **Ba vùng tải độc lập.** Lớp lấy từ #19 (không có thì "không tìm thấy lớp"), mã mời #24, học viên #26 (`useClassRoster`). Lỗi mã mời hiện khối lỗi kèm Thử lại tại vùng đó; lỗi bảng học viên hiện ở bảng; các vùng còn lại giữ nguyên.
+- **Bảng học viên.** #26 trả `studentId`, `displayName`, `email`, `phone`, `joinedAt`, `status` luôn null. Ở chế độ thật bảng hiện tên, email, số điện thoại, ngày vào lớp và **không** có cột trạng thái, điểm TB, hoàn thành, hoạt động gần nhất (cần F4, ponytail bậc 2); chế độ mock giữ các cột đó (`ClassRosterRow.metrics`).
+- **Mã mời.** Tạo mã mới gọi #23 rồi tải lại danh sách từ #24; mã cũ còn nguyên. Nhãn hạn hiển thị "Còn hạn tới dd/mm/yyyy" theo UTC+7.
+- **Gỡ học viên.** Gọi #27 theo `classId` và `studentId` (hook `useRemoveStudent` nay nhận hai id); lỗi toast theo mã (`IDT-414`, `IDT-445`).
+- **Sửa và xoá lớp** như `INS0201`: hộp thoại giữ nội dung khi bị từ chối; chỉ chuyển trang sau khi #22 thành công.
+- Kiểm chứng: `class-detail-real.test.tsx`; `e2e/classes-real.spec.ts`.
+
+
 ## 8. Nợ prototype và câu hỏi mở
 
 **Nợ prototype:** ba nhóm vẫn dùng mock và đang chia sẻ `entities/class` cho giảng viên/học viên; cần nối đúng F1 #19/#24/#26, dùng UUID thật, tách retry, sửa invalidate khi sửa/xoá/gỡ. Dòng `INS0205` trong `06-plan/PROTOTYPE_DEBT.md` còn mở đến khi code tích hợp. `[SoT: BD Sheet 4.4; V]`
 
 **Đã đóng ở DD:** lớp không có/ngoài phạm vi dùng `404 IDT-414` thống nhất với các API đọc giảng viên; tên/mô tả/lịch học theo validation F1 §5 (`IDT-V10`, `IDT-V14`–`V16`). Khi nối API, màn ánh xạ `error.code` từ hợp đồng F1, không dựa vào chuỗi `message`. `[SoT: BD Sheet 9; F1 mục 0.4; validation F1 §5]`
+
+## Cập nhật 2026-11-07 (nối API thật)
+
+API tiêu thụ: `GET /api/v1/identity/classes/{classId}/students` (#26) nay có thêm `status`, `avgScore`, `completionPercent`, `lastSubmittedAt` (null khi F4 không đọc được). Hook `useClassRoster` không đổi; mapper `realListRoster` điền `metrics`.
+

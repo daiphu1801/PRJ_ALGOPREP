@@ -39,12 +39,14 @@ test("the avatar menu opens and reaches the account destinations", async ({
   await page.goto("/dashboard");
 
   await page.getByRole("button", { name: "Mở menu tài khoản" }).click();
-  const menu = page.getByRole("menu");
-  await expect(menu.getByRole("menuitem")).toHaveCount(4);
+  // The menu is plain links on purpose (no role="menu": arrow keys are not implemented), so it is
+  // found through its scrim button instead.
+  const scrim = page.getByRole("button", { name: "Đóng menu tài khoản" });
+  await expect(scrim).toBeVisible();
 
-  await menu.getByRole("menuitem", { name: "Cài đặt" }).click();
+  await page.getByRole("link", { name: "Cài đặt", exact: true }).click();
   await expect(page).toHaveURL(/\/settings$/);
-  await expect(page.getByRole("menu")).toHaveCount(0);
+  await expect(scrim).toHaveCount(0);
 });
 
 test("collapses the nav behind one button on a narrow viewport", async ({

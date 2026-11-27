@@ -20,6 +20,8 @@ type ThemeLangSwitcherProps = {
    * only loses the theme group's text.
    */
   collapsed?: boolean;
+  /** Below the `sm` breakpoint show only the theme icons (label moves to title/aria-label). */
+  iconOnlyBelowSm?: boolean;
   className?: string;
 };
 
@@ -36,8 +38,7 @@ const THEME_OPTIONS = [
  * (fixed corner widget, 02-bd/screens/shared/SHR0101_auth.md Sheet 4.4) and the Admin shell sidebar
  * (02-bd/screens/admin/ADM0101_overview.md section 2 point 6).
  *
- * Two DIFFERENT shapes on purpose, not one shared track twice: Theme stays a segmented pill —
- * 1:1 with the prototype's toggle group, BOTH options always visible inside one track
+ * Theme stays a segmented pill with both options visible inside one track
  * (09-layoutBase/Admin - Tổng quan.dc.html:96-100, 09-layoutBase/Đăng nhập & Đăng ký.dc.html:80-87).
  * Language is two independent circle buttons (matches the decorative icon buttons already in
  * `AdminToolbar`) — narrower than a second pill, which is what let the Admin sidebar's 224px width
@@ -47,6 +48,7 @@ const THEME_OPTIONS = [
 export function ThemeLangSwitcher({
   variant = "inline",
   collapsed = false,
+  iconOnlyBelowSm = false,
   className,
 }: ThemeLangSwitcherProps) {
   const t = useT("common");
@@ -112,18 +114,22 @@ export function ThemeLangSwitcher({
   // circles by 4px each — verified live (Playwright bounding boxes) to land ~20px clear of the
   // border, not just "should fit" by eye.
   const segmentedTrack = cn(
-    "glass-surface flex h-8 gap-0.5 rounded-lg border border-[var(--color-border)] px-1 py-0.5",
-    stacked && "w-full",
+    "glass-surface flex gap-0.5 rounded-lg border border-[var(--color-border)]",
+    stacked ? "flex-col p-0.5" : "h-8 px-1 py-0.5",
   );
   const segmentButton = (active: boolean) =>
     cn(
-      "flex h-full items-center justify-center gap-1.5 rounded-md text-xs font-semibold transition-colors",
+      "flex items-center justify-center gap-1.5 rounded-md text-xs font-semibold transition-colors",
       // Fixed min-width instead of letting the label size the button: "Sáng"/"Tối" and
       // "Light"/"Dark" are NOT the same pixel width, so switching locale was changing the track's
       // total width and shifting whatever sits next to it (owner-flagged 2026-09-16 screenshot: the
       // VI/EN circles visibly jump right on switching to English). 62px fits the widest of the four
       // labels ("Light") with `px-1.5` — see the sidebar-budget note above for why not wider.
-      stacked ? "flex-1 px-1.5" : "min-w-[62px] px-1.5",
+      stacked
+        ? "size-7 shrink-0"
+        : iconOnlyBelowSm
+          ? "px-1.5 sm:min-w-[62px]"
+          : "min-w-[62px] px-1.5",
       active
         ? cn(
             "bg-[var(--color-primary)] text-[var(--color-on-primary)]",
@@ -146,8 +152,7 @@ export function ThemeLangSwitcher({
       // the group started 9.5px from the rail edge instead of 12px, eating 2.5px of the gutter on
       // each side. The rail now stacks VI over EN instead (admin UX review F6, 2026-10-14): side by
       // side, 20px circles touching each other were under the 24px target minimum.
-      "h-6 w-6",
-      stacked ? "text-[10px]" : "text-[10.5px]",
+      stacked ? "size-7 text-[10px]" : "size-6 text-[10.5px]",
       active
         ? cn(
             "bg-[var(--color-primary)] text-[var(--color-on-primary)]",
@@ -161,7 +166,7 @@ export function ThemeLangSwitcher({
       className={cn(
         "flex items-center gap-1",
         variant === "floating" && "fixed right-4 top-4 z-50",
-        stacked && "flex-col",
+        stacked && "flex-col gap-2",
         className,
       )}
     >
@@ -180,7 +185,7 @@ export function ThemeLangSwitcher({
             type="button"
             onClick={() => setTheme(option)}
             title={
-              collapsed
+              collapsed || iconOnlyBelowSm
                 ? option === "dark"
                   ? t("themeDark")
                   : t("themeLight")
@@ -191,8 +196,11 @@ export function ThemeLangSwitcher({
             suppressHydrationWarning
           >
             <Icon aria-hidden="true" className="h-3.5 w-3.5" />
-            {!collapsed &&
-              (option === "dark" ? t("themeDark") : t("themeLight"))}
+            {!collapsed && (
+              <span className={cn(iconOnlyBelowSm && "max-sm:sr-only")}>
+                {option === "dark" ? t("themeDark") : t("themeLight")}
+              </span>
+            )}
           </button>
         ))}
       </div>

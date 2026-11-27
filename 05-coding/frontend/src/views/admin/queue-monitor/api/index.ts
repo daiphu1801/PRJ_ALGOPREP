@@ -1,10 +1,24 @@
 export {
   type ClusterControls,
+  type JobsPage,
   type JobStatus,
   type QueueJob,
   type QueueLatency,
   type QueuePage,
+  type QueueSettings,
+  type QueueState,
+  type QueueSummary,
+  type QueueTab,
   type Worker,
   type WorkerStatus,
 } from "../model/types";
-export { useQueuePage } from "./queries";
+export {
+  QUEUE_KEY,
+  useQueueControl,
+  useQueueInfra,
+  useQueueJobs,
+  useQueueLive,
+  useQueueSettings,
+  useQueueSummary,
+  useSaveQueueSettings,
+} from "./queries";

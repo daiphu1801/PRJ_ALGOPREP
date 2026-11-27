@@ -3,14 +3,16 @@
 //
 // Top right, by owner choice (2026-10-03). It was first built bottom right to keep the PageHeader
 // actions (Save, Publish, Add...) uncovered; the owner wants it up top, so a card can sit over those
-// buttons for its few seconds. It auto-dismisses, the X closes it, and hovering holds it, never
-// blocks: `pointer-events-none` on the column lets clicks pass through the gaps between cards.
+// buttons for its few seconds. It auto-dismisses and the X closes it. The card body lets clicks
+// through (`pointer-events-none`), so a button under it stays usable and passing the pointer over it
+// does not hold it; only the X and the action button take the pointer.
 //
 // Motion (classes in globals.css, all behind prefers-reduced-motion): a card slides in from the
 // right with a small overshoot; closing slides it out and collapses its row so the cards below glide
 // up instead of jumping; a thin bar along the bottom runs down to the moment it dismisses itself.
 //
-// Dismiss timing: a card closes after its `durationMs`, and hovering or focusing it holds it open.
+// Dismiss timing: a card closes after its `durationMs`. Pointing at or focusing its X or action holds
+// it open (owner 2026-11-25: a card held by a resting pointer never went away and hid the buttons).
 // Leaving restarts the full duration instead of resuming the remainder — simpler, and a card the
 // user reached for should stay readable a little longer anyway. The progress bar is remounted on
 // every hold/release so it restarts in step with that timer.
@@ -99,13 +101,11 @@ function ToastCard({
       <div className={cn("min-h-0 pb-2", leaving && "overflow-hidden")}>
         <div
           role={urgent ? "alert" : "status"}
-          onMouseEnter={() => setHeld(true)}
-          onMouseLeave={() => setHeld(false)}
           onFocus={() => setHeld(true)}
           onBlur={() => setHeld(false)}
           className={cn(
             // Opaque surface: the page content scrolls under the toast, and a see-through card made it unreadable.
-            "toast-enter glass-card pointer-events-auto relative flex items-start gap-3 overflow-hidden border border-l-4 border-[var(--color-border)] !bg-[var(--color-surface)] px-4 py-3 shadow-lg",
+            "toast-enter glass-card pointer-events-none relative flex items-start gap-3 overflow-hidden border border-l-4 border-[var(--color-border)] !bg-[var(--color-surface)] px-4 py-3 shadow-lg",
             style.edge,
           )}
         >
@@ -124,11 +124,13 @@ function ToastCard({
             {item.action ? (
               <button
                 type="button"
+                onMouseEnter={() => setHeld(true)}
+                onMouseLeave={() => setHeld(false)}
                 onClick={() => {
                   item.action?.onClick();
                   setLeaving(true);
                 }}
-                className="mt-1.5 cursor-pointer text-[12.5px] font-semibold text-[var(--color-primary)] underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[var(--color-primary)]"
+                className="pointer-events-auto mt-1.5 cursor-pointer text-[12.5px] font-semibold text-[var(--color-primary)] underline underline-offset-2 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[var(--color-primary)]"
               >
                 {item.action.label}
               </button>
@@ -137,8 +139,10 @@ function ToastCard({
           <button
             type="button"
             aria-label={labels.dismiss}
+            onMouseEnter={() => setHeld(true)}
+            onMouseLeave={() => setHeld(false)}
             onClick={() => setLeaving(true)}
-            className="-mr-1 shrink-0 cursor-pointer rounded-md px-2 text-lg leading-none text-[var(--color-text-muted)] hover:text-[var(--color-text)] focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[var(--color-primary)]"
+            className="pointer-events-auto -mr-1 shrink-0 cursor-pointer rounded-md px-2 text-lg leading-none text-[var(--color-text-muted)] hover:text-[var(--color-text)] focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[var(--color-primary)]"
           >
             {"×"}
           </button>

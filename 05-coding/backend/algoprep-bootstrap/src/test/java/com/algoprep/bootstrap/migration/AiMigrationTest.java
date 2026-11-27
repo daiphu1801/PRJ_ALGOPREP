@@ -143,7 +143,7 @@ class AiMigrationTest {
             .load()
             .migrate();
     assertThat(result.success).isTrue();
-    assertThat(result.migrationsExecuted).isEqualTo(2);
+    assertThat(result.migrationsExecuted).isEqualTo(3);
     assertSeededConfiguration(clean);
     for (String empty : EMPTY_AT_START) {
       assertThat(count(clean, "ai." + empty)).as(empty).isZero();

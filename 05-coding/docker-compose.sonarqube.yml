@@ -1,0 +1,21 @@
+# Local SonarQube Community Build, kept out of the main stack (heavy, only needed for analysis).
+# Up:   docker compose -f docker-compose.sonarqube.yml up -d      UI: http://localhost:9002 (admin/admin)
+# Host port 9002 because 9000 is taken by MinIO.
+name: algoprep-sonar
+services:
+  sonarqube:
+    image: sonarqube:community
+    container_name: algoprep-sonarqube
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:9002:9000"
+    environment:
+      SONAR_ES_BOOTSTRAP_CHECKS_DISABLE: "true"
+    volumes:
+      - sonar-data:/opt/sonarqube/data
+      - sonar-extensions:/opt/sonarqube/extensions
+      - sonar-logs:/opt/sonarqube/logs
+volumes:
+  sonar-data:
+  sonar-extensions:
+  sonar-logs:

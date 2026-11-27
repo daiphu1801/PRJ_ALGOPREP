@@ -54,3 +54,8 @@ Các cụm đợt 1 được quản lý theo module: [F2 problem-bank](modules/F
 ## 4. Review và theo dõi
 
 Review hai chiều: từng test case phải dẫn đúng AC/DD; từng nhánh rủi ro của AC phải có ca độc lập. Gắn mã test case vào TDD sau review. Trạng thái `Chưa thực hiện` giữ nguyên cho đến khi chạy; kết quả mock, tích hợp và E2E được ghi riêng với môi trường và phiên bản build. Không báo “test pass” từ số lượng AC hoặc test case đã viết.
+
+
+### Bổ sung 2026-11-11 — F2 AC-95
+
+[Cụm authoring defaults](modules/F2_problem-bank/F2_authoring_defaults.md) thêm 13 ca thiết kế, đã review theo skill QA testcases và kiểm cấu trúc: 13 ca/13 trace, 0 lỗi. F2 hiện 171 ca/14 cụm/95 AC. Các ca QA mới chưa có run record. Giữ số 1.107 và 895 phía trên làm baseline trước bổ sung; không suy trạng thái Pass từ việc thêm trace.

@@ -9,8 +9,8 @@
 // Lives under views/dashboard, NOT entities/student-dashboard, because it reads `TopicProgress`
 // from `entities/progress` and FSD forbids one entity importing another (eslint
 // boundaries/element-types, 01-rd/system/SYS0102_frontend_architecture.md mục 2). Combining two
-// entities is exactly what the layer above them is for, and three blocks on this screen share it —
-// greeting, radar and suggested problems — so it is screen-level shared logic, not block-level.
+// entities is exactly what the layer above them is for. Since DEC-2026-1123-student-dashboard-trim removed the
+// radar, only the greeting reads it; the file name is kept to avoid churn.
 //
 // The weighting is locked by the owner (2026-10-18, DEC-2026-1018-usr-open-questions-phase2-5): 70% AC
 // rate plus 30% solved ratio of the topic, with NO difficulty weight (difficulty is an admin-managed
@@ -22,10 +22,7 @@ import type { SkillRadarPoint } from "../api";
 const AC_WEIGHT = 0.7;
 const COVERAGE_WEIGHT = 0.3;
 
-/** Number of axes the radar draws. dc.html:170-173 plots 6; more than that and the labels collide. */
-export const RADAR_AXIS_COUNT = 6;
-
-/** Every topic scored, in the caller's order. The greeting and the ranking read this, not the radar. */
+/** Every topic scored, in the caller's order. The greeting reads this (the radar was removed 2026-11-23). */
 export function scoreTopics(topics: TopicProgress[]): SkillRadarPoint[] {
   return topics.map((topic) => {
     const coverage =
@@ -39,29 +36,14 @@ export function scoreTopics(topics: TopicProgress[]): SkillRadarPoint[] {
   });
 }
 
-/**
- * The radar plots the RADAR_AXIS_COUNT WEAKEST topics (owner, 2026-10-13: opening the dashboard must show
- * what to improve). Keeping the strongest, as before, dropped the true weakest topic and made the greeting
- * name a different one than the "Nên ưu tiên" block. Axes go back to the caller's order: a radar whose axes
- * are sorted by value draws a spiral, which reads as a trend that isn't there.
- */
-export function deriveSkillRadar(topics: TopicProgress[]): SkillRadarPoint[] {
-  const scored = scoreTopics(topics);
-  const keep = new Set(
-    [...scored]
-      .sort((left, right) => left.score - right.score)
-      .slice(0, RADAR_AXIS_COUNT)
-      .map((point) => point.topicId),
-  );
-  return scored.filter((point) => keep.has(point.topicId));
-}
-
-/** The weakest of the given topics: pass `scoreTopics(...)`, not the radar subset (dc.html:102-103). */
+/** The weakest of the given topics: pass `scoreTopics(...)` over every topic (dc.html:102-103). */
 export function pickWeakestTopic(
   points: SkillRadarPoint[],
 ): SkillRadarPoint | null {
-  if (points.length === 0) return null;
-  return points.reduce((weakest, point) =>
-    point.score < weakest.score ? point : weakest,
+  const [first] = points;
+  if (!first) return null;
+  return points.reduce(
+    (weakest, point) => (point.score < weakest.score ? point : weakest),
+    first,
   );
 }

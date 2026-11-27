@@ -12,3 +12,6 @@ blob-report
 e2e/__screenshots__/
 e2e/screenshots/
 e2e/*-snapshots/
+
+# Monaco copied from node_modules by `pnpm copy:monaco` (predev/prebuild)
+/public/monaco/

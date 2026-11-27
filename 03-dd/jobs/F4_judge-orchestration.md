@@ -1,5 +1,11 @@
 # DD — Job nền module `judge-orchestration` (F4)
 
+**Làm rõ owner 2026-11-03 (DEC-2026-1103-f4-worker-job-lease):** khóa sở hữu mỗi job
+ở BR-JD-03 là khóa phiên riêng, giữ qua các transaction ghi ngắn; sweep vẫn dùng khóa
+giao dịch. Khóa leader listener JOB-JD-05 là vai trò khác. D02m chỉ cung cấp persistence,
+chưa hiện thực các job/leader/consumer/lease hoặc lịch chạy trong file này.
+
+
 **Tạo 2026-10-23** (`DEC-2026-1023-db-actor-review-fixes`; owner chốt cùng ngày: mọi giá trị mặc định BD đề xuất đều được xác nhận).
 BD đã nhiều lần ghi "chi tiết job nằm ở `03-dd/jobs`" (`02-bd/database/F4_judge-orchestration.md:72`, `:137`); file này là nơi đó.
 
@@ -28,6 +34,8 @@ Bảng 1 liệt kê năm job của module và nguồn của từng job. Mọi jo
 - **Job không phụ thuộc AI path** (`CLAUDE.md`, mục Rules): không job nào ở đây gọi `ai-review`.
 
 ## 1. JOB-JD-01 — Sweep bài nộp treo (F4-07)
+
+**Triển khai 2026-11-04 (D02p):** JOB-JD-01/03/04 đã nối vào scheduler riêng, bật bằng profile `maintenance` hoặc `judge.maintenance.enabled=true`. Sweep lấy khóa giao dịch `JOB-JD-01` và khóa `judge:sub:<id>` cùng namespace worker; khóa cluster_settings trước dòng bài nộp để kiểm lại pause/heartbeat/trạng thái, dùng finalizer chung trong cùng transaction với Outbox. Khác hình SQL minh họa bên dưới: guard thời gian/pause nằm ở SELECT FOR UPDATE trước UPDATE finalizer, giữ khóa dòng và SHARE cluster_settings xuyên hai câu lệnh trong cùng transaction nên không có cửa sổ ghi đè. Cleanup lô 5.000, 90 ngày, giữ pending/source/token/callback, commit mỗi lô; cron UTC+7 03:00/03:30. Kernel resume REQUIRED/READ_COMMITTED khóa cờ và làm mới heartbeat PENDING trong cùng transaction; lấy clock_timestamp sau khóa để không dùng giờ đầu transaction đã chờ lâu. API #19/quyền/audit còn mở. Report `261104-f4-maintenance-recovery`.
 
 - **Mục đích.** Đưa bài nộp mà worker bỏ rơi (crash, bị kill) về trạng thái cuối `SYSTEM_ERROR` để học viên không chờ vô hạn
   (`02-bd/architecture/F4_judge-orchestration.md:226-228`).
@@ -74,6 +82,8 @@ WHERE id = :id
 - **Bảng chạm.** `submissions` (ghi), `outbox_events` (ghi), `cluster_settings` (đọc `queue_paused`).
 
 ## 2. JOB-JD-02 — Relay outbox
+
+**Triển khai 2026-11-04 (D02o):** lô 100, khóa `FOR UPDATE SKIP LOCKED` trong giao dịch riêng, thứ tự `created_at,id` theo chỉ mục BD đã sửa 2026-10-29 (thay ghi chú index cũ bên dưới). Confirm và không mandatory return mới đánh dấu published; mọi thất bại giữ pending, WARN từ 3/ERROR từ 5 và tiếp tục retry. Scheduler riêng tránh chặn worker. Bật profile `outbox` hoặc `judge.outbox.enabled=true`; default delay 2000ms. Đã kiểm Rabbit/PG/F1 thật và 3 mutation; không nghiệm thu outage 10 phút/GET kết quả/F5 ở lát này. Report `261104-f4-outbox-relay`.
 
 - **Mục đích.** Publish các sự kiện domain (`SubmissionAccepted`, `SubmissionGraded`) lên RabbitMQ sau khi giao dịch chấm đã commit, để `ai-review` và `identity`
   nhận được dù broker từng chết (`02-bd/architecture/F4_judge-orchestration.md:239-248`).
@@ -151,13 +161,43 @@ WHERE id IN (
 
 ## 5. JOB-JD-05 — Điều khiển số consumer chấm bài
 
+**Cập nhật13/11 — `DEC-2026-1113-f2-lifecycle-backlog-and-f4-target-publication`:** công bố volatile `target` của proposal trước khi gọi resize để observer không thấy active mới trong khi target chưa được công bố. Chỉ commit counters/scaling sau resize thành công; nếu RuntimeException thì target quay về scaling đã commit, readiness unhealthy, chu kỳ sau thử lại từ counters cũ. Hai gauge riêng không là snapshot nguyên tử; active có thể hội tụ chậm do drain hoặc broker. Giữ giới hạn, leader và luật pause/disable hiện hành.
+
+**Cập nhật2026-11-12 — ACCEPT-02:** `DEC-2026-1112-f4-worker-scaling-and-db-wait` đưa trần và số chu kỳ ra cấu hình deployment: `judge.autoscale.max-workers=8`, `scale-up-polls=2`, `scale-down-polls=4` mặc định; yêu cầu dương. Runtime và API snapshot dùng cùng trần. Worker chỉ khởi động khi Hikari pool >= trần+10, so sánh không tràn số; profile worker vẫn pool48 và scale-delay3000ms. Các số8/2/4 trong mô tả lịch sử dưới đây là mặc định, không còn là hằng bất biến. Các luật pause/đổi ngưỡng/reset/copy proposal, single leader và disable về1 giữ nguyên. Đây không thay quyết định giới hạn một tiến trình hoặc mở mạng sandbox.
+
 - **Phạm vi.** “Worker” của công tắc `ADM0401` là RabbitMQ consumer chấm bài **trong một tiến trình backend chuyên trách**, không phải container go-judge mới. Go-judge vẫn là sandbox thực thi; bộ điều khiển không dùng Docker socket hoặc chạy lệnh Compose. Triển khai cấu hình đúng một tiến trình `judge.worker.enabled=true`; các bản backend khác chỉ phục vụ API và không đăng ký listener chấm. Tiến trình worker giữ một kết nối PostgreSQL riêng với `pg_try_advisory_lock(hashtext('F4_GRADING_WORKER_LEADER'))` suốt vòng đời listener. Không lấy được khoá thì không khởi động listener và báo readiness lỗi; mất kết nối/khoá thì dừng nhận job mới, tiến trình được restart để tranh khoá lại. Tránh hai bộ điều khiển tự nhân số consumer vượt trần 8.
 - **Cơ chế.** Dùng `SimpleMessageListenerContainer` cho queue bài nộp với `prefetchCount = 1`, ack thủ công. Đặt số consumer cố định ban đầu 1, **không bật cơ chế tự tăng riêng** qua `maxConcurrentConsumers`; chỉ JOB-JD-05 đổi `concurrentConsumers` khi container đang chạy, tránh hai bộ điều khiển cùng quyết định. Spring AMQP hỗ trợ đổi động thuộc tính này. Nguồn: [Spring AMQP Listener Concurrency](https://docs.spring.io/spring-amqp/reference/amqp/listener-concurrency.html), [Container Management](https://docs.spring.io/spring-amqp/reference/amqp/receiving-messages/async-annotation-driven/container-management.html).
 - **Lịch và đầu vào.** Mỗi 15 giây đọc một snapshot `judge.cluster_settings` (`queue_paused`, `autoscale_enabled`, `autoscale_job_threshold`) và đếm `judge.submissions.status = PENDING`. Dùng `pendingCount` từ DB; không đọc metric worker cá nhân từ Prometheus. Bắt đầu với một consumer, hằng `judge.autoscale.max-workers = 8`.
 - **Quy tắc tăng/giảm.** Nếu đang mở queue, autoscale bật và `pendingCount > autoscaleJobThreshold` trong **hai lượt liên tiếp**, tăng `targetConsumers` đúng 1 mỗi chu kỳ, tối đa 8. Nếu `pendingCount = 0` trong **bốn lượt liên tiếp** (60 giây) và không còn lượt đang xử lý ở consumer sẽ dừng, giảm 1 mỗi chu kỳ tới 1. Khoảng giữa hai mốc giữ nguyên; `pendingCount` mới giảm không cưỡng bức hủy job đang chạy. Khi tắt autoscale, đưa mục tiêu về 1 bằng cơ chế drain, không hủy job đang chấm. Khi admin đổi ngưỡng, áp ở lần poll kế. Reset bộ đếm hai/bốn lượt sau mỗi lần đổi mục tiêu.
 - **Pause/resume.** `queue_paused=true` gọi stop container theo BR-JD-08, chờ các message đã giao hoàn tất rồi mới dừng; không giảm mục tiêu vì pause. Resume khởi động container với mục tiêu hiện tại, JOB-JD-01 chạm `updated_at` của `PENDING` theo hợp đồng cũ. Nếu broker/DB không đọc được, giữ mục tiêu gần nhất, không tăng; listener và job xử lý lỗi kết nối theo quy tắc sẵn có.
-- **Quan sát và lỗi.** Log thay đổi `{oldTarget,newTarget,pendingCount,threshold,reason}` không chứa mã người học; metric tổng `judge_grading_consumers_target` và `judge_grading_consumers_active` do **chính F4** xuất, không là số từng worker go-judge. Không ghi DB cho mỗi lần scale. Nếu container từ chối đổi concurrency thì giữ số thực đang chạy, log `ERROR`, thử lại chu kỳ sau; không báo thành công giả ở snapshot. Công tắc API chỉ xác nhận lưu cấu hình, không chờ việc scale kết thúc.
+- **Quan sát và lỗi.** Log thay đổi `{oldTarget,newTarget,pendingCount,threshold,reason}` không chứa mã người học; metric tổng `judge_grading_consumers_target` và `judge_grading_consumers_active` do **chính F4** xuất, không là số từng worker go-judge. Từ 2026-11-22 (`DEC-2026-1122-f4-queue-consumers-and-throughput-on-adm0401`) **có ghi một dòng trạng thái** sau mỗi lần `scale()`, xem "Ghi trạng thái luồng chấm" ngay dưới; trước đó mục này ghi "không ghi DB cho mỗi lần scale", nay chỉ còn đúng cho bảng `submissions` và `cluster_settings`. Nếu container từ chối đổi concurrency thì giữ số thực đang chạy, log `ERROR`, thử lại chu kỳ sau; không báo thành công giả ở snapshot. Công tắc API chỉ xác nhận lưu cấu hình, không chờ việc scale kết thúc.
 - **Test viewpoints.** Ngưỡng 20: 21 `PENDING` qua hai lượt tăng 1→2; đủ thêm chu kỳ tăng không vượt 8; hàng đợi rỗng bốn lượt giảm từng bước; tắt autoscale trở về 1 sau khi job đang chấm xong; pause không nhận message mới, resume tiếp tục; hai tiến trình worker cùng cấu hình chỉ một giữ khoá leader; mất khoá dừng nhận job.
+
+### Ghi trạng thái luồng chấm (thêm 2026-11-22, đã dựng)
+
+Bước này thuộc JOB-JD-05 và chỉ chạy ở **worker được bầu** (giữ khoá leader); API và tiến trình khác không ghi. Mục đích: để màn `ADM0401` (qua `GET /admin/queue/snapshot`, `03-dd/api/F4_judge-orchestration.md` mục 16) thấy số luồng chấm khi worker chạy ở tiến trình khác với API. Đích ghi là bảng một dòng `judge.worker_status` (`02-bd/database/F4_judge-orchestration.md` mục 1.11, migration `V4.003__create_worker_status.sql`). Bảng 5.1 liệt kê các bước.
+
+| Bước | Hành động | Ghi chú |
+| :-: | :--- | :--- |
+| 1 | Chạy `scale()` như quy tắc tăng/giảm ở trên, ra mục tiêu mới và số consumer đang chạy | Không đổi thứ tự hay kết quả của `scale()` |
+| 2 | Upsert một câu duy nhất: `INSERT ... ON CONFLICT (id) DO UPDATE` với `id = 1`, đặt `consumers_target`, `consumers_active`, `reported_at = now()` (giờ DB) | Chạy **sau mỗi lần `scale()`**, kể cả khi không đổi mục tiêu, để `reported_at` luôn tươi |
+| 3 | Chỉ khi mục tiêu **đổi** ở bước 1: câu upsert đặt thêm `last_scale_at = now()`, `last_scale_from` (mục tiêu cũ), `last_scale_to` (mục tiêu mới), `last_scale_reason`, `last_scale_pending` (`pendingCount` lúc đổi) | Lần không đổi giữ nguyên nhóm `last_scale_*` |
+| 4 | Lỗi ghi (DB không với tới, lỗi SQL): bắt lại, ghi log mức `WARN` với thông điệp cố định, không kèm chi tiết lỗi, **đi tiếp** | Không ném lỗi ra ngoài `scale()`; không dừng, không thử lại ngay, không làm readiness lỗi vì lỗi ghi này; chu kỳ sau ghi lại từ giá trị hiện tại |
+
+Bảng 5.1: Các bước ghi trạng thái luồng chấm sau mỗi lần `scale()`.
+
+Lý do (`reason`): `BACKLOG` khi tăng do `pendingCount` vượt ngưỡng hai lượt liên tiếp; `IDLE` khi giảm do hàng đợi rỗng bốn lượt liên tiếp; `DISABLED` khi đưa mục tiêu về 1 vì tắt tự động mở rộng. Tạm dừng và tiếp tục hàng đợi **không** đổi mục tiêu nên không tạo lần đổi mới. Thời điểm báo dùng giờ DB (không dùng giờ tiến trình worker) để API so với `now()` của DB mà không lệch đồng hồ; API coi dòng cũ hơn 60 giây là cũ (hằng số trong mã). Hai luồng gauge `judge_grading_consumers_target`, `judge_grading_consumers_active` vẫn xuất cho Grafana như cũ, độc lập với bảng này. Lỗi ghi trạng thái không làm đổi kết quả `scale()` nên không ảnh hưởng luồng chấm.
+
+**Điểm kiểm thử của bước ghi.**
+
+| ID | Loại | Nội dung |
+| :--- | :--- | :--- |
+| T-WS-01 | Normal | Lần `scale()` đầu tiên khi bảng trống: có đúng một dòng `id = 1`; `reported_at` gần `now()`; nhóm `last_scale_*` NULL nếu chưa đổi mục tiêu |
+| T-WS-02 | Normal | Mục tiêu đổi 1 lên 2 vì hai lượt vượt ngưỡng: nhóm `last_scale_*` có `from = 1`, `to = 2`, `reason = BACKLOG`, `pending` bằng `pendingCount` lúc đổi |
+| T-WS-03 | Normal | Lần `scale()` kế không đổi mục tiêu: `reported_at` mới hơn, nhóm `last_scale_*` giữ nguyên giá trị lần trước |
+| T-WS-04 | Normal | Hàng đợi rỗng bốn lượt giảm mục tiêu: `reason = IDLE`; tắt tự động mở rộng đưa về 1: `reason = DISABLED` |
+| T-WS-05 | Abnormal | Câu upsert ném lỗi: `scale()` vẫn hoàn tất với cùng mục tiêu, có log `WARN`, readiness không đổi; chu kỳ sau ghi lại được |
+| T-WS-06 | Security | Tiến trình không giữ khoá leader không ghi dòng nào |
 
 ## Câu hỏi mở
 
@@ -165,3 +205,23 @@ WHERE id IN (
 | :-: | :--- | :--- |
 | ~~Q1~~ | ~~Chọn ShedLock hay advisory lock để chặn chạy trùng giữa các instance?~~ | **Đã chốt 2026-10-23:** advisory lock Postgres (không thêm bảng, không thêm thư viện); ponytail bậc 4 |
 | Q2 | **DD đóng:** `judge_run_tokens` có cần dọn cùng chi tiết testcase không? | Không. Giữ token làm dấu vết idempotency của submission gốc (không xoá cứng) và để `callback_logs` không đứt FK; chỉ thêm retention khi có yêu cầu vận hành mới |
+
+
+## Ghi nhận triển khai D02n — 2026-11-03
+
+D02n đã có leader session lease, manual ack/prefetch1, pause/drain/resume, poll gate3s/scale15s; target1..8, hai chu kỳ cao/bốn rỗng, reset khi pause/đổi ngưỡng và về1 khi tắt autoscale. Dùng concurrency cố định từng lần, không bật bộ tự scale riêng của Spring. Đổi target lỗi giữ counters/target trước để thử lại. Health/readiness role worker đã nối; chưa triển khai job recovery/sweep/relay/cleanup, Prometheus target/active và đầy đủ log vận hành theo JOB-JD-05. Không đánh dấu JOB-JD-05 đã clear toàn bộ. Việc resume chạm updated_at của PENDING thuộc JOB-JD-01 còn mở, không thay đổi nghĩa timeout do im lặng.
+
+
+## D02n1 — Đóng nợ worker local (2026-11-03)
+
+Thay ghi nhận nợ D02n: metric target/active đã xuất qua MeterBinder; log resize đủ trường. Pause/stop cancel nhận mới rồi đợi active counter0, không cưỡng bức đóng channel. Tránh Long.MAX_VALUE vì deadline Spring AMQP tràn số. Kiểm8 consumer/pool10, giảm target/drain và terminate leader PG thật. Instance mất leader bị chặn cả lifecycle start. JOB-JD-01 resume heartbeat/relay/sweep vẫn là task riêng.
+
+
+## D02ac — queue controls, 2026-11-05
+
+**D02ac — 2026-11-05:** API #16–19 pause/resume, autoscale và queue settings có backend thật; resume tái dùng kernel heartbeat D02p, quyền ADMIN riêng với Function READ cho GET, stale409, no-op và audit REQUIRED. 34 test liên quan đạt (22 mới),9/9 mutation,73/73 dòng logic mới; Spotless judge/bootstrap, Checkstyle đúng phạm vi và SpotBugs đạt. F4-3 còn snapshot/jobs/infra/STOMP admin, runtime cuối ở FINAL; chưa full regression/merge, FE riêng. [Report](F:/prj_algoprep/06-plan/reports/261105-1547-f4-queue-controls/report.md).
+
+Kernel resume và worker gate/scaling không sửa. Outer transaction giữ khóa cluster qua heartbeat/actor/audit; audit lỗi rollback cả flag và heartbeat; lỗi sau audit rollback audit. JDG-V16 cho boolean bắt buộc/sai JSON, JDG-V09 cho int thiếu/sai kiểu/nonpositive/vượt INT. Không nhận số dạng chuỗi hoặc số thập phân. Mọi int1..2147483647 được nhận, không chặn100000. Settings last-writer-wins; không so updatedAt gửi lại. [SoT: Suy luận] lỗi hạ tầng503 chung không thêm mã; không fallback dữ liệu giả. Không thay lịch3s/15s, không đợi scale trong PUT; live Rabbit acceptance vẫn FINAL.
+
+
+**D02af — 2026-11-05:** STOMP admin W2 có QUEUE_BATCH thật theo chu kỳ5s, một lô chung cho mọi admin, không query khi không có subscriber hợp lệ. Snapshot/counts/infra-summary cùng transaction RR; outbound chặn phiên hết JWT hoặc đã unsubscribe.64 test liên quan đạt (18 mới),6/6 mutation,28/28 dòng logic mới; Spotless/Checkstyle/SpotBugs phạm vi chọn đạt. Backend F4-3 đủ API và W2; tiếp theo FINAL BE/full regression khi clear. FE/browser/C08 và production nhiều process giữ mốc riêng. Chưa commit/merge. [Report](F:/prj_algoprep/06-plan/reports/261105-f4-admin-queue-stream/report.md).

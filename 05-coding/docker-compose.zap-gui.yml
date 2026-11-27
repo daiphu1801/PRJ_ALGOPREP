@@ -1,0 +1,31 @@
+name: algoprep-zap-ui
+
+services:
+  zap-gui:
+    image: ghcr.io/zaproxy/zaproxy@sha256:9624669db72f54d86c4b46a7064518bd9bf79d8c61a4c31befa9923489f328af
+    container_name: algoprep-zap-gui
+    user: zap
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:18080:8080"
+      - "127.0.0.1:18091:8090"
+    volumes:
+      - ../.tmp/zap-gui:/zap/wrk
+      - ../07-review/261114-zap-full:/zap/reports:ro
+      - ../07-review/261115-zap-final:/zap/reports-final:ro
+      - ../07-review/261115-zap-final-01-fix:/zap/reports-final-01-fix:ro
+    environment:
+      JAVA_TOOL_OPTIONS: "-Xmx1536m"
+      ZAP_WEBSWING_OPTS: >-
+        -host 0.0.0.0 -port 8090
+        -dir /zap/wrk/profile
+        -session /zap/wrk/review/algoprep-final-01-fix.session
+        -config mode=safe
+        -config autoupdate.checkOnStart=false
+    # Reuse the local desktop across browsers instead of opening a second locked profile.
+    command:
+      - sh
+      - -c
+      - |
+        sed -i 's/CONTINUE_FOR_BROWSER/CONTINUE_FOR_USER/' /zap/webswing/webswing.config
+        exec /zap/zap-webswing.sh

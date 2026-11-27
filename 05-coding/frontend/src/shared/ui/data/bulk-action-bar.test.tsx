@@ -37,4 +37,23 @@ describe("BulkActionBar", () => {
     expect(bar.parentElement).toBe(container.querySelector(".admin-shell"));
     expect(screen.getByTestId("card")).not.toContainElement(bar);
   });
+
+  it("floats at the top by default and at the bottom when asked", () => {
+    const { rerender } = render(
+      <BulkActionBar count={1} label="Selected 1">
+        <button type="button">Go</button>
+      </BulkActionBar>,
+    );
+    expect(screen.getByRole("region", { name: "Selected 1" })).toHaveClass(
+      "top-3",
+    );
+    rerender(
+      <BulkActionBar count={1} label="Selected 1" placement="bottom">
+        <button type="button">Go</button>
+      </BulkActionBar>,
+    );
+    expect(screen.getByRole("region", { name: "Selected 1" })).toHaveClass(
+      "bottom-4",
+    );
+  });
 });

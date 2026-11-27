@@ -1,4 +1,5 @@
-// PROTOTYPE — no DD yet. See 06-plan/PROTOTYPE_DEBT.md section 9.
+// PROTOTYPE with a real API behind it (task 12, 03-dd/api/F1_identity.md #35 to #38, #50, #62, #63);
+// see 06-plan/PROTOTYPE_DEBT.md section 9.
 //
 // Layout follows 09-layoutBase/Admin - Người dùng.dc.html: sticky header with the "Thêm tài khoản"
 // CTA (:148-159), stat cards (:161-173), the account table card (:175-236), then two panels side by
@@ -30,17 +31,21 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { KeyRound, Lock, LockOpen, UserCog } from "lucide-react";
+import { ImageOff, KeyRound, Lock, LockOpen, UserCog } from "lucide-react";
+import { UserAvatar } from "@/entities/user";
 import {
-  initialsOf,
+  ADMIN_USERS_PAGE_SIZE,
+  useAdminUserActions,
   useAdminUserPage,
   type AdminUser,
+  type AdminUserListParams,
   type AdminUserPage,
   type AdminUserRole,
   type AdminUserStatus,
 } from "../api";
-import { useT } from "@/shared/i18n";
-import { textTone } from "@/shared/lib";
+import { useApiErrorMessage, useLocale, useT } from "@/shared/i18n";
+import { formatRelativeVN, textTone, useDebounced } from "@/shared/lib";
+import { useMediaQuery } from "@/shared/lib/use-media-query";
 import { toast } from "@/shared/lib/toast-store";
 import { checkLock, checkRoleChange, partitionByStatus } from "../model/guards";
 import { AddAccountDialog } from "./add-account-dialog";
@@ -53,6 +58,9 @@ import {
   Card,
   ConfirmDialog,
   DataTable,
+  EmptyState,
+  Modal,
+  PageContainer,
   PageHeader,
   Pagination,
   QueryBoundary,
@@ -88,24 +96,60 @@ const ROLE_BAR_COLOR_VAR: Record<AdminUserRole | "deactivated", string> = {
 type RoleFilter = AdminUserRole | "all";
 type StatusFilter = AdminUserStatus | "all";
 
-const PAGE_SIZE = 20;
-
 export function AdminUserManagementView() {
+  // Real mode filters and pages on the server; the mock page ignores these and the inner view still
+  // filters locally, so both modes share one set of controls.
+  const [filters, setFilters] = useState<AdminUserListParams>({
+    status: "all",
+    role: "all",
+    query: "",
+    page: 1,
+  });
+  const query = useAdminUserPage({
+    ...filters,
+    query: useDebounced(filters.query),
+  });
   return (
-    <QueryBoundary query={useAdminUserPage()}>
-      {(page) => <AdminUserManagementInner page={page} />}
+    <QueryBoundary query={query}>
+      {(page) => (
+        <AdminUserManagementInner
+          page={page}
+          filters={filters}
+          onFiltersChange={(patch) =>
+            setFilters((previous) => ({ ...previous, ...patch }))
+          }
+        />
+      )}
     </QueryBoundary>
   );
 }
 
-function AdminUserManagementInner({ page }: { page: AdminUserPage }) {
+function AdminUserManagementInner({
+  page,
+  filters,
+  onFiltersChange,
+}: {
+  page: AdminUserPage;
+  filters: AdminUserListParams;
+  onFiltersChange: (patch: Partial<AdminUserListParams>) => void;
+}) {
   const t = useT("adminUserManagement");
+  const compact = useMediaQuery("(max-width: 1200px)");
+  const apiMessage = useApiErrorMessage();
+  const locale = useLocale() === "en" ? "en" : "vi";
+  const actions = useAdminUserActions();
+  const { query, role, status } = filters;
   const [accounts, setAccounts] = useState(page.users);
+  const [seenPage, setSeenPage] = useState(page);
   const [adding, setAdding] = useState(false);
-  const [query, setQuery] = useState("");
-  const [role, setRole] = useState<RoleFilter>("all");
-  const [status, setStatus] = useState<StatusFilter>("all");
   const [selected, setSelected] = useState<ReadonlySet<string>>(new Set());
+  // A new page from the server (filter, page change or refetch after an action) replaces the rows and
+  // the selection. Adjusted during render rather than in an effect, which would paint stale rows first.
+  if (seenPage !== page) {
+    setSeenPage(page);
+    setAccounts(page.users);
+    setSelected(new Set());
+  }
   // The lock and unlock dialogs act on whichever rows opened them: the bulk bar passes the selection,
   // a row action passes that one account. `null` = closed.
   const [lockRequest, setLockRequest] = useState<{
@@ -115,7 +159,10 @@ function AdminUserManagementInner({ page }: { page: AdminUserPage }) {
   } | null>(null);
   const [unlockTargets, setUnlockTargets] = useState<AdminUser[] | null>(null);
   const [roleTarget, setRoleTarget] = useState<AdminUser | null>(null);
+  const [detailId, setDetailId] = useState<string | null>(null);
   const [resetTarget, setResetTarget] = useState<AdminUser | null>(null);
+  const [avatarTarget, setAvatarTarget] = useState<AdminUser | null>(null);
+  const detailUser = accounts.find((user) => user.id === detailId);
 
   // Role, status and free text combine with AND — same as the mockup's own filter (dc.html:449-453).
   const users = useMemo(() => {
@@ -140,18 +187,53 @@ function AdminUserManagementInner({ page }: { page: AdminUserPage }) {
   // looked at. Cleared in each setter rather than in an effect: an effect here would run one render
   // late, so the bar would briefly show a stale count against the new filter.
   function changeQuery(next: string) {
-    setQuery(next);
+    onFiltersChange({ query: next, page: 1 });
     setSelected(new Set());
   }
 
   function changeRole(next: RoleFilter) {
-    setRole(next);
+    onFiltersChange({ role: next, page: 1 });
     setSelected(new Set());
   }
 
   function changeStatus(next: StatusFilter) {
-    setStatus(next);
+    onFiltersChange({ status: next, page: 1 });
     setSelected(new Set());
+  }
+
+  function changePage(next: number) {
+    onFiltersChange({ page: next });
+    setSelected(new Set());
+  }
+
+  /** One command per account (the DD has no batch endpoint); a failure does not stop the others. */
+  async function runBatch(
+    targets: AdminUser[],
+    act: (user: AdminUser) => Promise<unknown>,
+  ) {
+    const results = await Promise.allSettled(targets.map(act));
+    const done: AdminUser[] = [];
+    let firstError: unknown;
+    results.forEach((result, index) => {
+      const user = targets[index];
+      if (result.status === "fulfilled") {
+        if (user) done.push(user);
+      } else firstError ??= result.reason;
+    });
+    return { done, failed: targets.length - done.length, firstError };
+  }
+
+  function patchStatus(done: AdminUser[], next: AdminUserStatus) {
+    const ids = new Set(done.map((user) => user.email));
+    setAccounts((previous) =>
+      previous.map((account) =>
+        ids.has(account.email) ? { ...account, status: next } : account,
+      ),
+    );
+  }
+
+  function isSelf(user: AdminUser) {
+    return user.email === page.currentUserEmail;
   }
 
   function toggleRow(key: string) {
@@ -174,37 +256,44 @@ function AdminUserManagementInner({ page }: { page: AdminUserPage }) {
     else setLockRequest({ targets, skipped, includesSelf: check.includesSelf });
   }
 
-  function applyLock(reason: string, notify: boolean) {
-    // No endpoint yet — the rows flip locally and the selection clears.
-    const target = new Set(
-      (lockRequest?.targets ?? []).map((user) => user.email),
+  async function applyLock(reason: string, notify: boolean) {
+    const targets = lockRequest?.targets ?? [];
+    const { done, failed, firstError } = await runBatch(targets, (user) =>
+      actions.lock({ id: user.id, reason, notify, self: isSelf(user) }),
     );
-    setAccounts((previous) =>
-      previous.map((account) =>
-        target.has(account.email) ? { ...account, status: "locked" } : account,
-      ),
-    );
-    toast.success(
-      notify
-        ? t("lockDoneNotified", { count: target.size, reason })
-        : t("lockDone", { count: target.size, reason }),
-    );
+    patchStatus(done, "locked");
+    if (done.length > 0) {
+      toast.success(
+        notify
+          ? t("lockDoneNotified", { count: done.length, reason })
+          : t("lockDone", { count: done.length, reason }),
+      );
+    }
+    if (failed > 0) {
+      toast.error(
+        t("batchFailed", { count: failed, reason: apiMessage(firstError) }),
+      );
+    }
     setSelected(new Set());
   }
 
-  function applyUnlock() {
-    const target = new Set((unlockTargets ?? []).map((user) => user.email));
-    setAccounts((previous) =>
-      previous.map((account) =>
-        target.has(account.email) ? { ...account, status: "active" } : account,
-      ),
-    );
-    toast.success(t("unlockDone", { count: target.size }));
-    setSelected(new Set());
+  async function applyUnlock() {
+    const targets = unlockTargets ?? [];
     setUnlockTargets(null);
+    const { done, failed, firstError } = await runBatch(targets, (user) =>
+      actions.unlock({ id: user.id }),
+    );
+    patchStatus(done, "active");
+    if (done.length > 0) toast.success(t("unlockDone", { count: done.length }));
+    if (failed > 0) {
+      toast.error(
+        t("batchFailed", { count: failed, reason: apiMessage(firstError) }),
+      );
+    }
+    setSelected(new Set());
   }
 
-  function applyRoleChange(user: AdminUser, nextRole: AdminUserRole) {
+  async function applyRoleChange(user: AdminUser, nextRole: AdminUserRole) {
     const check = checkRoleChange(
       accounts,
       user.email,
@@ -213,6 +302,16 @@ function AdminUserManagementInner({ page }: { page: AdminUserPage }) {
     );
     if (check.blockedLastAdmin) {
       toast.warning(t("roleBlockedBody"));
+      return;
+    }
+    try {
+      await actions.changeRole({
+        id: user.id,
+        role: nextRole,
+        self: isSelf(user),
+      });
+    } catch (error) {
+      toast.error(apiMessage(error));
       return;
     }
     setAccounts((previous) =>
@@ -225,14 +324,56 @@ function AdminUserManagementInner({ page }: { page: AdminUserPage }) {
     );
   }
 
-  function applyResetPassword() {
-    if (resetTarget)
-      toast.success(
-        t(resetTarget.hasPassword === false ? "resetDoneOAuth" : "resetDone", {
-          email: resetTarget.email,
-        }),
-      );
+  async function applyResetPassword() {
+    const target = resetTarget;
     setResetTarget(null);
+    if (!target) return;
+    try {
+      await actions.resetPassword({ id: target.id });
+    } catch (error) {
+      toast.error(apiMessage(error));
+      return;
+    }
+    toast.success(
+      t(target.hasPassword === false ? "resetDoneOAuth" : "resetDone", {
+        email: target.email,
+      }),
+    );
+  }
+
+  async function applyRemoveAvatar() {
+    const target = avatarTarget;
+    setAvatarTarget(null);
+    if (!target) return;
+    try {
+      await actions.removeAvatar({ id: target.id });
+    } catch (error) {
+      // A missing USER_MANAGEMENT:UPDATE cell comes back as IDT-445 and reads like the sibling buttons.
+      toast.error(apiMessage(error));
+      return;
+    }
+    setAccounts((previous) =>
+      previous.map((account) =>
+        account.id === target.id
+          ? { ...account, avatarVersion: null }
+          : account,
+      ),
+    );
+    toast.success(t("removeAvatarDone", { name: target.name }));
+  }
+
+  async function createAccount(input: {
+    name: string;
+    email: string;
+    role: "student" | "instructor";
+  }) {
+    try {
+      const created = await actions.create(input);
+      setAccounts((previous) => [created, ...previous]);
+    } catch (error) {
+      toast.error(apiMessage(error));
+      throw error;
+    }
   }
 
   function toggleAll(selectAll: boolean) {
@@ -241,24 +382,87 @@ function AdminUserManagementInner({ page }: { page: AdminUserPage }) {
     );
   }
 
-  const columns: DataTableColumn<AdminUser>[] = [
+  /** Real rows carry the time, mock rows a ready-made label; "-" when the account never logged in. */
+  function lastActiveText(user: AdminUser) {
+    if (user.lastActiveAt === undefined) return user.lastActiveLabel ?? "-";
+    return user.lastActiveAt
+      ? formatRelativeVN(user.lastActiveAt, { locale })
+      : "-";
+  }
+
+  // Solved count and submissions come from the F1 read models with the real API (#35); the columns
+  // appear only when the loaded rows carry them.
+  const hasCounts = accounts.some((user) => user.solvedCount !== undefined);
+  const hasLastActive = accounts.some(
+    (user) =>
+      user.lastActiveAt !== undefined || user.lastActiveLabel !== undefined,
+  );
+  const activityColumns: DataTableColumn<AdminUser>[] = [
+    {
+      key: "solved",
+      header: t("columnSolved"),
+      width: "84px",
+      align: "right",
+      render: (user) => (
+        <span className="font-mono font-semibold">
+          {user.solvedCount ?? "-"}
+        </span>
+      ),
+    },
+    {
+      key: "submissions",
+      header: t("columnSubmissions"),
+      width: "92px",
+      align: "right",
+      render: (user) => (
+        <span className="font-mono text-[var(--color-text-muted)]">
+          {(user.submissionCount ?? 0).toLocaleString("vi-VN")}
+        </span>
+      ),
+    },
+  ];
+
+  const lastActiveColumn: DataTableColumn<AdminUser> = {
+    key: "lastActive",
+    header: t("columnLastActive"),
+    width: "116px",
+    render: (user) => (
+      <span className="block truncate text-[12.5px] text-[var(--color-text-muted)]">
+        {lastActiveText(user)}
+      </span>
+    ),
+  };
+
+  const [identityColumn, roleColumn, statusColumn, actionsColumn]: [
+    DataTableColumn<AdminUser>,
+    DataTableColumn<AdminUser>,
+    DataTableColumn<AdminUser>,
+    DataTableColumn<AdminUser>,
+  ] = [
     {
       key: "user",
       header: t("columnUser"),
       render: (user) => (
         <div className="flex min-w-0 items-center gap-2.5">
-          <span
-            aria-hidden="true"
-            className="glass-surface flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-full border border-[var(--color-border)] text-[11px] font-semibold"
-          >
-            {initialsOf(user.name)}
-          </span>
-          <span className="min-w-0">
-            <span className="block truncate font-semibold">{user.name}</span>
+          <UserAvatar
+            userId={user.id}
+            name={user.name}
+            avatarVersion={user.avatarVersion}
+            size="sm"
+          />
+          <div className="min-w-0">
+            <button
+              type="button"
+              aria-label={t("details.open", { name: user.name })}
+              onClick={() => setDetailId(user.id)}
+              className="block max-w-full cursor-pointer truncate rounded-sm text-left font-semibold text-[var(--color-primary)] underline decoration-transparent underline-offset-2 hover:decoration-current focus-visible:outline-2 focus-visible:outline-offset-2"
+            >
+              {user.name}
+            </button>
             <span className="block truncate font-mono text-[11px] text-[var(--color-text-subtle)]">
               {user.email}
             </span>
-          </span>
+          </div>
         </div>
       ),
     },
@@ -273,39 +477,9 @@ function AdminUserManagementInner({ page }: { page: AdminUserPage }) {
       ),
     },
     {
-      key: "solved",
-      header: t("columnSolved"),
-      width: "84px",
-      align: "right",
-      render: (user) => (
-        <span className="font-mono font-semibold">{user.solvedCount}</span>
-      ),
-    },
-    {
-      key: "submissions",
-      header: t("columnSubmissions"),
-      width: "92px",
-      align: "right",
-      render: (user) => (
-        <span className="font-mono text-[var(--color-text-muted)]">
-          {user.submissionCount.toLocaleString("vi-VN")}
-        </span>
-      ),
-    },
-    {
-      key: "lastActive",
-      header: t("columnLastActive"),
-      width: "116px",
-      render: (user) => (
-        <span className="block truncate text-[12.5px] text-[var(--color-text-muted)]">
-          {user.lastActiveLabel}
-        </span>
-      ),
-    },
-    {
       key: "status",
       header: t("columnStatus"),
-      width: "132px",
+      width: "166px",
       align: "right",
       render: (user) => (
         <span
@@ -342,6 +516,14 @@ function AdminUserManagementInner({ page }: { page: AdminUserPage }) {
             ariaLabel={t("actionResetPasswordFor", { name: user.name })}
             onClick={() => setResetTarget(user)}
           />
+          {user.avatarVersion != null ? (
+            <IconAction
+              icon={ImageOff}
+              label={t("actionRemoveAvatar")}
+              ariaLabel={t("actionRemoveAvatarFor", { name: user.name })}
+              onClick={() => setAvatarTarget(user)}
+            />
+          ) : null}
           {user.status === "locked" ? (
             <IconAction
               icon={LockOpen}
@@ -362,12 +544,26 @@ function AdminUserManagementInner({ page }: { page: AdminUserPage }) {
       ),
     },
   ];
+  const metrics = [
+    ...(hasCounts ? activityColumns : []),
+    ...(hasLastActive ? [lastActiveColumn] : []),
+  ];
+  const columns = [
+    identityColumn,
+    roleColumn,
+    ...metrics,
+    statusColumn,
+    actionsColumn,
+  ];
+  const allSelected =
+    users.length > 0 && users.every((user) => selected.has(user.email));
 
   return (
-    <div>
+    <PageContainer variant="content" className="@container">
       <PageHeader
         title={t("title")}
         description={t("subtitle")}
+        className="[&_h1]:whitespace-normal [&_p]:whitespace-normal"
         actions={
           <Button variant="cta" size="sm" onClick={() => setAdding(true)}>
             {t("addAccount")}
@@ -375,162 +571,232 @@ function AdminUserManagementInner({ page }: { page: AdminUserPage }) {
         }
       />
 
-      <Card className="mb-4 min-w-0 px-[18px] py-4">
-        <FilterBar
-          search={{
-            label: t("searchLabel"),
-            placeholder: t("searchPlaceholder"),
-            value: query,
-            onChange: changeQuery,
-          }}
-          resultCount={t("resultCount", {
-            shown: users.length,
-            total: page.totalUsers.toLocaleString("vi-VN"),
-          })}
-        >
-          <FilterMenu
-            label={t("roleFilterLabel")}
-            value={role}
-            onValueChange={changeRole}
-            options={[
-              { value: "all", label: t("filterAll") },
-              { value: "student", label: t("role.student") },
-              { value: "instructor", label: t("role.instructor") },
-              { value: "admin", label: t("role.admin") },
-            ]}
-          />
-          <FilterMenu
-            label={t("statusFilterLabel")}
-            value={status}
-            onValueChange={changeStatus}
-            options={[
-              { value: "all", label: t("filterAll") },
-              { value: "active", label: t("status.active") },
-              { value: "pending", label: t("status.pending") },
-              { value: "locked", label: t("status.locked") },
-            ]}
-          />
-        </FilterBar>
+      <div className="grid min-w-0 grow gap-4 @min-[1340px]:grid-cols-[minmax(0,1fr)_minmax(280px,0.34fr)]">
+        <Card className="flex min-w-0 flex-col px-[18px] py-4">
+          <FilterBar
+            search={{
+              label: t("searchLabel"),
+              placeholder: t("searchPlaceholder"),
+              value: query,
+              onChange: changeQuery,
+            }}
+            resultCount={t("resultCount", {
+              shown: users.length,
+              total: page.totalUsers.toLocaleString("vi-VN"),
+            })}
+          >
+            <FilterMenu
+              label={t("roleFilterLabel")}
+              value={role}
+              onValueChange={changeRole}
+              options={[
+                { value: "all", label: t("filterAll") },
+                { value: "student", label: t("role.student") },
+                { value: "instructor", label: t("role.instructor") },
+                { value: "admin", label: t("role.admin") },
+              ]}
+            />
+            <FilterMenu
+              label={t("statusFilterLabel")}
+              value={status}
+              onValueChange={changeStatus}
+              options={[
+                { value: "all", label: t("filterAll") },
+                { value: "active", label: t("status.active") },
+                { value: "pending", label: t("status.pending") },
+                { value: "locked", label: t("status.locked") },
+              ]}
+            />
+          </FilterBar>
 
-        <BulkActionBar
-          count={selected.size}
-          label={t("selectionLabel", { count: selected.size })}
-        >
-          {/* Always enabled: a disabled button cannot say why. With nothing to change it raises a
+          <BulkActionBar
+            count={selected.size}
+            label={t("selectionLabel", { count: selected.size })}
+          >
+            {/* Always enabled: a disabled button cannot say why. With nothing to change it raises a
               warning toast that explains instead (owner instruction 2026-10-11). */}
-          <Button
-            variant="ghost"
-            size="sm"
-            className="border border-[var(--color-border)] text-[var(--color-admin-negative-text)]"
-            onClick={() =>
-              lockable.length === 0
-                ? toast.warning(t("lockNothing"))
-                : requestLock(lockable, unlockable.length)
-            }
-          >
-            {t("bulkLock")}
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="border border-[var(--color-border)]"
-            onClick={() =>
-              unlockable.length === 0
-                ? toast.warning(t("unlockNothing"))
-                : setUnlockTargets(unlockable)
-            }
-          >
-            {t("bulkUnlock")}
-          </Button>
-        </BulkActionBar>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="border border-[var(--color-border)] text-[var(--color-admin-negative-text)]"
+              onClick={() =>
+                lockable.length === 0
+                  ? toast.warning(t("lockNothing"))
+                  : requestLock(lockable, unlockable.length)
+              }
+            >
+              {t("bulkLock")}
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="border border-[var(--color-border)]"
+              onClick={() =>
+                unlockable.length === 0
+                  ? toast.warning(t("unlockNothing"))
+                  : setUnlockTargets(unlockable)
+              }
+            >
+              {t("bulkUnlock")}
+            </Button>
+          </BulkActionBar>
 
-        <DataTable
-          caption={t("tableCaption")}
-          columns={columns}
-          rows={users}
-          rowKey={(user) => user.email}
-          emptyMessage={t("emptyFiltered")}
-          minWidth={910}
-          selection={{
-            selectedKeys: selected,
-            onToggleRow: toggleRow,
-            onToggleAll: toggleAll,
-            selectAllLabel: t("selectAll", { count: users.length }),
-            rowLabel: (user) => t("selectRow", { name: user.name }),
-          }}
-        />
+          {compact ? (
+            users.length ? (
+              <div className="mb-3">
+                <label className="mb-2 flex min-h-10 cursor-pointer items-center gap-2 px-1 text-sm font-medium">
+                  <input
+                    type="checkbox"
+                    checked={allSelected}
+                    ref={(node) => {
+                      if (node)
+                        node.indeterminate =
+                          !allSelected &&
+                          users.some((user) => selected.has(user.email));
+                    }}
+                    onChange={(event) => toggleAll(event.target.checked)}
+                    className="h-4 w-4 shrink-0 accent-[var(--color-admin-teal)]"
+                  />
+                  {t("selectAll", { count: users.length })}
+                </label>
+                <ul
+                  aria-label={t("tableCaption")}
+                  className="grid gap-2.5 @min-[550px]:grid-cols-2"
+                >
+                  {users.map((user) => (
+                    <li
+                      key={user.email}
+                      className="glass-surface flex min-w-0 flex-col gap-2.5 rounded-xl border border-[var(--color-border)] p-3"
+                    >
+                      <div className="flex min-w-0 items-start gap-2.5">
+                        <input
+                          type="checkbox"
+                          checked={selected.has(user.email)}
+                          onChange={() => toggleRow(user.email)}
+                          aria-label={t("selectRow", { name: user.name })}
+                          className="mt-2 h-4 w-4 shrink-0 cursor-pointer accent-[var(--color-admin-teal)]"
+                        />
+                        <div className="min-w-0 [&_.truncate]:whitespace-normal [&_.truncate]:[overflow-wrap:anywhere]">
+                          {identityColumn.render(user)}
+                        </div>
+                      </div>
+                      <div className="flex flex-wrap items-center gap-2.5">
+                        {roleColumn.render(user)}
+                        {statusColumn.render(user)}
+                      </div>
+                      {metrics.length > 0 && (
+                        <dl className="flex flex-wrap gap-x-3 gap-y-1.5 text-xs">
+                          {metrics.map(({ key, header, render }) => (
+                            <div key={key}>
+                              <dt className="text-[var(--color-text-muted)]">
+                                {header}
+                              </dt>
+                              <dd>{render(user)}</dd>
+                            </div>
+                          ))}
+                        </dl>
+                      )}
+                      <div className="mt-auto border-t border-[var(--color-border)] pt-2 [&>span]:flex-wrap [&_button]:min-h-9 [&_button]:min-w-9">
+                        {actionsColumn.render(user)}
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : (
+              <EmptyState>{t("emptyFiltered")}</EmptyState>
+            )
+          ) : (
+            <DataTable
+              caption={t("tableCaption")}
+              columns={columns}
+              rows={users}
+              rowKey={(user) => user.email}
+              emptyMessage={t("emptyFiltered")}
+              minWidth={910}
+              selection={{
+                selectedKeys: selected,
+                onToggleRow: toggleRow,
+                onToggleAll: toggleAll,
+                selectAllLabel: t("selectAll", { count: users.length }),
+                rowLabel: (user) => t("selectRow", { name: user.name }),
+              }}
+            />
+          )}
 
-        <Pagination
-          page={1}
-          pageSize={PAGE_SIZE}
-          total={page.totalUsers}
-          onPageChange={() => {}}
-          summary={t("pageLabel", {
-            page: 1,
-            totalPages: page.totalPages,
-            shown: users.length,
-          })}
-          previousLabel={t("previous")}
-          nextLabel={t("next")}
-        />
-      </Card>
-
-      <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
-        <Card
-          title={t("roleDistributionTitle")}
-          description={t("roleDistributionSubtitle", {
-            total: page.totalUsers.toLocaleString("vi-VN"),
-          })}
-        >
-          <RankedProgressList
-            numbered={false}
-            items={page.roleDistribution.map((item) => ({
-              label:
-                item.role === "deactivated"
-                  ? t("role.deactivated")
-                  : t(`role.${item.role}`),
-              value: item.percent,
-              colorVar: ROLE_BAR_COLOR_VAR[item.role],
-            }))}
+          <Pagination
+            page={filters.page}
+            pageSize={ADMIN_USERS_PAGE_SIZE}
+            total={page.totalUsers}
+            onPageChange={changePage}
+            summary={t("pageLabel", {
+              page: filters.page,
+              totalPages: page.totalPages,
+              shown: users.length,
+            })}
+            previousLabel={t("previous")}
+            nextLabel={t("next")}
           />
         </Card>
 
-        <Card
-          title={t("pendingTitle")}
-          // BD ADM0201 F NO2 / EVT-16: plain navigation, no leave-confirm (nothing unsaved here).
-          action={
-            <Link
-              href="/admin/system-log"
-              className="text-[12.5px] font-semibold text-[var(--color-primary)] hover:underline"
-            >
-              {t("auditLogLink")}
-            </Link>
-          }
-        >
-          <div className="flex flex-col gap-2.5">
-            {page.pendingTasks.map((task) => (
-              <SettingRow
-                key={task.key}
-                label={t(`pending.${task.key}.label`)}
-                description={t(`pending.${task.key}.meta`)}
+        <div className="grid min-w-0 gap-4 @min-[740px]:grid-cols-2 @min-[1340px]:grid-cols-1 @min-[1340px]:content-start">
+          <Card
+            title={t("roleDistributionTitle")}
+            description={t("roleDistributionSubtitle", {
+              total: page.totalUsers.toLocaleString("vi-VN"),
+            })}
+          >
+            <RankedProgressList
+              numbered={false}
+              items={page.roleDistribution.map((item) => ({
+                label:
+                  item.role === "deactivated"
+                    ? t("role.deactivated")
+                    : t(`role.${item.role}`),
+                value: item.percent,
+                valueLabel: item.label,
+                colorVar: ROLE_BAR_COLOR_VAR[item.role],
+              }))}
+            />
+          </Card>
+
+          <Card
+            title={t("pendingTitle")}
+            // BD ADM0201 F NO2 / EVT-16: plain navigation, no leave-confirm (nothing unsaved here).
+            action={
+              <Link
+                href="/admin/system-log"
+                className="text-[12.5px] font-semibold text-[var(--color-primary)] hover:underline"
               >
-                <span
-                  className="font-mono text-[13px] font-semibold"
-                  style={{ color: textTone(task.colorVar) }}
+                {t("auditLogLink")}
+              </Link>
+            }
+          >
+            <div className="flex flex-col gap-2.5">
+              {page.pendingTasks.map((task) => (
+                <SettingRow
+                  key={task.key}
+                  label={t(`pending.${task.key}.label`)}
+                  description={t(`pending.${task.key}.meta`)}
                 >
-                  {task.count}
-                </span>
-              </SettingRow>
-            ))}
-          </div>
-        </Card>
+                  <span
+                    className="font-mono text-[13px] font-semibold"
+                    style={{ color: textTone(task.colorVar) }}
+                  >
+                    {task.count}
+                  </span>
+                </SettingRow>
+              ))}
+            </div>
+          </Card>
+        </div>
       </div>
 
       <AddAccountDialog
         open={adding}
         onClose={() => setAdding(false)}
         existingEmails={new Set(accounts.map((account) => account.email))}
-        onCreate={(user) => setAccounts((previous) => [user, ...previous])}
+        onCreate={createAccount}
       />
 
       <LockAccountsDialog
@@ -548,6 +814,70 @@ function AdminUserManagementInner({ page }: { page: AdminUserPage }) {
         onClose={() => setRoleTarget(null)}
         onConfirm={applyRoleChange}
       />
+
+      <Modal
+        open={detailUser !== undefined}
+        onClose={() => setDetailId(null)}
+        title={t("details.title")}
+        className="scrollbar-glass max-h-[calc(calc(100*var(--dvh1))-2rem)] overflow-y-auto"
+        footer={
+          <Button
+            variant="ghost"
+            className="border border-[var(--color-border)]"
+            onClick={() => setDetailId(null)}
+          >
+            {t("details.close")}
+          </Button>
+        }
+      >
+        {detailUser ? (
+          <div className="flex min-w-0 flex-col gap-4">
+            <div className="flex min-w-0 items-center gap-3">
+              <UserAvatar
+                userId={detailUser.id}
+                name={detailUser.name}
+                avatarVersion={detailUser.avatarVersion}
+              />
+              <div className="min-w-0 [overflow-wrap:anywhere]">
+                <p className="font-semibold text-[var(--color-text)]">
+                  {detailUser.name}
+                </p>
+                <p className="text-xs">{detailUser.email}</p>
+              </div>
+            </div>
+            <dl className="grid gap-3 rounded-xl border border-[var(--color-border)] p-3 min-[380px]:grid-cols-2">
+              {[roleColumn, statusColumn, ...metrics].map(
+                ({ key, header, render }) => (
+                  <div key={key} className="min-w-0">
+                    <dt className="text-xs">{header}</dt>
+                    <dd className="mt-1 text-[var(--color-text)] [&>span]:justify-start">
+                      {render(detailUser)}
+                    </dd>
+                  </div>
+                ),
+              )}
+              {detailUser.hasPassword !== undefined ? (
+                <div>
+                  <dt className="text-xs">{t("details.passwordLabel")}</dt>
+                  <dd className="mt-1 text-[var(--color-text)]">
+                    {t(
+                      detailUser.hasPassword
+                        ? "details.passwordSet"
+                        : "details.passwordUnset",
+                    )}
+                  </dd>
+                </div>
+              ) : null}
+              <div className="min-w-0 min-[380px]:col-span-2">
+                <dt className="text-xs">{t("details.id")}</dt>
+                <dd className="mt-1 font-mono text-xs [overflow-wrap:anywhere]">
+                  {detailUser.id}
+                </dd>
+              </div>
+            </dl>
+          </div>
+        ) : null}
+      </Modal>
 
       {/* Reset is per person (RD ADM0201 Q7): the temporary password goes to that one inbox, so the
           dialog names the address instead of a count. */}
@@ -567,6 +897,18 @@ function AdminUserManagementInner({ page }: { page: AdminUserPage }) {
             },
           )}
         </p>
+      </ConfirmDialog>
+
+      <ConfirmDialog
+        open={avatarTarget !== null}
+        onClose={() => setAvatarTarget(null)}
+        onConfirm={applyRemoveAvatar}
+        title={t("removeAvatarTitle", { name: avatarTarget?.name ?? "" })}
+        confirmLabel={t("removeAvatarAction")}
+        cancelLabel={t("cancel")}
+        destructive
+      >
+        <p>{t("removeAvatarBody")}</p>
       </ConfirmDialog>
 
       {/* Unlock is not destructive — it restores access — so it needs a plain confirmation and no
@@ -602,6 +944,6 @@ function AdminUserManagementInner({ page }: { page: AdminUserPage }) {
           ) : null}
         </ul>
       </ConfirmDialog>
-    </div>
+    </PageContainer>
   );
 }

@@ -1,5 +1,27 @@
 # DD — Validation module `problem-bank` (F2)
 
+**S2b lõi nội bộ, 2026-11-02:** ProblemContentValidation kiểm typed content theo§2 trước DB,
+PRB-001 kèm fields/field/rule, không echo giá trị. Giữ source/Markdown nguyên văn, title/tags
+trim, dedup topic/tag; UTF-8 byte cho reference/examples, codepoint cho text. Trần kỹ thuật đọc
+qua `algoprep.problem-bank.authoring.*` với mặc định DD (statement-max-chars100000,
+constraints-max-chars20000, max-tags20, example-max-bytes8192, explanation-max-chars4000,
+source-max-bytes65536). `[SoT: Suy luận triển khai]` NUL bị từ chối trước PostgreSQL TEXT;
+foreign/duplicate exampleID trả PRB-001 với exists/unique, không chuyển ví dụ từ bài khác.
+Raw JSON binding và HTTP field mapping thuộc lát transport sau, không tuyên bố đã kiểm ở đây.
+
+**S2a, 2026-11-02:** §38 có raw JSON boundary trước P5. Sai kiểu cấp ngoài400 PRB-001;
+TypeNode sai cấu trúc/hard P5 trả422 PRB-036 với details.violations; soft trả200 PRB-W01.
+Decimal parse bằng BigDecimal trước kiểm epsilon; không để double/NUMERIC làm tròn dữ liệu.
+Giới hạn epsilon scale12 sau stripTrailingZeros và max999999.999999999999 kiểm trước DB.
+P5 OTHER chỉ là marker đánh giá; JSON kind lạ như GRAPH giữ nguyên trong DB. Hai override keys
+JAVA/java bị HRN-V18, không last-wins; keys hợp lệ lưu HOA. Format text tối đa20.000 codepoints.
+
+**S1, 2026-11-02:** tên catalogue kiểm tại application: strip khoảng trắng,1–60 Unicode
+code points; JSON tên phải là string. Controller không nhận actor/role từ request, chỉ lấy
+từ authentication. Thứ tự phải là array UUID đầy đủ/không trùng/không null; lỗiPRB-049422.
+Body JSON sai cú pháp trảPRB-001400 qua advice riêng, không thay handler dùng chung F1.
+Plan/report `261102-0926-f2-s1-taxonomy` có log và test biên.
+
 > Nguồn: `02-bd/screens/**` Sheet 5 (độ dài, bắt buộc) và Sheet 9 (đặc tả kiểm tra) của `SHR0201`, `SHR0202`, `USR0101`, `USR0103`, `INS0202`; `02-bd/database/F2_problem-bank.md` (ràng buộc cột);
 > `02-bd/security/F2_problem-bank.md` mục 5. Hợp đồng endpoint ở `03-dd/api/F2_problem-bank.md` (số mục `§n` dưới đây là số mục ở file đó); quy tắc nghiệp vụ ở `03-dd/logic/F2_problem-bank.md`; tiêu chí nghiệm thu ở `04-tdd/modules/F2_problem-bank.md`.
 > Cập nhật: 2026-10-23.
@@ -199,7 +221,7 @@ Bảng 11.1: Năm điều kiện, kiểm ở máy chủ, giao diện chỉ hiể
 | `MIN_APPROVED_SAMPLES` | `>= 2` | `visibility = SAMPLE AND approved = true` |
 | `MIN_WORKED_EXAMPLES` | `>= 2` | dòng `worked_examples` |
 | `REFERENCE_SOLUTION_PASSES_ALL` | đáp án mẫu `PASS` mọi testcase đã duyệt trong **một lần chạy lúc bấm xuất bản** | không đọc cờ lưu sẵn |
-| `SPEC_DECLARED` | `stdinFormatMd` và `stdoutFormatMd` không rỗng; chiến lược so khớp hợp lệ (có `epsilonValue` nếu `EPSILON`); **chữ ký đã khai** (`functionName`, `returnType`, `parameters` khác `null`), trừ khi chữ ký có kiểu ngoài lược đồ | theo `problem_specs` |
+| `SPEC_DECLARED` | `stdinFormatMd` và `stdoutFormatMd` không rỗng; chiến lược so khớp hợp lệ (có `epsilonValue` nếu `EPSILON`); **chữ ký đã khai** (`functionName`, `returnType`, `parameters` khác `null`), trừ khi bài không hỗ trợ hàm (`problems.function_wrapper_supported = false`: chữ ký có kiểu ngoài lược đồ `HRN-V01` đến `V06`, hoặc chưa khai chữ ký `HRN-V07`); bài kiểu Standard I/O không cần chữ ký (Owner chốt 2026-11-08, `DEC-2026-1108-f2-spec-declared-stdio-exempt`) | theo `problem_specs` |
 
 Điều kiện "tổng trọng số 100" **không còn áp dụng** (`01-rd/req/F2_problem-bank.md:162-163`). Hành vi: thiếu điều kiện thì `422 PRB-030` liệt kê **tất cả** điều kiện thiếu (`SHR0202` Q8, dòng 793).
 

@@ -26,5 +26,10 @@
   <name>algoprep-common</name>
   <description>Nhan dung chung — kieu mien co so, ngoai le nen, cong ra dung chung</description>
 
+  <properties>
+    <!-- Coverage gate is blocking here: 100% measured 2026-10-31 (threshold stays 80%, parent pom). -->
+    <jacoco.haltOnFailure>true</jacoco.haltOnFailure>
+  </properties>
+
   <!-- Khong khai dependency nao. Java thuan. Day la chu dich, khong phai thieu sot. -->
 </project>

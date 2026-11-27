@@ -26,8 +26,12 @@ type FilterMenuProps<T extends string> = {
   onValueChange: (value: T) => void;
   /** Value-only trigger (the label stays as the accessible name), for small pickers such as rows per page. */
   compact?: boolean;
+  /** The choice is shown but cannot be changed (a locked row, a form being sent). */
+  disabled?: boolean;
   /** Which way the panel opens; "top" for a control at the bottom of a card, such as the pagination bar. */
   placement?: "bottom" | "top";
+  /** Which edge of the trigger the panel lines up with; "end" for a control at the right edge of a card. */
+  align?: "start" | "end";
   className?: string;
 };
 
@@ -37,7 +41,9 @@ export function FilterMenu<T extends string>({
   value,
   onValueChange,
   compact = false,
+  disabled = false,
   placement = "bottom",
+  align = "start",
   className,
 }: FilterMenuProps<T>) {
   const [open, setOpen] = useState(false);
@@ -95,8 +101,9 @@ export function FilterMenu<T extends string>({
       <button
         ref={triggerRef}
         type="button"
+        disabled={disabled}
         aria-haspopup="listbox"
-        aria-expanded={open}
+        aria-expanded={open && !disabled}
         aria-controls={open ? listId : undefined}
         onClick={() => setOpen((previous) => !previous)}
         onKeyDown={(event) => {
@@ -108,6 +115,7 @@ export function FilterMenu<T extends string>({
         className={cn(
           "inline-flex items-center gap-1.5 rounded-xl border border-[var(--color-border)] bg-[var(--color-track)] text-[12.5px]",
           compact ? "h-8 px-2.5" : "h-[34px] px-3",
+          "disabled:cursor-not-allowed disabled:opacity-60",
           "hover:text-[var(--color-text)] focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[var(--color-primary)]",
         )}
       >
@@ -128,15 +136,17 @@ export function FilterMenu<T extends string>({
         />
       </button>
 
-      {open ? (
+      {open && !disabled ? (
         <div
           ref={listRef}
           id={listId}
           role="listbox"
+          tabIndex={-1}
           aria-label={label}
           onKeyDown={onListKeyDown}
           className={cn(
-            "glass-card glass-card--popover scrollbar-glass absolute left-0 z-40 max-h-72 w-max min-w-full max-w-[min(20rem,calc(100vw-2rem))] overflow-y-auto overscroll-contain border border-[var(--color-border)] p-1.5",
+            "glass-card glass-card--popover scrollbar-glass absolute z-40 max-h-72 w-max min-w-full max-w-[min(20rem,calc(100vw-2rem))] overflow-y-auto overscroll-contain border border-[var(--color-border)] p-1.5",
+            align === "end" ? "right-0" : "left-0",
             placement === "top" ? "bottom-full mb-2" : "top-full mt-2",
           )}
         >

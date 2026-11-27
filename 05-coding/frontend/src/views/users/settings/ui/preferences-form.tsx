@@ -4,7 +4,9 @@
 // dirty flag and Save button per Sheet 5 Khu vực E NO 3.
 "use client";
 
-import { useT } from "@/shared/i18n";
+import { Bell, Code2, MessagesSquare, Save } from "lucide-react";
+import { ApiError } from "@/shared/api/api-error";
+import { useApiErrorMessage, useT } from "@/shared/i18n";
 import { useUnsavedChangesGuard } from "@/shared/lib";
 import { toast } from "@/shared/lib/toast-store";
 import {
@@ -33,6 +35,10 @@ const LANGUAGE_OPTIONS: {
   { value: "JAVA", label: "Java 21", enabled: true },
   { value: "CPP", label: "C++ 17", enabled: true },
 ];
+
+const CHOICE_ROW =
+  "flex-col items-stretch gap-2 @min-[34rem]:flex-row @min-[34rem]:items-center";
+const CHOICES = "w-fit flex-wrap [&>button]:h-9";
 
 export function PreferencesForm() {
   const t = useT("settings");
@@ -105,6 +111,7 @@ function Body({
     !interviewDegraded,
   );
   const leaveGuard = useUnsavedChangesGuard(dirty);
+  const apiMessage = useApiErrorMessage();
 
   // Saved language switched off by an admin: show the first enabled one (BD Q4). Display only (D35):
   // the draft keeps the stored value and nothing is written until the learner picks a language.
@@ -118,10 +125,14 @@ function Body({
   // BD Q11 (closed 2026-10-18): the button writes to two modules, each group reports its own result.
   async function handleSave(): Promise<boolean> {
     try {
-      const { settingsOk, interviewOk } = await save();
+      const { settingsOk, settingsError, interviewOk } = await save();
+      const failedText =
+        settingsError instanceof ApiError
+          ? apiMessage(settingsError)
+          : t("saveBar.saveFailed");
       if (interviewOk === null) {
         if (settingsOk) toast.success(t("saveBar.saved"));
-        else toast.error(t("saveBar.saveFailed"));
+        else toast.error(failedText);
         return settingsOk;
       }
       if (settingsOk && interviewOk) {
@@ -129,7 +140,7 @@ function Body({
         return true;
       }
       if (settingsOk) toast.success(t("saveBar.savedSettings"));
-      else toast.error(t("saveBar.saveFailed"));
+      else toast.error(failedText);
       if (interviewOk) toast.success(t("interview.saved"));
       else toast.warning(t("interview.saveFailedWarning"));
       return settingsOk && interviewOk;
@@ -140,14 +151,42 @@ function Body({
   }
 
   return (
-    <div className="flex flex-col gap-3.5">
-      <Card title={t("workspace.title")}>
+    <div className="@container flex min-w-0 flex-col gap-4">
+      {/* The student header is 58px tall with 18px top padding. */}
+      <div className="sticky top-0 z-10 flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-2.5 [.student-shell_&]:top-[76px]">
+        <p
+          role="status"
+          className="text-sm font-medium text-[var(--color-text-muted)]"
+        >
+          {dirty ? t("saveBar.statusDirty") : t("saveBar.statusIdle")}
+        </p>
+        <Button
+          type="button"
+          className="ml-auto h-11 gap-2"
+          onClick={() => void handleSave()}
+          disabled={!dirty || isSaving}
+          aria-busy={isSaving || undefined}
+        >
+          <Save size={16} aria-hidden="true" />
+          {t("saveBar.save")}
+        </Button>
+      </div>
+      <Card
+        title={
+          <span className="flex items-center gap-2">
+            <Code2 size={18} aria-hidden="true" />
+            {t("workspace.title")}
+          </span>
+        }
+      >
         <div className="flex flex-col gap-2">
           <SettingRow
+            className={CHOICE_ROW}
             label={t("workspace.defaultLanguage")}
             description={t("workspace.defaultLanguageDescription")}
           >
             <SegmentedTabs
+              className={CHOICES}
               label={t("workspace.defaultLanguage")}
               value={shownLanguage}
               onValueChange={(v) => setWorkspace({ defaultLanguage: v })}
@@ -158,10 +197,12 @@ function Body({
             />
           </SettingRow>
           <SettingRow
+            className={CHOICE_ROW}
             label={t("workspace.editorFontSize")}
             description={t("workspace.editorFontSizeDescription")}
           >
             <SegmentedTabs
+              className={CHOICES}
               label={t("workspace.editorFontSize")}
               value={draft.workspace.editorFontSize}
               onValueChange={(v) => setWorkspace({ editorFontSize: v })}
@@ -195,16 +236,25 @@ function Body({
         </div>
       </Card>
 
-      <Card title={t("interview.title")}>
+      <Card
+        title={
+          <span className="flex items-center gap-2">
+            <MessagesSquare size={18} aria-hidden="true" />
+            {t("interview.title")}
+          </span>
+        }
+      >
         {interviewDegraded ? (
           <EmptyState>{t("interview.degradedNotice")}</EmptyState>
         ) : (
           <div className="flex flex-col gap-2">
             <SettingRow
+              className={CHOICE_ROW}
               label={t("interview.interviewerLevel")}
               description={t("interview.interviewerLevelDescription")}
             >
               <SegmentedTabs
+                className={`${CHOICES} @max-[34rem]:grid @max-[34rem]:w-full @max-[34rem]:grid-cols-2`}
                 label={t("interview.interviewerLevel")}
                 value={draft.preferredInterviewLevel}
                 onValueChange={(v) => set("preferredInterviewLevel", v)}
@@ -217,10 +267,12 @@ function Body({
               />
             </SettingRow>
             <SettingRow
+              className={CHOICE_ROW}
               label={t("interview.maxTurns")}
               description={t("interview.maxTurnsDescription")}
             >
               <SegmentedTabs
+                className={CHOICES}
                 label={t("interview.maxTurns")}
                 value={draft.interview.maxTurnsPerSession}
                 onValueChange={(v) => setInterview({ maxTurnsPerSession: v })}
@@ -248,7 +300,14 @@ function Body({
         )}
       </Card>
 
-      <Card title={t("notification.title")}>
+      <Card
+        title={
+          <span className="flex items-center gap-2">
+            <Bell size={18} aria-hidden="true" />
+            {t("notification.title")}
+          </span>
+        }
+      >
         <div className="flex flex-col gap-2">
           <SettingRow
             label={t("notification.streakReminder")}
@@ -275,20 +334,6 @@ function Body({
             />
           </SettingRow>
         </div>
-      </Card>
-
-      <Card title={t("saveBar.title")}>
-        <p className="mb-3 text-sm text-[var(--color-text-muted)]">
-          {dirty ? t("saveBar.statusDirty") : t("saveBar.statusIdle")}
-        </p>
-        <Button
-          className="w-full"
-          onClick={() => void handleSave()}
-          disabled={!dirty || isSaving}
-          aria-busy={isSaving || undefined}
-        >
-          {t("saveBar.save")}
-        </Button>
       </Card>
 
       <UnsavedChangesDialog

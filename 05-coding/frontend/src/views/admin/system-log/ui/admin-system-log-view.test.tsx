@@ -1,5 +1,6 @@
-// The three things ADM0403 added on 2026-10-08: "Tải thêm" loads rows, the day range filters them,
-// and a lock row shows its reason while an unlock row does not.
+// Mock-mode behaviour of ADM0403: paging uses a cursor, the day range filters it,
+// and a lock row shows its reason while an unlock
+// row does not. The real-API path is in admin-system-log-real.test.tsx.
 import type { ReactElement } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { describe, expect, it, vi } from "vitest";
@@ -15,16 +16,18 @@ import { toast, useToasts } from "@/shared/lib/toast-store";
 import { ExportLogDialog } from "./export-log-dialog";
 import { AdminSystemLogView } from "./admin-system-log-view";
 
-// The view now loads through a query, so each render waits for the first page.
+// The list loads through a query, so each render waits for the first page.
 async function renderView(ui: ReactElement) {
   const client = new QueryClient({
     defaultOptions: { queries: { retry: false } },
   });
   render(<QueryClientProvider client={client}>{ui}</QueryClientProvider>);
-  await screen.findAllByText("title");
+  await screen.findByRole("list", { name: "eventListLabel" });
 }
 
 vi.mock("@/shared/i18n", () => ({
+  useApiErrorMessage: () => () => "apiError",
+  useLocale: () => "vi",
   useT: () => (key: string, values?: Record<string, string | number>) =>
     values ? `${key}:${Object.values(values).join(",")}` : key,
 }));
@@ -37,20 +40,38 @@ const rows = () =>
 describe("AdminSystemLogView", () => {
   it("shows the lock reason on the lock row only", async () => {
     await renderView(<AdminSystemLogView />);
-    expect(screen.getAllByText(/^reasonLabel: /)).toHaveLength(1);
-    expect(screen.getByText(/Phát hiện nhiều tài khoản/)).toBeInTheDocument();
+    // The first page holds the ten seed rows and their synthetic repeats: every lock row has the
+    // reason, no unlock row does.
+    const locks = screen.getAllByText("Khóa tài khoản hmtri");
+    expect(locks.length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/^reasonLabel: /)).toHaveLength(locks.length);
+    expect(
+      screen.getAllByText("Mở khóa tài khoản bklinh").length,
+    ).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Phát hiện nhiều tài khoản/)).toHaveLength(
+      locks.length,
+    );
   });
 
-  it("loads 50 more rows from the load-more button", async () => {
+  it("shows 50 rows per page and returns to the cached first page", async () => {
     await renderView(<AdminSystemLogView />);
-    const before = rows().length;
-    fireEvent.click(screen.getByRole("button", { name: "loadMore:50" }));
-    await waitFor(() => expect(rows()).toHaveLength(before + 50));
+    const firstRow = rows()[0]?.textContent;
+    expect(rows()).toHaveLength(50);
+    expect(firstRow).toBeTruthy();
+    expect(screen.getByRole("button", { name: "pagePrevious" })).toBeDisabled();
+    fireEvent.click(screen.getByRole("button", { name: "pageNext" }));
+    await screen.findByText("pageLabel:2,50");
+    expect(rows()).toHaveLength(50);
+    expect(rows()[0]?.textContent).not.toBe(firstRow);
+    fireEvent.click(screen.getByRole("button", { name: "pagePrevious" }));
+    expect(screen.getByText("pageLabel:1,50")).toBeInTheDocument();
+    expect(rows()[0]?.textContent).toBe(firstRow);
   });
 
   it("filters by day range, inclusive on both ends", async () => {
     await renderView(<AdminSystemLogView />);
-    fireEvent.click(screen.getByRole("button", { name: "loadMore:50" }));
+    fireEvent.click(screen.getByRole("button", { name: "pageNext" }));
+    await screen.findByText("pageLabel:2,50");
 
     fireEvent.change(screen.getByLabelText("dateFrom"), {
       target: { value: "2026-10-08" },
@@ -60,7 +81,9 @@ describe("AdminSystemLogView", () => {
     });
 
     // Today's seed rows only: the synthetic history starts yesterday.
-    expect(rows()).toHaveLength(10);
+    await waitFor(() => expect(rows()).toHaveLength(10));
+    expect(screen.getByText("pageLabel:1,10")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "pageNext" })).toBeDisabled();
   });
 
   it("returns nothing, and says why, when the range is reversed", async () => {
@@ -82,16 +105,20 @@ describe("AdminSystemLogView", () => {
     const toasts = renderHook(() => useToasts());
     act(() => toast.clear());
     render(
-      <ExportLogDialog
-        open
-        onClose={() => {}}
-        scope={{
-          query: "pdai",
-          categoryLabel: "category.auth",
-          from: "",
-          to: "",
-        }}
-      />,
+      <QueryClientProvider client={new QueryClient()}>
+        <ExportLogDialog
+          open
+          onClose={() => {}}
+          retentionDays={90}
+          scope={{
+            query: "pdai",
+            category: "auth",
+            categoryLabel: "category.auth",
+            from: "",
+            to: "",
+          }}
+        />
+      </QueryClientProvider>,
     );
     expect(screen.getByText(/exportDialog.scopeTitle/)).toHaveTextContent(
       "exportDialog.scopeQuery:pdai",

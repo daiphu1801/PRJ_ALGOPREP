@@ -12,7 +12,7 @@ Theo đề xuất đã duyệt trước [SoT: `07-review/bd_open_questions_with_
 | Quy tắc | Giá trị | Mã lỗi |
 | :--- | :--- | :--- |
 | Độ dài tối thiểu | 8 ký tự | `IDT-V01` |
-| Độ dài tối đa | 128 ký tự (khớp ô nhập mật khẩu mới ở `USR0503_settings.md:522`, trước 2026-10-20 ở USR0502) | `IDT-V02` |
+| Độ dài tối đa | **72 byte UTF-8**, giữ BCrypt; không cắt chuỗi. Chủ dự án chốt 2026-10-30 (`DEC-2026-1030-bcrypt-password-byte-limit`), thay giới hạn 128 ký tự cũ. Ký tự ngoài ASCII có thể chiếm nhiều byte | `IDT-V02` |
 | Thành phần bắt buộc | ít nhất 1 chữ cái, ít nhất 1 chữ số | `IDT-V03` |
 | Không được trùng | không được trùng chính email/`display_name` của tài khoản (chống mật khẩu đoán ngay) | `IDT-V04` |
 
@@ -20,6 +20,10 @@ Theo đề xuất đã duyệt trước [SoT: `07-review/bd_open_questions_with_
 
 Áp dụng cho: `POST /auth/register`, `POST /auth/password/reset`, `POST /me/password` (cả hai biến thể
 BR-05/BR-06 ở `03-dd/logic/F1_identity.md`).
+
+Đăng nhập với đầu vào vượt 72 byte UTF-8 trả lỗi thông tin đăng nhập chung `401 IDT-102`, không cắt mật khẩu,
+không tiết lộ tài khoản có tồn tại. Frontend prototype còn giới hạn cũ; phải đồng bộ trước task #7 nối API thật
+(`06-plan/PROTOTYPE_DEBT.md`, mục giới hạn BCrypt 2026-10-30).
 
 ## 2. Rate-limit
 
@@ -59,8 +63,9 @@ Endpoint #60 kiểm OTP quên mật khẩu trước khi đặt mật khẩu: `em
 | Lịch học có cấu trúc `classes.schedule` | `classes` | Mọi phần tuỳ chọn: `note` tối đa 200 ký tự; `room` tối đa 100 ký tự; `days` là số nguyên 1 tới 7, không trùng; `startTime`/`endTime` dạng `HH:mm`, đi cùng nhau, kết thúc sau bắt đầu; có giờ thì phải có ít nhất một ngày; `startDate`/`endDate` dạng `yyyy-MM-dd`, ngày kết thúc không trước ngày bắt đầu. | `IDT-V10` cho quá dài `room`/`note`; `IDT-V16` cho cấu trúc/ngày/giờ sai. Các giới hạn theo BD INS0201/INS0205 Sheet 9; mã V16 chốt tại DD. |
 | Số điện thoại (`phone`, F1-09) — **thêm phase 5, ID-28** | `users` | `VARCHAR(20)`, không bắt buộc, không xác thực với nhà mạng [SoT: `02-bd/database/F1_identity.md:22`]; DD kiểm: bỏ khoảng trắng đầu/cuối, chỉ cho chữ số, khoảng trắng và `+ - ( )`, độ dài ≤ 20 `[SoT: Suy luận — BD chỉ nêu độ dài 20, tập ký tự do DD đề xuất]`. Chuỗi rỗng lưu `NULL` | `IDT-V13` (mã mới, đề xuất) |
 | Tên lớp (`classes.name`) — **thêm phase 5, ID-26** | `classes` | bắt buộc, 1 tới 120 ký tự sau khi bỏ khoảng trắng đầu/cuối [SoT: `02-bd/database/F1_identity.md:109`, `02-bd/screens/teacher/INS0201_class_management.md`] | `IDT-V14` (mã mới, đề xuất) |
+| Tên lớp không trùng trong cùng giảng viên (`DEC-2026-1126-class-name-unique`) | `classes` | so sánh `lower(btrim(name))` trong phạm vi một `instructor_id`; giữ nguyên tên của chính lớp khi PATCH thì hợp lệ | `IDT-417` (409), #20, #21 |
 | Mô tả lớp (`classes.description`) — **thêm phase 5, ID-26** | `classes` | tuỳ chọn, tối đa 500 ký tự [SoT: `02-bd/database/F1_identity.md:109`] | `IDT-V15` (mã mới, đề xuất) |
-| Xác nhận email tự xoá tài khoản (`emailConfirmation`) | không lưu | phải khớp tuyệt đối `users.email` hiện tại (case-sensitive theo giá trị đã lưu, không lower-case hoá để người dùng gõ đúng những gì họ thấy) | `IDT-201` |
+| Xác nhận email tự xoá tài khoản (`emailConfirmation`) | không lưu | ~~phải khớp tuyệt đối `users.email` hiện tại (case-sensitive theo giá trị đã lưu, không lower-case hoá để người dùng gõ đúng những gì họ thấy)~~ **Chủ dự án chốt 2026-11-01:** trim hai đầu rồi so với `users.email` hiện tại không phân biệt hoa thường (quyết định D38 của màn Cài đặt) | `IDT-201`; `IDT-432` nếu là ADMIN hoạt động duy nhất |
 
 ## 6. Token/Session
 
@@ -116,6 +121,44 @@ Server kiểm lại toàn bộ tham số của cả tìm và xuất, kể cả k
 ## 13. Xác nhận ADMIN tự ảnh hưởng (#36–37)
 
 Khi `userId` đích bằng actor và yêu cầu khoá chính mình (`targetStatus=DEACTIVATED`) hoặc đổi `targetRoleId` sang role có `base_category != ADMIN`, request bắt buộc `acknowledgeSelfImpact: true` (boolean). Thiếu, `null`, `false` hoặc sai kiểu trả `400 IDT-V21`; không ghi dữ liệu hoặc phát email/audit. Bất biến ADMIN hoạt động cuối cùng dùng `422 IDT-432` và được kiểm trước nhánh xác nhận. Các thao tác khác không bắt buộc cờ này. [SoT: quyết định chủ dự án 2026-10-27; API F1 §0.6, logic BR-15].
+
+## 14. Quản lý người dùng của admin (#35–38, #50) — triển khai 2026-11-02
+
+Máy chủ kiểm lại mọi giá trị dù client đã chặn (`DEC-2026-1102-admin-user-management-contracts`, các mã mới là `[SoT: Suy luận]` đã được chủ dự án duyệt).
+
+| Trường | Quy tắc | Mã lỗi |
+| :--- | :--- | :--- |
+| `status` (#35) | Rỗng, `ALL` hoặc một trong `ACTIVE`, `DEACTIVATED`, `PENDING_VERIFICATION` | `400 IDT-V17` |
+| `role` (#35) | Rỗng, `ALL` hoặc `base_category` `STUDENT`, `INSTRUCTOR`, `ADMIN` | `400 IDT-V17` |
+| `q` (#35) | Trim, tối đa 100 ký tự; rỗng nghĩa là không lọc | `400 IDT-V17` |
+| `page`, `pageSize` (#35) | `page >= 1`; `pageSize` 1 đến 100, mặc định 20 | `400 IDT-V17` |
+| `userId` (#36–38) | UUID của một tài khoản có thật; sai dạng hoặc không có | `404 IDT-450` |
+| `targetRoleId` (#36) | UUID của một role có thật; thiếu hoặc sai dạng `422 IDT-V26`, không có role `404 IDT-424` | `IDT-V26`, `IDT-424` |
+| `targetStatus` (#37) | Đúng `ACTIVE` hoặc `DEACTIVATED` | `422 IDT-V26` |
+| `reason` (#37) | Chuỗi, trim, tối đa 500 ký tự; rỗng coi như không có | `422 IDT-V26` |
+| `notifyByEmail` (#37) | Boolean hoặc vắng; `true` chỉ hợp lệ khi có `reason` | `422 IDT-V26` |
+| `acknowledgeSelfImpact` | Chỉ bắt buộc `true` khi tự khoá hoặc tự hạ vai trò (mục 13); kiểu khác `true` thì coi là thiếu | `400 IDT-V21` |
+| `displayName` (#50) | 2 đến 100 ký tự sau trim | `IDT-V19`, `IDT-V20` |
+| `email` (#50) | Quy tắc chung (trim, chữ thường, RFC 5322, tối đa 254); trùng không phân biệt hoa thường | `400 IDT-400`, `409 IDT-440` |
+| `roleId` (#50) | UUID của role có thật và không thuộc nhóm ADMIN; thiếu, sai dạng, không có hoặc thuộc ADMIN | `422 IDT-441` |
+
+Thứ tự kiểm ở #36 và #37: hình dạng thân (`IDT-V26`) trước, rồi người dùng (`IDT-450`), rồi bất biến ADMIN cuối (`IDT-432`), rồi xác nhận tự ảnh hưởng (`IDT-V21`).
+
+## 15. Ảnh đại diện (#74) — thêm 2026-11-17, F1-35
+
+Nguồn: `DEC-2026-1117-user-avatar-upload`, RD F1-35 mục 1, `02-bd/security/F1_identity.md` mục 6.1. Thứ tự kiểm ở máy chủ cũng là thứ tự dưới đây; vi phạm đầu tiên dừng ngay.
+
+| # | Trường | Luật | Mã lỗi | Nơi kiểm |
+| :-: | :--- | :--- | :--- | :--- |
+| 1 | Yêu cầu | Là `multipart/form-data` và có **đúng một** part tên `file` | `IDT-V32` (400) | Máy chủ |
+| 2 | `file` kích thước | Tối đa 524288 byte (512 KB); đếm khi đọc luồng, đọc tới 524289 byte để biết vượt; không chỉ tin `Content-Length` | `IDT-V30` (413) | Máy chủ; giao diện kiểm sau khi thu nhỏ |
+| 3 | `file` định dạng | Theo **byte đầu tệp**: PNG `89 50 4E 47 0D 0A 1A 0A`; JPEG `FF D8 FF`; WebP `52 49 46 46` ở byte 0 đến 3 và `57 45 42 50` ở byte 8 đến 11. Không tin `Content-Type` của part, không tin phần mở rộng tên tệp. SVG và mọi kiểu khác bị từ chối | `IDT-V29` (422) | Máy chủ |
+| 4 | `file` điểm ảnh | Chiều rộng và chiều cao đọc từ tiêu đề tệp, mỗi chiều từ 1 đến 1024. PNG: khối `IHDR` (byte 16 đến 23, big-endian). JPEG: quét đến khối `SOF` đầu tiên (mã `C0` đến `CF` trừ `C4`, `C8`, `CC`). WebP: `VP8 ` (lossy), `VP8L` (lossless), `VP8X` (canvas, 24 bit cộng 1). Không đọc được hoặc ngoài khoảng | `IDT-V31` (422) | Máy chủ |
+| 5 | Tần suất | Tối đa 10 lần đổi hoặc xoá (#74, #75) mỗi giờ cho mỗi người | `IDT-452` (429) | Máy chủ |
+
+Máy chủ **không** giải mã hay chuyển đổi ảnh; chỉ đọc tiêu đề. Tên tệp người dùng gửi lên bị bỏ, khoá đối tượng do hệ thống sinh (BR-25).
+
+**Quy tắc phía giao diện (zod, khớp bảng trên)**: tệp được chọn phải có `type` thuộc `image/png`, `image/jpeg`, `image/webp`; kích thước tệp **gốc** tối đa 10 MB (chặn tệp quá lớn trước khi giải mã trong trình duyệt, `[SoT: Suy luận]`, hằng số trong mã); sau khi thu nhỏ về 256 x 256 bằng canvas và xuất `image/webp` chất lượng 0,9 (dự phòng `image/jpeg` khi trình duyệt không xuất được WebP), kích thước kết quả phải tối đa 512 KB. Phần kiểm ở giao diện chỉ để báo lỗi sớm; máy chủ luôn kiểm lại.
 
 ## Tham chiếu
 

@@ -43,6 +43,34 @@ gì là thiếu]`. **Chốt 2026-08-25** (đối chiếu `09-layoutBase/Trang c�
     **Bổ sung 2026-10-13** (`DEC-2026-1013-a2-reads-student-contact`): thêm trường thứ 7 **Số điện thoại**,
     không bắt buộc, để giảng viên phụ trách lớp liên lạc với học viên. Giảng viên chỉ đọc được email và số
     điện thoại của học viên thuộc lớp mình phụ trách.
+  - **F1-35 — Ảnh đại diện (avatar) của người dùng.** **Chốt 2026-11-17 (owner, hỏi từng câu;
+    `DEC-2026-1117-user-avatar-upload`)**, đảo ngược mục (4) của `DEC-2026-1018-usr-open-questions-phase1-scope`
+    (trước đó chỉ có avatar chữ viết tắt):
+    1. Người dùng đã đăng nhập tải lên, thay và xoá ảnh đại diện của chính mình ở màn Hồ sơ (`USR0502`). Chấp nhận
+       PNG, JPEG, WebP, tối đa 512 KB; không nhận SVG. Định dạng được kiểm theo nội dung tệp, không theo phần mở
+       rộng hay tiêu đề `Content-Type`. Trình duyệt thu nhỏ ảnh về 256 x 256 trước khi gửi.
+    2. Chưa có ảnh, đã xoá ảnh, hoặc ảnh tải lỗi thì mọi nơi hiển thị **chữ viết tắt của tên hiển thị** như hiện nay.
+    3. Ảnh nằm trong kho đối tượng MinIO; cơ sở dữ liệu chỉ giữ khoá đối tượng (chi tiết ở BD).
+    4. Ảnh hiện ở **mọi màn có hiển thị một người**: hồ sơ, thanh đầu trang và lời chào của học viên, danh sách và chi
+       tiết học viên của giảng viên, danh sách bài nộp, bảng người dùng và nhật ký của quản trị viên. Danh sách màn cụ
+       thể do BD chốt từng màn.
+    5. **Mọi người dùng đã đăng nhập** đọc được ảnh của người khác theo mã người dùng, không kiểm tra lớp hay vai
+       trò (owner chấp nhận).
+    6. Lần đầu liên kết tài khoản Google hoặc GitHub (F1-15), khi người dùng chưa có ảnh, hệ thống lấy ảnh đại diện của
+       nhà cung cấp **một lần** (xin bản 256 điểm ảnh; vẫn quá 512 KB thì bỏ qua); lấy không được thì bỏ qua và **không làm hỏng đăng nhập**. Sau đó người dùng đổi
+       hoặc xoá tự do.
+    7. Kho đối tượng lỗi thì F1 vẫn hoạt động: đăng nhập, hồ sơ và mọi chức năng khác không đổi; chỉ riêng thao tác
+       với ảnh báo lỗi và nơi hiển thị rơi về chữ viết tắt (cùng nguyên tắc suy giảm có kiểm soát như F5/F6).
+    8. Xoá tài khoản (F1-16) xoá **ngay** cả ảnh khi người dùng bấm xoá, không đợi bước ẩn danh hoá (owner chốt
+       2026-11-17); khôi phục tài khoản trong thời gian ân hạn không lấy lại ảnh, người dùng tự tải lại. Xuất dữ liệu
+       cá nhân (F1-22) chỉ ghi tài khoản có ảnh hay không, không kèm tệp ảnh `[SoT: Suy luận — F1-22 không nhắc ảnh]`.
+    9. **Quản trị viên gỡ được ảnh của người dùng khác** ở màn quản lý người dùng (quyền `USER_MANAGEMENT:UPDATE`),
+       ví dụ khi ảnh không phù hợp; hành động ghi Nhật ký hệ thống (F1-14) với loại `USER_AVATAR_REMOVED`. Quản trị
+       viên chỉ gỡ, không tải ảnh thay cho người khác (owner chốt 2026-11-17, Q-AV-4).
+    10. **Đổi ảnh có bước xem trước rồi lưu**: chọn tệp thì hiện bản xem trước, chỉ khi bấm Lưu ảnh mới gửi lên và
+        thay ảnh hiện tại; bấm Huỷ thì bỏ ảnh đã chọn (owner chốt 2026-11-17, Q12).
+    - **Đã chốt 2026-11-17:** Q-AV-1 (xoá ảnh ngay khi xoá tài khoản, mục 8) và Q-AV-2 (xin bản 256 điểm ảnh từ nhà
+      cung cấp, vẫn quá 512 KB thì bỏ qua, mục 6).
   - **F1-19 — Tự đổi mật khẩu khi đã đăng nhập.** Khác F1-17 (quên mật khẩu, chưa đăng nhập): người dùng nhập
     mật khẩu hiện tại + mật khẩu mới ngay tại trang cá nhân/bảo mật, không qua email. **Chốt 2026-08-25.**
 - **Ma trận phân quyền Role × Function × Action** — chốt 2026-08-23 theo `06-plan/PROTOTYPE_DEBT.md` mục
@@ -135,6 +163,15 @@ gì là thiếu]`. **Chốt 2026-08-25** (đối chiếu `09-layoutBase/Trang c�
     công từng học viên. Gác bởi Function `CLASS_MANAGEMENT` trong ma trận phân quyền (F1-12) cho thao tác
     tạo lớp (A2); việc học viên nhập mã mời để tham gia không đi qua ma trận phân quyền, tương tự cách
     F1-05 gán vai trò mặc định khi đăng ký — có sẵn tài khoản hợp lệ và biết mã mời là đủ điều kiện.
+    **Amendment 2026-11-26** (`DEC-2026-1126-class-name-unique`, chủ dự án duyệt): **một giảng viên không có hai lớp
+    trùng tên** (không phân biệt hoa thường và khoảng trắng hai đầu); tạo hoặc đổi tên lớp trùng bị từ chối. Hai giảng
+    viên khác nhau được đặt cùng tên.
+    **Amendment 2026-11-26** (`DEC-2026-1126-class-join-needs-active-instructor`, chủ dự án duyệt): mã mời của một lớp
+    **không dùng được khi tài khoản giảng viên không còn hoạt động** (bị khoá, tự xoá hoặc chưa xác minh); học viên nhập
+    mã bị từ chối như mã sai, học viên đã vào lớp không bị đuổi. **Amendment 2026-11-26**
+    (`DEC-2026-1126-roster-inactive-account-label`, chủ dự án duyệt): học viên đã xoá hoặc bị khoá tài khoản **vẫn nằm
+    trong danh sách và sĩ số lớp**, danh sách ghi nhãn "Tài khoản không còn hoạt động"; tỉ lệ hoàn thành vẫn chia cho cả
+    những học viên đó.
   - **F1-24 — Giáo viên xoá lớp học.** **Chốt 2026-08-28 — qua hỏi trực tiếp chủ dự án:** xoá **thật** (hard
     delete), không phải khoá mềm/ẩn danh hoá như cách F1-16 xử lý xoá tài khoản — đây là một quyết định có
     chủ đích khác với F1-16, không phải sơ suất thiếu nhất quán. Sửa thông tin lớp (đổi tên, mô tả, lịch
@@ -149,6 +186,9 @@ gì là thiếu]`. **Chốt 2026-08-25** (đối chiếu `09-layoutBase/Trang c�
     dùng riêng của nó**, độc lập với các mã cũ (mã cũ hết hạn không tự động ảnh hưởng mã mới). Không nói rõ
     mã cũ còn hiệu lực có bị vô hiệu hoá khi tạo mã mới hay không — `[SoT: Suy luận — để BD quyết định, hợp
     lý là cho phép nhiều mã cùng hiệu lực song song, không cần thu hồi mã cũ]`.
+    **Amendment 2026-11-26** (`DEC-2026-1126-class-invite-revoke`, chủ dự án duyệt): giảng viên **thu hồi được từng mã
+    mời** của lớp mình. Mã đã thu hồi không dùng được nữa (học viên nhập bị từ chối như mã sai); học viên đã vào lớp và
+    các mã khác của lớp không bị ảnh hưởng. Tạo mã mới vẫn **không** vô hiệu các mã cũ.
   - **F1-26 — Giáo viên gỡ một học viên khỏi lớp.** ~~**Chốt 2026-08-28 — qua hỏi trực tiếp chủ dự án:** gỡ học viên khỏi lớp thì **xoá luôn lịch sử làm bài của học viên đó trong phạm vi lớp này** (lượt nộp, điểm, tiến độ gắn với lớp) — không giữ lại, vì "đã gỡ rồi thì giữ cũng không làm gì". Đây là **xoá thật, có cascade**, khác hẳn cách dữ liệu người dùng thường được giữ lại ở nơi khác trong hệ thống (ví dụ F1-16 — xoá tài khoản chỉ khoá mềm) — ghi rõ ở đây để BD/DD không lỡ áp cùng một khuôn mẫu "giữ lại dữ liệu" cho mọi thao tác xoá.~~ **ĐÃ ĐỔI 2026-10-14 (DEC-2026-1014-keep-learning-history-on-leave):** gỡ học viên khỏi lớp thì **giữ lịch sử làm bài và lịch sử học**; học viên chỉ được đánh dấu "đã rời lớp" (ghi danh giữ lại làm lịch sử, kèm ngày rời); giảng viên vẫn xem được bài nộp từ lúc học viên còn trong lớp; dữ liệu của học viên không bị đụng tới; học viên đã rời không còn tính vào tổng số học viên và tiến độ lớp (F1-26) [SoT: .nexa/control/decision-registry.md:3933-3940]. Ghi chú: F1-24 (xoá lớp) vẫn là xoá thật; quyết định này chỉ đổi việc gỡ một học viên.
   - **F1-27 — Giáo viên xem hồ sơ chi tiết một học viên trong lớp mình phụ trách** (thông tin cơ bản, tiến
     độ, lịch sử nộp bài — phạm vi giới hạn trong lớp giáo viên đó quản lý). **Chốt 2026-08-28 — qua hỏi
@@ -187,6 +227,7 @@ gì là thiếu]`. **Chốt 2026-08-25** (đối chiếu `09-layoutBase/Trang c�
       nhất một bài `[SoT: Suy luận]`; "Cần hỗ trợ" — điểm trung bình giảm liên tiếp qua từ hai mốc tuần gần
       nhất trở lên `[SoT: Suy luận]`. Khối "Cần chú ý" **luôn lọc theo đúng tab lớp đang chọn**, giống bảng
       danh sách học viên (sửa thiếu sót của prototype, nơi khối này bỏ qua bộ lọc lớp).
+      **Đã bỏ khối riêng ở INS0203 (Owner chốt 2026-11-07)**: nhãn vẫn dùng cho cột Trạng thái của bảng; endpoint #58 giữ làm hợp đồng, không màn nào đọc (xem `01-rd/screens/teacher/INS0203_class_progress.md`).
     - **Danh sách học viên khi lớp đông**: phân trang cùng kiểu với `problem_list` (F2-11); có trạng thái
       rỗng riêng khi lớp chưa có học viên, và trạng thái lỗi tải dữ liệu kèm nút thử lại — chi tiết UI để
       BD/DD.

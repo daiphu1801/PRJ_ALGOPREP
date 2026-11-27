@@ -12,17 +12,17 @@
     "detail": true,
     "participants": [
       {
-        "name": "ReviewCmd",
+        "name": "GetOrCreateSolutionReviewCommandHandler",
         "role": "service",
         "stereo": "application command"
       },
       {
-        "name": "ReviewRepo",
+        "name": "SolutionReviewRepository",
         "role": "repository",
         "stereo": "output port F5"
       },
       {
-        "name": "AiDbAdapter",
+        "name": "JdbcSolutionReviewRepository",
         "role": "repository",
         "stereo": "persistence adapter"
       },
@@ -32,7 +32,7 @@
         "stereo": "schema ai"
       },
       {
-        "name": "AiLimitPort",
+        "name": "AiCostGatePort",
         "role": "repository",
         "stereo": "output port"
       },
@@ -47,7 +47,7 @@
         "stereo": "giới hạn theo giờ"
       },
       {
-        "name": "ProblemPort",
+        "name": "ProblemContextPort",
         "role": "repository",
         "stereo": "cổng F2"
       },
@@ -66,85 +66,85 @@
           "label": "Có bản dùng lại?",
           "then": [
             {
-              "from": "ReviewCmd",
-              "to": "ReviewCmd",
+              "from": "GetOrCreateSolutionReviewCommandHandler",
+              "to": "GetOrCreateSolutionReviewCommandHandler",
               "text": "Sao chép kết quả cho bài nộp mới"
             },
             {
-              "from": "ReviewCmd",
-              "to": "ReviewRepo",
+              "from": "GetOrCreateSolutionReviewCommandHandler",
+              "to": "SolutionReviewRepository",
               "text": "Lưu báo cáo và sự kiện hoàn tất"
             },
             {
-              "from": "ReviewRepo",
-              "to": "AiDbAdapter",
+              "from": "SolutionReviewRepository",
+              "to": "JdbcSolutionReviewRepository",
               "text": "Ghi báo cáo, tăng lượt dùng lại"
             },
             {
-              "from": "AiDbAdapter",
+              "from": "JdbcSolutionReviewRepository",
               "to": "PostgreSQL",
               "text": "Lưu báo cáo, không ghi mức tiêu thụ"
             },
             {
               "from": "PostgreSQL",
-              "to": "AiDbAdapter",
+              "to": "JdbcSolutionReviewRepository",
               "text": "Đã lưu bản mới",
               "kind": "return"
             },
             {
-              "from": "AiDbAdapter",
-              "to": "ReviewRepo",
+              "from": "JdbcSolutionReviewRepository",
+              "to": "SolutionReviewRepository",
               "text": "Báo cáo đã lưu",
               "kind": "return"
             },
             {
-              "from": "ReviewRepo",
-              "to": "ReviewCmd",
+              "from": "SolutionReviewRepository",
+              "to": "GetOrCreateSolutionReviewCommandHandler",
               "text": "Trả kết quả, không gọi AI",
               "kind": "return"
             }
           ],
           "else": [
             {
-              "from": "ReviewCmd",
-              "to": "ReviewRepo",
+              "from": "GetOrCreateSolutionReviewCommandHandler",
+              "to": "SolutionReviewRepository",
               "text": "Kiểm ngân sách còn dùng được"
             },
             {
-              "from": "ReviewRepo",
-              "to": "AiDbAdapter",
+              "from": "SolutionReviewRepository",
+              "to": "JdbcSolutionReviewRepository",
               "text": "Tính token đã dùng trong chu kỳ"
             },
             {
-              "from": "AiDbAdapter",
+              "from": "JdbcSolutionReviewRepository",
               "to": "PostgreSQL",
               "text": "Đọc mức dùng và trạng thái khoá"
             },
             {
               "from": "PostgreSQL",
-              "to": "AiDbAdapter",
+              "to": "JdbcSolutionReviewRepository",
               "text": "Còn ngân sách hoặc đã khoá",
               "kind": "return"
             },
             {
-              "from": "AiDbAdapter",
-              "to": "ReviewRepo",
+              "from": "JdbcSolutionReviewRepository",
+              "to": "SolutionReviewRepository",
               "text": "Kết quả kiểm ngân sách",
               "kind": "return"
             },
             {
-              "from": "ReviewRepo",
-              "to": "ReviewCmd",
+              "from": "SolutionReviewRepository",
+              "to": "GetOrCreateSolutionReviewCommandHandler",
               "text": "Cho phép hoặc từ chối",
               "kind": "return"
             },
             {
-              "from": "ReviewCmd",
-              "to": "AiLimitPort",
+              "from": "GetOrCreateSolutionReviewCommandHandler",
+              "to": "AiCostGatePort",
               "text": "Giữ lượt trong giờ và thời gian chờ"
             },
             {
-              "from": "AiLimitPort",
+              "from": "AiCostGatePort",
               "to": "RedisLimitAdapter",
               "text": "Kiểm giới hạn theo người học"
             },
@@ -161,35 +161,35 @@
             },
             {
               "from": "RedisLimitAdapter",
-              "to": "AiLimitPort",
+              "to": "AiCostGatePort",
               "text": "Kết quả giới hạn",
               "kind": "return"
             },
             {
-              "from": "AiLimitPort",
-              "to": "ReviewCmd",
+              "from": "AiCostGatePort",
+              "to": "GetOrCreateSolutionReviewCommandHandler",
               "text": "Được gọi AI hoặc từ chối",
               "kind": "return"
             },
             {
-              "from": "ReviewCmd",
-              "to": "ProblemPort",
+              "from": "GetOrCreateSolutionReviewCommandHandler",
+              "to": "ProblemContextPort",
               "text": "Lấy ngữ cảnh bài toán"
             },
             {
-              "from": "ProblemPort",
+              "from": "ProblemContextPort",
               "to": "ProblemBridge",
               "text": "Hỏi phần ngân hàng bài toán"
             },
             {
               "from": "ProblemBridge",
-              "to": "ProblemPort",
+              "to": "ProblemContextPort",
               "text": "Đề bài và chỉ dẫn theo bài",
               "kind": "return"
             },
             {
-              "from": "ProblemPort",
-              "to": "ReviewCmd",
+              "from": "ProblemContextPort",
+              "to": "GetOrCreateSolutionReviewCommandHandler",
               "text": "Tiếp tục ở trang 3",
               "kind": "return"
             }

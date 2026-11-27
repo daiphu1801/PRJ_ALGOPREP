@@ -5,19 +5,29 @@
 // is what makes the future swap to a real 03-dd/api/F1_identity.md contract mechanical: the DD's
 // client validation table becomes a diff on this file, not a rewrite.
 import { z } from "zod";
+import { fitsBcrypt } from "@/shared/lib";
 
-// Username/password rules are NOT locked in yet (03-dd/validation/F1_identity.md doesn't exist) —
-// these are prototype-only placeholders, loose enough to let the mock respond, not a security
-// policy. [SoT: Suy luận]
+// Rules mirror the backend (03-dd/validation/F1_identity.md): display name 2 to 100 characters;
+// password 8 characters minimum, at most 72 UTF-8 bytes (BCrypt limit,
+// DEC-2026-1030-bcrypt-password-byte-limit), at least one letter and one digit.
 // Message values are i18n keys RELATIVE to the "auth" namespace (not full paths) — the feature
 // layer translates them with useT("auth") before display, see features/auth-by-credentials/ui/auth-form.tsx.
-const usernameField = z.string().min(3, "errors.usernameTooShort").max(32);
-const passwordField = z.string().min(8, "errors.passwordTooShort");
-const emailField = z.string().email("errors.emailInvalid");
+const displayNameField = z
+  .string()
+  .trim()
+  .min(2, "errors.displayNameTooShort")
+  .max(100, "errors.displayNameTooLong");
+const passwordField = z
+  .string()
+  .min(8, "errors.passwordTooShort")
+  .regex(/\p{L}/u, "errors.passwordNeedsLetter")
+  .regex(/\d/, "errors.passwordNeedsDigit")
+  .refine(fitsBcrypt, "errors.passwordTooLong");
+const emailField = z.string().trim().email("errors.emailInvalid");
 
 export const signupSchema = z
   .object({
-    username: usernameField,
+    displayName: displayNameField,
     password: passwordField,
     email: emailField,
     termsAccepted: z.boolean(),
@@ -31,10 +41,11 @@ export const signupSchema = z
     path: ["termsAccepted"],
   });
 
+// Login matches by e-mail only: the backend has no username (BD Sheet 5 item 7, owner decision
+// 2026-10-31). The password is not re-validated here, the server judges it (IDT-102).
 export const loginSchema = z.object({
-  identifier: z.string().min(1, "errors.identifierRequired"),
+  email: emailField,
   password: z.string().min(1, "errors.passwordRequired"),
-  rememberMe: z.boolean(),
 });
 
 export const forgotEmailSchema = z.object({

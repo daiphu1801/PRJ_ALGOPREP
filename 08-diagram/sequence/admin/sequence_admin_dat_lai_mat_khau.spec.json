@@ -15,22 +15,22 @@
         "role": "actor"
       },
       {
-        "name": "UserAdminController",
+        "name": "AdminUserActionController",
         "role": "controller",
         "stereo": "presentation"
       },
       {
-        "name": "ResetUserPassword",
+        "name": "ResetUserPasswordCommandHandler",
         "role": "service",
         "stereo": "application command"
       },
       {
-        "name": "IdentityStorePort",
+        "name": "AccountLifecycleRepository",
         "role": "repository",
         "stereo": "output port"
       },
       {
-        "name": "IdentityDbAdapter",
+        "name": "JdbcUserAccountRepository",
         "role": "repository",
         "stereo": "persistence adapter"
       },
@@ -40,12 +40,12 @@
         "stereo": "schema identity"
       },
       {
-        "name": "AdminEmailPort",
+        "name": "MailDeliveryPort",
         "role": "repository",
         "stereo": "output port"
       },
       {
-        "name": "MailAdapter",
+        "name": "MailDeliveryAdapter",
         "role": "repository",
         "stereo": "infrastructure"
       },
@@ -65,44 +65,44 @@
       },
       {
         "from": "Quản trị viên",
-        "to": "UserAdminController",
+        "to": "AdminUserActionController",
         "text": "Chọn tài khoản và xác nhận đặt lại mật khẩu"
       },
       {
-        "from": "UserAdminController",
-        "to": "ResetUserPassword",
+        "from": "AdminUserActionController",
+        "to": "ResetUserPasswordCommandHandler",
         "text": "Đặt lại mật khẩu cho tài khoản"
       },
       {
-        "from": "ResetUserPassword",
-        "to": "IdentityStorePort",
+        "from": "ResetUserPasswordCommandHandler",
+        "to": "AccountLifecycleRepository",
         "text": "Đọc tài khoản và tình trạng mật khẩu"
       },
       {
-        "from": "IdentityStorePort",
-        "to": "IdentityDbAdapter",
+        "from": "AccountLifecycleRepository",
+        "to": "JdbcUserAccountRepository",
         "text": "Tìm tài khoản"
       },
       {
-        "from": "IdentityDbAdapter",
+        "from": "JdbcUserAccountRepository",
         "to": "PostgreSQL",
         "text": "Đọc tài khoản và loại đăng nhập"
       },
       {
         "from": "PostgreSQL",
-        "to": "IdentityDbAdapter",
+        "to": "JdbcUserAccountRepository",
         "text": "Tình trạng tài khoản",
         "kind": "return"
       },
       {
-        "from": "IdentityDbAdapter",
-        "to": "IdentityStorePort",
+        "from": "JdbcUserAccountRepository",
+        "to": "AccountLifecycleRepository",
         "text": "Tình trạng tài khoản",
         "kind": "return"
       },
       {
-        "from": "IdentityStorePort",
-        "to": "ResetUserPassword",
+        "from": "AccountLifecycleRepository",
+        "to": "ResetUserPasswordCommandHandler",
         "text": "Tình trạng tài khoản",
         "kind": "return"
       },
@@ -111,54 +111,54 @@
           "label": "Tài khoản có mật khẩu?",
           "then": [
             {
-              "from": "ResetUserPassword",
-              "to": "ResetUserPassword",
+              "from": "ResetUserPasswordCommandHandler",
+              "to": "ResetUserPasswordCommandHandler",
               "text": "Sinh mật khẩu tạm và chỉ giữ bản băm"
             },
             {
-              "from": "ResetUserPassword",
-              "to": "IdentityStorePort",
+              "from": "ResetUserPasswordCommandHandler",
+              "to": "AccountLifecycleRepository",
               "text": "Lưu bản băm và thu hồi mọi phiên làm mới"
             },
             {
-              "from": "IdentityStorePort",
-              "to": "IdentityDbAdapter",
+              "from": "AccountLifecycleRepository",
+              "to": "JdbcUserAccountRepository",
               "text": "Cập nhật mật khẩu và phiên"
             },
             {
-              "from": "IdentityDbAdapter",
+              "from": "JdbcUserAccountRepository",
               "to": "PostgreSQL",
               "text": "Ghi bản băm và thu hồi phiên"
             },
             {
-              "from": "ResetUserPassword",
-              "to": "AdminEmailPort",
+              "from": "ResetUserPasswordCommandHandler",
+              "to": "MailDeliveryPort",
               "text": "Gửi mật khẩu tạm tới email tài khoản"
             },
             {
-              "from": "AdminEmailPort",
-              "to": "MailAdapter",
+              "from": "MailDeliveryPort",
+              "to": "MailDeliveryAdapter",
               "text": "Chuẩn bị thư riêng"
             },
             {
-              "from": "MailAdapter",
+              "from": "MailDeliveryAdapter",
               "to": "Dịch vụ email",
               "text": "Gửi mật khẩu tạm"
             }
           ],
           "else": [
             {
-              "from": "ResetUserPassword",
-              "to": "AdminEmailPort",
+              "from": "ResetUserPasswordCommandHandler",
+              "to": "MailDeliveryPort",
               "text": "Gửi hướng dẫn đăng nhập qua nhà cung cấp"
             },
             {
-              "from": "AdminEmailPort",
-              "to": "MailAdapter",
+              "from": "MailDeliveryPort",
+              "to": "MailDeliveryAdapter",
               "text": "Chuẩn bị thư hướng dẫn"
             },
             {
-              "from": "MailAdapter",
+              "from": "MailDeliveryAdapter",
               "to": "Dịch vụ email",
               "text": "Gửi hướng dẫn đăng nhập"
             }
@@ -166,18 +166,18 @@
         }
       },
       {
-        "from": "ResetUserPassword",
+        "from": "ResetUserPasswordCommandHandler",
         "to": "AuditLogPort",
         "text": "Ghi nhật ký không chứa mật khẩu rõ"
       },
       {
-        "from": "ResetUserPassword",
-        "to": "UserAdminController",
+        "from": "ResetUserPasswordCommandHandler",
+        "to": "AdminUserActionController",
         "text": "Trả kết quả xử lý",
         "kind": "return"
       },
       {
-        "from": "UserAdminController",
+        "from": "AdminUserActionController",
         "to": "Quản trị viên",
         "text": "Hiển thị đã gửi email, không hiện mật khẩu",
         "kind": "return"

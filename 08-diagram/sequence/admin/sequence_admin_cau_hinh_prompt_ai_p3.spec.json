@@ -14,22 +14,22 @@
         "role": "actor"
       },
       {
-        "name": "AiConfigController",
+        "name": "AdminLanguageConfigController",
         "role": "controller",
         "stereo": "presentation"
       },
       {
-        "name": "PublishPromptTemplate",
+        "name": "PublishPromptTemplateCommandHandler",
         "role": "service",
         "stereo": "application command"
       },
       {
-        "name": "PromptStorePort",
+        "name": "PromptTemplateRepository",
         "role": "repository",
-        "stereo": "output port"
+        "stereo": "domain output port"
       },
       {
-        "name": "AiDbAdapter",
+        "name": "JdbcAiPromptTemplateRepository",
         "role": "repository",
         "stereo": "persistence adapter"
       },
@@ -50,44 +50,44 @@
       },
       {
         "from": "Quản trị viên",
-        "to": "AiConfigController",
+        "to": "AdminLanguageConfigController",
         "text": "Chọn chỉ thị cần phát hành và xác nhận"
       },
       {
-        "from": "AiConfigController",
-        "to": "PublishPromptTemplate",
+        "from": "AdminLanguageConfigController",
+        "to": "PublishPromptTemplateCommandHandler",
         "text": "Phát hành một đến ba tính năng"
       },
       {
-        "from": "PublishPromptTemplate",
-        "to": "PromptStorePort",
+        "from": "PublishPromptTemplateCommandHandler",
+        "to": "PromptTemplateRepository",
         "text": "Khóa bản đang chạy và đọc bản nháp"
       },
       {
-        "from": "PromptStorePort",
-        "to": "AiDbAdapter",
+        "from": "PromptTemplateRepository",
+        "to": "JdbcAiPromptTemplateRepository",
         "text": "Đọc phiên bản của các tính năng đã chọn"
       },
       {
-        "from": "AiDbAdapter",
+        "from": "JdbcAiPromptTemplateRepository",
         "to": "PostgreSQL",
         "text": "Khóa các dòng chỉ thị cần đổi"
       },
       {
         "from": "PostgreSQL",
-        "to": "AiDbAdapter",
+        "to": "JdbcAiPromptTemplateRepository",
         "text": "Bản đang chạy và bản nháp",
         "kind": "return"
       },
       {
-        "from": "AiDbAdapter",
-        "to": "PromptStorePort",
+        "from": "JdbcAiPromptTemplateRepository",
+        "to": "PromptTemplateRepository",
         "text": "Bản đang chạy và bản nháp",
         "kind": "return"
       },
       {
-        "from": "PromptStorePort",
-        "to": "PublishPromptTemplate",
+        "from": "PromptTemplateRepository",
+        "to": "PublishPromptTemplateCommandHandler",
         "text": "Bản đang chạy và bản nháp",
         "kind": "return"
       },
@@ -96,39 +96,39 @@
           "label": "Bản đang chạy còn đúng và có thay đổi thật?",
           "then": [
             {
-              "from": "PublishPromptTemplate",
-              "to": "PromptStorePort",
+              "from": "PublishPromptTemplateCommandHandler",
+              "to": "PromptTemplateRepository",
               "text": "Lưu bản mới đang chạy và lưu trữ bản cũ"
             },
             {
-              "from": "PromptStorePort",
-              "to": "AiDbAdapter",
+              "from": "PromptTemplateRepository",
+              "to": "JdbcAiPromptTemplateRepository",
               "text": "Đổi phiên bản trong một giao dịch"
             },
             {
-              "from": "AiDbAdapter",
+              "from": "JdbcAiPromptTemplateRepository",
               "to": "PostgreSQL",
               "text": "Lưu bản chạy mới và bản cũ"
             },
             {
-              "from": "PublishPromptTemplate",
+              "from": "PublishPromptTemplateCommandHandler",
               "to": "AuditLogPort",
               "text": "Ghi nhật ký phát hành cùng giao dịch"
             },
             {
               "from": "AuditLogPort",
-              "to": "PublishPromptTemplate",
+              "to": "PublishPromptTemplateCommandHandler",
               "text": "Nhật ký đã ghi",
               "kind": "return"
             },
             {
-              "from": "PublishPromptTemplate",
-              "to": "AiConfigController",
+              "from": "PublishPromptTemplateCommandHandler",
+              "to": "AdminLanguageConfigController",
               "text": "Trả cả ba bản đang chạy mới nhất",
               "kind": "return"
             },
             {
-              "from": "AiConfigController",
+              "from": "AdminLanguageConfigController",
               "to": "Quản trị viên",
               "text": "Hiển thị phiên bản đã phát hành",
               "kind": "return"
@@ -136,13 +136,13 @@
           ],
           "else": [
             {
-              "from": "PublishPromptTemplate",
-              "to": "AiConfigController",
+              "from": "PublishPromptTemplateCommandHandler",
+              "to": "AdminLanguageConfigController",
               "text": "Báo xung đột hoặc không có thay đổi",
               "kind": "return"
             },
             {
-              "from": "AiConfigController",
+              "from": "AdminLanguageConfigController",
               "to": "Quản trị viên",
               "text": "Yêu cầu tải lại hoặc chỉnh nội dung",
               "kind": "return"

@@ -15,22 +15,22 @@
         "role": "actor"
       },
       {
-        "name": "LanguageConfigController",
+        "name": "AdminLanguageConfigController",
         "role": "controller",
         "stereo": "presentation"
       },
       {
-        "name": "GetLanguageConfigs",
+        "name": "GetLanguageConfigsQueryHandler",
         "role": "service",
         "stereo": "application query"
       },
       {
-        "name": "JudgeConfigReadPort",
+        "name": "AdminLanguageConfigRepository",
         "role": "repository",
         "stereo": "output port"
       },
       {
-        "name": "JudgeDbAdapter",
+        "name": "JdbcAdminLanguageConfigRepository",
         "role": "repository",
         "stereo": "persistence adapter"
       },
@@ -46,55 +46,55 @@
       },
       {
         "from": "Quản trị viên",
-        "to": "LanguageConfigController",
+        "to": "AdminLanguageConfigController",
         "text": "Mở trang cấu hình ngôn ngữ và giới hạn"
       },
       {
-        "from": "LanguageConfigController",
-        "to": "GetLanguageConfigs",
+        "from": "AdminLanguageConfigController",
+        "to": "GetLanguageConfigsQueryHandler",
         "text": "Lấy cấu hình hiện hành"
       },
       {
-        "from": "GetLanguageConfigs",
-        "to": "JudgeConfigReadPort",
+        "from": "GetLanguageConfigsQueryHandler",
+        "to": "AdminLanguageConfigRepository",
         "text": "Đọc ba ngôn ngữ, mặc định và môi trường chạy"
       },
       {
-        "from": "JudgeConfigReadPort",
-        "to": "JudgeDbAdapter",
+        "from": "AdminLanguageConfigRepository",
+        "to": "JdbcAdminLanguageConfigRepository",
         "text": "Truy vấn cấu hình và số bài đang chờ"
       },
       {
-        "from": "JudgeDbAdapter",
+        "from": "JdbcAdminLanguageConfigRepository",
         "to": "PostgreSQL",
         "text": "Đọc cấu hình và đếm bài chờ theo ngôn ngữ"
       },
       {
         "from": "PostgreSQL",
-        "to": "JudgeDbAdapter",
+        "to": "JdbcAdminLanguageConfigRepository",
         "text": "Bốn khối cấu hình và số bài chờ",
         "kind": "return"
       },
       {
-        "from": "JudgeDbAdapter",
-        "to": "JudgeConfigReadPort",
+        "from": "JdbcAdminLanguageConfigRepository",
+        "to": "AdminLanguageConfigRepository",
         "text": "Bốn khối cấu hình và số bài chờ",
         "kind": "return"
       },
       {
-        "from": "JudgeConfigReadPort",
-        "to": "GetLanguageConfigs",
+        "from": "AdminLanguageConfigRepository",
+        "to": "GetLanguageConfigsQueryHandler",
         "text": "Cấu hình hiện hành",
         "kind": "return"
       },
       {
-        "from": "GetLanguageConfigs",
-        "to": "LanguageConfigController",
+        "from": "GetLanguageConfigsQueryHandler",
+        "to": "AdminLanguageConfigController",
         "text": "Trả cấu hình và tên trình biên dịch chỉ đọc",
         "kind": "return"
       },
       {
-        "from": "LanguageConfigController",
+        "from": "AdminLanguageConfigController",
         "to": "Quản trị viên",
         "text": "Hiển thị giới hạn hiệu dụng theo từng ngôn ngữ",
         "kind": "return"

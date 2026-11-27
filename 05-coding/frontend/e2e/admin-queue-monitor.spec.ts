@@ -32,7 +32,7 @@ test("infrastructure events are a link row, the feed lives on its own screen", a
   await expect(page.getByRole("list", { name: "Sự kiện hạ tầng" })).toHaveCount(
     0,
   );
-  await page.getByRole("link", { name: "Xem tất cả sự kiện" }).click();
+  await page.getByRole("link", { name: "Xem lỗi hạ tầng" }).click();
   await expect(page).toHaveURL(/\/admin\/infra-events\?level=error$/);
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(
     "Sự kiện hạ tầng",
@@ -44,7 +44,7 @@ test("job tabs carry counts and the table pages by the saved rows per page", asy
 }) => {
   await page.goto("/admin/queue");
 
-  const table = page.getByRole("table", { name: "Job trong hàng đợi" });
+  const table = page.getByRole("table", { name: "Bài nộp trong hàng đợi" });
   await expect(
     page.getByRole("button", { name: "Đang chờ 21" }),
   ).toHaveAttribute("aria-pressed", "true");
@@ -63,7 +63,7 @@ test("column sort reorders the job table and announces itself", async ({
 }) => {
   await page.goto("/admin/queue");
 
-  const table = page.getByRole("table", { name: "Job trong hàng đợi" });
+  const table = page.getByRole("table", { name: "Bài nộp trong hàng đợi" });
   const waitHeader = table.getByRole("columnheader").filter({ hasText: "Chờ" });
 
   // Default: longest wait first.
@@ -81,8 +81,15 @@ test("pausing asks for confirmation first and updates the status strip", async (
   await page.goto("/admin/queue");
 
   const pause = page.getByRole("switch", {
-    name: "Tạm dừng tiêu thụ hàng đợi",
+    name: "Tạm dừng nhận bài mới",
   });
+  await expect(pause).toBeHidden();
+  const controls = page.getByText("Điều khiển và chi tiết luồng chấm", {
+    exact: true,
+  });
+  await controls.focus();
+  await controls.press("Enter");
+  await expect(pause).toBeVisible();
   await pause.click();
   await expect(pause).toHaveAttribute("aria-checked", "false");
   await expect(page.getByRole("dialog")).toContainText(

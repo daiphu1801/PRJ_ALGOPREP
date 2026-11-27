@@ -1,10 +1,14 @@
 import type { ReactNode } from "react";
-import { AppShell } from "@/widgets/app-shell";
+import { AppShell, RoleGate } from "@/widgets/app-shell";
 
 export default function InstructorLayout({
   children,
 }: {
   children: ReactNode;
 }) {
-  return <AppShell area="instructor">{children}</AppShell>;
+  return (
+    <RoleGate area="instructor">
+      <AppShell area="instructor">{children}</AppShell>
+    </RoleGate>
+  );
 }

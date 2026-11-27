@@ -9,7 +9,15 @@
 import { cn } from "@/shared/lib";
 import { Badge, type BadgeVariant } from "@/shared/ui";
 import { BookmarkToggle } from "./bookmark-toggle";
-import type { InterviewQuestion, RecallLevel } from "../model/types";
+import type { LearnerQuestionItem } from "../model/learner-types";
+import type { RecallLevel } from "../model/types";
+
+// Left edge colour by recall: the list reads at a glance without the badge.
+const RECALL_EDGE: Record<RecallLevel, string> = {
+  known: "var(--color-success)",
+  vague: "var(--color-warning, #d97706)",
+  forgotten: "var(--color-danger, #dc2626)",
+};
 
 const RECALL_VARIANT: Record<RecallLevel, BadgeVariant> = {
   known: "success",
@@ -30,7 +38,7 @@ export function InterviewQuestionListRow({
   onSelect,
   onToggleBookmark,
 }: {
-  question: InterviewQuestion;
+  question: LearnerQuestionItem;
   topicLabel: string;
   levelLabel: string;
   levelTone: BadgeVariant;
@@ -44,6 +52,9 @@ export function InterviewQuestionListRow({
 }) {
   return (
     <div
+      style={{
+        borderLeft: `3px solid ${recall ? RECALL_EDGE[recall] : "transparent"}`,
+      }}
       className={cn(
         "flex items-start gap-2.5 border-b border-[var(--color-border)] px-4 py-3 last:border-b-0",
         selected
@@ -69,7 +80,7 @@ export function InterviewQuestionListRow({
           </span>
         </div>
         <p className="text-[13.5px] leading-snug font-medium text-pretty">
-          {question.question}
+          {question.title}
         </p>
       </button>
       <BookmarkToggle

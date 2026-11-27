@@ -14,7 +14,11 @@ import {
 import type { ManagedListError } from "@/shared/lib/managed-list-store";
 import type { BadgeVariant } from "@/shared/ui";
 
-export type InterviewLevel = LevelItem<BadgeVariant>;
+/** `id` and `questionCount` exist only on the API-backed list (see topic-store). */
+export type InterviewLevel = LevelItem<BadgeVariant> & {
+  id?: string;
+  questionCount?: number | null;
+};
 
 export type LevelMutationError = ManagedListError;
 

@@ -35,7 +35,7 @@ export function slugify(label: string): string {
     .replace(/đ/gi, "d")
     .toUpperCase()
     .replace(/[^A-Z0-9]+/g, "_")
-    .replace(/^_+|_+$/g, "");
+    .replace(/^_|_$/g, "");
 }
 
 export function createManagedListStore<T extends ManagedItem>(
@@ -68,6 +68,9 @@ export function createManagedListStore<T extends ManagedItem>(
   }
 
   return {
+    /** The list right now, for code that is not a component (the mock data layer sorts by it). */
+    get: (): readonly T[] => items,
+
     /** Live list in display order. */
     use: (): readonly T[] =>
       useSyncExternalStore(

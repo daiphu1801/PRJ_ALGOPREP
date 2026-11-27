@@ -58,6 +58,12 @@
     **không xoá** lượt nộp/điểm/tiến độ cũ của học viên gắn với bài đó trong lớp, khác hẳn cách F1-26 xoá
     cascade khi gỡ một **học viên** khỏi lớp (hai thao tác gỡ khác đối tượng, không dùng chung một khuôn mẫu
     xoá dữ liệu).
+    **Amendment 2026-11-25** (`DEC-2026-1125-copy-class-assignments`): F2-12 còn bao gồm **sao chép toàn bộ bài đã giao của
+    một lớp sang lớp khác** mà giảng viên phụ trách, actor A2, cùng quyền `CLASS_MANAGEMENT:UPDATE`, một lần xác nhận, không
+    phải chọn từng bài. Chỉ thêm liên kết giao bài, không nhân bản bài toán. Bài lớp nhận đã có và bài đã rút xuống thì bỏ
+    qua. Sao chép một lần, hai lớp không tự đồng bộ về sau.
+  - **Khách chưa đăng nhập xem danh sách và đề bài đã xuất bản (F2-11, F2-01).** **Amendment 2026-11-26** (`DEC-2026-1126-guest-browse-published-problems`): khách
+    (không có phiên) được xem danh sách bài đã xuất bản, đọc đề kèm ví dụ, xem testcase mẫu (Sample), danh mục độ khó và bấm "Bài ngẫu nhiên"; testcase Hidden vẫn ẩn (F2-08). Khi không có phiên, các giá trị theo người dùng (trạng thái đã giải, đã lưu) không được trả: trạng thái giải là rỗng, `bookmarked` là `false`. Bài nháp, bài đã gỡ và id không tồn tại cùng trả "không tìm thấy". Giải bài, chạy thử, nộp bài, lưu bài, lịch sử, tiến độ, hồ sơ và lớp vẫn cần phiên. Thay phần "khu Người học bắt buộc đăng nhập, không có trạng thái khách" của `DEC-2026-1018-usr-open-questions-phase1-scope`.
   - **Bài đã lưu (bookmark) kèm ghi chú riêng tư** (F2-13) — bổ sung theo `06-plan/PROTOTYPE_DEBT.md` mục
     2.1, đối chiếu `09-layoutBase/Bài đã lưu.dc.html`. Người học đánh dấu bài toán để xem lại, kèm ghi chú
     tự do theo từng bookmark. **Chốt 2026-08-24:** ghi chú lưu ở server theo (`user_id`, `problem_id`) —
@@ -177,7 +183,22 @@
     toàn bộ kết quả đang lọc — **không xuất nội dung đề bài, đặc tả, hay testcase**. **Nhập CSV bài toán
     (nút "Nhập CSV" ở thanh tiêu đề `problem_management`) đã cắt khỏi phạm vi** — một CSV phẳng không chở
     nổi đặc tả F2-03 (chữ ký hàm) hay nội dung Markdown/LaTeX của đề bài; xoá nút này khi dựng
-    UI thật.
+    UI thật. **Amendment 2026-11-25** (`DEC-2026-1125-bulk-problem-import`): nhập CSV vẫn cắt; nhập nhiều bài
+    mới từ Excel hoặc ô dán là mã riêng F2-19. **Amendment 2026-11-25** (`DEC-2026-1125-export-problems-xlsx`,
+    chủ dự án duyệt): tệp xuất là **Excel (.xlsx) có định dạng**, thay cho CSV; vẫn đúng tám cột, cùng phạm vi và bộ lọc,
+    vẫn chỉ dữ liệu bảng. Ô chữ lưu dạng chữ nên tiêu đề không thể chạy như công thức.
+  - **F2-19 — Nhập nhiều bài toán một lần.** Chủ dự án duyệt 2026-11-25 (`DEC-2026-1125-bulk-problem-import`).
+    Actor A2/A3 có quyền `PROBLEM_AUTHORING:CREATE` và `TESTCASE_MANAGEMENT:CREATE` đưa vào một tệp `.xlsx`
+    hoặc dán các ô từ Excel, Google Sheets; mỗi dòng là một bài, tối đa **20 bài** mỗi lượt. Người soạn xem và
+    sửa trong bảng trước khi tạo.
+    - Chỉ nhận bài **Standard I/O** (không có chữ ký hàm). Bài bọc hàm vẫn khai ở `problem_authoring`.
+    - Hai testcase đầu là Sample, đồng thời là hai ví dụ mẫu; các testcase còn lại là Hidden.
+    - Bài tạo ra ở trạng thái `Chưa xuất bản`. Bài đủ điều kiện được chạy Đáp án mẫu (F2-18); bài còn thiếu
+      được giữ ở bản nháp. Bài đã tạo mà chưa đạt thì sửa tiếp trong bảng và chạy lại.
+    - Xuất bản **giữ nguyên điều kiện F2-15**. A2 có thể giao luôn các bài vừa xuất bản cho lớp mình phụ trách
+      (F2-12).
+    - Một bài lỗi không chặn các bài khác. Tiêu đề trùng bài đã có chỉ bị cảnh báo.
+    - Ngoài phạm vi: AI tách đề thô, chatbot soạn đề, nhập ZIP hoặc CSV, xuất lại ra cùng mẫu.
 
 ## Baseline triển khai đã chốt 2026-10-29
 

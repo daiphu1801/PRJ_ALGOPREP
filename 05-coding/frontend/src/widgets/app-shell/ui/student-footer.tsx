@@ -24,18 +24,18 @@ export async function StudentFooter() {
   const t = await getT("studentShell");
 
   return (
-    <footer className="mt-6 border-t border-[var(--color-border)] pt-4 pb-6">
-      <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
-        <div className="min-w-0">
-          <p className="flex items-center gap-2 text-[13px] font-semibold text-[var(--color-text)]">
-            <BrandMark size={20} />
-            AlgoPrep
-            <JudgeEngineTag />
-          </p>
-          <p className="mt-0.5 text-xs text-[var(--color-text-muted)]">
-            {t("footer.copyright")}
-          </p>
-        </div>
+    // One line (owner 2026-11-23: the footer took ~100px of a short window). The copyright moved up beside the
+    // brand instead of sitting on a second line; it wraps only when the window is too narrow for one row.
+    <footer className="mt-2 border-t border-[var(--color-border)] pt-2 pb-3">
+      <div className="flex flex-wrap items-center gap-x-5 gap-y-1">
+        <p className="flex items-center gap-2 text-[13px] font-semibold text-[var(--color-text)]">
+          <BrandMark size={18} />
+          AlgoPrep
+          <JudgeEngineTag />
+        </p>
+        <p className="text-xs text-[var(--color-text-muted)]">
+          {t("footer.copyright")}
+        </p>
 
         <p className="flex items-center gap-2 text-[12.5px] text-[var(--color-text-muted)]">
           <span

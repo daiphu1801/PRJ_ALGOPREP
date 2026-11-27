@@ -38,6 +38,8 @@ test("an empty rubric saves, a rubric that misses 100% does not", async ({
 
   // One criterion at 0% means the total is not 100, which must block saving.
   await page.getByRole("button", { name: "+ Thêm tiêu chí" }).click();
+  // A blank criterion name is rejected before the weight check, so name it first.
+  await page.getByLabel("Tên tiêu chí 1").fill("Độ chính xác");
   // The button only looks disabled (aria-disabled); clicking it names the reason in a toast.
   await expect(save).toBeDisabled();
   await save.click({ force: true });

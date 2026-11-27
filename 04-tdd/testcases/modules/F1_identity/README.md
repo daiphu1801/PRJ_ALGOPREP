@@ -15,5 +15,6 @@ Nguồn: [TDD F1](../../../modules/F1_identity.md), DD F1 API/logic/validation/j
 | [Xuất dữ liệu và số liệu](F1_extension_b_privacy_metrics.md) | Một phần AC-56–78 | 22 | Đã audit thiết kế 2026-10-28; chưa thực thi |
 | [Lớp, đăng nhập liên kết và hồ sơ](F1_extension_b_class_auth.md) | Một phần AC-56–78 | 16 | Đã audit thiết kế 2026-10-28; chưa thực thi |
 | [Quyền quản trị và audit mở rộng](F1_extension_b_admin_security.md) | Một phần AC-56–78 | 11 | Đã audit thiết kế 2026-10-28; chưa thực thi |
+| [Quản lý người dùng của quản trị](F1_extension_c_admin_user_management.md) | AC-79 | 4 | Viết 2026-11-02; chưa audit thiết kế, chưa thực thi |
 
 Đã có **165 ca/80 AC** theo [checklist](../../CHECKLIST.md). [Inventory nhánh nền tảng](F1_foundation_branch_inventory.md) và bảng nhánh trong các file mở rộng ghi phần đã phủ cùng ngoại lệ. Đã đối chiếu 11 cụm với AC/DD và quyết định hiện hành; 165/165 ca qua checker cấu trúc/trace. Các giới hạn đặc tả và cổng sau coding ghi tại [audit đợt 2](../../AUDIT_DOT2_F1.md); chưa có run record.

@@ -15,22 +15,22 @@
         "role": "actor"
       },
       {
-        "name": "UserAdminController",
+        "name": "AdminUserActionController",
         "role": "controller",
         "stereo": "presentation"
       },
       {
-        "name": "ChangeUserStatus",
+        "name": "ChangeUserStatusCommandHandler",
         "role": "service",
         "stereo": "application command"
       },
       {
-        "name": "UserAdminStorePort",
+        "name": "AccountLifecycleRepository",
         "role": "repository",
         "stereo": "output port"
       },
       {
-        "name": "IdentityDbAdapter",
+        "name": "JdbcUserAccountRepository",
         "role": "repository",
         "stereo": "persistence adapter"
       },
@@ -51,44 +51,44 @@
       },
       {
         "from": "Quản trị viên",
-        "to": "UserAdminController",
+        "to": "AdminUserActionController",
         "text": "Chọn tài khoản và xác nhận mở khóa"
       },
       {
-        "from": "UserAdminController",
-        "to": "ChangeUserStatus",
+        "from": "AdminUserActionController",
+        "to": "ChangeUserStatusCommandHandler",
         "text": "Mở khóa tài khoản"
       },
       {
-        "from": "ChangeUserStatus",
-        "to": "UserAdminStorePort",
+        "from": "ChangeUserStatusCommandHandler",
+        "to": "AccountLifecycleRepository",
         "text": "Đọc trạng thái và mốc ẩn danh hóa"
       },
       {
-        "from": "UserAdminStorePort",
-        "to": "IdentityDbAdapter",
+        "from": "AccountLifecycleRepository",
+        "to": "JdbcUserAccountRepository",
         "text": "Tìm tài khoản"
       },
       {
-        "from": "IdentityDbAdapter",
+        "from": "JdbcUserAccountRepository",
         "to": "PostgreSQL",
         "text": "Đọc trạng thái, nguồn khóa và mốc ẩn danh"
       },
       {
         "from": "PostgreSQL",
-        "to": "IdentityDbAdapter",
+        "to": "JdbcUserAccountRepository",
         "text": "Tình trạng tài khoản",
         "kind": "return"
       },
       {
-        "from": "IdentityDbAdapter",
-        "to": "UserAdminStorePort",
+        "from": "JdbcUserAccountRepository",
+        "to": "AccountLifecycleRepository",
         "text": "Tình trạng tài khoản",
         "kind": "return"
       },
       {
-        "from": "UserAdminStorePort",
-        "to": "ChangeUserStatus",
+        "from": "AccountLifecycleRepository",
+        "to": "ChangeUserStatusCommandHandler",
         "text": "Tình trạng tài khoản",
         "kind": "return"
       },
@@ -97,13 +97,13 @@
           "label": "Tài khoản đã ẩn danh hóa?",
           "then": [
             {
-              "from": "ChangeUserStatus",
-              "to": "UserAdminController",
+              "from": "ChangeUserStatusCommandHandler",
+              "to": "AdminUserActionController",
               "text": "Từ chối khôi phục dữ liệu đã ẩn danh",
               "kind": "return"
             },
             {
-              "from": "UserAdminController",
+              "from": "AdminUserActionController",
               "to": "Quản trị viên",
               "text": "Hiển thị lý do không mở khóa được",
               "kind": "return"
@@ -111,39 +111,39 @@
           ],
           "else": [
             {
-              "from": "ChangeUserStatus",
-              "to": "UserAdminStorePort",
+              "from": "ChangeUserStatusCommandHandler",
+              "to": "AccountLifecycleRepository",
               "text": "Đặt hoạt động và bỏ mốc khóa, hủy"
             },
             {
-              "from": "UserAdminStorePort",
-              "to": "IdentityDbAdapter",
+              "from": "AccountLifecycleRepository",
+              "to": "JdbcUserAccountRepository",
               "text": "Ghi trạng thái mới"
             },
             {
-              "from": "IdentityDbAdapter",
+              "from": "JdbcUserAccountRepository",
               "to": "PostgreSQL",
               "text": "Cập nhật tài khoản thành hoạt động"
             },
             {
-              "from": "ChangeUserStatus",
+              "from": "ChangeUserStatusCommandHandler",
               "to": "AuditLogPort",
               "text": "Ghi nhật ký mở khóa cùng giao dịch"
             },
             {
               "from": "AuditLogPort",
-              "to": "ChangeUserStatus",
+              "to": "ChangeUserStatusCommandHandler",
               "text": "Nhật ký đã ghi",
               "kind": "return"
             },
             {
-              "from": "ChangeUserStatus",
-              "to": "UserAdminController",
+              "from": "ChangeUserStatusCommandHandler",
+              "to": "AdminUserActionController",
               "text": "Trả tài khoản đã mở",
               "kind": "return"
             },
             {
-              "from": "UserAdminController",
+              "from": "AdminUserActionController",
               "to": "Quản trị viên",
               "text": "Hiển thị tài khoản hoạt động",
               "kind": "return"

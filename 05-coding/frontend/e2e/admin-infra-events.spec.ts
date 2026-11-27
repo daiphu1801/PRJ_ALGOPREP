@@ -33,6 +33,8 @@ test("the sidebar lists it between the queue and language config", async ({
   await page.goto("/admin/infra-events");
   const nav = page.getByRole("navigation", { name: "Điều hướng khu quản trị" });
   const links = nav.getByRole("link");
+  // allInnerTexts does not auto-wait, so wait for the nav to render before reading it.
+  await expect(links.last()).toBeVisible();
   const names = await links.allInnerTexts();
   const queue = names.indexOf("Hàng đợi chấm");
   expect(queue).toBeGreaterThan(-1);

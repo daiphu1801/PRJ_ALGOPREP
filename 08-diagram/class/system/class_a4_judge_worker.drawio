@@ -4,58 +4,71 @@
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="t_service" value='&lt;div style="text-align:center"&gt;&lt;b&gt;JudgeWorkerService&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;acceptAndQueue(command&amp;nbsp;:&amp;nbsp;SubmitCommand)&amp;nbsp;:&amp;nbsp;UUID&lt;br&gt;+&amp;nbsp;executeCase(submissionId&amp;nbsp;:&amp;nbsp;UUID,&amp;nbsp;caseId&amp;nbsp;:&amp;nbsp;UUID)&amp;nbsp;:&amp;nbsp;CaseResult&lt;br&gt;+&amp;nbsp;completeAllCases(submissionId&amp;nbsp;:&amp;nbsp;UUID)&amp;nbsp;:&amp;nbsp;SubmissionResult&lt;br&gt;+&amp;nbsp;publishCaseProgress(result&amp;nbsp;:&amp;nbsp;CaseResult)&lt;br&gt;+&amp;nbsp;recordIdempotently(result&amp;nbsp;:&amp;nbsp;CaseResult)&lt;br&gt;+&amp;nbsp;sweepTimeouts(now&amp;nbsp;:&amp;nbsp;Instant)&amp;nbsp;:&amp;nbsp;int' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="396.79999999999995" y="60" width="402.2" height="124" as="geometry" />
+        <mxCell id="t_caseHandler" value='&lt;div style="text-align:center"&gt;&lt;b&gt;WorkerTestcaseCommandHandler&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;issue(id&amp;nbsp;:&amp;nbsp;UUID,&amp;nbsp;testcaseId&amp;nbsp;:&amp;nbsp;UUID)&amp;nbsp;:&amp;nbsp;Optional&amp;lt;Token&amp;gt;&lt;br&gt;+&amp;nbsp;record(write&amp;nbsp;:&amp;nbsp;TestcaseWrite)&amp;nbsp;:&amp;nbsp;boolean' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="230.33750000000003" y="60" width="359.5" height="68" as="geometry" />
         </mxCell>
-        <mxCell id="t_port1" value='&lt;div style="text-align:center"&gt;&lt;b&gt;SubmissionRepository&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;save(submission&amp;nbsp;:&amp;nbsp;Submission)' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="54" y="264" width="213.1" height="54" as="geometry" />
+        <mxCell id="t_finalizeHandler" value='&lt;div style="text-align:center"&gt;&lt;b&gt;FinalizeSubmissionCommandHandler&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;finish(command&amp;nbsp;:&amp;nbsp;FinishCommand)&amp;nbsp;:&amp;nbsp;Optional&amp;lt;Finished&amp;gt;' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="732.5" y="208" width="353.4" height="54" as="geometry" />
         </mxCell>
-        <mxCell id="t_port2" value='&lt;div style="text-align:center"&gt;&lt;b&gt;JudgeEnginePort&lt;/b&gt;&lt;br&gt;&lt;font style="font-size:9px" color="#666666"&gt;&amp;lt;&amp;lt;interface&amp;gt;&amp;gt;&lt;/font&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;execute(payload&amp;nbsp;:&amp;nbsp;JudgePayload)&amp;nbsp;:&amp;nbsp;JudgeResult' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#DCEBFC;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="317.1" y="264" width="310.7" height="68" as="geometry" />
+        <mxCell id="t_sweepHandler" value='&lt;div style="text-align:center"&gt;&lt;b&gt;SweepStaleSubmissionsCommandHandler&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;sweep(now&amp;nbsp;:&amp;nbsp;Instant)&amp;nbsp;:&amp;nbsp;int' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="639.8375000000001" y="60" width="281.72499999999997" height="54" as="geometry" />
         </mxCell>
-        <mxCell id="t_port3" value='&lt;div style="text-align:center"&gt;&lt;b&gt;JudgeQueuePort&lt;/b&gt;&lt;br&gt;&lt;font style="font-size:9px" color="#666666"&gt;&amp;lt;&amp;lt;interface&amp;gt;&amp;gt;&lt;/font&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;enqueue(submissionId&amp;nbsp;:&amp;nbsp;UUID)' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#DCEBFC;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="677.8" y="264" width="207" height="68" as="geometry" />
+        <mxCell id="t_workerRepo" value='&lt;div style="text-align:center"&gt;&lt;b&gt;SubmissionWorkerRepository&lt;/b&gt;&lt;br&gt;&lt;font style="font-size:9px" color="#666666"&gt;&amp;lt;&amp;lt;interface&amp;gt;&amp;gt;&lt;/font&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;lock(submissionId&amp;nbsp;:&amp;nbsp;UUID)&amp;nbsp;:&amp;nbsp;Optional&amp;lt;SubmissionState&amp;gt;&lt;br&gt;+&amp;nbsp;issue(id&amp;nbsp;:&amp;nbsp;UUID,&amp;nbsp;testcaseId&amp;nbsp;:&amp;nbsp;UUID,&amp;nbsp;token&amp;nbsp;:&amp;nbsp;Token)&amp;nbsp;:&amp;nbsp;boolean&lt;br&gt;+&amp;nbsp;finish(before&amp;nbsp;:&amp;nbsp;SubmissionState,&amp;nbsp;outcome&amp;nbsp;:&amp;nbsp;Outcome)&amp;nbsp;:&amp;nbsp;Finished' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#DCEBFC;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="368.75" y="346" width="414.4" height="96" as="geometry" />
         </mxCell>
-        <mxCell id="t_port4" value='&lt;div style="text-align:center"&gt;&lt;b&gt;ProgressEventPort&lt;/b&gt;&lt;br&gt;&lt;font style="font-size:9px" color="#666666"&gt;&amp;lt;&amp;lt;interface&amp;gt;&amp;gt;&lt;/font&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;publish(result&amp;nbsp;:&amp;nbsp;CaseResult)' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#DCEBFC;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="934.8" y="264" width="207" height="68" as="geometry" />
+        <mxCell id="t_judgeAdapter" value='&lt;div style="text-align:center"&gt;&lt;b&gt;GoJudgeAdapter&lt;/b&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;execute(payload&amp;nbsp;:&amp;nbsp;JudgePayload)&amp;nbsp;:&amp;nbsp;JudgeResult' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#FFFFFF;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="66" y="208" width="310.7" height="54" as="geometry" />
         </mxCell>
-        <mxCell id="e1" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.144;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_service" target="t_port1">
+        <mxCell id="t_progressPort" value='&lt;div style="text-align:center"&gt;&lt;b&gt;SubmissionProgressPort&lt;/b&gt;&lt;br&gt;&lt;font style="font-size:9px" color="#666666"&gt;&amp;lt;&amp;lt;interface&amp;gt;&amp;gt;&lt;/font&gt;&lt;/div&gt;&lt;hr size="1"/&gt;+&amp;nbsp;publish(progress&amp;nbsp;:&amp;nbsp;TestcaseProgress)' style="algoprep=class;rounded=0;whiteSpace=nowrap;html=1;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;spacingRight=8;fontSize=11;fontFamily=Helvetica;fillColor=#DCEBFC;strokeColor=#4A76A8;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="426.7" y="208" width="255.79999999999998" height="68" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.815;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.262;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_caseHandler" target="t_workerRepo">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-            <mxPoint x="454.57499999999993" y="200" />
-            <mxPoint x="160.55" y="200" />
+            <mxPoint x="523.2541666666667" y="176" />
+            <mxPoint x="30" y="176" />
+            <mxPoint x="30" y="299.3333333333333" />
+            <mxPoint x="477.35" y="299.3333333333333" />
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="e2" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.381;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_service" target="t_port2">
+        <mxCell id="e2" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.185;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_caseHandler" target="t_judgeAdapter">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-            <mxPoint x="550.125" y="216" />
-            <mxPoint x="472.45000000000005" y="216" />
+            <mxPoint x="296.92083333333335" y="144" />
+            <mxPoint x="221.35" y="144" />
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="e3" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.619;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_service" target="t_port3">
+        <mxCell id="e3" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.500;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_caseHandler" target="t_progressPort">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-            <mxPoint x="645.675" y="232" />
-            <mxPoint x="781.3" y="232" />
+            <mxPoint x="410.08750000000003" y="160" />
+            <mxPoint x="554.6" y="160" />
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="e4" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.856;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_service" target="t_port4">
+        <mxCell id="e4" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.500;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.738;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_finalizeHandler" target="t_workerRepo">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-            <mxPoint x="741.2249999999999" y="248" />
-            <mxPoint x="1038.3" y="248" />
+            <mxPoint x="909.2" y="322.6666666666667" />
+            <mxPoint x="674.55" y="322.6666666666667" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e5" style="html=1;rounded=0;jettySize=auto;fontSize=10;strokeColor=#333333;fontColor=#1A1A1A;labelBackgroundColor=#FFFFFF;exitX=0.500;exitY=1;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.500;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;startArrow=none;endArrow=open;endFill=0;" edge="1" parent="1" source="t_sweepHandler" target="t_finalizeHandler">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+            <mxPoint x="780.7" y="192" />
+            <mxPoint x="909.2" y="192" />
             </Array>
           </mxGeometry>
         </mxCell>
         <mxCell id="title" value="A4 — Worker chấm bài và phát tiến độ" style="text;html=1;fontSize=16;fontStyle=1;align=center;verticalAlign=middle;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="0" y="10" width="1171.8" height="30" as="geometry" />
+          <mxGeometry x="0" y="10" width="1115.9" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="v5" value="Ghi chú: Chấm hết testcase, tính điểm theo tỷ lệ đạt; ghi idempotent khi message phát lại; timeout sweep kết thúc bài treo.&lt;br&gt;Ghi chú: [SoT: Suy luận] Tên lớp/phương thức là thiết kế backend từ DD." style="text;html=1;align=left;verticalAlign=top;fontSize=12;fontColor=#1A1A1A;" vertex="1" parent="1">
-          <mxGeometry x="30" y="352" width="1100" height="44" as="geometry" />
+        <mxCell id="v6" value="Ghi chú: WorkerTestcaseCommandHandler chấm từng testcase qua GoJudgeAdapter và đẩy WebSocket qua SubmissionProgressPort.&lt;br&gt;Ghi chú: FinalizeSubmissionCommandHandler tính tỷ lệ đạt khi hoàn tất toàn bộ testcase; SweepStaleSubmissionsCommandHandler quét dọn bài treo." style="text;html=1;align=left;verticalAlign=top;fontSize=12;fontColor=#1A1A1A;" vertex="1" parent="1">
+          <mxGeometry x="30" y="462" width="1100" height="44" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>

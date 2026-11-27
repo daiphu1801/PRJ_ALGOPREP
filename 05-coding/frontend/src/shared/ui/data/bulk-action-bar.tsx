@@ -25,11 +25,18 @@ type BulkActionBarProps = {
   label: string;
   /** The action buttons. */
   children: ReactNode;
+  /** Where it floats: the top of the screen (default) or the bottom, for a "confirm the selection" step. */
+  placement?: "top" | "bottom";
 };
 
 const SHELL_ROOT = ".admin-shell, .instructor-shell";
 
-export function BulkActionBar({ count, label, children }: BulkActionBarProps) {
+export function BulkActionBar({
+  count,
+  label,
+  children,
+  placement = "top",
+}: BulkActionBarProps) {
   // A callback ref into state: it also tells us when we are on the client and have a node to search from.
   const [anchor, setAnchor] = useState<HTMLElement | null>(null);
   const target = anchor
@@ -46,7 +53,7 @@ export function BulkActionBar({ count, label, children }: BulkActionBarProps) {
             <div
               role="region"
               aria-label={label}
-              className="glass-card glass-card--popover bulk-pop-in fixed inset-x-4 top-3 z-40 mx-auto flex w-fit max-w-[calc(100vw-2rem)] flex-wrap items-center gap-x-4 gap-y-2 border border-[var(--color-border)] px-4 py-2.5"
+              className={`glass-card glass-card--popover bulk-pop-in fixed inset-x-4 ${placement === "bottom" ? "bottom-4" : "top-3"} z-40 mx-auto flex w-fit max-w-[calc(100vw-2rem)] flex-wrap items-center gap-x-4 gap-y-2 border border-[var(--color-border)] px-4 py-2.5`}
             >
               <span className="text-[13px] font-semibold">{label}</span>
               <span className="flex flex-wrap gap-2">{children}</span>

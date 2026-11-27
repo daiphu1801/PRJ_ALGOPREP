@@ -163,7 +163,7 @@ Fixture chung: clock T0 `2026-10-27T02:00:00Z`; user ACTIVE `qa.f1.boundary@exam
 | Kind / priority | Security, Boundary; P1 (credential dễ đoán) |
 | Environment | API integration, PostgreSQL, Redis/mail spy |
 | Preconditions | Email chưa tồn tại; field còn lại hợp lệ. |
-| Test data | Email `identity.boundary1@example.test`, displayName `AliceDev123`; password candidate bằng chính xác email và candidate bằng chính xác displayName. Mỗi trial reset DB, cả hai candidate có chữ và số, dài 8–128 nên chỉ vi phạm IDT-V04. |
+| Test data | Email `identity.boundary1@example.test`, displayName `AliceDev123`; password candidate bằng chính xác email và candidate bằng chính xác displayName. Mỗi trial reset DB, cả hai candidate có chữ và số, tối thiểu 8 ký tự và không quá 72 byte UTF-8 nên chỉ vi phạm IDT-V04. |
 | Steps | Gửi POST register riêng cho từng password candidate. |
 | Expected | Cả hai trả `400 IDT-V04` vì trùng dữ liệu định danh; không tạo user/OTP/mail/session và response/log không echo secret. |
 | Cleanup | Xóa mọi artifact phát sinh; reset Redis/mail fixture. |

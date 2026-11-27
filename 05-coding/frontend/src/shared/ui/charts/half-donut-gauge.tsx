@@ -3,6 +3,8 @@
 // Half-circle gauge, N colored slices summing to 100% — used for the 5-verdict distribution block
 // (AC/WA/TLE/RE/CE, 02-bd/screens/admin/ADM0101_overview.md section 2 point 3). Generic slice list in,
 // no domain type — shared/ui.
+import type { ReactNode } from "react";
+
 type GaugeSlice = {
   label: string;
   value: number;
@@ -54,7 +56,18 @@ export function wholePercents(values: number[]): number[] {
   return floors;
 }
 
-export function HalfDonutGauge({ slices }: { slices: GaugeSlice[] }) {
+export function HalfDonutGauge({
+  slices,
+  chartClassName = "max-w-[170px]",
+  fullCircle = false,
+  center,
+}: {
+  slices: GaugeSlice[];
+  chartClassName?: string;
+  fullCircle?: boolean;
+  /** Content drawn inside the arc (half circle only), e.g. a headline percentage. */
+  center?: ReactNode;
+}) {
   const total = slices.reduce((sum, slice) => sum + slice.value, 0) || 1;
   const percents = wholePercents(slices.map((slice) => slice.value));
 
@@ -65,8 +78,9 @@ export function HalfDonutGauge({ slices }: { slices: GaugeSlice[] }) {
       GaugeSlice & { startAngle: number; endAngle: number; percent: number }
     >
   >((acc, slice, index) => {
-    const cursor = acc.length > 0 ? acc[acc.length - 1]!.endAngle : 180;
-    const sweep = (slice.value / total) * 180;
+    const cursor =
+      acc.length > 0 ? acc[acc.length - 1]!.endAngle : fullCircle ? 90 : 180;
+    const sweep = (slice.value / total) * (fullCircle ? 360 : 180);
     const endAngle = cursor - sweep;
     acc.push({
       ...slice,
@@ -79,23 +93,43 @@ export function HalfDonutGauge({ slices }: { slices: GaugeSlice[] }) {
 
   return (
     <div>
-      <svg
-        viewBox="0 0 120 68"
-        className="mx-auto w-full max-w-[170px]"
-        role="img"
-        aria-label="Kết quả chấm"
-      >
-        {segments.map((segment) => (
-          <path
-            key={segment.label}
-            d={arcPath(segment.startAngle, segment.endAngle)}
-            fill="none"
-            stroke={`var(${segment.colorVar})`}
-            strokeWidth={STROKE_WIDTH}
-            strokeLinecap="butt"
-          />
-        ))}
-      </svg>
+      <div className={`relative mx-auto w-full ${chartClassName}`}>
+        <svg
+          viewBox={fullCircle ? "0 0 120 120" : "0 0 120 68"}
+          className="w-full"
+          role="img"
+          aria-label="Kết quả chấm"
+        >
+          {segments.map((segment) =>
+            fullCircle && segment.value === total ? (
+              <circle
+                key={segment.label}
+                cx={CENTER}
+                cy={CENTER}
+                r={RADIUS}
+                fill="none"
+                stroke={`var(${segment.colorVar})`}
+                strokeWidth={STROKE_WIDTH}
+              />
+            ) : (
+              <path
+                key={segment.label}
+                d={arcPath(segment.startAngle, segment.endAngle)}
+                fill="none"
+                stroke={`var(${segment.colorVar})`}
+                strokeWidth={STROKE_WIDTH}
+                strokeLinecap="butt"
+              />
+            ),
+          )}
+        </svg>
+        {center && !fullCircle ? (
+          // The arc baseline sits 8 of 68 viewBox units above the bottom edge.
+          <div className="absolute inset-x-0 bottom-[12%] text-center">
+            {center}
+          </div>
+        ) : null}
+      </div>
       <ul className="mt-2 grid grid-cols-2 gap-x-3 gap-y-1 text-xs">
         {segments.map((segment) => (
           <li
@@ -103,7 +137,7 @@ export function HalfDonutGauge({ slices }: { slices: GaugeSlice[] }) {
             className="flex items-center gap-1.5 text-[var(--color-text-muted)]"
           >
             <span
-              className="h-2 w-2 rounded-full"
+              className="size-2 shrink-0 rounded-full"
               style={{ background: `var(${segment.colorVar})` }}
               aria-hidden="true"
             />

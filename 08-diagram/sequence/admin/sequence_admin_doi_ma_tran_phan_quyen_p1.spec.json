@@ -19,17 +19,17 @@
         "stereo": "presentation"
       },
       {
-        "name": "GetPermissionMatrix",
+        "name": "GetPermissionMatrixQueryHandler",
         "role": "service",
         "stereo": "application query"
       },
       {
-        "name": "RbacReadPort",
+        "name": "RbacRepository",
         "role": "repository",
         "stereo": "output port"
       },
       {
-        "name": "IdentityDbAdapter",
+        "name": "JdbcRbacRepository",
         "role": "repository",
         "stereo": "persistence adapter"
       },
@@ -50,44 +50,44 @@
       },
       {
         "from": "RbacController",
-        "to": "GetPermissionMatrix",
+        "to": "GetPermissionMatrixQueryHandler",
         "text": "Lấy vai trò và quyền của từng ô"
       },
       {
-        "from": "GetPermissionMatrix",
-        "to": "RbacReadPort",
+        "from": "GetPermissionMatrixQueryHandler",
+        "to": "RbacRepository",
         "text": "Đọc vai trò, chức năng, hành động và quyền"
       },
       {
-        "from": "RbacReadPort",
-        "to": "IdentityDbAdapter",
+        "from": "RbacRepository",
+        "to": "JdbcRbacRepository",
         "text": "Truy vấn ma trận"
       },
       {
-        "from": "IdentityDbAdapter",
+        "from": "JdbcRbacRepository",
         "to": "PostgreSQL",
         "text": "Đọc vai trò và các ô quyền"
       },
       {
         "from": "PostgreSQL",
-        "to": "IdentityDbAdapter",
+        "to": "JdbcRbacRepository",
         "text": "Ma trận hiện hành",
         "kind": "return"
       },
       {
-        "from": "IdentityDbAdapter",
-        "to": "RbacReadPort",
+        "from": "JdbcRbacRepository",
+        "to": "RbacRepository",
         "text": "Ma trận hiện hành",
         "kind": "return"
       },
       {
-        "from": "RbacReadPort",
-        "to": "GetPermissionMatrix",
+        "from": "RbacRepository",
+        "to": "GetPermissionMatrixQueryHandler",
         "text": "Ma trận hiện hành",
         "kind": "return"
       },
       {
-        "from": "GetPermissionMatrix",
+        "from": "GetPermissionMatrixQueryHandler",
         "to": "RbacController",
         "text": "Trả ma trận",
         "kind": "return"

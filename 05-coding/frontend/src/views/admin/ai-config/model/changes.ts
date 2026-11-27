@@ -17,6 +17,7 @@ export type FeatureChange = {
   feature: AiFeatureKey;
   instruction: boolean;
   model: { from: string; to: string } | null;
+  tokens: { from: number | ""; to: number | "" } | null;
   guards: number;
 };
 
@@ -50,6 +51,10 @@ export function describeChanges(
           before.modelId !== prompt.modelId
             ? { from: before.modelId, to: prompt.modelId }
             : null,
+        tokens:
+          before.maxTokens !== prompt.maxTokens
+            ? { from: before.maxTokens, to: prompt.maxTokens }
+            : null,
         guards,
       };
     })
@@ -57,6 +62,7 @@ export function describeChanges(
       (change) =>
         change.instruction ||
         change.model ||
+        change.tokens ||
         change.guards > 0,
     );
 }
@@ -69,8 +75,9 @@ export function pendingByFeature(
   const counts: PendingCounts = { review: 0, interview: 0, testcase: 0 };
   for (const change of describeChanges(saved, draft)) {
     counts[change.feature] =
-      (change.instruction ? 1 : 0) +
-      (change.model ? 1 : 0) +
+      Number(change.instruction) +
+      Number(Boolean(change.model)) +
+      Number(Boolean(change.tokens)) +
       change.guards;
   }
   return counts;
@@ -84,6 +91,25 @@ export function totalPending(counts: PendingCounts): number {
 export function bumpVersion(version: string): string {
   const match = /^v(\d+)\.(\d+)$/.exec(version);
   return match ? `v${match[1]}.${Number(match[2]) + 1}` : version;
+}
+
+/** The editable copy at load: the live page with every server-stored DRAFT laid over it. */
+export function withServerDrafts(page: AiConfigPage): AiConfigPage {
+  const guards = { ...page.guards };
+  const prompts = page.prompts.map((prompt) => {
+    const stored = page.drafts[prompt.feature];
+    if (!stored) return prompt;
+    if (stored.guards && isGuarded(prompt.feature)) {
+      guards[prompt.feature] = { ...stored.guards };
+    }
+    return {
+      ...prompt,
+      systemInstruction: stored.systemInstruction,
+      modelId: stored.modelId,
+      maxTokens: stored.maxTokens,
+    };
+  });
+  return { ...page, prompts, guards };
 }
 
 /** Overwrites the draft instruction of one feature (edit popup save, or restoring a version). */

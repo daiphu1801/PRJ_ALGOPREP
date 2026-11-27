@@ -1,0 +1,1 @@
+{"functionName":"echo","returnType":{"kind":"ARRAY","of":{"kind":"INT","of":null,"dimensions":null},"dimensions":1},"parameters":[{"name":"value","type":{"kind":"ARRAY","of":{"kind":"INT","of":null,"dimensions":null},"dimensions":1}}],"nameOverrides":{},"matchingStrategy":"EXACT","epsilon":null}

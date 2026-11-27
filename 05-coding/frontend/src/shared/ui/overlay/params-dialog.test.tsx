@@ -5,6 +5,7 @@ import {
   render,
   renderHook,
   screen,
+  waitFor,
 } from "@testing-library/react";
 import { toast, useToasts } from "@/shared/lib/toast-store";
 import { ParamsDialog } from "./params-dialog";
@@ -103,5 +104,34 @@ describe("ParamsDialog", () => {
     fireEvent.click(screen.getByRole("button", { name: "Vẫn lưu" }));
     expect(onSave).toHaveBeenCalledWith({ days: "30" });
     act(() => toast.clear());
+  });
+
+  it("waits for an async save and stays open with the draft when it rejects", async () => {
+    const toasts = renderHook(() => useToasts());
+    act(() => toast.clear());
+    const onClose = vi.fn();
+    const onSave = vi.fn().mockRejectedValue(new Error("refused"));
+    render(
+      <ParamsDialog
+        open
+        onClose={onClose}
+        title="T"
+        fields={fields}
+        values={{ days: "90" }}
+        onSave={onSave}
+        labels={labels}
+      />,
+    );
+    fireEvent.change(screen.getByLabelText("Thời hạn"), {
+      target: { value: "120" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Lưu" }));
+    await waitFor(() => expect(onSave).toHaveBeenCalled());
+    await waitFor(() =>
+      expect(screen.getByRole("button", { name: "Lưu" })).not.toBeDisabled(),
+    );
+    expect(onClose).not.toHaveBeenCalled();
+    expect(screen.getByLabelText("Thời hạn")).toHaveValue(120);
+    expect(toasts.result.current).toHaveLength(0);
   });
 });

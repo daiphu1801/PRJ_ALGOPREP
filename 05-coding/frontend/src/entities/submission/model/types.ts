@@ -4,6 +4,9 @@
 // Bounded Context (judge-orchestration), same underlying table `judge.submissions`
 // (02-bd/screens/users/USR0201_submission_result.md Sheet 4.3), so one entity instead of two.
 
+/** F4-14: approximate queue hint, non-null only while status is PENDING. */
+export type JudgeQueue = { ahead: number; estimatedWaitSeconds: number | null };
+
 /** Verdict of the whole submission. Matches `judge.submissions.status`. */
 export type SubmissionStatus =
   | "PENDING"
@@ -44,6 +47,21 @@ export type SubmissionTestcaseResult = {
 };
 
 export type SubmissionDetail = {
+  instructorContext?: {
+    studentId: string;
+    studentName: string;
+    /** Picture version of the learner (absent or null: no picture). */
+    studentAvatarVersion?: number | null;
+    classId: string;
+    className: string;
+    leftClass: boolean;
+  };
+  problemWithdrawn?: boolean;
+  beatsSampleSize?: number;
+  /** F4-14, mock only: the real page reads the queue from the progress snapshot. */
+  queue?: JudgeQueue | null;
+  testcaseDetailsAvailable?: boolean;
+  testcaseUnavailableReason?: string | null;
   id: string;
   problemId: string;
   problemSlug: string;
@@ -68,6 +86,7 @@ export type SubmissionDetail = {
 };
 
 export type SubmissionListItem = {
+  problemWithdrawn?: boolean;
   id: string;
   problemId: string;
   problemSlug: string;

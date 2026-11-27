@@ -53,8 +53,9 @@ export type InProgressProblem = {
   language: SubmissionLanguage;
   /** Raw `submissions.status` plus the pass ratio; the view maps it to text through i18n (F4-13). */
   lastVerdict: OverallVerdict;
-  passedCount: number;
-  totalCount: number;
+  /** null while the submission has no result yet (queued or compiling): the card shows the verdict only. */
+  passedCount: number | null;
+  totalCount: number | null;
 };
 
 export type ClassAssignmentItem = {
@@ -134,7 +135,6 @@ export type SubmissionHistoryItem = {
 export type SolutionReviewQuickInsight = {
   timeComplexity: string;
   spaceComplexity: string;
-  notes: string[];
 };
 
 export type ProblemDetail = {
@@ -147,10 +147,12 @@ export type ProblemDetail = {
   /** Markdown incl. the `## Ràng buộc` and `## Câu hỏi mở rộng` sections (USR0102 Q5): no separate column. */
   statementMd: string;
   examples: ProblemExample[];
-  /** Effective limits per language = base limit x language multiplier (BD Sheet 5 khu H NO 7). */
-  limitsByLanguage: Record<
-    SubmissionLanguage,
-    { timeLimitMs: number; memoryLimitMb: number }
+  /**
+   * Effective limits per language = base limit x language multiplier (BD Sheet 5 khu H NO 7). Empty for a
+   * guest and when the judge read fails: the screen then hides the limits.
+   */
+  limitsByLanguage: Partial<
+    Record<SubmissionLanguage, { timeLimitMs: number; memoryLimitMb: number }>
   >;
   acRate: number | null;
   /** Whether the current learner bookmarked this problem (`problem.bookmarks`). */
@@ -160,8 +162,13 @@ export type ProblemDetail = {
   /** Mock only: every simulated Run Code / Submit passes (to review the all-passed UI). */
   mockAlwaysPass?: boolean;
   starterCode: Record<StarterCodeKey, string>;
-  sampleTestcases: { input: string; expectedOutput: string }[];
-  mySubmissions: SubmissionHistoryItem[];
+  sampleTestcases: {
+    testcaseId?: string;
+    input: string;
+    expectedOutput: string;
+  }[];
+  /** `null` = the history read failed, which is not the same as "never submitted". */
+  mySubmissions: SubmissionHistoryItem[] | null;
   solutionReview: SolutionReviewQuickInsight | null;
 };
 
@@ -180,6 +187,7 @@ export type OverallVerdict =
   | "systemError";
 
 export type SubmissionRunResult = {
+  compileErrorMessage?: string | null;
   submissionId: string;
   overallVerdict: OverallVerdict;
   passedCount: number;
@@ -191,6 +199,7 @@ export type SubmissionRunResult = {
 };
 
 export type SampleRunResult = {
+  compileErrorMessage?: string | null;
   cases: {
     input: string;
     expectedOutput: string;

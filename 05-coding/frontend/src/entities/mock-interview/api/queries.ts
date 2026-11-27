@@ -8,7 +8,7 @@
 import { useMockMutation, useMockQuery } from "@/shared/api";
 import type {
   AcceptedSubmissionOption,
-  BankQuestionOption,
+  BankQuestionPage,
   InterviewResult,
   InterviewStage,
 } from "../model/types";
@@ -19,6 +19,10 @@ import {
   computeInterviewResult,
   getScriptedQuestion,
 } from "./__mock__/mock-interview-mocks";
+import {
+  realListAcceptedSubmissionOptions,
+  realListBankQuestionOptions,
+} from "./real-entry-options";
 
 const SPEC = "03-dd/api/F5_ai-review.md";
 
@@ -26,13 +30,15 @@ export const useAcceptedSubmissionOptions = () =>
   useMockQuery<AcceptedSubmissionOption[]>({
     queryKey: ["mock-interview", "accepted-submissions"],
     mock: () => ACCEPTED_SUBMISSIONS,
+    real: realListAcceptedSubmissionOptions,
     spec: SPEC,
   });
 
 export const useBankQuestionOptions = () =>
-  useMockQuery<BankQuestionOption[]>({
+  useMockQuery<BankQuestionPage>({
     queryKey: ["mock-interview", "bank-questions"],
-    mock: () => BANK_QUESTIONS,
+    mock: () => ({ items: BANK_QUESTIONS, total: BANK_QUESTIONS.length }),
+    real: realListBankQuestionOptions,
     spec: SPEC,
   });
 

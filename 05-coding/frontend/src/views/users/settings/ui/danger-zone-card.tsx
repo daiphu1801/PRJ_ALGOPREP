@@ -6,6 +6,7 @@
 "use client";
 
 import { useState } from "react";
+import { TriangleAlert } from "lucide-react";
 import { useT } from "@/shared/i18n";
 import { Button, Card } from "@/shared/ui";
 import { DeleteAccountDialog } from "@/features/deactivate-my-account";
@@ -16,17 +17,22 @@ export function DangerZoneCard({ email }: { email: string }) {
 
   return (
     <Card
-      title={t("dangerZone.title")}
+      title={
+        <span className="flex items-center gap-2 text-[var(--color-danger)]">
+          <TriangleAlert size={18} aria-hidden="true" />
+          {t("dangerZone.title")}
+        </span>
+      }
       className="border-[var(--color-danger)]"
     >
-      <div className="flex flex-wrap items-center gap-4">
-        <p className="min-w-0 flex-1 text-sm text-[var(--color-text-muted)]">
+      <div className="flex flex-col items-start gap-3">
+        <p className="text-sm text-[var(--color-text-muted)]">
           {t("dangerZone.consequenceText")}
         </p>
         <Button
+          type="button"
           variant="ghost"
-          size="sm"
-          className="border border-[var(--color-danger)] text-[var(--color-danger)] hover:bg-[var(--color-danger)] hover:text-[var(--color-background)]"
+          className="h-11 border border-[var(--color-danger)] px-3 text-[var(--color-danger)] hover:bg-[var(--color-danger)] hover:text-[var(--color-background)]"
           onClick={() => setOpen(true)}
         >
           {t("dangerZone.delete")}

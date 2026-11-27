@@ -15,22 +15,22 @@
         "role": "actor"
       },
       {
-        "name": "UserAdminController",
+        "name": "AdminUserActionController",
         "role": "controller",
         "stereo": "presentation"
       },
       {
-        "name": "ChangeUserRole",
+        "name": "ChangeUserRoleCommandHandler",
         "role": "service",
         "stereo": "application command"
       },
       {
-        "name": "UserAdminStorePort",
+        "name": "AccountLifecycleRepository",
         "role": "repository",
         "stereo": "output port"
       },
       {
-        "name": "IdentityDbAdapter",
+        "name": "JdbcUserAccountRepository",
         "role": "repository",
         "stereo": "persistence adapter"
       },
@@ -51,44 +51,44 @@
       },
       {
         "from": "Quản trị viên",
-        "to": "UserAdminController",
+        "to": "AdminUserActionController",
         "text": "Chọn vai trò mới và xác nhận"
       },
       {
-        "from": "UserAdminController",
-        "to": "ChangeUserRole",
+        "from": "AdminUserActionController",
+        "to": "ChangeUserRoleCommandHandler",
         "text": "Đổi vai trò tài khoản"
       },
       {
-        "from": "ChangeUserRole",
-        "to": "UserAdminStorePort",
+        "from": "ChangeUserRoleCommandHandler",
+        "to": "AccountLifecycleRepository",
         "text": "Khóa các quản trị viên hoạt động và đọc vai trò đích"
       },
       {
-        "from": "UserAdminStorePort",
-        "to": "IdentityDbAdapter",
+        "from": "AccountLifecycleRepository",
+        "to": "JdbcUserAccountRepository",
         "text": "Đọc tài khoản, vai trò và tập quản trị viên đang hoạt động"
       },
       {
-        "from": "IdentityDbAdapter",
+        "from": "JdbcUserAccountRepository",
         "to": "PostgreSQL",
         "text": "Khóa dòng quản trị viên đang hoạt động, đọc vai trò"
       },
       {
         "from": "PostgreSQL",
-        "to": "IdentityDbAdapter",
+        "to": "JdbcUserAccountRepository",
         "text": "Tài khoản, vai trò và số quản trị viên",
         "kind": "return"
       },
       {
-        "from": "IdentityDbAdapter",
-        "to": "UserAdminStorePort",
+        "from": "JdbcUserAccountRepository",
+        "to": "AccountLifecycleRepository",
         "text": "Tài khoản, vai trò và số quản trị viên",
         "kind": "return"
       },
       {
-        "from": "UserAdminStorePort",
-        "to": "ChangeUserRole",
+        "from": "AccountLifecycleRepository",
+        "to": "ChangeUserRoleCommandHandler",
         "text": "Tài khoản, vai trò và số quản trị viên",
         "kind": "return"
       },
@@ -97,13 +97,13 @@
           "label": "Sẽ không còn quản trị viên hoạt động?",
           "then": [
             {
-              "from": "ChangeUserRole",
-              "to": "UserAdminController",
+              "from": "ChangeUserRoleCommandHandler",
+              "to": "AdminUserActionController",
               "text": "Từ chối hạ quản trị viên cuối",
               "kind": "return"
             },
             {
-              "from": "UserAdminController",
+              "from": "AdminUserActionController",
               "to": "Quản trị viên",
               "text": "Hiển thị lỗi bảo vệ hệ thống",
               "kind": "return"
@@ -111,44 +111,44 @@
           ],
           "else": [
             {
-              "from": "ChangeUserRole",
-              "to": "ChangeUserRole",
+              "from": "ChangeUserRoleCommandHandler",
+              "to": "ChangeUserRoleCommandHandler",
               "text": "Nếu tự hạ vai trò, kiểm xác nhận ảnh hưởng"
             },
             {
-              "from": "ChangeUserRole",
-              "to": "UserAdminStorePort",
+              "from": "ChangeUserRoleCommandHandler",
+              "to": "AccountLifecycleRepository",
               "text": "Lưu vai trò mới"
             },
             {
-              "from": "UserAdminStorePort",
-              "to": "IdentityDbAdapter",
+              "from": "AccountLifecycleRepository",
+              "to": "JdbcUserAccountRepository",
               "text": "Cập nhật vai trò trong giao dịch"
             },
             {
-              "from": "IdentityDbAdapter",
+              "from": "JdbcUserAccountRepository",
               "to": "PostgreSQL",
               "text": "Ghi vai trò mới"
             },
             {
-              "from": "ChangeUserRole",
+              "from": "ChangeUserRoleCommandHandler",
               "to": "AuditLogPort",
               "text": "Ghi nhật ký đổi vai trò cùng giao dịch"
             },
             {
               "from": "AuditLogPort",
-              "to": "ChangeUserRole",
+              "to": "ChangeUserRoleCommandHandler",
               "text": "Nhật ký đã ghi",
               "kind": "return"
             },
             {
-              "from": "ChangeUserRole",
-              "to": "UserAdminController",
+              "from": "ChangeUserRoleCommandHandler",
+              "to": "AdminUserActionController",
               "text": "Trả vai trò mới",
               "kind": "return"
             },
             {
-              "from": "UserAdminController",
+              "from": "AdminUserActionController",
               "to": "Quản trị viên",
               "text": "Hiển thị tài khoản sau đổi",
               "kind": "return"

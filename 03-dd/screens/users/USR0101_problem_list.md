@@ -82,6 +82,7 @@ Bảng 2.1: Sự kiện, endpoint, hook.
 | EVT-1 | F4 mục 11 `ListMyUnsolvedRecentProblems` (`limit = 3`) | `useInProgressProblems(3)` | mock (`inProgress` trong mock gộp) |
 | EVT-1 | F5 mục 5 `ListMyReviewedProblemIds` | `useReviewedProblemIds` (`entities/solution-review`) | chưa có |
 | EVT-11 | F2 mục 3 `GetRandomProblem` | `useRandomProblem` (`useMutation`: kết quả ngẫu nhiên, không cache) | chưa có, máy khách tự bốc [SoT: PLV:153-160] |
+| EVT-16 | Không gọi API | `LoginPromptDialog` (`features/login-prompt`, `USR0104` mục 4A); chỉ khi khách | client |
 | EVT-10, 12, 13, 14, 15 | không gọi API | điều hướng `next/link` | không áp dụng |
 
 Màn **không** gọi `ListMyProblemSolveStates` dù BD liệt kê ở Sheet 7.3 NO 5 [SoT: BD:564]: F2 đọc trạng thái giải qua `SolveStatePort` rồi trả `solveState` ngay trong dòng bảng, dòng bài tập lớp và tiến độ chủ đề, kèm cờ `solveStateAvailable` [SoT: F2:273-275, 288, 367-368]. Kênh realtime: không có (màn không dùng STOMP hay SSE).
@@ -125,7 +126,8 @@ Bảng 3.1: Trạng thái theo vùng.
 | Bài đang làm dở | Ẩn cả khối | F4 mục 11 lỗi, hoặc không có bài nào | ẩn khối kèm tiêu đề, không khối rỗng [SoT: BD:489] | không áp dụng |
 | Bài tập lớp | Ẩn cả khối | F2 mục 5 lỗi, hoặc `groups = []` | ẩn khối kèm tiêu đề [SoT: BD:500; F2:417] | không áp dụng |
 | Bài ngẫu nhiên | Không có bài | F2 mục 3 trả `problemId = null` | ở lại trang, toast cảnh báo | `toast.randomEmpty` |
-| Toàn màn | Chưa đăng nhập | `401` sau khi làm mới token thất bại | chuyển về `auth` (do `shared/api/client.ts`) | không áp dụng |
+| Toàn màn | Khách (không có phiên, đổi 2026-11-26) | `useSession()` trả `guest` (BR-SC-07) | **không** chuyển về `auth`; dựng bảng, tìm kiếm, tab độ khó (F2 mục 15, mở cho khách), "Bài ngẫu nhiên"; ẩn các phần theo người dùng; "Bài đã lưu" mở `LoginPromptDialog` | `problemList.guest.*` |
+| Toàn màn | Phiên hết hạn giữa chừng | `401` ở lời gọi cá nhân sau khi làm mới token thất bại | xoá token và chuyển sang trạng thái khách tại chỗ, không chuyển trang (màn này công khai) | không áp dụng |
 | Toàn màn | Quyền bị từ chối | tài khoản không phải `STUDENT` | chặn ở nhóm route `(student)`; không dựng UI `403` riêng `[SoT: Suy luận]` | không áp dụng |
 
 ## 4. Quy tắc đặc thù màn
@@ -135,7 +137,7 @@ Sáu khối dưới là những việc đi qua nhiều sự kiện hoặc không
 ### BR-SC-01 Khởi tạo: sáu truy vấn độc lập
 
 - **Kích hoạt:** EVT-1.
-- **Tiền điều kiện:** đã đăng nhập.
+- **Tiền điều kiện:** đã đăng nhập (`signedIn`); khách đi BR-SC-07.
 - **Các bước:**
   1. Đọc query URL bằng lược đồ ở mục 5; giá trị lạ bị bỏ qua, không báo lỗi [SoT: BD:628].
   2. Gửi song song F2 mục 2, mục 4, mục 5, mục 15, F4 mục 11, F5 mục 5. Chỉ F2 mục 2 phụ thuộc tham số URL; năm truy vấn còn lại có khoá không chứa tham số lọc nên **không gọi lại khi đổi bộ lọc** [SoT: BD:490, 502].
@@ -186,6 +188,18 @@ Sáu khối dưới là những việc đi qua nhiều sự kiện hoặc không
 - **Kích hoạt:** EVT-1, EVT-14.
 - **Quy tắc:** nhóm theo `classId` (khoá `key`, thay `className` của bản dựng [SoT: PLV:459]); tối đa 3 nhóm do máy chủ cắt, màn không cắt lại; mỗi bài là liên kết `/problems/{problemId}`; chấm trạng thái chỉ vẽ khi `solveState` khác `null`. Dòng phụ chỉ có ngày giao `giao {assignedAt}` định dạng `formatDateVN` (UTC+7) [SoT: F2:407-409; BD:420]. **Không** có "x / y bài": F2 không trả số đó (OQ-1). Rỗng hoặc lỗi thì ẩn cả khối (Bảng 3.1). Không có liên kết "Xem tất cả" [SoT: BD:293].
 
+### BR-SC-07 Khách: chỉ đọc danh sách, ẩn phần theo người dùng (`DEC-2026-1126-guest-browse-published-problems`)
+
+- **Kích hoạt:** EVT-1, EVT-16 (khách bấm "Bài đã lưu").
+- **Tiền điều kiện:** `useSession()` trả `guest`. Khi `signedIn` chạy BR-SC-01 như cũ (`AuthProvider` đã chờ khôi phục phiên trước khi dựng màn).
+- **Các bước:**
+  1. Chỉ gửi F2 mục 2 (`ListPublishedProblems`) và F2 mục 15 (`ListProblemLevels`). **Không gửi** F2 mục 4 (tiến độ chủ đề, kiêm danh mục chủ đề; chưa mở cho khách nên thanh chủ đề không dựng), F2 mục 5 (bài tập lớp), F4 mục 11 (bài đang làm dở), F5 mục 5 (bài đã có Solution Review): bốn hook đó nhận `enabled = false`.
+  2. Không dựng: khối "Bài đang làm dở", khối "Bài tập lớp", số `{solved}/{total}`, tab trạng thái, cột chấm trạng thái, nhãn Solution Review. Không thay bằng ô trống hay số liệu giả.
+  3. Bỏ tham số `status` khỏi URL khi đọc (khách mở link có `?status=SOLVED` vẫn được xem toàn bộ danh sách, không báo lỗi).
+  4. "Bài ngẫu nhiên" gọi F2 mục 3 như cũ; kết quả mở `/problems/{id}`. Khách không bị loại bài đã giải.
+  5. "Bài đã lưu" mở `LoginPromptDialog` với `returnTo = /saved` (EVT-16); "Vào giải" và tên bài mở `/problems/{id}` ở chế độ khách (`USR0104` mục 4A).
+- **Hậu điều kiện:** khách không phát sinh `401` nào khi dùng màn này; hợp đồng F2 ở `03-dd/api/F2_problem-bank.md` mục 0A.
+
 ## 5. Kiểm tra phía client
 
 Màn không có form ghi; chỉ có ô tìm kiếm và chuẩn hoá query URL. Bảng 5.1 ánh xạ sang zod (`zod 3.24.1`, `package.json:35`) và quy tắc ở V2. Cột "Khớp" là Có, Lệch (kèm lý do) hoặc Không áp dụng.
@@ -198,7 +212,7 @@ Bảng 5.1: Ánh xạ zod và V2.
 | `status` | `z.enum(["solved","attempted","todo"]).optional().catch(undefined)` | `SOLVED`, `ATTEMPTED`, `UNSOLVED`, giá trị lạ bỏ qua (V2:155) | Có sau ánh xạ chữ hoa ở entity |
 | `difficulty` | `z.string().min(1).max(64).optional().catch(undefined)`, rồi đối chiếu danh mục (BR-SC-02.7) | `levelCode` có thật, không thì "Tất cả" (V2:156) | Có; 64 ký tự là trần phòng thủ của client `[SoT: Suy luận]`, máy chủ là nguồn đúng |
 | `topic` | `z.string().uuid().optional().catch(undefined)` | uuid chủ đề có thật, không thì bỏ lọc (V2:157) | Có |
-| `sort` | `z.enum(["level","acRate"]).optional().catch(undefined)` | `level`, `acRate`, mặc định `code` (V2:159) | Có |
+| `sort` | `z.enum(["level","acRate"]).optional().catch(undefined)` | `level`, `acRate`; mặc định của màn là độ khó tăng dần (`sort=level`, `dir=asc`), owner chốt 2026-11-06, không dùng `code` | Có |
 | `dir` | `z.enum(["asc","desc"]).catch("asc")` | `asc`, `desc`, mặc định `asc` (V2:159) | Có |
 | `page` | `z.coerce.number().int().min(1).catch(1)` | số nguyên từ 1, quá số trang thì trang cuối (V2:160) | Có; việc kẹp trang cuối là của máy chủ, client đồng bộ URL (BR-SC-02.6) |
 | `pageSize` | `z.union([z.literal(12), z.literal(24), z.literal(48)]).catch(12)` đọc từ `localStorage` | 12/24/48 (V2:161) | Có |
@@ -207,6 +221,10 @@ Bảng 5.1: Ánh xạ zod và V2.
 Lệch bắt buộc nêu: bản dựng giữ trạng thái lọc bằng `useState` và giá trị chữ thường của `SolveState` [SoT: PLV:83-93; `entities/problem/model/types.ts:21`]; hợp đồng dùng enum chữ hoa và `sort = level`. Ánh xạ nằm ở `entities/problem/model`, view không biết enum của API; không cần thêm quyết định.
 
 ## 6. i18n và truy cập
+
+- `ProblemListView` dùng một `DataTable` cho cả hai bố cục. Dưới 768 px, chủ đề và độ khó chuyển vào ô tên. Menu `sort.*` điều khiển cùng các tham số `sort`, `dir`, `page` với tiêu đề cột desktop.
+- Mã vẫn là đầu vào hợp lệ cho bộ lọc `q`. Hàng kết quả dùng tên làm định danh hiển thị và giữ liên kết `/problems/{id}` trên **Xem đề**.
+- `table.results` lấy `page.totalItems` và thông báo qua `role="status"`. **Xóa bộ lọc** xuất hiện cạnh số kết quả khi có bộ lọc đang áp dụng. Danh sách rỗng phân biệt bộ lọc rỗng với ngân hàng chưa có bài xuất bản.
 
 **Tiền tố khoá:** `problemList.*` ở `messages/vi.json:133-208` và `messages/en.json` (cùng cấu trúc, `shared/i18n/messages.test.ts` giữ hai bản đồng khoá). Khoá cần **sửa hoặc thêm**: `assignment.meta` đổi thành `"giao {date}"` (bỏ `{solved} / {total} bài`, OQ-1); `toast.randomEmpty` đổi thành "Không có bài nào khớp bộ lọc hiện tại." để khớp BD (hiện đang là câu dài hơn [SoT: `messages/vi.json:193`; BD:630]); `table.btnSolveAria` ("Vào giải bài {title}"); `table.resultsLive` (vùng `aria-live`, "{total} bài khớp bộ lọc").
 
@@ -251,6 +269,9 @@ Bảng 7.1: Điểm kiểm thử.
 | T-PL-21 | Normal | EVT-14: bài tập lớp nhóm theo `classId`, tối đa 3 nhóm, dòng phụ chỉ có ngày giao | Vitest | F2 AC-07 |
 | T-PL-22 | Normal | EVT-15: "Xem tất cả" sang `/workspace`, chỉ hiện khi có ít nhất một thẻ | Vitest | TDD màn `PL-AC-04` |
 | T-PL-23 | Normal | Luồng đầy đủ: mở `/problems`, lọc độ khó, bấm một bài, Quay lại thấy bộ lọc cũ | Playwright | PL-AC-02 |
+| T-PL-24 | Normal | EVT-1 khách: chỉ gọi F2 mục 2, 3, 15; không gọi F2 mục 4, 5, F4 mục 11, F5 mục 5; không dựng hai khối phụ, tab trạng thái và cột trạng thái | Vitest | PL-AC-05, F2 AC-98 |
+| T-PL-25 | Abnormal | Khách mở `?status=SOLVED`: danh sách vẫn đầy đủ, không lỗi | Vitest | PL-AC-05 |
+| T-PL-26 | Normal | EVT-16 khách bấm "Bài đã lưu" mở hộp thoại, Đăng nhập dẫn tới `/login?redirect=/saved` | Vitest | PL-AC-05 |
 
 ## 8. Nợ prototype và câu hỏi mở
 
@@ -264,7 +285,7 @@ Bảng 8.1: Lệch giữa prototype và thiết kế, cần làm khi nối thậ
 | P2 | Lọc, sắp xếp, phân trang chạy ở máy khách trên mảng đầy đủ | Chạy ở máy chủ, màn chỉ gửi tham số | PLV:117-146 |
 | P3 | Trạng thái lọc ở `useState`, không lên URL | Ghi URL theo BR-SC-02 | PLV:12-13, 83-98 |
 | P4 | Tìm kiếm lọc ngay mỗi ký tự, Enter toast theo mảng cục bộ | Trễ 400 ms, toast theo `totalItems` (BR-SC-03) | PLV:162-169 |
-| P5 | Sắp xếp mặc định theo độ khó tăng dần | Không `sort` thì máy chủ dùng `code` | PLV:87-92; F2:260 |
+| P5 | Sắp xếp mặc định theo độ khó tăng dần | **Owner chốt 2026-11-06: giữ mặc định của prototype (độ khó tăng dần), DD sửa theo**; màn gửi `sort=level&dir=asc` khi URL không có `sort`. Bộ lọc lên URL (BR-SC-02) hoãn, ghi nợ | PLV:87-92; F2:260 |
 | P6 | `QueryBoundary` bọc cả trang bằng một truy vấn | Chỉ bảng có vùng lỗi; khối khác tự ẩn | PLV:69-76 |
 | P7 | "Bài đang làm dở" và "Bài tập lớp" hiện câu rỗng trong khối | Ẩn cả khối kèm tiêu đề | PLV:444, 453-457; BD:489, 500 |
 | P8 | Dòng phụ bài tập lớp có "x / y bài" | Chỉ ngày giao (OQ-1) | PLV:481-485; F2:407 |
@@ -296,3 +317,36 @@ Bảng 8.3: Câu hỏi mở.
 | OQ-2 | **Đã chốt 2026-10-19** (owner, BD V0.8 [SoT: BD:64]): giữ bộ chọn 12/24/48, mặc định 12, nhớ ở trình duyệt (`usePersistedPageSize`, khoá `algoprep-problem-list-page-size`), không nhớ theo tài khoản | Đã chốt | 5 |
 | OQ-3 | **Đã chốt 2026-10-18** (`DEC-2026-1018-usr-open-questions-phase1-scope`, `DEC-2026-1018-usr-open-questions-phase2-5`): bắt buộc đăng nhập, bài đang làm dở đọc từ `judge.submissions`, `identity` cấp trạng thái giải qua cổng, cache 60 giây | Đã chốt | 1, 3 |
 | OQ-4 | **Đã chốt 2026-10-24** (`DEC24`): mọi route học viên dùng `problemId` UUID; liên kết bảng, bài ngẫu nhiên, bài tập lớp, thẻ bài dở đều là UUID | Đã chốt | 4 |
+
+## 9. Nối API thật (2026-11-06, F2-6 phần 1)
+
+Bảng 9.1: Các dòng của Bảng 8.1 mà bản dựng đã xử lý khi nối API thật.
+
+| # | Trạng thái | Ghi chú |
+| :-: | :--- | :--- |
+| P1 | Một phần | Bốn truy vấn riêng: `#1`, `#3`, `#4`, `F4 #8`; `hasSolutionReview` chưa có (F5) nên chưa có truy vấn thứ năm. `useProblemListPage` (mock gộp) vẫn còn cho `USR0601`, `USR0105` đến khi hai màn đó nối |
+| P2 | Xong | Máy chủ lọc, sắp xếp, phân trang |
+| P3 | Chưa | Bộ lọc chưa lên URL |
+| P4 | Một phần | Ô tìm trễ 300 ms (DD ghi 400 ms); toast Enter theo `page.totalItems` |
+| P5 | Chưa | Mặc định vẫn là độ khó tăng dần như prototype; DD ghi `code` |
+| P6 | Xong | Bảng có vùng lỗi riêng với nút thử lại; mỗi khối phụ tự báo lỗi |
+| P7 | Chưa | Khối rỗng vẫn hiện câu rỗng |
+| P8 | Xong | Dòng phụ chỉ còn ngày giao (OQ-1 theo mặc định đề xuất) |
+| P9 | Xong | Nhóm khoá theo `classId` |
+| P10 | Xong | Thẻ chưa có kết quả chỉ in nhãn kết quả |
+| P11 | Chưa | Nhãn "Đã có Solution Review" không vẽ (F5 chưa có endpoint) |
+| P12 | Xong | Gửi `topic` là UUID của chủ đề |
+| P13 | Xong | Độ khó đọc từ `#14`, tông màu theo `levelCode` seed |
+| P14, P15 | Chưa | Giữ câu toast và nút hiện tại |
+
+Suy giảm đã dựng: `solveStateAvailable=false` hoặc `solveState=null` thì hiện "Chưa rõ trạng thái", một dòng thông báo và bộ lọc trạng thái chưa áp dụng; `solved=null` ở chip thì chip chỉ còn tổng; `acRate=null` hiện `-`.
+
+## Ghi chú đồng bộ prototype 2026-11-07: URL, tên nút, khối rỗng
+
+Trạng thái màn trên URL: `q`, `status` (`solved|attempted|todo`), `level` (khoá mức độ khó), `topic` (id chủ đề), `sort` (`acRate`; vắng là độ khó), `dir` (`desc`; vắng là tăng dần), `page` (vắng là 1). Mỗi thay đổi một lần `router.replace` kèm bỏ `page`; ô tìm kiếm ghi URL theo từng phím và truy vấn chờ 300 ms như cũ. Cỡ trang không vào URL.
+
+Nút "Vào giải": `aria-label` = `problemList.table.btnSolveFor` ("Vào giải bài {title}" / "Solve {title}"). Khối "Bài đang làm dở" và "Bài tập lớp": ẩn khi danh sách rỗng, vẫn hiện khi đang tải hoặc lỗi; cả hai ẩn thì lưới còn một cột. Khoá `assignment.empty` không còn dùng.
+
+Test: `problem-list-real.test.tsx` (nhóm "URL state and block visibility"), dùng `shared/test/mock-url.ts` để `router.replace` đổi URL giả.
+
+Còn mở: nhãn Solution Review chờ F5; mã mức độ hoặc chủ đề lạ trên URL chưa được kiểm trước khi gửi máy chủ; chưa duyệt hình.

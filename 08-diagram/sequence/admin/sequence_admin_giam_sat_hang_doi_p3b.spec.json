@@ -15,12 +15,12 @@
         "stereo": "scheduled gate"
       },
       {
-        "name": "QueueSettingsPort",
+        "name": "AdminQueueRepository",
         "role": "repository",
         "stereo": "output port"
       },
       {
-        "name": "JudgeDbAdapter",
+        "name": "JdbcAdminQueueRepository",
         "role": "repository",
         "stereo": "persistence adapter"
       },
@@ -46,33 +46,33 @@
       },
       {
         "from": "QueueConsumptionGate",
-        "to": "QueueSettingsPort",
+        "to": "AdminQueueRepository",
         "text": "Đọc cờ tạm dừng và số luồng nhận mục tiêu"
       },
       {
-        "from": "QueueSettingsPort",
-        "to": "JudgeDbAdapter",
+        "from": "AdminQueueRepository",
+        "to": "JdbcAdminQueueRepository",
         "text": "Lấy cấu hình đã lưu"
       },
       {
-        "from": "JudgeDbAdapter",
+        "from": "JdbcAdminQueueRepository",
         "to": "PostgreSQL",
         "text": "Đọc cờ hàng đợi và số luồng nhận"
       },
       {
         "from": "PostgreSQL",
-        "to": "JudgeDbAdapter",
+        "to": "JdbcAdminQueueRepository",
         "text": "Cấu hình hiện tại",
         "kind": "return"
       },
       {
-        "from": "JudgeDbAdapter",
-        "to": "QueueSettingsPort",
+        "from": "JdbcAdminQueueRepository",
+        "to": "AdminQueueRepository",
         "text": "Cấu hình hiện tại",
         "kind": "return"
       },
       {
-        "from": "QueueSettingsPort",
+        "from": "AdminQueueRepository",
         "to": "QueueConsumptionGate",
         "text": "Cấu hình hiện tại",
         "kind": "return"

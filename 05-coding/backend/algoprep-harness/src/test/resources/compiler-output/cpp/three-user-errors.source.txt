@@ -1,0 +1,10 @@
+// fixture prefix
+struct Solution {
+  void first() { missingFirst(); }
+  void nested() {
+    if (true) {
+      missingNested();
+    }
+  }
+  void last() { missingLast(); }
+};

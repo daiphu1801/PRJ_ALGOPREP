@@ -54,3 +54,68 @@ export type QueuePage = {
   /** Epoch ms the snapshot was taken, for "Cập nhật lúc" and the stale check. */
   generatedAt: number;
 };
+
+/**
+ * What the screen renders, the same shape whether it comes from the mock or the real backend.
+ * `workers` is empty when the source has no worker data (the real snapshot has none yet).
+ */
+export type QueueState = "ok" | "paused" | "overloaded" | "backlog";
+
+/** Why the grading worker last changed its consumer target (F4 DD 16.2). */
+export type ScaleReason = "BACKLOG" | "IDLE" | "DISABLED";
+
+/**
+ * The real "Luồng chấm" block (DEC-2026-1122-f4-queue-consumers-and-throughput-on-adm0401). `consumers` is
+ * null while the worker has not reported or its report is older than 60 s; the throughput figures come from
+ * submissions, so they stay. `null` for the whole block means the mock source, which keeps the old worker list.
+ */
+export type GradingBlock = {
+  consumers: {
+    target: number;
+    active: number;
+    max: number;
+    lastScaling: {
+      at: number;
+      from: number;
+      to: number;
+      reason: ScaleReason;
+      pendingCount: number;
+    } | null;
+  } | null;
+  finishedLastMinute: number;
+  estimatedClearSeconds: number | null;
+};
+
+export type QueueSettings = {
+  autoscaleThreshold: number;
+  jobsPerPage: number;
+  errorRetentionHours: number;
+  latencyCapSeconds: number;
+};
+
+export type QueueSummary = {
+  state: QueueState;
+  pendingCount: number;
+  controls: ClusterControls;
+  latency: { seconds: number | null; label: string };
+  settings: QueueSettings | null;
+  workers: Worker[];
+  workerCount: number;
+  maxWorkers: number;
+  grading: GradingBlock | null;
+  /** Epoch ms the snapshot was taken. */
+  generatedAt: number;
+  infra: { warn: number; error: number } | null;
+};
+
+export type QueueTab = "waiting" | "failed" | "all";
+
+export type JobsPage = {
+  items: QueueJob[];
+  page: number;
+  pageSize: number;
+  total: number;
+  counts: { waiting: number; failed: number; all: number };
+  /** True when the source sorts by wait time (the mock); the server list is fixed order. */
+  sortable: boolean;
+};

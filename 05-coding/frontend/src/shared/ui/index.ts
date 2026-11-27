@@ -3,6 +3,7 @@ export { IconAction } from "./primitives/icon-action";
 export {
   ManagedListDialog,
   type ManagedListLabels,
+  type ManagedListResult,
 } from "./overlay/managed-list-dialog";
 export {
   ParamsDialog,
@@ -49,6 +50,7 @@ export { Toaster, type ToasterLabels } from "./feedback/toaster";
 export { TextField } from "./form/text-field";
 export { SelectField } from "./form/select-field";
 export { TextArea } from "./form/text-area";
+export { FilePickerButton } from "./form/file-picker-button";
 export { NavLink } from "./layout/nav-link";
 export { NavGroupHeader } from "./layout/nav-group-header";
 export { ThemeLangSwitcher } from "./layout/theme-lang-switcher";
@@ -61,6 +63,7 @@ export { GroupedBarChart } from "./charts/grouped-bar-chart";
 export { DotGrid } from "./charts/dot-grid";
 export { LineChartWithTotal } from "./charts/line-chart-with-total";
 export { RankedProgressList } from "./charts/ranked-progress-list";
+export { ColumnChart } from "./charts/column-chart";
 export {
   StackedBarChart,
   type StackedBar,
@@ -71,3 +74,4 @@ export { SeeAllLink } from "./charts/see-all-link";
 export { RadarChart } from "./charts/radar-chart";
 export { ActivityHeatmap } from "./charts/activity-heatmap";
 export { QueryBoundary, QueryError } from "./feedback/query-boundary";
+export { Avatar, type AvatarSize } from "./data/avatar";

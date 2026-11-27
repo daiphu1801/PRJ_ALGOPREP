@@ -15,13 +15,27 @@ import type {
 import { RUBRIC_WEIGHTS } from "../../model/types";
 
 export const ACCEPTED_SUBMISSIONS: AcceptedSubmissionOption[] = [
-  { id: "SUB-2841", problemTitle: "1. Two Sum", language: "Python 3" },
+  {
+    id: "SUB-2841",
+    problemTitle: "1. Two Sum",
+    language: "Python 3",
+    submittedAt: "2026-11-22T09:12:00Z",
+    levelLabel: "Dễ",
+  },
   {
     id: "SUB-2799",
     problemTitle: "23. Merge k Sorted Lists",
     language: "Java 21",
+    submittedAt: "2026-11-19T14:30:00Z",
+    levelLabel: "Khó",
   },
-  { id: "SUB-2712", problemTitle: "127. Word Ladder", language: "C++ 17" },
+  {
+    id: "SUB-2712",
+    problemTitle: "127. Word Ladder",
+    language: "C++ 17",
+    submittedAt: "2026-11-15T03:05:00Z",
+    levelLabel: "Khó",
+  },
 ];
 
 export const BANK_QUESTIONS: BankQuestionOption[] = [

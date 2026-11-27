@@ -32,6 +32,8 @@ type ModalProps = {
   /** Action row, rendered bottom-right. */
   footer?: ReactNode;
   className?: string;
+  /** false: Escape and a click on the backdrop do nothing, for a step the person must finish. */
+  dismissible?: boolean;
 };
 
 export function Modal({
@@ -41,6 +43,7 @@ export function Modal({
   children,
   footer,
   className,
+  dismissible = true,
 }: ModalProps) {
   const panelRef = useRef<HTMLDivElement>(null);
   const openerRef = useRef<HTMLElement | null>(null);
@@ -59,8 +62,15 @@ export function Modal({
 
     function onKeyDown(event: KeyboardEvent) {
       if (event.key === "Escape") {
+        // Let an open listbox inside the dialog dismiss itself and restore its trigger focus.
+        if (
+          event.target instanceof Element &&
+          panel?.contains(event.target) &&
+          panel.contains(event.target.closest('[role="listbox"]'))
+        )
+          return;
         event.stopPropagation();
-        onClose();
+        if (dismissible) onClose();
         return;
       }
       if (event.key !== "Tab" || !panel) return;
@@ -89,7 +99,7 @@ export function Modal({
       document.removeEventListener("keydown", onKeyDown, true);
       openerRef.current?.focus();
     };
-  }, [open, onClose, target]);
+  }, [open, onClose, dismissible, target]);
 
   if (!open) return null;
 
@@ -98,7 +108,7 @@ export function Modal({
       <div
         className="absolute inset-0 bg-[color-mix(in_srgb,var(--color-scrim)_30%,transparent)]"
         aria-hidden="true"
-        onClick={onClose}
+        onClick={dismissible ? onClose : undefined}
       />
       <div
         ref={panelRef}

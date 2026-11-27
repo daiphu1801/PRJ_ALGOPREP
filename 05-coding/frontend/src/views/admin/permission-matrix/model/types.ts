@@ -50,6 +50,8 @@ export const FUNCTION_KEYS: FunctionKey[] = [
 export type BaseCategory = "STUDENT" | "INSTRUCTOR" | "ADMIN";
 
 export type Role = {
+  /** Server id, used by every call; the mock uses the key. */
+  id: string;
   key: string;
   label: string;
   /** System roles (STUDENT/INSTRUCTOR/ADMIN) cannot be deleted. */
@@ -64,6 +66,9 @@ export type ActionGrant = Record<ActionKey, boolean>;
 export type RolePermissions = Partial<Record<FunctionKey, ActionGrant>>;
 
 export type PermissionMatrixPage = {
+  /** Real API: ids of the catalogue rows, needed to address a cell (#31). The mock has none. */
+  functionIds?: Partial<Record<FunctionKey, string>>;
+  actionIds?: Record<ActionKey, string>;
   /** Role the acting admin holds. Revoking its cells locks them out, so it needs a confirmation. */
   currentRoleKey: string;
   roles: Role[];

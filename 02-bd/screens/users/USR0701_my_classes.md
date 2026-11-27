@@ -47,7 +47,7 @@
 | Đường dẫn | `/classes` |
 | Trục tài liệu | Màn hình (`02-bd/screens/`) |
 | Actor | A1 (`STUDENT`) |
-| Phiên bản | V0.1 |
+| Phiên bản | V0.2 |
 | Người tạo | Claude |
 | Ngày tạo | 2026/10/23 |
 | Người cập nhật | Claude |
@@ -60,6 +60,7 @@
 | Ver | Sheet bị sửa | Nội dung sửa | Ngày | Người sửa |
 | :--- | :--- | :--- | :--- | :--- |
 | V0.1 | Toàn bộ | Tạo mới theo mẫu 9 sheet sau khi dựng prototype (`DEC-2026-1023-student-class-screens`). Chốt: danh sách thẻ lớp chỉ đọc kèm khung nhập mã mời ở cột phải; tiến độ x/y tính khi đọc từ bài giao và trạng thái làm bài (ponytail bậc 4); `ListMyClasses` thuộc `identity`, bài giao thuộc `problem-bank` (thao tác mới `ListMyClassProblems` vì thao tác hiện có cắt 3 nhóm và ẩn bài đã rút, Q2); trạng thái bài giao chỉ hai nhãn theo RD REQ-04. Căn REQ và Q theo RD `USR0701` (REQ-01 đến REQ-12; Q1 đến Q7 trùng RD, Q8 và Q9 là của BD). Chưa duyệt hình | 2026/10/23 | Claude |
+| V0.2 | Hiện trạng bản dựng | Sửa 2026-11-02 (task #12, nối FE với API thật). Màn gọi F1 #25 và #25A; không có bài giao (F2) nên thẻ lớp không có thanh tiến độ; lỗi tham gia đọc theo mã `IDT-410` và `IDT-412`. Không có câu hỏi mở mới. |
 
 ---
 

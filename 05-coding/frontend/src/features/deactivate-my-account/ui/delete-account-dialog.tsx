@@ -2,6 +2,7 @@
 "use client";
 
 import { useT } from "@/shared/i18n";
+import { useApiErrorMessage } from "@/shared/i18n/use-api-error-message";
 import { toast } from "@/shared/lib/toast-store";
 import { ConfirmDialog, TextField } from "@/shared/ui";
 import { useDeactivateAccount } from "../model/use-deactivate-account";
@@ -14,13 +15,19 @@ export function DeleteAccountDialog({
   onClose: () => void;
 }) {
   const t = useT("settings");
+  const apiMessage = useApiErrorMessage();
   const { confirmPhrase, setConfirmPhrase, canConfirm, isSubmitting, confirm } =
     useDeactivateAccount(email);
 
   async function handleConfirm() {
     const result = await confirm();
     if (result.status === "done") toast.success(t("deleteConfirm.done"));
-    else if (result.status === "error") toast.error(t(result.errorKey));
+    else if (result.status === "error")
+      toast.error(
+        result.errorKey !== undefined
+          ? t(result.errorKey)
+          : apiMessage(result.error),
+      );
   }
 
   return (

@@ -1,9 +1,10 @@
 // PROTOTYPE — no DD yet. See 06-plan/PROTOTYPE_DEBT.md
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import type { LucideIcon } from "lucide-react";
+import { PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import {
   BrandMark,
   NavGroupHeader,
@@ -63,21 +64,73 @@ export function GroupedSidebar({
 }: Props) {
   const t = useT(namespace);
   const pathname = usePathname();
-  // Two independent sources decide the visual state, not one: `collapsed` is the user's own
-  // persisted preference (toggle button, localStorage); `isNarrowViewport` is a live viewport
-  // check (below `lg`, 1024px). A narrow viewport always forces the icon-rail width regardless of
-  // the saved preference (owner flagged the sidebar as "bị dãn quá" on 2026-09-14).
   const [collapsed, setCollapsed] = useState(false);
   const [isNarrowViewport, setIsNarrowViewport] = useState(false);
-  const effectiveCollapsed = collapsed || isNarrowViewport;
+  const [flyout, setFlyout] = useState<{
+    key: string;
+    pathname: string;
+  } | null>(null);
+  const sidebarRef = useRef<HTMLElement>(null);
+  const flyoutRef = useRef<HTMLDivElement>(null);
+  const groupTriggerRef = useRef<HTMLButtonElement | null>(null);
+  const effectiveCollapsed = isNarrowViewport || collapsed;
+  const activeGroup =
+    effectiveCollapsed && flyout?.pathname === pathname
+      ? groups.find((group) => group.key === flyout.key)
+      : undefined;
 
   useEffect(() => {
     const mediaQuery = window.matchMedia("(max-width: 1023px)");
-    const applyFromViewport = () => setIsNarrowViewport(mediaQuery.matches);
+    const applyFromViewport = () => {
+      setIsNarrowViewport(mediaQuery.matches);
+      setFlyout(null);
+    };
     applyFromViewport();
     mediaQuery.addEventListener("change", applyFromViewport);
     return () => mediaQuery.removeEventListener("change", applyFromViewport);
   }, []);
+
+  useLayoutEffect(() => {
+    if (!activeGroup) return;
+    const panel = flyoutRef.current;
+    const sidebar = sidebarRef.current;
+    const trigger = groupTriggerRef.current;
+    if (!panel || !sidebar || !trigger) return;
+
+    const alignPanel = () => {
+      const top =
+        trigger.getBoundingClientRect().top -
+        sidebar.getBoundingClientRect().top;
+      const available = sidebar.clientHeight - panel.offsetHeight - 8;
+      panel.style.top = `${Math.max(8, Math.min(top, available))}px`;
+    };
+    alignPanel();
+    panel.querySelector("a")?.focus({ preventScroll: true });
+    const closeOutside = (event: PointerEvent) => {
+      if (
+        event.target instanceof Node &&
+        !sidebarRef.current?.contains(event.target)
+      ) {
+        setFlyout(null);
+      }
+    };
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key !== "Escape" || event.defaultPrevented) return;
+      if (!sidebarRef.current?.contains(document.activeElement)) return;
+      setFlyout(null);
+      groupTriggerRef.current?.focus();
+    };
+    document.addEventListener("pointerdown", closeOutside);
+    document.addEventListener("keydown", closeOnEscape);
+    sidebar.addEventListener("scroll", alignPanel, true);
+    window.addEventListener("resize", alignPanel);
+    return () => {
+      document.removeEventListener("pointerdown", closeOutside);
+      document.removeEventListener("keydown", closeOnEscape);
+      sidebar.removeEventListener("scroll", alignPanel, true);
+      window.removeEventListener("resize", alignPanel);
+    };
+  }, [activeGroup]);
 
   // Restore the saved preference after mount (reading it during render would break hydration).
   // Until 2026-10-14 the key was only ever written, so a reload always re-expanded the sidebar
@@ -128,6 +181,7 @@ export function GroupedSidebar({
       [key]: !(prev[key] ?? ownsActiveRoute(key)),
     }));
   const toggleCollapsed = () => {
+    setFlyout(null);
     setCollapsed((prev) => {
       const next = !prev;
       try {
@@ -141,12 +195,28 @@ export function GroupedSidebar({
 
   return (
     <nav
+      ref={sidebarRef}
       aria-label={t("sidebarLabel")}
+      onClick={(event) => {
+        if (
+          activeGroup &&
+          !event.ctrlKey &&
+          !event.metaKey &&
+          !event.shiftKey &&
+          !event.altKey &&
+          event.target instanceof Element &&
+          event.target.closest("a[href]")
+        ) {
+          setFlyout(null);
+          groupTriggerRef.current?.focus();
+        }
+      }}
       className={cn(
         // Pinned to the viewport: without sticky + h-screen the nav is a tall flex child and scrolls
         // away with a long table. `self-start` lets sticky work in the row.
-        "glass-surface sticky top-0 flex h-screen shrink-0 flex-col gap-3 self-start overflow-hidden border-r border-[var(--color-border)] p-3 transition-[width]",
+        "glass-surface sticky top-0 flex h-[calc(100*var(--vh1))] shrink-0 flex-col gap-3 self-start border-r border-[var(--color-border)] p-3 lg:transition-[width]",
         effectiveCollapsed ? "w-[72px]" : "w-56",
+        activeGroup ? "z-40" : "overflow-hidden",
       )}
     >
       <div
@@ -170,16 +240,22 @@ export function GroupedSidebar({
         )}
       </div>
 
-      <button
-        type="button"
-        onClick={toggleCollapsed}
-        title={t("toggleSidebar")}
-        aria-label={t("toggleSidebar")}
-        className="flex h-8 items-center justify-center gap-2 rounded-md border border-[var(--color-border)] text-xs font-semibold text-[var(--color-text-muted)] hover:bg-[var(--color-surface-hover)]"
-      >
-        <span aria-hidden="true">{effectiveCollapsed ? "»" : "«"}</span>
-        {!effectiveCollapsed && <span>{t("collapseSidebar")}</span>}
-      </button>
+      {!isNarrowViewport && (
+        <button
+          type="button"
+          onClick={toggleCollapsed}
+          title={t("toggleSidebar")}
+          aria-label={t("toggleSidebar")}
+          className="flex h-8 items-center justify-center gap-2 rounded-md border border-[var(--color-border)] text-xs font-semibold text-[var(--color-text-muted)] hover:bg-[var(--color-surface-hover)]"
+        >
+          {effectiveCollapsed ? (
+            <PanelLeftOpen aria-hidden="true" size={16} />
+          ) : (
+            <PanelLeftClose aria-hidden="true" size={16} />
+          )}
+          {!effectiveCollapsed && <span>{t("collapseSidebar")}</span>}
+        </button>
+      )}
 
       {/* min-h-0 lets this list shrink and scroll on its own, so the logo, collapse button and theme switcher stay pinned. */}
       <div className="scrollbar-glass -mr-2 flex min-h-0 flex-1 flex-col gap-1 overflow-x-hidden overflow-y-auto pr-2">
@@ -196,13 +272,27 @@ export function GroupedSidebar({
         {groups.map((group) => {
           const isOpen = isGroupOpen(group.key) && !effectiveCollapsed;
           return (
-            <div key={group.key}>
+            <div key={group.key} data-sidebar-group={group.key}>
               <NavGroupHeader
                 label={t(group.labelKey)}
                 icon={group.icon}
-                isOpen={isOpen}
+                isOpen={isOpen || activeGroup?.key === group.key}
                 collapsed={effectiveCollapsed}
-                onClick={() => toggleGroup(group.key)}
+                onClick={() => {
+                  if (effectiveCollapsed) {
+                    groupTriggerRef.current =
+                      sidebarRef.current?.querySelector<HTMLButtonElement>(
+                        `[data-sidebar-group="${group.key}"] button`,
+                      ) ?? null;
+                    setFlyout(
+                      activeGroup?.key === group.key
+                        ? null
+                        : { key: group.key, pathname },
+                    );
+                  } else {
+                    toggleGroup(group.key);
+                  }
+                }}
               />
               {isOpen && (
                 <div className="mt-1 ml-4 flex flex-col gap-0.5 border-l border-[var(--color-border)] pl-2">
@@ -221,6 +311,31 @@ export function GroupedSidebar({
           );
         })}
       </div>
+
+      {activeGroup && (
+        <div
+          ref={flyoutRef}
+          className="glass-card glass-card--popover absolute left-full ml-2 flex max-h-[calc(calc(100*var(--dvh1))-1rem)] w-56 max-w-[calc(100vw-5.5rem)] flex-col gap-1 overflow-y-auto rounded-xl p-2"
+        >
+          <p className="mb-1 flex items-center gap-2 border-b border-[var(--color-border)] px-2 pt-1 pb-2 text-sm font-semibold">
+            <activeGroup.icon
+              aria-hidden="true"
+              size={15}
+              className="shrink-0 text-[var(--color-text-muted)]"
+            />
+            {t(activeGroup.labelKey)}
+          </p>
+          {activeGroup.items.map((item) => (
+            <NavLink
+              key={item.key}
+              href={item.href}
+              label={t(item.labelKey)}
+              isActive={item.href === activeHref}
+              collapsed={false}
+            />
+          ))}
+        </div>
+      )}
 
       <ThemeLangSwitcher variant="inline" collapsed={effectiveCollapsed} />
     </nav>

@@ -261,4 +261,37 @@ describe("DataTable", () => {
       expect(onSortChange).toHaveBeenCalledWith("name", "asc");
     });
   });
+  describe("disabled rows", () => {
+    function renderPicker(onToggleRow = vi.fn(), onToggleAll = vi.fn()) {
+      renderTable({
+        selection: {
+          selectedKeys: new Set<string>(),
+          onToggleRow,
+          onToggleAll,
+          selectAllLabel: "Chọn tất cả",
+          rowLabel: (row) => `Chọn ${row.name}`,
+          isRowDisabled: (row) => row.id === "u2",
+        },
+      });
+    }
+
+    it("turns the checkbox off and ignores a click on the row", () => {
+      const onToggleRow = vi.fn();
+      renderPicker(onToggleRow);
+      expect(
+        screen.getByRole("checkbox", { name: "Chọn Tran Thi B" }),
+      ).toBeDisabled();
+      fireEvent.click(screen.getByText("Tran Thi B"));
+      expect(onToggleRow).not.toHaveBeenCalled();
+      fireEvent.click(screen.getByText("Nguyen Van A"));
+      expect(onToggleRow).toHaveBeenCalledWith("u1");
+    });
+
+    it("counts only the pickable rows for the select-all box", () => {
+      renderPicker();
+      expect(
+        screen.getByRole("checkbox", { name: "Chọn tất cả" }),
+      ).not.toBeChecked();
+    });
+  });
 });

@@ -94,6 +94,14 @@
 | **Kết quả mong đợi** | Trang chỉ đọc: không có nút phân tích, phỏng vấn, làm lại; hiện trạng thái hiện tại và không tự cập nhật (muốn mới hơn thì tải lại); không có Beats. Breadcrumb về đúng màn đã gọi (mặc định danh sách bài nộp), mục sidebar sáng theo màn gọi tới. Thẻ ngữ cảnh luôn là H và L thật của bài nộp, không theo gợi ý trên đường dẫn. Bài nộp ngoài lớp: "Không tìm thấy bài nộp." |
 | **Nguồn** | [SoT: 01-rd/screens/users/USR0201_submission_result.md:225-232; 02-bd/screens/users/USR0201_submission_result.md:549, 557-560; 04-tdd/modules/F4_judge-orchestration.md AC-45] |
 
+### SR-AC-11 — Bài đang chờ: thấy số bài phía trước và thời gian ước tính, tự làm tươi, tự biến mất khi bắt đầu chấm
+| Mục | Nội dung |
+| :--- | :--- |
+| **Tiền đề** | Bài nộp A của học viên vừa nộp từ Workspace, đang chờ chấm; phía trước còn 18 bài đang chờ, hệ thống đủ dữ liệu tốc độ chấm (ước tính khoảng 9 giây) |
+| **Thao tác** | Học viên mở trang bài nộp A và chờ khoảng vài chục giây; một lần khác, hệ thống chưa đủ dữ liệu tốc độ; một lần khác, phía trước không còn bài nào; một lần khác, đóng và mở lại trang khi bài đã bắt đầu chấm |
+| **Kết quả mong đợi** | Trang hiện dòng "Đang chờ chấm: phía trước còn 18 bài, ước tính khoảng 9 giây" và số này tự cập nhật khoảng mỗi 5 giây mà không cần tải lại. Khi chưa đủ dữ liệu chỉ hiện "phía trước còn N bài". Khi không còn bài phía trước chỉ hiện câu sắp đến lượt, không có số giây. Ngay khi A bắt đầu được chấm dòng này biến mất, việc làm tươi dừng và trang hiện tiến độ từng testcase như SR-AC-02. Trang của giảng viên (SR-AC-10) không hiện dòng này. Con số luôn được nói là ước tính |
+| **Nguồn** | [SoT: 01-rd/screens/users/USR0201_submission_result.md] REQ-20; [SoT: 02-bd/screens/users/USR0201_submission_result.md] Sheet 5 Khu vực B NO 6, Sheet 8 EVT-10; [SoT: 04-tdd/modules/F4_judge-orchestration.md] AC-78, AC-79 |
+
 ## 3. Truy vết
 
 Bảng 1 nối tiêu chí tới `AC` module và điểm kiểm ở DD màn (`T-SR-nn`).
@@ -112,6 +120,7 @@ Bảng 1 nối tiêu chí tới `AC` module và điểm kiểm ở DD màn (`T-S
 | SR-AC-08 | `F4 AC-34` | T-SR-15, 16 | [TC-USR0201-SRAC08-01](../../testcases/screens/users/USR0201_submission_result.md), [TC-USR0201-SRAC08-02](../../testcases/screens/users/USR0201_submission_result.md), [TC-USR0201-SRAC08-03](../../testcases/screens/users/USR0201_submission_result.md), [TC-USR0201-SRAC08-04](../../testcases/screens/users/USR0201_submission_result.md) | chưa |
 | SR-AC-09 | `F4 AC-68` | T-SR-18, 19, 20, 23 | [TC-USR0201-SRAC09-01](../../testcases/screens/users/USR0201_submission_result.md), [TC-USR0201-SRAC09-02](../../testcases/screens/users/USR0201_submission_result.md) | chưa |
 | SR-AC-10 | `F4 AC-45` | T-SR-11, 21 | [TC-USR0201-SRAC10-01](../../testcases/screens/users/USR0201_submission_result.md) | chưa |
+| SR-AC-11 | `F4 AC-78`, `AC-79`, `AC-80` | T-SR-24 đến 27 | `queue-notice.test.tsx` (ba trạng thái, null), `progress.test.tsx` (mô-đun "PENDING queue polling"), `submission-result-view.test.tsx` (SB-90430 hiện, JUDGING và cuối không hiện) | FE xong 2026-11-16 (`pnpm check` PASS); backend xong (xem `F4 AC-78` đến `AC-80`); **đã kiểm trình duyệt thật với máy chủ thật 2026-11-16** (`06-plan/reports/261116-0100-f4-14-browser-check/report.md`; ảnh chụp bằng script Playwright, không phải `pnpm e2e`): dòng hiện đúng, thăm dò 5,02 đến 5,03 giây, dừng sau `PENDING`. Vế giảng viên (T-SR-27) chỉ kiểm **gián tiếp**: token giảng viên gọi `progress` trả `403 JDG-301`, nhưng giảng viên tổng hợp chưa phụ trách lớp nào nên chưa dựng được trang giảng viên có bài `PENDING` |
 
 ## 4. Chưa chốt
 

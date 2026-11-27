@@ -1,6 +1,37 @@
 import { expect, test } from "@playwright/test";
 import { pickFilter } from "./filter-menu";
 
+test("opens account details and dismisses the role menu before the dialog", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 800 });
+  await page.goto("/admin/users");
+  const account = page
+    .getByRole("list", { name: "Danh sách tài khoản" })
+    .getByRole("listitem")
+    .first();
+  const details = account.getByRole("button", {
+    name: /^Xem chi tiết tài khoản/,
+  });
+  await details.click();
+  const detailDialog = page.getByRole("dialog", { name: "Chi tiết tài khoản" });
+  await expect(detailDialog.getByText("Mã tài khoản")).toBeVisible();
+  await detailDialog.getByRole("button", { name: "Đóng" }).click();
+  await expect(details).toBeFocused();
+
+  await account.getByRole("button", { name: /^Đổi vai trò của/ }).click();
+  const roleDialog = page.getByRole("dialog", { name: /^Đổi vai trò của/ });
+  const picker = roleDialog.getByRole("button", { name: /^Vai trò mới/ });
+  await picker.press("ArrowDown");
+  const menu = roleDialog.getByRole("listbox", { name: "Vai trò mới" });
+  await expect(menu).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(menu).toHaveCount(0);
+  await expect(picker).toBeFocused();
+  await page.keyboard.press("Escape");
+  await expect(roleDialog).toHaveCount(0);
+});
+
 /**
  * PROTOTYPE screen check for admin_user_management. Covers the selection + bulk-action flow, which
  * is the reason DataTable grew row selection, and the confirmation step that
@@ -24,7 +55,7 @@ test("filters combine and the result count follows them", async ({ page }) => {
 
   await page.getByLabel("Tìm người dùng").fill("bklinh");
   await expect(rows).toHaveCount(1);
-  await expect(page.getByText("1 / 9 tài khoản")).toBeVisible();
+  await expect(page.getByText("1 / 1.284 tài khoản")).toBeVisible();
 });
 
 test("selecting rows reveals bulk actions and locking asks for confirmation first", async ({

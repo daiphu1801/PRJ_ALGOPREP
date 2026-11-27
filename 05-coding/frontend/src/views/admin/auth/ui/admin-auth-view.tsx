@@ -40,6 +40,7 @@ function AdminAuthViewContent() {
 
   const title = {
     signup: t("signupTitle"),
+    verify_email: t("verifyEmailTitle"),
     login: tAdmin("title"),
     forgot_email: t("forgotEmailTitle"),
     forgot_otp: t("forgotOtpTitle"),
@@ -47,7 +48,7 @@ function AdminAuthViewContent() {
   }[mode];
 
   return (
-    <div className="admin-shell relative flex min-h-screen w-full items-center justify-center overflow-hidden bg-[var(--color-background)] p-4 text-[var(--color-text)]">
+    <div className="admin-shell relative flex min-h-[calc(100*var(--vh1))] w-full items-center justify-center overflow-hidden bg-[var(--color-background)] p-4 text-[var(--color-text)]">
       <LiquidGlassBackdrop />
       <ThemeLangSwitcher variant="floating" />
 
@@ -69,7 +70,7 @@ function AdminAuthViewContent() {
           small box adrift on a large backdrop (owner, 2026-09-29). The right column is the same
           `AuthAsidePanel` the student screen uses, so the fix costs content, not a second layout. */}
       <section
-        className="glass-card glass-card--elevated relative z-10 grid w-full max-w-3xl grid-cols-1 overflow-hidden lg:grid-cols-[1.06fr_1fr]"
+        className="glass-card glass-card--elevated relative z-10 grid w-full max-w-md grid-cols-1 lg:max-w-3xl overflow-hidden lg:grid-cols-[1.06fr_1fr]"
         style={{
           border:
             "1px solid color-mix(in srgb, white 35%, var(--color-border))",

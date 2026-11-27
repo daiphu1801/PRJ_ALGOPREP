@@ -52,7 +52,8 @@ class JudgeMigrationTest {
           "judge_run_tokens",
           "submission_testcase_results",
           "callback_logs",
-          "outbox_events");
+          "outbox_events",
+          "worker_status");
 
   /** Tables that must hold no rows right after a clean install (BD 8: seed is configuration). */
   private static final List<String> EMPTY_AT_START =
@@ -61,7 +62,8 @@ class JudgeMigrationTest {
           "judge_run_tokens",
           "submission_testcase_results",
           "callback_logs",
-          "outbox_events");
+          "outbox_events",
+          "worker_status");
 
   private static final String INSERT_SUBMISSION =
       "INSERT INTO judge.submissions (id, user_id, problem_id, language, submission_model,"
@@ -145,7 +147,7 @@ class JudgeMigrationTest {
             .load()
             .migrate();
     assertThat(result.success).isTrue();
-    assertThat(result.migrationsExecuted).isEqualTo(2);
+    assertThat(result.migrationsExecuted).isEqualTo(3);
     assertSeededConfiguration(clean);
     for (String empty : EMPTY_AT_START) {
       assertThat(count(clean, "judge." + empty)).as(empty).isZero();

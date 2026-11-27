@@ -1,5 +1,5 @@
 {
-  "_": "Nguồn tiêu chí: 01-rd/req/user_stories/a1_student.md:158; 01-rd/req/user_stories/a1_student.md:160; 01-rd/req/user_stories/a1_student.md:163; 01-rd/req/user_stories/a1_student.md:165; 01-rd/req/user_stories/a1_student.md:167. Nguồn thiết kế: 03-dd/logic/F6_interview-bank.md; 03-dd/api/F6_interview-bank.md. [SoT: Suy luận] Tên lớp và chữ ký phương thức là thiết kế đề xuất từ hợp đồng DD vì backend nghiệp vụ chưa hiện thực đầy đủ. Mỗi phương thức ở lớp điều phối nối với đúng một tiêu chí theo thứ tự trong bảng truy vết; không hàm ý một endpoint riêng cho mỗi tiêu chí. Bỏ DTO HTTP, getter/setter, nhánh lỗi chi tiết.",
+  "_": "Nguồn tiêu chí: 01-rd/req/user_stories/a1_student.md:158-167. Nguồn thiết kế: 05-coding/backend/algoprep-interview-bank/src/main/java/com/algoprep/interviewbank/. Cấu trúc Controller, CommandHandler và Port chuẩn theo kiến trúc Hexagonal / Clean Architecture của phân hệ F6.",
   "kind": "class",
   "title": "A1 — Học và luyện câu hỏi phỏng vấn",
   "covers": [
@@ -19,62 +19,84 @@
     "legend": "shared",
     "classes": [
       {
-        "id": "service",
-        "name": "InterviewPracticeService",
+        "id": "questionController",
+        "name": "InterviewQuestionsController",
         "methods": [
-          "+ search(filter : QuestionFilter, studentId : UUID) : Page<Question>",
-          "+ study(questionId : UUID) : StudyContent",
-          "+ evaluate(questionId : UUID, studentId : UUID, answer : String) : PracticeFeedback",
-          "+ progress(studentId : UUID) : PracticeProgress",
-          "+ selfRate(questionId : UUID, studentId : UUID, rating : RecallRating)"
+          "+ list(caller : JwtToken, params : Map) : Items",
+          "+ get(caller : JwtToken, questionId : String) : Detail",
+          "+ rate(caller : JwtToken, questionId : String, req : Request) : Recall"
         ]
       },
       {
-        "id": "port1",
-        "name": "InterviewQuestionRepository",
-        "kind": "class",
+        "id": "practiceController",
+        "name": "PracticeAnswersController",
         "methods": [
-          "+ findPublished(filter : QuestionFilter) : Page<Question>"
+          "+ submit(caller : JwtToken, questionId : String, req : Request) : AttemptDto"
         ]
       },
       {
-        "id": "port2",
-        "name": "PracticeAttemptRepository",
-        "kind": "class",
+        "id": "submitHandler",
+        "name": "SubmitPracticeAnswerCommandHandler",
         "methods": [
-          "+ save(attempt : PracticeAttempt)"
+          "+ submit(in : PracticeSubmission) : PracticeOutcome"
         ]
       },
       {
-        "id": "port3",
-        "name": "AnswerEvaluationPort",
+        "id": "questionRepo",
+        "name": "LearnerQuestionRepository",
         "kind": "interface",
         "methods": [
-          "+ evaluate(question : Question, answer : String) : PracticeFeedback"
+          "+ page(criteria : LearnerQuestionCriteria) : LearnerQuestionPage",
+          "+ find(userId : UUID, questionId : UUID) : Optional<LearnerQuestion>",
+          "+ rate(userId : UUID, questionId : UUID, rating : RecallRating) : Optional<RecallState>"
+        ]
+      },
+      {
+        "id": "practiceRepo",
+        "name": "PracticeRepository",
+        "kind": "interface",
+        "methods": [
+          "+ findActiveQuestion(questionId : UUID) : Optional<PracticeQuestion>",
+          "+ insertAttempt(attempt : NewAttempt, attemptNo : int) : AnswerAttempt",
+          "+ attempts(userId : UUID, questionId : UUID, before : Integer, limit : int) : AttemptPage"
+        ]
+      },
+      {
+        "id": "feedbackPort",
+        "name": "AnswerFeedbackPort",
+        "kind": "interface",
+        "methods": [
+          "+ reserve(userId : UUID, category : LearnerCategory, limit : int) : GateTicket",
+          "+ compareAnswer(request : FeedbackRequest) : FeedbackResult"
         ]
       }
     ],
     "externals": [],
     "relations": [
       {
-        "from": "service",
-        "to": "port1",
+        "from": "questionController",
+        "to": "questionRepo",
         "kind": "dependency"
       },
       {
-        "from": "service",
-        "to": "port2",
+        "from": "practiceController",
+        "to": "submitHandler",
         "kind": "dependency"
       },
       {
-        "from": "service",
-        "to": "port3",
+        "from": "submitHandler",
+        "to": "practiceRepo",
+        "kind": "dependency"
+      },
+      {
+        "from": "submitHandler",
+        "to": "feedbackPort",
         "kind": "dependency"
       }
     ],
     "notes": [
-      "Chế độ học trả gợi ý/khung chuẩn/từ khoá; tự chấm gần nhất quyết định thứ tự ôn lại.",
-      "[SoT: Suy luận] Tên lớp/phương thức là thiết kế backend từ DD."
+      "InterviewQuestionsController phục vụ duyệt câu hỏi, xem khung đáp án mẫu và ghi nhận mức độ ghi nhớ (RecallRating).",
+      "SubmitPracticeAnswerCommandHandler đối chiếu câu trả lời tự luận với rubric qua AnswerFeedbackPort."
     ]
   }
 }

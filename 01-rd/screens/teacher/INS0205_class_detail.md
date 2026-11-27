@@ -58,7 +58,8 @@ mà chỉ trỏ tới.
 3. **Thẻ "Lịch học"** — hiển thị **từng phần**: ngày học trong tuần, giờ học, phòng, thời gian áp dụng
    (từ ngày đến ngày), ghi chú. Mọi phần tuỳ chọn; lớp không có lịch thì thẻ hiện trạng thái rỗng.
 4. **Thẻ "Mã mời"** — danh sách mã còn hiệu lực kèm hạn dùng, nút sao chép từng mã, nút "Tạo mã mới" ngay
-   trên trang. Nhiều mã song song hợp lệ, không thu hồi mã cũ (F1-25)
+   trên trang, nút thu hồi từng mã (kèm xác nhận, `DEC-2026-1126-class-invite-revoke`). Nhiều mã song song hợp lệ,
+   tạo mã mới không thu hồi mã cũ (F1-25)
    [SoT: 01-rd/req/F1_identity.md:118-125]. **Chốt 2026-10-14
    (DEC-2026-1014-instructor-batch3-4-contracts-and-removal):** hạn dùng mỗi mã cố định 7 ngày, không có ô
    nhập để chọn hạn, tạo mã mới được bất cứ lúc nào [SoT: .nexa/control/decision-registry.md:3734-3735].
@@ -87,7 +88,7 @@ Xoá. Popup Tạo/Sửa lớp giữ nguyên, dùng chung giữa hai màn.
 - Hồ sơ chi tiết một học viên — thuộc `class_student_detail` (`INS0204`).
 - Chấm lại, bộ câu hỏi phỏng vấn riêng theo lớp — đã loại khỏi phạm vi
   (`DEC-2026-0828-remove-rejudge-scope`, `DEC-2026-0828-remove-per-class-interview-set`).
-- Thu hồi mã mời, đặt hạn dùng mã mời tuỳ ý: F1-25 chỉ chốt "mỗi mã có hạn riêng"
+- ~~Thu hồi mã mời~~ **(ĐÃ ĐƯA VÀO PHẠM VI 2026-11-26, `DEC-2026-1126-class-invite-revoke`)**; đặt hạn dùng mã mời tuỳ ý: F1-25 chỉ chốt "mỗi mã có hạn riêng"
   `[SoT: 01-rd/req/F1_identity.md:118-123]`; giá trị hạn đã chốt cố định 7 ngày
   (`DEC-2026-1014-instructor-batch3-4-contracts-and-removal`).
 

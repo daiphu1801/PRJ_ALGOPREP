@@ -1,4 +1,4 @@
-// PROTOTYPE — no DD yet. See 06-plan/PROTOTYPE_DEBT.md
+// F6 #10, #15 to #18 (03-dd/api/F6_interview-bank.md); in-memory store in mock mode.
 //
 // "Quản lý độ khó" for interview questions (DEC-2026-1001-admin-configurable-settings): the shared
 // ManagedListDialog, same shape as the topic manager but without a per-row extra control. At least one
@@ -6,10 +6,7 @@
 "use client";
 
 import {
-  addInterviewLevel,
-  moveInterviewLevel,
-  removeInterviewLevel,
-  renameInterviewLevel,
+  useInterviewLevelActions,
   useInterviewLevels,
 } from "@/entities/interview-question";
 import { useT } from "@/shared/i18n";
@@ -25,6 +22,7 @@ type Props = {
 export function LevelManagerDialog({ open, onClose, usage }: Props) {
   const t = useT("interviewQuestionManagement");
   const levels = useInterviewLevels();
+  const actions = useInterviewLevelActions();
 
   return (
     <ManagedListDialog
@@ -32,10 +30,10 @@ export function LevelManagerDialog({ open, onClose, usage }: Props) {
       onClose={onClose}
       items={levels}
       usage={usage}
-      onAdd={addInterviewLevel}
-      onRename={renameInterviewLevel}
-      onRemove={removeInterviewLevel}
-      onMove={moveInterviewLevel}
+      onAdd={actions.add}
+      onRename={actions.rename}
+      onRemove={actions.remove}
+      onMove={actions.move}
       keepAtLeast={1}
       labels={{
         title: t("levelManager.title"),

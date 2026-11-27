@@ -7,10 +7,10 @@ import {
   screen,
 } from "@testing-library/react";
 import { toast, useToasts } from "@/shared/lib/toast-store";
-import type { ManagedListError } from "@/shared/lib/managed-list-store";
 import {
   ManagedListDialog,
   type ManagedListLabels,
+  type ManagedListResult,
 } from "./managed-list-dialog";
 
 const labels: ManagedListLabels = {
@@ -36,7 +36,9 @@ const items = [
 
 function setup(
   onRemove = vi.fn(),
-  onAdd: (label: string) => ManagedListError | null = () => null,
+  onAdd: (
+    label: string,
+  ) => ManagedListResult | Promise<ManagedListResult> = () => null,
   options: {
     items?: typeof items;
     keepAtLeast?: number;
@@ -164,5 +166,40 @@ describe("ManagedListDialog long lists", () => {
     const list = screen.getByRole("list");
     expect(list).toHaveClass("overflow-y-auto");
     expect(list.style.maxHeight).toBe("14.5rem");
+  });
+});
+
+describe("ManagedListDialog with an API behind it", () => {
+  it("waits for a promised add, then toasts success and clears the field", async () => {
+    const toasts = renderHook(() => useToasts());
+    setup(vi.fn(), () => Promise.resolve(null));
+    const field = screen.getByLabelText("Chủ đề mới");
+    fireEvent.change(field, { target: { value: "Gamma" } });
+    fireEvent.click(screen.getByRole("button", { name: "Thêm" }));
+    await act(async () => {});
+    expect(toasts.result.current.map((item) => item.message)).toEqual([
+      "Đã thêm",
+    ]);
+    expect(field).toHaveValue("");
+  });
+
+  it("adds no toast of its own when the caller already reported the failure", async () => {
+    const toasts = renderHook(() => useToasts());
+    setup(vi.fn(), () => Promise.resolve("reported"));
+    const field = screen.getByLabelText("Chủ đề mới");
+    fireEvent.change(field, { target: { value: "Gamma" } });
+    fireEvent.click(screen.getByRole("button", { name: "Thêm" }));
+    await act(async () => {});
+    expect(toasts.result.current).toHaveLength(0);
+    expect(field).toHaveValue("Gamma");
+    expect(field).toHaveAttribute("aria-invalid", "true");
+  });
+
+  it("raises no success toast after a delete the caller reported as failed", async () => {
+    const toasts = renderHook(() => useToasts());
+    setup(vi.fn(() => Promise.resolve("reported" as const)));
+    fireEvent.click(screen.getByRole("button", { name: "Xoá" }));
+    await act(async () => {});
+    expect(toasts.result.current).toHaveLength(0);
   });
 });

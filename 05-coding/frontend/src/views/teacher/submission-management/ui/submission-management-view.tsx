@@ -7,15 +7,13 @@
 // No stat-card strip (owner rule 2026-10-13): the list is the screen.
 "use client";
 
+import { UserAvatar } from "@/entities/user";
 import { useMemo, useState } from "react";
+import { isMockMode } from "@/shared/api";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Eye } from "lucide-react";
-import {
-  initialsOfClassStudent,
-  useClassStudents,
-  useInstructorClasses,
-} from "@/entities/class";
+import { useClassStudents, useInstructorClasses } from "@/entities/class";
 import {
   matchesResultFilter,
   SUBMISSION_STATUS_VARIANT,
@@ -32,9 +30,14 @@ import {
   PageHeader,
   Pagination,
   TextField,
+  QueryError,
   type DataTableColumn,
 } from "@/shared/ui";
-import { buildSubmissionRows, type SubmissionRow } from "@/features/submission-rows";
+import {
+  buildSubmissionRows,
+  useInstructorSubmissionPage,
+  type SubmissionRow,
+} from "@/features/submission-rows";
 
 // 20 rows per page, fixed (DEC-2026-1014-instructor-batch5-6-nav-pagination-rubric): no size picker.
 const PAGE_SIZE = 20;
@@ -64,7 +67,13 @@ export function SubmissionManagementView() {
     router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
   };
 
-  const readableQuery = useInstructorReadableSubmissions();
+  const readableQuery = useInstructorReadableSubmissions(isMockMode());
+  const realPage = useInstructorSubmissionPage({
+    classId: classTab === "all" ? undefined : classTab,
+    result,
+    q: searchParams.get("q") ?? "",
+    page,
+  });
   const allRows = useMemo(
     () =>
       buildSubmissionRows(studentsQuery.data ?? [], readableQuery.data ?? []),
@@ -81,7 +90,12 @@ export function SubmissionManagementView() {
           row.problemTitle.toLowerCase().includes(needle)),
     );
   }, [allRows, classTab, result, searchParams]);
-  const pageRows = rows.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const pageRows = isMockMode()
+    ? rows.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
+    : (realPage.data?.items ?? []);
+  const totalRows = isMockMode()
+    ? rows.length
+    : (realPage.data?.totalCount ?? 0);
 
   const columns: DataTableColumn<SubmissionRow>[] = [
     {
@@ -90,12 +104,12 @@ export function SubmissionManagementView() {
       render: (row) => {
         const identity = (
           <>
-            <span
-              aria-hidden="true"
-              className="glass-surface flex h-[28px] w-[28px] shrink-0 items-center justify-center rounded-full border border-[var(--color-border)] text-[11px] font-semibold"
-            >
-              {initialsOfClassStudent(row.studentName)}
-            </span>
+            <UserAvatar
+              userId={row.studentId}
+              name={row.studentName}
+              avatarVersion={row.studentAvatarVersion}
+              size="sm"
+            />
             {row.studentName}
           </>
         );
@@ -176,6 +190,9 @@ export function SubmissionManagementView() {
       />
 
       <Card>
+        {!isMockMode() && realPage.isError ? (
+          <QueryError query={realPage} />
+        ) : null}
         <div className="mb-3.5 flex flex-wrap items-center gap-2.5">
           <TextField
             label={t("search")}
@@ -206,6 +223,7 @@ export function SubmissionManagementView() {
             ]}
           />
           <FilterMenu
+            align="end"
             label={t("resultFilter")}
             value={result}
             onValueChange={(value) =>
@@ -221,7 +239,10 @@ export function SubmissionManagementView() {
             ]}
           />
           <span className="ml-auto text-[12.5px] text-[var(--color-text-muted)]">
-            {t("resultCount", { shown: rows.length, total: allRows.length })}
+            {t("resultCount", {
+              shown: isMockMode() ? rows.length : pageRows.length,
+              total: isMockMode() ? allRows.length : totalRows,
+            })}
           </span>
         </div>
 
@@ -231,9 +252,9 @@ export function SubmissionManagementView() {
           rows={pageRows}
           rowKey={(row) => row.key}
           status={
-            studentsQuery.isLoading
+            (!isMockMode() ? realPage.isLoading : studentsQuery.isLoading)
               ? "loading"
-              : studentsQuery.isError
+              : (!isMockMode() ? realPage.isError : studentsQuery.isError)
                 ? "error"
                 : "ready"
           }
@@ -244,19 +265,19 @@ export function SubmissionManagementView() {
                 ? t("emptyNoSubmission")
                 : t("empty")
           }
-          minWidth={960}
+          minWidth={0}
         />
 
         <Pagination
           page={page}
           pageSize={PAGE_SIZE}
-          total={rows.length}
+          total={totalRows}
           onPageChange={(value) =>
             setUrlParams({ page: value > 1 ? String(value) : null })
           }
           summary={t("pageSummary", {
             page,
-            total: Math.max(1, Math.ceil(rows.length / PAGE_SIZE)),
+            total: Math.max(1, Math.ceil(totalRows / PAGE_SIZE)),
           })}
           previousLabel={t("previous")}
           nextLabel={t("next")}

@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import type { Metadata } from "next";
+import { headers } from "next/headers";
 import { IntlProvider, getLocale } from "@/shared/i18n/server";
 import { Providers } from "./providers";
 import "./globals.css";
@@ -15,12 +16,13 @@ export default async function RootLayout({
   children: ReactNode;
 }) {
   const locale = await getLocale();
+  const nonce = (await headers()).get("x-nonce") ?? undefined;
 
   return (
     <html lang={locale} data-ui-lang={locale} suppressHydrationWarning>
       <body>
         <IntlProvider>
-          <Providers>{children}</Providers>
+          <Providers nonce={nonce}>{children}</Providers>
         </IntlProvider>
       </body>
     </html>

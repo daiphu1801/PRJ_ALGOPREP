@@ -89,3 +89,13 @@ Dùng `problemInfo.*`, `problemAuthoring.*` cho nhãn chia sẻ và `apiError.PR
 | OQ-2 | A2 đọc bài công khai của người khác, DTO chỉ trả `testcaseSummary` nên không có độ phủ theo loại ca | Ẩn thẻ độ phủ với `readOnly=true`; chỉ hiện các số tổng hợp có nguồn |
 
 TDD màn đã có tại `04-tdd/screens/shared/SHR0203_problem_info.md`.
+
+## Nối API thật (F2-6 phần 2, 2026-11-06)
+
+Bảng dưới liệt kê endpoint màn tiêu thụ và hiện trạng; hợp đồng chỉ định nghĩa ở `03-dd/api/F2_problem-bank.md`.
+
+| Endpoint | Hiện trạng |
+| :--- | :--- |
+| `#33` | `realLoadDraft`; `PRB-010` (404) hiện không tìm thấy, `PRB-002` (403) báo lỗi tải |
+
+Test đường thật: `views/shared/problem-info/ui/problem-info-real.test.tsx` (3 ca).

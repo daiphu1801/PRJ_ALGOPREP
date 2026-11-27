@@ -1,21 +1,26 @@
 // PROTOTYPE — no DD yet. See 06-plan/PROTOTYPE_DEBT.md
 "use client";
 
+import { useMyProfile } from "@/entities/user";
 import { useT } from "@/shared/i18n";
 import { ADMIN_NAV_MISC } from "../model/admin-nav";
 import { AreaToolbar } from "./area-toolbar";
 
 /**
- * Real identity waits on app/providers/auth-provider.tsx session bootstrap (still TODO) — shown as
- * a static two-line placeholder (name + role, dc.html:116-119) so the row's shape matches the
- * prototype without inventing a specific fake person's name.
+ * Name from the signed-in admin's profile (same read as the instructor toolbar); the static
+ * placeholder (name + role, dc.html:116-119) shows while it loads, so the row never pretends to
+ * know a person it has not read.
  */
 export function AdminToolbar() {
   const t = useT("adminNav");
+  const profile = useMyProfile("admin").data;
+  const name = profile?.displayName;
   return (
     <AreaToolbar
-      name={t("identityNamePlaceholder")}
-      roleLabel={t("adminIdentityPlaceholder")}
+      name={name || t("identityNamePlaceholder")}
+      userId={name ? profile?.userId : undefined}
+      avatarVersion={profile?.avatarVersion}
+      roleLabel={profile?.roleName ?? t("adminIdentityPlaceholder")}
       items={ADMIN_NAV_MISC.map(({ key, href, labelKey, icon }) => ({
         key,
         href,

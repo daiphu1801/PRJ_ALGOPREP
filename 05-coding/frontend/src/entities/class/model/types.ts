@@ -36,9 +36,12 @@ export const classSummarySchema = z.object({
   description: z.string().optional(),
   schedule: classScheduleSchema.optional(),
   studentCount: z.number(),
-  completionPct: z.number(),
-  avgScore: z.number().nullable(),
-  absentCount: z.number(),
+  // The three figures below come from F1 #56 (judge figures through identity). The plain list (#19),
+  // the fallback when the judge is down, leaves them out, and a screen shows a column only when the
+  // data has it. `completionPct` is null for a class with no assigned problem: never a 0 for "unknown".
+  completionPct: z.number().nullable().optional(),
+  avgScore: z.number().nullable().optional(),
+  absentCount: z.number().optional(),
   createdAt: z.string(),
 });
 export type ClassSummary = z.infer<typeof classSummarySchema>;
@@ -55,6 +58,7 @@ export const classStudentSchema = z.object({
   trend: z.array(z.number()),
   lastActiveLabel: z.string(),
   status: studentStatusSchema,
+  avatarVersion: z.number().nullable().optional(),
   // Contact details the instructor uses to reach the student (owner, 2026-10-13). Optional until
   // the identity DD fixes which profile fields an A2 may read.
   email: z.string().optional(),
@@ -64,6 +68,55 @@ export const classStudentSchema = z.object({
   leftAt: z.string().optional(),
 });
 export type ClassStudent = z.infer<typeof classStudentSchema>;
+
+// One page of the instructor student list (F1 #59): the server searches, sorts and pages.
+export type InstructorStudentPage = {
+  rows: ClassStudent[];
+  total: number;
+  totalPages: number;
+};
+
+// What the student detail screen needs (F1 #28); a mock `ClassStudent` is a valid one. The real one
+// adds the per-problem best result of the student in this class.
+export type ClassStudentDetail = Pick<
+  ClassStudent,
+  | "id"
+  | "name"
+  | "classId"
+  | "className"
+  | "status"
+  | "email"
+  | "phone"
+  | "avatarVersion"
+> & {
+  assignmentProgress?: {
+    problemId: string;
+    bestRatio: number | null;
+    bestVerdict: string | null;
+  }[];
+};
+
+// One row of the roster of a class (F1 #26). `metrics` is absent when the server could not read the
+// judge figures (the roster still comes back without them). `completionPct` is null for a class with
+// no assigned problem.
+export type ClassRosterRow = {
+  id: string;
+  classId: string;
+  name: string;
+  /** Picture version (F1 #26); absent or null means the learner has no picture. */
+  avatarVersion?: number | null;
+  /** The account is deleted or locked; the learner still counts in the class (F1 #26). */
+  accountInactive?: boolean;
+  email?: string;
+  phone?: string;
+  joinedAt?: string;
+  metrics?: {
+    status: StudentStatus;
+    avgScore: number | null;
+    completionPct: number | null;
+    lastActiveLabel: string;
+  };
+};
 
 export const inviteCodeSchema = z.object({
   id: z.string(),
@@ -87,6 +140,9 @@ export const classActivitySchema = z.object({
   text: z.string(),
   timeLabel: z.string(),
   attention: z.boolean(),
+  /** Real mode: the DB activity type and the actor, so the screen words the line through i18n. */
+  activityType: z.string().optional(),
+  actorName: z.string().optional(),
 });
 export type ClassActivity = z.infer<typeof classActivitySchema>;
 
@@ -109,14 +165,6 @@ export const classScoreTrendSchema = z.object({
 });
 export type ClassScoreTrend = z.infer<typeof classScoreTrendSchema>;
 
-// Two-letter avatar initial, same rule for every screen in the cluster
-// (class_management Sheet 5 Khu vực D NO 4: "hai ký tự đầu của hai từ cuối trong display_name").
-export function initialsOfClassStudent(name: string): string {
-  const parts = name.trim().split(/\s+/);
-  const lastTwo = parts.slice(-2);
-  return lastTwo.map((part) => part.charAt(0).toUpperCase()).join("");
-}
-
 // Learner side (screen "Lớp của tôi") - one class the signed-in learner belongs to. Instructor name
 // and assigned problems ride along so the screen needs a single call.
 export type MyClassAssignment = {
@@ -132,5 +180,10 @@ export type MyClass = {
   schedule?: ClassSchedule;
   instructorName: string;
   joinedAtLabel: string;
-  assignments: MyClassAssignment[];
+  // Assigned problems come from F2 (not built): the real class has none, and a screen hides the
+  // block and the progress bar rather than show "0 / 0".
+  assignments?: MyClassAssignment[];
 };
+
+/** What joining by invite code tells the learner (F1 #25). */
+export type JoinedClass = { id: string; name: string };

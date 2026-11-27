@@ -282,3 +282,17 @@ Bảng 8.3: Câu hỏi mở.
 | OQ-4 | **Đã chốt 2026-10-18** (`DEC-2026-1018-usr-open-questions-last-four`): bài đã rút vẫn hiện kèm nhãn "Đã rút xuống", tính vào tổng, ghi chú và Bỏ lưu dùng được | Đã chốt | 6 |
 | OQ-5 | **Đã chốt 2026-10-21** (owner, BD V0.10 [SoT: BD:74]): điểm lưu bài ở `problem_overview` và `problem_detail`; nút vào dòng là "Mở bài"; chỉ tên bài và nút mở được bấm | Đã chốt | 1 |
 | OQ-6 | **Đã chốt 2026-10-24** (`DEC24`): `problemId` UUID ở mọi route; liên kết dòng là `/problems/{uuid}` | Đã chốt | 4 |
+
+## 9. Nối API thật (2026-11-06, F2-6 phần 1)
+
+Bảng 9.1: Điều đã nối ở bản dựng, theo mục 2.
+
+| Việc | API | Trạng thái |
+| :--- | :--- | :--- |
+| Danh sách, lọc, trang 20 dòng | `#8` | Đã nối; ô tìm trễ 300 ms; mới lưu trước; `meta` cho dòng mô tả |
+| Bỏ lưu | `#10` | Đã nối; toast Hoàn tác giữ ghi chú trong closure |
+| Hoàn tác | `#9` với `createIfMissing=true` | Đã nối; ngày lưu là ngày tạo lại; `PRB-010` khi bài đã rút (mất ghi chú): owner chấp nhận 2026-11-06, **đã đóng** |
+| Sửa ghi chú | `#9` với `createIfMissing=false` | Đã nối; `PRB-014` đóng ô sửa và tải lại, `PRB-001` giữ ô sửa mở |
+| Bộ nhớ đệm bookmark dùng chung (`#11`) | Thuộc `USR0102`, `USR0104` | Chưa nối ở lát này |
+
+Suy giảm đã dựng: `solveState=null` hiện "Chưa rõ", `meta.solvedCount=null` thì dòng mô tả chỉ còn số bài đã lưu, có dòng thông báo và bộ lọc trạng thái chưa áp dụng.
