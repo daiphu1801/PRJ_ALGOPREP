@@ -266,7 +266,16 @@ test("a new account is created, mailed a temporary password, and a taken e-mail 
 
   // The same address again. The dialog only knows the rows on screen, so filter the list down to
   // nothing first: the duplicate then reaches the server, which refuses it, and the dialog stays.
+  // The screen filters its rows at once, before the server answers: wait for that answer, or the dialog
+  // still holds the old rows and refuses the address itself.
+  const filtered = page.waitForResponse(
+    (r) =>
+      r.url().includes("/identity/admin/users") &&
+      r.url().includes("zzz-no-such-user") &&
+      r.request().method() === "GET",
+  );
   await page.getByLabel(m.searchLabel).fill("zzz-no-such-user");
+  expect((await filtered).status()).toBe(200);
   await expect(page.getByText(m.emptyFiltered)).toBeVisible({
     timeout: 10_000,
   });

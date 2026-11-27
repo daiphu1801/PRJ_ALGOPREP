@@ -10,20 +10,14 @@ test("a submission outside the instructor's classes is not found", async ({
   await expect(page.getByText("Không tìm thấy bài nộp.")).toBeVisible();
 });
 
-test("a student's history filters by result and opens the submission with who submitted it", async ({
+test("a student's history opens the submission with who submitted it", async ({
   page,
 }) => {
   await page.goto("/instructor/classes/c1/students/s1");
   const history = page.getByRole("table", { name: "Lịch sử nộp bài" });
   await expect(history.getByRole("row")).toHaveCount(5); // header + 4 submissions (one still judging)
 
-  await pickFilter(page, "Lọc theo kết quả", "Đã chấp nhận");
-  await expect(history.getByRole("row")).toHaveCount(2); // header + 1 accepted
-  await expect(page.getByText("1 lượt nộp")).toBeVisible();
-  // "Chưa đạt" is judged-and-failed only: the submission still being judged is not in it.
-  await pickFilter(page, "Lọc theo kết quả", "Chưa đạt");
-  await expect(history.getByRole("row")).toHaveCount(3); // header + wrong answer + compile error
-  await pickFilter(page, "Lọc theo kết quả", "Đã chấp nhận");
+  // INS0204 has no result filter until F4 can filter this list (06-plan/261123-1100, row 15).
 
   await history.getByRole("link", { name: "Xem kết quả bài Two Sum" }).click();
   await expect(page).toHaveURL(

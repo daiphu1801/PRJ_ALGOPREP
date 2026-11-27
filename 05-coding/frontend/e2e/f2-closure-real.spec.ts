@@ -1,6 +1,7 @@
 // F2 closure on the real HTTP/PostgreSQL/MinIO stack. Fixtures belong to a unique instructor.
 import { randomUUID } from "node:crypto";
 import { readFile } from "node:fs/promises";
+import { inflateRawSync } from "node:zlib";
 import { expect, test, type Page } from "@playwright/test";
 import {
   APP_URL,
@@ -46,6 +47,27 @@ function topics() {
   sql(`insert into problem.topics(id,code,name,sort_order) values
        ('${first}','E2E-${first}','${names[0]}',20),('${second}','E2E-${second}','${names[1]}',21)`);
   return { first, second, names };
+}
+
+/** One entry of a ZIP file, found through its central directory (a stream writer fills the sizes there). */
+function zipText(zip: Buffer, name: string): string {
+  let at = zip.readUInt32LE(zip.lastIndexOf("PK\u0005\u0006") + 16);
+  while (zip.readUInt32LE(at) === 0x02014b50) {
+    const nameLength = zip.readUInt16LE(at + 28);
+    if (zip.toString("utf8", at + 46, at + 46 + nameLength) === name) {
+      const local = zip.readUInt32LE(at + 42);
+      const start =
+        local +
+        30 +
+        zip.readUInt16LE(local + 26) +
+        zip.readUInt16LE(local + 28);
+      const raw = zip.subarray(start, start + zip.readUInt32LE(at + 20));
+      return inflateRawSync(raw).toString("utf8");
+    }
+    at +=
+      46 + nameLength + zip.readUInt16LE(at + 30) + zip.readUInt16LE(at + 32);
+  }
+  throw new Error(`no ${name} in the downloaded file`);
 }
 
 test("management bulk adds a topic, withdraws only selected rows, exports all filtered rows", async ({
@@ -147,10 +169,11 @@ test("management bulk adds a topic, withdraws only selected rows, exports all fi
   const file = await download;
   const path = await file.path();
   expect(path).not.toBeNull();
-  const csv = await readFile(path!, "utf8");
-  expect(csv.split("\n").filter((line) => line.includes(prefix))).toHaveLength(
-    10,
-  );
+  // The export is an .xlsx workbook (F2 section 28.3); text cells are inline strings in the one sheet.
+  const sheet = zipText(await readFile(path!), "xl/worksheets/sheet1.xml");
+  expect(
+    sheet.split("</row>").filter((row) => row.includes(prefix)),
+  ).toHaveLength(10);
   await page.screenshot({
     path: info.outputPath("management-real.png"),
     fullPage: true,

@@ -25,7 +25,12 @@ const detail = vi.problemDetail;
 /** One published problem of the database behind the stack, as `[id, title]`. */
 function publishedProblem(): { id: string; title: string } {
   const row = sql(
-    "select id || '|' || title from problem.problems where status='PUBLISHED' and not deleted order by code limit 1",
+    // Other specs insert bare rows by SQL; only a problem with a spec and testcases is a real one.
+    "select id || '|' || title from problem.problems p where status='PUBLISHED' and not deleted" +
+      " and exists (select 1 from problem.problem_specs s where s.problem_id = p.id)" +
+      " and exists (select 1 from problem.testcases t where t.problem_id = p.id)" +
+      " and (select count(*) from problem.problems o where o.title = p.title and o.status='PUBLISHED') = 1" +
+      " order by code limit 1",
   );
   test.skip(!row, "no published problem in the database");
   const [id, title] = row.split("|") as [string, string];
@@ -47,6 +52,10 @@ function watchApiFailures(page: Page): string[] {
   return failures;
 }
 
+/** The list searched by title: on a shared database the problem need not be on the first page. */
+const listWith = (title: string) =>
+  `${APP_URL}/problems?q=${encodeURIComponent(title)}`;
+
 const loginHref = (path: string) =>
   `/login?redirect=${encodeURIComponent(path)}`;
 
@@ -58,9 +67,6 @@ test("a guest lands on the problem list, sees no personal part and no API call f
 
   await page.goto(`${APP_URL}/`);
   await expect(page).toHaveURL(/\/problems$/);
-  await expect(
-    page.getByRole("link", { name: problem.title, exact: true }),
-  ).toBeVisible();
 
   const header = page.getByRole("banner");
   await expect(header.getByRole("link", { name: nav.login })).toHaveAttribute(
@@ -78,6 +84,11 @@ test("a guest lands on the problem list, sees no personal part and no API call f
   await expect(page.getByText(list.table.colState)).toHaveCount(0);
   await expect(page.getByText(list.degraded.solveState)).toHaveCount(0);
 
+  await page.goto(listWith(problem.title));
+  await expect(
+    page.getByRole("link", { name: problem.title, exact: true }),
+  ).toBeVisible();
+
   await page.getByRole("button", { name: list.summary.btnRandom }).click();
   await expect(page).toHaveURL(/\/problems\/[0-9a-f-]{36}$/);
   await page.waitForLoadState("networkidle");
@@ -93,7 +104,7 @@ test("Solve and Save ask a guest to sign in, and signing in returns to the same 
   const failures = watchApiFailures(page);
   const path = `/problems/${problem.id}`;
 
-  await page.goto(`${APP_URL}/problems`);
+  await page.goto(listWith(problem.title));
   await page.getByRole("link", { name: problem.title, exact: true }).click();
   await expect(
     page.getByRole("heading", { level: 1, name: problem.title }),

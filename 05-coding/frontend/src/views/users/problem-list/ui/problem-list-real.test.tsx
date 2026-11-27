@@ -307,11 +307,12 @@ describe("ProblemListView with the real API", () => {
     expect(await screen.findByText("Bài lớp 3")).toBeInTheDocument();
     expect(screen.queryByText("Bài lớp 4")).toBeNull();
     // A class with 3 or fewer problems has nothing more to open.
-    expect(screen.getAllByRole("link", { name: /Xem tất cả \d+ bài/ })).toHaveLength(1);
-    expect(screen.getByRole("link", { name: /Xem tất cả 5 bài/ })).toHaveAttribute(
-      "href",
-      "/classes/c1",
-    );
+    expect(
+      screen.getAllByRole("link", { name: /Xem tất cả \d+ bài/ }),
+    ).toHaveLength(1);
+    expect(
+      screen.getByRole("link", { name: /Xem tất cả 5 bài/ }),
+    ).toHaveAttribute("href", "/classes/c1");
   });
 
   it("the table failing shows the retry block, not an empty table", async () => {

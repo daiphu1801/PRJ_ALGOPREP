@@ -1,11 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { ReactNode } from "react";
-import {
-  render,
-  screen,
-  waitFor,
-  within,
-} from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { NextIntlClientProvider } from "@/shared/i18n";
 import messages from "../../../../../../messages/vi.json";

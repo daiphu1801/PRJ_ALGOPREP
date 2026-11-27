@@ -73,6 +73,8 @@ async function adminOnQueue(page: Page, request: APIRequestContext) {
   await expect(
     page.getByRole("heading", { name: queue.title, exact: true }),
   ).toBeVisible();
+  // The switches sit in a section that is closed on entry (DD ADM0401 BR-SC-01).
+  await page.getByText(queue.controlsTitle, { exact: true }).click();
   return admin;
 }
 
@@ -219,7 +221,8 @@ test("the queue screen shows a retryable error when the snapshot API fails", asy
   );
   await page.reload();
   const retry = page.getByRole("button", { name: "Thử lại", exact: true });
-  await expect(retry).toBeVisible();
+  // The query retries with backoff before it reports the failure.
+  await expect(retry).toBeVisible({ timeout: 20_000 });
   await page.unroute("**/judge/admin/queue/snapshot*");
   await retry.click();
   await expect(

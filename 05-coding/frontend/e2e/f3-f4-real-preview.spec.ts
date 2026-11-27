@@ -30,6 +30,13 @@ async function openSpecTab(page: Page, email: string, password: string) {
   await submitLogin(page, email, password);
   await expect(page).toHaveURL(/instructor\/overview/);
   await page.goto(`${APP_URL}/instructor/problems/new`);
+  // A new problem starts as stdin/stdout; the signature fields exist only for the function kind.
+  await page
+    .getByRole("button", {
+      name: vi.problemAuthoring.kind.function,
+      exact: true,
+    })
+    .click();
   await page
     .getByRole("button", { name: vi.problemAuthoring.tab.spec, exact: true })
     .click();

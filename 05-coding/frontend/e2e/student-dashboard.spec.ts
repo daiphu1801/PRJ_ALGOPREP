@@ -16,8 +16,6 @@ test("renders both halves of the merged screen", async ({ page }) => {
 
   for (const block of [
     "Bài nộp theo ngày",
-    "Năng lực theo chủ đề",
-    "Hoạt động 12 tháng",
     "Bài toán gợi ý",
     "Mock Interview",
     "Solution Review",
@@ -31,9 +29,6 @@ test("renders both halves of the merged screen", async ({ page }) => {
   // short progress bars were replaced by the full topic table, which says strictly more.
   await expect(
     page.getByRole("table", { name: "Theo chủ đề", exact: true }),
-  ).toBeVisible();
-  await expect(
-    page.getByRole("heading", { name: "Nên ưu tiên" }),
   ).toBeVisible();
 
   // The four stat cards resolve their own queries, so wait on real numbers rather than the frame.

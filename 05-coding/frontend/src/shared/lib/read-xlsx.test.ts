@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { deflateRawSync } from "node:zlib";
 import { describe, expect, it } from "vitest";
-import type { XlsxError} from "./read-xlsx";
+import type { XlsxError } from "./read-xlsx";
 import { XLSX_MAX_BYTES, readXlsx } from "./read-xlsx";
 
 /** Minimal ZIP: local headers plus central directory, every entry deflated. */

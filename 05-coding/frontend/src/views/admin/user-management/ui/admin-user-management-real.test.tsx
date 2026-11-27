@@ -319,7 +319,9 @@ describe("AdminUserManagementView with the real API", () => {
 
     fireEvent.click(rowAction(m.actionChangeRoleFor, "An Hoc"));
     fireEvent.click(
-      screen.getByRole("button", { name: new RegExp(`^${m.roleDialog.label}`) }),
+      screen.getByRole("button", {
+        name: new RegExp(`^${m.roleDialog.label}`),
+      }),
     );
     fireEvent.click(screen.getByRole("option", { name: m.role.instructor }));
     fireEvent.click(button(m.roleDialog.submit));
