@@ -109,14 +109,26 @@ describe("ProblemOverviewView with the real API", () => {
     expect(await screen.findByText(d.empty.title)).toBeInTheDocument();
   });
 
-  it("fails the page when the F4 limits read fails, never showing made-up limits", async () => {
+  it("keeps the statement when both F4 reads fail, hiding the limits table and the recent card", async () => {
     apiMock.get.mockImplementation(async (path: string) => {
       if (path.endsWith("/overview")) return OVERVIEW;
       throw new ApiError("UNKNOWN_ERROR", 503);
     });
     render(withTestProviders(<ProblemOverviewView />));
-    await waitFor(() => expect(screen.queryByText("1000 ms")).toBeNull());
-    expect(screen.queryByRole("heading", { level: 1 })).toBeNull();
+
+    expect(
+      await screen.findByRole("heading", { level: 1, name: "Two Sum" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: d.panel.btnSave }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("7")).toBeInTheDocument();
+    expect(screen.queryByRole("table")).toBeNull();
+    expect(
+      screen.queryByText(viMessages.problemOverview.recentTitle),
+    ).toBeNull();
+    // A failed read is not "you have never submitted".
+    expect(screen.queryByText(d.panel.noSubmissions)).toBeNull();
   });
 
   it("bookmarks with the wanted state, flips after the server answers and toasts", async () => {

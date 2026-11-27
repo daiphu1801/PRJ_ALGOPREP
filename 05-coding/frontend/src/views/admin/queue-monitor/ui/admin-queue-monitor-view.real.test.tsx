@@ -101,3 +101,42 @@ it("reports a partial refresh while keeping valid zeroes and distinguishing a mi
   );
   expect(success).not.toHaveBeenCalled();
 });
+
+it("offers a retry for the snapshot and shows its figures once it answers (DD ADM0401 section 3)", async () => {
+  let snapshotFails = true;
+  apiMock.get.mockImplementation(async (path: string) => {
+    if (path.endsWith("/jobs")) return jobs;
+    if (path.endsWith("/settings")) return settings;
+    if (path.endsWith("/infra-summary")) return { warnCount: 0, errorCount: 0 };
+    if (snapshotFails) throw new Error("snapshot unavailable");
+    return snapshot;
+  });
+  render(withTestProviders(<AdminQueueMonitorView />));
+  const retry = await screen.findByRole("button", { name: "Thử lại" });
+  expect(screen.queryByText("0 lượt/phút")).toBeNull();
+
+  snapshotFails = false;
+  fireEvent.click(retry);
+
+  expect(await screen.findByText("0 lượt/phút")).toBeVisible();
+  expect(screen.queryByRole("button", { name: "Thử lại" })).toBeNull();
+});
+
+it("does not keep showing old figures after a later snapshot read fails", async () => {
+  let snapshotFails = false;
+  apiMock.get.mockImplementation(async (path: string) => {
+    if (path.endsWith("/jobs")) return jobs;
+    if (path.endsWith("/settings")) return settings;
+    if (path.endsWith("/infra-summary")) return { warnCount: 0, errorCount: 0 };
+    if (snapshotFails) throw new Error("snapshot unavailable");
+    return snapshot;
+  });
+  render(withTestProviders(<AdminQueueMonitorView />));
+  expect(await screen.findByText("0 lượt/phút")).toBeVisible();
+
+  snapshotFails = true;
+  fireEvent.click(screen.getByRole("button", { name: "Làm mới" }));
+
+  expect(await screen.findByRole("button", { name: "Thử lại" })).toBeVisible();
+  expect(screen.queryByText("0 lượt/phút")).toBeNull();
+});

@@ -122,17 +122,52 @@ describe("workspace API contracts", () => {
       });
     });
 
-    it("returns null on a 404 and rethrows anything else", async () => {
+    it("returns null on a 404 and rethrows when the problem itself cannot be read", async () => {
       answer({ overview: new ApiError("PRB-010", 404) });
       expect(await fetchOverviewProblem("p1")).toBeNull();
       const down = new ApiError("UNKNOWN_ERROR", 503);
-      answer({ "execution-limits": down });
+      answer({ overview: down });
       await expect(fetchOverviewProblem("p1")).rejects.toBe(down);
     });
 
-    it("refuses an incomplete limits answer instead of inventing a language", async () => {
+    it("keeps the problem and drops the limits when the F4 limits read fails", async () => {
+      answer({ "execution-limits": new ApiError("UNKNOWN_ERROR", 500) });
+      const result = await fetchOverviewProblem("p1");
+      expect(result?.title).toBe("T");
+      expect(result?.limitsByLanguage).toEqual({});
+      expect(result?.mySubmissions).toEqual([]);
+    });
+
+    it("marks the history as unavailable, not empty, when its read fails", async () => {
+      answer({ mine: new ApiError("JDG-506", 503) });
+      const result = await fetchOverviewProblem("p1");
+      expect(result?.mySubmissions).toBeNull();
+      expect(result?.limitsByLanguage.java).toBeDefined();
+    });
+
+    it("drops an incomplete limits answer instead of inventing a language", async () => {
       answer({ "execution-limits": { limits: limits.limits.slice(0, 2) } });
-      await expect(fetchOverviewProblem("p1")).rejects.toBeInstanceOf(ApiError);
+      const result = await fetchOverviewProblem("p1");
+      expect(result?.limitsByLanguage).toEqual({});
+    });
+
+    it("keeps the workspace usable when both F4 reads fail", async () => {
+      get.mockImplementation(async (path: string) => {
+        if (path.endsWith("/workspace"))
+          return {
+            ...overview,
+            id: "p1",
+            functionWrapperSupported: true,
+            workedExamples: [],
+          };
+        if (path.endsWith("/overview")) return overview;
+        if (path.endsWith("/sample-testcases")) return { items: [] };
+        throw new ApiError("UNKNOWN_ERROR", 503);
+      });
+      const result = await fetchWorkspaceProblem("p1");
+      expect(result?.title).toBe("T");
+      expect(result?.limitsByLanguage).toEqual({});
+      expect(result?.mySubmissions).toBeNull();
     });
   });
 });

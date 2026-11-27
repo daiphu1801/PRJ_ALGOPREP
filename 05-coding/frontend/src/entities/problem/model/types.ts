@@ -147,10 +147,12 @@ export type ProblemDetail = {
   /** Markdown incl. the `## Ràng buộc` and `## Câu hỏi mở rộng` sections (USR0102 Q5): no separate column. */
   statementMd: string;
   examples: ProblemExample[];
-  /** Effective limits per language = base limit x language multiplier (BD Sheet 5 khu H NO 7). */
-  limitsByLanguage: Record<
-    SubmissionLanguage,
-    { timeLimitMs: number; memoryLimitMb: number }
+  /**
+   * Effective limits per language = base limit x language multiplier (BD Sheet 5 khu H NO 7). Empty for a
+   * guest and when the judge read fails: the screen then hides the limits.
+   */
+  limitsByLanguage: Partial<
+    Record<SubmissionLanguage, { timeLimitMs: number; memoryLimitMb: number }>
   >;
   acRate: number | null;
   /** Whether the current learner bookmarked this problem (`problem.bookmarks`). */
@@ -165,7 +167,8 @@ export type ProblemDetail = {
     input: string;
     expectedOutput: string;
   }[];
-  mySubmissions: SubmissionHistoryItem[];
+  /** `null` = the history read failed, which is not the same as "never submitted". */
+  mySubmissions: SubmissionHistoryItem[] | null;
   solutionReview: SolutionReviewQuickInsight | null;
 };
 

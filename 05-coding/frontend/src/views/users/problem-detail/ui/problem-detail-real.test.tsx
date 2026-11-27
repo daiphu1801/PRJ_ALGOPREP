@@ -147,3 +147,53 @@ describe("ProblemDetailView bookmark with the real API", () => {
     ).toHaveAttribute("aria-pressed", "false");
   });
 });
+
+describe("ProblemDetailView when the judge reads fail (USR0102 graceful degradation)", () => {
+  beforeEach(() => {
+    resetApiMock();
+    window.localStorage.clear();
+  });
+
+  function failing(suffix: string) {
+    route(false);
+    const answer = apiMock.get.getMockImplementation()!;
+    apiMock.get.mockImplementation(async (path: string) => {
+      if (path.endsWith(suffix)) throw new ApiError("UNKNOWN_ERROR", 503);
+      return answer(path);
+    });
+    return answer;
+  }
+
+  it("keeps the statement, Run and Submit and drops only the limits line", async () => {
+    failing("/execution-limits");
+    render(withTestProviders(<ProblemDetailView />));
+
+    expect(
+      await screen.findByRole("heading", { level: 1, name: "Two Sum" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: d.taskbar.btnRun }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: d.taskbar.btnSubmit }),
+    ).toBeInTheDocument();
+    expect(screen.queryByText(/256 MB/)).toBeNull();
+  });
+
+  it("shows the history failure inside the submissions tab, and retry brings the list back", async () => {
+    const answer = failing("/submissions/mine");
+    render(withTestProviders(<ProblemDetailView />));
+    fireEvent.click(
+      await screen.findByRole("button", { name: d.panel.tabSubmissions }),
+    );
+
+    expect(screen.getByText(viMessages.common.error)).toBeInTheDocument();
+    expect(screen.queryByText(d.panel.noSubmissions)).toBeNull();
+
+    apiMock.get.mockImplementation(answer);
+    fireEvent.click(
+      screen.getByRole("button", { name: viMessages.common.retry }),
+    );
+    expect(await screen.findByText(d.panel.noSubmissions)).toBeInTheDocument();
+  });
+});

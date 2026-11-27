@@ -107,7 +107,12 @@ export function ProblemDetailView() {
     <QueryBoundary query={query}>
       {(problem) =>
         problem ? (
-          <Workspace key={problemId} problemId={problemId} detail={problem} />
+          <Workspace
+            key={problemId}
+            problemId={problemId}
+            detail={problem}
+            onReload={() => void query.refetch()}
+          />
         ) : (
           <NotFound />
         )
@@ -133,9 +138,11 @@ function NotFound() {
 function Workspace({
   problemId,
   detail,
+  onReload,
 }: {
   problemId: string;
   detail: ProblemDetail;
+  onReload: () => void;
 }) {
   const t = useT("problemDetail");
   const locale = useLocale() === "en" ? "en" : "vi";
@@ -499,7 +506,7 @@ function Workspace({
     );
   }
 
-  const latestSubmission = detail.mySubmissions[0];
+  const latestSubmission = detail.mySubmissions?.[0];
   // F5 #6 (real mode only): the real problem endpoints leave `detail.solutionReview` null, so the
   // latest stored report fills the tab. F5 #6 carries no notes, so the card shows complexity only.
   const insight = useReviewQuickInsight(problemId).data;
@@ -577,7 +584,9 @@ function Workspace({
         ) : null}
 
         {tab === "submissions" ? (
-          detail.mySubmissions.length === 0 ? (
+          detail.mySubmissions === null ? (
+            <QueryError query={{ refetch: onReload }} />
+          ) : detail.mySubmissions.length === 0 ? (
             <EmptyState>{t("panel.noSubmissions")}</EmptyState>
           ) : (
             <ul className="flex flex-col gap-2">
@@ -787,12 +796,14 @@ function Workspace({
             ? t("toolbar.draftSaved")
             : ""}
         </span>
-        <span>
-          {t("toolbar.limits", {
-            time: limits.timeLimitMs / 1000,
-            memory: limits.memoryLimitMb,
-          })}
-        </span>
+        {limits ? (
+          <span>
+            {t("toolbar.limits", {
+              time: limits.timeLimitMs / 1000,
+              memory: limits.memoryLimitMb,
+            })}
+          </span>
+        ) : null}
       </div>
     </Card>
   );

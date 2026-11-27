@@ -260,7 +260,10 @@ function QueueMonitorInner({
         }
       />
 
-      {summary && (
+      {/* One snapshot feeds the figures and the switches: on failure they give way to one retry. */}
+      {summaryQuery.isError ? (
+        <QueryError query={summaryQuery} />
+      ) : summary ? (
         <dl
           aria-label={t("metricsLabel")}
           className="grid grid-cols-2 gap-x-4 gap-y-3 border-b border-[var(--color-border)] px-4 pb-4 @min-[670px]:grid-cols-4"
@@ -290,7 +293,7 @@ function QueueMonitorInner({
             </dd>
           </div>
         </dl>
-      )}
+      ) : null}
 
       <section aria-labelledby="queue-jobs-title" className="min-w-0 px-4 py-4">
         <h2 id="queue-jobs-title" className="mb-3 text-base font-semibold">
@@ -502,7 +505,7 @@ function QueueMonitorInner({
           {t("controlsTitle")}
         </summary>
         <div className="space-y-3 px-4 pb-4">
-          {summary?.grading?.consumers && (
+          {!summaryQuery.isError && summary?.grading?.consumers && (
             <dl className="grid gap-3 @min-[620px]:grid-cols-[minmax(0,1fr)_minmax(0,3fr)]">
               <GradingCard grading={summary.grading} details />
             </dl>

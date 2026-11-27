@@ -203,9 +203,22 @@ type OverviewResponse = {
   }[];
 };
 
+// The F4 reads are secondary on both screens (BD USR0104 Sheet 9 NO 5, DD USR0102 section 3): a failure
+// hides its own part and never takes the statement down, and nothing is invented in its place.
+// ponytail: still awaited together with the F2 reads, so a hanging F4 delays the first paint; split into
+// separate queries if that shows up.
+const readLimits = (problemId: string) =>
+  getLimits(problemId)
+    .then(toLimits)
+    .catch((): ProblemDetail["limitsByLanguage"] => ({}));
+const readHistory = (problemId: string) =>
+  getHistory(problemId)
+    .then(toHistory)
+    .catch(() => null);
+
 /**
- * USR0104 (#6 + F4 limits and own history). One 404 PRB-010 from any call reads as "not found"; any
- * other failure (including a 503 from the F4 side) fails the whole page, it never shows invented limits.
+ * USR0104 (#6 + F4 limits and own history). A 404 PRB-010 from F2 reads as "not found" and any other
+ * F2 failure fails the page.
  */
 export async function fetchOverviewProblem(
   problemId: string,
@@ -218,8 +231,8 @@ export async function fetchOverviewProblem(
       api.get<OverviewResponse>(
         `/problem-bank/problems/${encodeURIComponent(problemId)}/overview`,
       ),
-      guest ? null : getLimits(problemId),
-      guest ? null : getHistory(problemId),
+      guest ? {} : readLimits(problemId),
+      guest ? [] : readHistory(problemId),
     ]);
     return {
       id: overview.problemId,
@@ -237,15 +250,13 @@ export async function fetchOverviewProblem(
         output: item.output,
         explanation: item.explanationMd ?? undefined,
       })),
-      limitsByLanguage: limits
-        ? toLimits(limits)
-        : ({} as ProblemDetail["limitsByLanguage"]),
+      limitsByLanguage: limits,
       acRate: overview.acRate,
       saved: overview.bookmarked,
       hiddenTestcaseCount: overview.hiddenTestcaseCount,
       starterCode: {} as Record<StarterCodeKey, string>,
       sampleTestcases: [],
-      mySubmissions: history ? toHistory(history) : [],
+      mySubmissions: history,
       solutionReview: null,
     };
   } catch (error) {
@@ -271,8 +282,8 @@ export async function fetchWorkspaceProblem(
           expectedOutputDownloadUrl: string | null;
         }[];
       }>(`${path}/sample-testcases`),
-      getLimits(problemId),
-      getHistory(problemId),
+      readLimits(problemId),
+      readHistory(problemId),
     ]);
     return {
       id: workspace.id,
@@ -291,7 +302,7 @@ export async function fetchWorkspaceProblem(
         output: item.output,
         explanation: item.explanationMd ?? undefined,
       })),
-      limitsByLanguage: toLimits(limits),
+      limitsByLanguage: limits,
       acRate: workspace.acRate,
       saved: workspace.bookmarked,
       hiddenTestcaseCount: overview.hiddenTestcaseCount,
@@ -310,7 +321,7 @@ export async function fetchWorkspaceProblem(
           ),
         })),
       ),
-      mySubmissions: toHistory(history),
+      mySubmissions: history,
       solutionReview: null,
     };
   } catch (error) {

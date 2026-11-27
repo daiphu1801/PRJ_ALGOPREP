@@ -142,7 +142,7 @@ function ProblemOverview({
   }
 
   // Newest first (USR0104 Q5, owner 2026-10-21); the review link points at the latest Accepted one.
-  const sorted = [...detail.mySubmissions].sort((a, b) =>
+  const sorted = [...(detail.mySubmissions ?? [])].sort((a, b) =>
     b.submittedAt.localeCompare(a.submittedAt),
   );
   const recent = sorted.slice(0, RECENT_SUBMISSION_LIMIT);
@@ -306,7 +306,8 @@ function ProblemOverview({
         <aside className="flex min-w-0 flex-col gap-3 lg:col-start-2 lg:row-start-2">
           <Card className="p-4">
             <h2 className="text-sm font-bold">{t("languagesTitle")}</h2>
-            {guest ? (
+            {/* No limits (guest, or the judge read failed): the language names alone. */}
+            {LANGUAGES.some((item) => !detail.limitsByLanguage[item]) ? (
               <p className="mt-1 text-sm text-[var(--color-text-muted)]">
                 {LANGUAGES.map((language) => td(`language.${language}`)).join(
                   ", ",
@@ -333,10 +334,10 @@ function ProblemOverview({
                     <tr key={language}>
                       <td className="py-0.5">{td(`language.${language}`)}</td>
                       <td className="py-0.5 text-right font-mono">
-                        {detail.limitsByLanguage[language].timeLimitMs} ms
+                        {detail.limitsByLanguage[language]?.timeLimitMs} ms
                       </td>
                       <td className="py-0.5 text-right font-mono">
-                        {detail.limitsByLanguage[language].memoryLimitMb} MB
+                        {detail.limitsByLanguage[language]?.memoryLimitMb} MB
                       </td>
                     </tr>
                   ))}
@@ -362,7 +363,7 @@ function ProblemOverview({
             </dl>
           </Card>
 
-          {guest ? null : (
+          {guest || detail.mySubmissions === null ? null : (
             <Card className="px-4 py-4">
               <h2 className="mb-2 text-sm font-bold">{t("recentTitle")}</h2>
               {recent.length === 0 ? (
