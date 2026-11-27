@@ -138,7 +138,7 @@ jobs:
           docker compose --env-file 05-coding/deploy/.env.smoke -f 05-coding/deploy/compose.yml -f 05-coding/deploy/compose.smoke.yml logs --no-color > release-reports/compose.log
       - name: Save verification reports and image manifest
         if: always()
-        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: release-evidence
           path: |
