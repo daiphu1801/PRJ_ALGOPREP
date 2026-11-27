@@ -1,0 +1,434 @@
+{
+  "projects": [
+    "algoprep-backend",
+    "algoprep-frontend"
+  ],
+  "qualityGate": {
+    "name": "AlgoPrep",
+    "conditions": [
+      {
+        "metric": "coverage",
+        "op": "LT",
+        "error": "90"
+      }
+    ]
+  },
+  "entries": [
+    {
+      "rule": "java:S2068",
+      "component": "algoprep-backend:algoprep-identity/src/main/java/com/algoprep/identity/domain/exception/IdentityErrorCodes.java",
+      "hash": "87e5b0382ea049d2647412809f964d6a",
+      "count": 1,
+      "transition": "falsepositive",
+      "reason": "This is the name of an error code constant, not a password."
+    },
+    {
+      "rule": "java:S2077",
+      "component": "algoprep-backend:algoprep-ai-review/src/main/java/com/algoprep/aireview/infrastructure/persistence/JdbcInterviewScoringRepository.java",
+      "hash": "fb03ee5fa47d97e05f6886e9af9fc530",
+      "count": 1,
+      "transition": "accept",
+      "reason": "Only static final fragments, ternary or switch literals and allowlisted column names are concatenated; every request value is bound as a named parameter. Reviewed 2026-11-27."
+    },
+    {
+      "rule": "java:S2077",
+      "component": "algoprep-backend:algoprep-identity/src/main/java/com/algoprep/identity/infrastructure/persistence/JdbcAdminUserRepository.java",
+      "hash": "63225f19fccb18e7c709f1fa11bc738e",
+      "count": 1,
+      "transition": "accept",
+      "reason": "Only static final fragments, ternary or switch literals and allowlisted column names are concatenated; every request value is bound as a named parameter. Reviewed 2026-11-27."
+    },
+    {
+      "rule": "java:S2077",
+      "component": "algoprep-backend:algoprep-identity/src/main/java/com/algoprep/identity/infrastructure/persistence/JdbcAdminUserRepository.java",
+      "hash": "81c9b270aa10ddafbb0457c9117451dc",
+      "count": 1,
+      "transition": "accept",
+      "reason": "Only static final fragments, ternary or switch literals and allowlisted column names are concatenated; every request value is bound as a named parameter. Reviewed 2026-11-27."
+    },
+    {
+      "rule": "java:S2077",
+      "component": "algoprep-backend:algoprep-interview-bank/src/main/java/com/algoprep/interviewbank/infrastructure/persistence/JdbcAdminQuestionRepository.java",
+      "hash": "4e1c0ce97bb3d249ed3eb0d7fbbe76c8",
+      "count": 1,
+      "transition": "accept",
+      "reason": "Only static final fragments, ternary or switch literals and allowlisted column names are concatenated; every request value is bound as a named parameter. Reviewed 2026-11-27."
+    },
+    {
+      "rule": "java:S2077",
+      "component": "algoprep-backend:algoprep-interview-bank/src/main/java/com/algoprep/interviewbank/infrastructure/persistence/JdbcAdminQuestionRepository.java",
+      "hash": "bf9947e42480b03846c63d115a61f1dc",
+      "count": 1,
+      "transition": "accept",
+      "reason": "Only static final fragments, ternary or switch literals and allowlisted column names are concatenated; every request value is bound as a named parameter. Reviewed 2026-11-27."
+    },
+    {
+      "rule": "java:S2077",
+      "component": "algoprep-backend:algoprep-interview-bank/src/main/java/com/algoprep/interviewbank/infrastructure/persistence/JdbcAdminQuestionRepository.java",
+      "hash": "ee96c16e3a9c8f55a25f27662db61dba",
+      "count": 1,
+      "transition": "accept",
+      "reason": "Only static final fragments, ternary or switch literals and allowlisted column names are concatenated; every request value is bound as a named parameter. Reviewed 2026-11-27."
+    },
+    {
+      "rule": "java:S2077",
+      "component": "algoprep-backend:algoprep-interview-bank/src/main/java/com/algoprep/interviewbank/infrastructure/persistence/JdbcInterviewQuestionRepository.java",
+      "hash": "4e1c0ce97bb3d249ed3eb0d7fbbe76c8",
+      "count": 1,
+      "transition": "accept",
+      "reason": "Only static final fragments, ternary or switch literals and allowlisted column names are concatenated; every request value is bound as a named parameter. Reviewed 2026-11-27."
+    },
+    {
+      "rule": "java:S2077",
+      "component": "algoprep-backend:algoprep-interview-bank/src/main/java/com/algoprep/interviewbank/infrastructure/persistence/JdbcInterviewQuestionRepository.java",
+      "hash": "63225f19fccb18e7c709f1fa11bc738e",
+      "count": 1,
+      "transition": "accept",
+      "reason": "Only static final fragments, ternary or switch literals and allowlisted column names are concatenated; every request value is bound as a named parameter. Reviewed 2026-11-27."
+    },
+    {
+      "rule": "java:S2077",
+      "component": "algoprep-backend:algoprep-interview-bank/src/main/java/com/algoprep/interviewbank/infrastructure/persistence/JdbcPracticeRepository.java",
+      "hash": "d6070049dc292885779df6e0b46174b6",
+      "count": 1,
+      "transition": "accept",
+      "reason": "Only static final fragments, ternary or switch literals and allowlisted column names are concatenated; every request value is bound as a named parameter. Reviewed 2026-11-27."
+    },
+    {
+      "rule": "java:S2077",
+      "component": "algoprep-backend:algoprep-interview-bank/src/main/java/com/algoprep/interviewbank/infrastructure/persistence/JdbcQuestionCatalogRepository.java",
+      "hash": "02c40ac2c055ecbeb4515b60cea0d4c1",
+      "count": 1,
+      "transition": "accept",
+      "reason": "Only static final fragments, ternary or switch literals and allowlisted column names are concatenated; every request value is bound as a named parameter. Reviewed 2026-11-27."
+    },
+    {
+      "rule": "java:S2077",
+      "component": "algoprep-backend:algoprep-interview-bank/src/main/java/com/algoprep/interviewbank/infrastructure/persistence/JdbcQuestionCatalogRepository.java",
+      "hash": "20027ed21a6842327e02b82cf6cc7b8a",
+      "count": 1,
+      "transition": "accept",
+      "reason": "Only static final fragments, ternary or switch literals and allowlisted column names are concatenated; every request value is bound as a named parameter. Reviewed 2026-11-27."
+    },
+    {
+      "rule": "java:S2077",
+      "component": "algoprep-backend:algoprep-interview-bank/src/main/java/com/algoprep/interviewbank/infrastructure/persistence/JdbcQuestionCatalogRepository.java",
+      "hash": "53bf4e9dfc72be211a1bf1a0742f8de6",
+      "count": 1,
+      "transition": "accept",
+      "reason": "Only static final fragments, ternary or switch literals and allowlisted column names are concatenated; every request value is bound as a named parameter. Reviewed 2026-11-27."
+    },
+    {
+      "rule": "java:S2077",
+      "component": "algoprep-backend:algoprep-interview-bank/src/main/java/com/algoprep/interviewbank/infrastructure/persistence/JdbcQuestionCatalogRepository.java",
+      "hash": "8b34e57c2e3e078712073a040509f01a",
+      "count": 1,
+      "transition": "accept",
+      "reason": "Only static final fragments, ternary or switch literals and allowlisted column names are concatenated; every request value is bound as a named parameter. Reviewed 2026-11-27."
+    },
+    {
+      "rule": "java:S2077",
+      "component": "algoprep-backend:algoprep-interview-bank/src/main/java/com/algoprep/interviewbank/infrastructure/persistence/JdbcQuestionCatalogRepository.java",
+      "hash": "9284cf255fdeb3d89f1fc0b6bb7e167a",
+      "count": 1,
+      "transition": "accept",
+      "reason": "Only static final fragments, ternary or switch literals and allowlisted column names are concatenated; every request value is bound as a named parameter. Reviewed 2026-11-27."
+    },
+    {
+      "rule": "java:S2077",
+      "component": "algoprep-backend:algoprep-interview-bank/src/main/java/com/algoprep/interviewbank/infrastructure/persistence/JdbcQuestionCatalogRepository.java",
+      "hash": "a084a16b096924b4c70ee5e27120c1fb",
+      "count": 1,
+      "transition": "accept",
+      "reason": "Only static final fragments, ternary or switch literals and allowlisted column names are concatenated; every request value is bound as a named parameter. Reviewed 2026-11-27."
+    },
+    {
+      "rule": "java:S2077",
+      "component": "algoprep-backend:algoprep-interview-bank/src/main/java/com/algoprep/interviewbank/infrastructure/persistence/JdbcQuestionCatalogRepository.java",
+      "hash": "a26fd04e49891aea4dc67b1bd90bfd3c",
+      "count": 1,
+      "transition": "accept",
+      "reason": "Only static final fragments, ternary or switch literals and allowlisted column names are concatenated; every request value is bound as a named parameter. Reviewed 2026-11-27."
+    },
+    {
+      "rule": "java:S2077",
+      "component": "algoprep-backend:algoprep-interview-bank/src/main/java/com/algoprep/interviewbank/infrastructure/persistence/JdbcQuestionCatalogRepository.java",
+      "hash": "c4ac74d53c82aa290b558b6a8876adf0",
+      "count": 1,
+      "transition": "accept",
+      "reason": "Only static final fragments, ternary or switch literals and allowlisted column names are concatenated; every request value is bound as a named parameter. Reviewed 2026-11-27."
+    },
+    {
+      "rule": "java:S2077",
+      "component": "algoprep-backend:algoprep-interview-bank/src/main/java/com/algoprep/interviewbank/infrastructure/persistence/JdbcQuestionCatalogRepository.java",
+      "hash": "dd830c5ff394accc5bda5b8144df764f",
+      "count": 1,
+      "transition": "accept",
+      "reason": "Only static final fragments, ternary or switch literals and allowlisted column names are concatenated; every request value is bound as a named parameter. Reviewed 2026-11-27."
+    },
+    {
+      "rule": "java:S2077",
+      "component": "algoprep-backend:algoprep-interview-bank/src/main/java/com/algoprep/interviewbank/infrastructure/persistence/JdbcQuestionCatalogRepository.java",
+      "hash": "f42596420c311597454804835ea783fc",
+      "count": 1,
+      "transition": "accept",
+      "reason": "Only static final fragments, ternary or switch literals and allowlisted column names are concatenated; every request value is bound as a named parameter. Reviewed 2026-11-27."
+    },
+    {
+      "rule": "java:S2077",
+      "component": "algoprep-backend:algoprep-judge/src/main/java/com/algoprep/judge/infrastructure/persistence/JdbcAdminLanguageConfigRepository.java",
+      "hash": "4dda263b44bf00a074747cb3ac5a21c0",
+      "count": 1,
+      "transition": "accept",
+      "reason": "Only static final fragments, ternary or switch literals and allowlisted column names are concatenated; every request value is bound as a named parameter. Reviewed 2026-11-27."
+    },
+    {
+      "rule": "java:S2077",
+      "component": "algoprep-backend:algoprep-judge/src/main/java/com/algoprep/judge/infrastructure/persistence/JdbcAdminLanguageConfigRepository.java",
+      "hash": "6c251d6e6c74fc36b89286499e921d4c",
+      "count": 1,
+      "transition": "accept",
+      "reason": "Only static final fragments, ternary or switch literals and allowlisted column names are concatenated; every request value is bound as a named parameter. Reviewed 2026-11-27."
+    },
+    {
+      "rule": "java:S2077",
+      "component": "algoprep-backend:algoprep-judge/src/main/java/com/algoprep/judge/infrastructure/persistence/JdbcAdminLanguageConfigRepository.java",
+      "hash": "93296fbfeb5e5f4243e703d7477aee16",
+      "count": 1,
+      "transition": "accept",
+      "reason": "Only static final fragments, ternary or switch literals and allowlisted column names are concatenated; every request value is bound as a named parameter. Reviewed 2026-11-27."
+    },
+    {
+      "rule": "java:S2077",
+      "component": "algoprep-backend:algoprep-judge/src/main/java/com/algoprep/judge/infrastructure/persistence/JdbcAdminLanguageConfigRepository.java",
+      "hash": "e2dd4d355a64523693579ae3a9868578",
+      "count": 1,
+      "transition": "accept",
+      "reason": "Only static final fragments, ternary or switch literals and allowlisted column names are concatenated; every request value is bound as a named parameter. Reviewed 2026-11-27."
+    },
+    {
+      "rule": "java:S2077",
+      "component": "algoprep-backend:algoprep-judge/src/main/java/com/algoprep/judge/infrastructure/persistence/JdbcAdminQueueRepository.java",
+      "hash": "a876187a3171190ddf6a0c73547e72dd",
+      "count": 1,
+      "transition": "accept",
+      "reason": "Only static final fragments, ternary or switch literals and allowlisted column names are concatenated; every request value is bound as a named parameter. Reviewed 2026-11-27."
+    },
+    {
+      "rule": "java:S2077",
+      "component": "algoprep-backend:algoprep-judge/src/main/java/com/algoprep/judge/infrastructure/persistence/JdbcInfraEventRepository.java",
+      "hash": "b829e41688c682db47048f02117e4e45",
+      "count": 1,
+      "transition": "accept",
+      "reason": "Only static final fragments, ternary or switch literals and allowlisted column names are concatenated; every request value is bound as a named parameter. Reviewed 2026-11-27."
+    },
+    {
+      "rule": "java:S2077",
+      "component": "algoprep-backend:algoprep-judge/src/main/java/com/algoprep/judge/infrastructure/persistence/JdbcInstructorSubmissionRepository.java",
+      "hash": "847b6a5a741e3b29b8daa5ed8244da9e",
+      "count": 1,
+      "transition": "accept",
+      "reason": "Only static final fragments, ternary or switch literals and allowlisted column names are concatenated; every request value is bound as a named parameter. Reviewed 2026-11-27."
+    },
+    {
+      "rule": "java:S2077",
+      "component": "algoprep-backend:algoprep-judge/src/main/java/com/algoprep/judge/infrastructure/persistence/JdbcSubmissionReadRepository.java",
+      "hash": "99938282f04071859941e18f16efcf42",
+      "count": 1,
+      "transition": "accept",
+      "reason": "Only static final fragments, ternary or switch literals and allowlisted column names are concatenated; every request value is bound as a named parameter. Reviewed 2026-11-27."
+    },
+    {
+      "rule": "java:S2077",
+      "component": "algoprep-backend:algoprep-judge/src/main/java/com/algoprep/judge/infrastructure/persistence/JdbcWorkerJobRepository.java",
+      "hash": "34b62d03dd36644eb62f2b76a2a75ac6",
+      "count": 1,
+      "transition": "accept",
+      "reason": "Only static final fragments, ternary or switch literals and allowlisted column names are concatenated; every request value is bound as a named parameter. Reviewed 2026-11-27."
+    },
+    {
+      "rule": "java:S2077",
+      "component": "algoprep-backend:algoprep-problem-bank/src/main/java/com/algoprep/problembank/infrastructure/persistence/JdbcCatalogRepository.java",
+      "hash": "5c026fe9612067fe7fedb02bd2e091ec",
+      "count": 1,
+      "transition": "accept",
+      "reason": "Only static final fragments, ternary or switch literals and allowlisted column names are concatenated; every request value is bound as a named parameter. Reviewed 2026-11-27."
+    },
+    {
+      "rule": "java:S2077",
+      "component": "algoprep-backend:algoprep-problem-bank/src/main/java/com/algoprep/problembank/infrastructure/persistence/JdbcCatalogRepository.java",
+      "hash": "8b34e57c2e3e078712073a040509f01a",
+      "count": 1,
+      "transition": "accept",
+      "reason": "Only static final fragments, ternary or switch literals and allowlisted column names are concatenated; every request value is bound as a named parameter. Reviewed 2026-11-27."
+    },
+    {
+      "rule": "java:S2077",
+      "component": "algoprep-backend:algoprep-problem-bank/src/main/java/com/algoprep/problembank/infrastructure/persistence/JdbcCatalogRepository.java",
+      "hash": "9284cf255fdeb3d89f1fc0b6bb7e167a",
+      "count": 1,
+      "transition": "accept",
+      "reason": "Only static final fragments, ternary or switch literals and allowlisted column names are concatenated; every request value is bound as a named parameter. Reviewed 2026-11-27."
+    },
+    {
+      "rule": "java:S2077",
+      "component": "algoprep-backend:algoprep-problem-bank/src/main/java/com/algoprep/problembank/infrastructure/persistence/JdbcCatalogRepository.java",
+      "hash": "b83d4058409b6cabeac74f43ae16a8ff",
+      "count": 1,
+      "transition": "accept",
+      "reason": "Only static final fragments, ternary or switch literals and allowlisted column names are concatenated; every request value is bound as a named parameter. Reviewed 2026-11-27."
+    },
+    {
+      "rule": "java:S2077",
+      "component": "algoprep-backend:algoprep-problem-bank/src/main/java/com/algoprep/problembank/infrastructure/persistence/JdbcCatalogRepository.java",
+      "hash": "dd830c5ff394accc5bda5b8144df764f",
+      "count": 1,
+      "transition": "accept",
+      "reason": "Only static final fragments, ternary or switch literals and allowlisted column names are concatenated; every request value is bound as a named parameter. Reviewed 2026-11-27."
+    },
+    {
+      "rule": "java:S2077",
+      "component": "algoprep-backend:algoprep-problem-bank/src/main/java/com/algoprep/problembank/infrastructure/persistence/JdbcCatalogRepository.java",
+      "hash": "f42596420c311597454804835ea783fc",
+      "count": 1,
+      "transition": "accept",
+      "reason": "Only static final fragments, ternary or switch literals and allowlisted column names are concatenated; every request value is bound as a named parameter. Reviewed 2026-11-27."
+    },
+    {
+      "rule": "java:S2077",
+      "component": "algoprep-backend:algoprep-problem-bank/src/main/java/com/algoprep/problembank/infrastructure/persistence/JdbcClassAssignmentRepository.java",
+      "hash": "5c02aafe7a7da1d62ca664a005c5924f",
+      "count": 1,
+      "transition": "accept",
+      "reason": "Only static final fragments, ternary or switch literals and allowlisted column names are concatenated; every request value is bound as a named parameter. Reviewed 2026-11-27."
+    },
+    {
+      "rule": "java:S2077",
+      "component": "algoprep-backend:algoprep-problem-bank/src/main/java/com/algoprep/problembank/infrastructure/persistence/JdbcClassAssignmentRepository.java",
+      "hash": "a104a2e307ad15550145b3fad5e6d540",
+      "count": 1,
+      "transition": "accept",
+      "reason": "Only static final fragments, ternary or switch literals and allowlisted column names are concatenated; every request value is bound as a named parameter. Reviewed 2026-11-27."
+    },
+    {
+      "rule": "java:S2077",
+      "component": "algoprep-backend:algoprep-problem-bank/src/main/java/com/algoprep/problembank/infrastructure/persistence/JdbcProblemAuthoringListRepository.java",
+      "hash": "9ebe6a1ed985b3e215807cc66fea8d82",
+      "count": 1,
+      "transition": "accept",
+      "reason": "Only static final fragments, ternary or switch literals and allowlisted column names are concatenated; every request value is bound as a named parameter. Reviewed 2026-11-27."
+    },
+    {
+      "rule": "java:S2077",
+      "component": "algoprep-backend:algoprep-problem-bank/src/main/java/com/algoprep/problembank/infrastructure/persistence/JdbcProblemAuthoringListRepository.java",
+      "hash": "aca7384607346851d4877cb5b638d41c",
+      "count": 1,
+      "transition": "accept",
+      "reason": "Only static final fragments, ternary or switch literals and allowlisted column names are concatenated; every request value is bound as a named parameter. Reviewed 2026-11-27."
+    },
+    {
+      "rule": "java:S2077",
+      "component": "algoprep-backend:algoprep-problem-bank/src/main/java/com/algoprep/problembank/infrastructure/persistence/JdbcPublishedProblemReadRepository.java",
+      "hash": "d7ef7076734ae84447992034ead7723d",
+      "count": 1,
+      "transition": "accept",
+      "reason": "Only static final fragments, ternary or switch literals and allowlisted column names are concatenated; every request value is bound as a named parameter. Reviewed 2026-11-27."
+    },
+    {
+      "rule": "java:S2142",
+      "component": "algoprep-backend:algoprep-judge/src/main/java/com/algoprep/judge/infrastructure/worker/WorkerConsumptionControl.java",
+      "hash": "2919c1506c413b2d97e5ca6779d71412",
+      "count": 1,
+      "transition": "falsepositive",
+      "reason": "The interrupt flag is restored after the loop; restoring it inside would spin."
+    },
+    {
+      "rule": "java:S4502",
+      "component": "algoprep-backend:algoprep-bootstrap/src/main/java/com/algoprep/bootstrap/config/SecurityConfig.java",
+      "hash": "081319b3996109f59882ec5b6e510d28",
+      "count": 1,
+      "transition": "accept",
+      "reason": "CSRF is ignored only for /api/**, authenticated by a bearer token; the refresh cookie is SameSite=Strict. Reviewed 2026-11-27."
+    },
+    {
+      "rule": "java:S7178",
+      "component": "algoprep-backend:algoprep-bootstrap/src/main/java/com/algoprep/bootstrap/config/SubmissionWebSocketConfig.java",
+      "hash": "4f0baa2a9c059bc235ad4bc73a0190f5",
+      "count": 1,
+      "transition": "falsepositive",
+      "reason": "@Value on a parameter of a static @Bean method is supported by Spring."
+    },
+    {
+      "rule": "java:S9352",
+      "component": "algoprep-backend:algoprep-ai-review/src/main/java/com/algoprep/aireview/application/command/interview/InterviewLlmCall.java",
+      "hash": "f04c0c7a7f0f9bfe2cf6c1fc894e4bc9",
+      "count": 1,
+      "transition": "falsepositive",
+      "reason": "The two LlmProviderPort beans are mutually exclusive through @Conditional (KeyConfigured / KeyMissing), covered by LlmProviderSelectionTest."
+    },
+    {
+      "rule": "java:S9352",
+      "component": "algoprep-backend:algoprep-ai-review/src/main/java/com/algoprep/aireview/application/command/interview/InterviewScorer.java",
+      "hash": "f04c0c7a7f0f9bfe2cf6c1fc894e4bc9",
+      "count": 1,
+      "transition": "falsepositive",
+      "reason": "The two LlmProviderPort beans are mutually exclusive through @Conditional (KeyConfigured / KeyMissing), covered by LlmProviderSelectionTest."
+    },
+    {
+      "rule": "java:S9352",
+      "component": "algoprep-backend:algoprep-ai-review/src/main/java/com/algoprep/aireview/application/command/practice/PracticeFeedbackCommandHandler.java",
+      "hash": "f04c0c7a7f0f9bfe2cf6c1fc894e4bc9",
+      "count": 1,
+      "transition": "falsepositive",
+      "reason": "The two LlmProviderPort beans are mutually exclusive through @Conditional (KeyConfigured / KeyMissing), covered by LlmProviderSelectionTest."
+    },
+    {
+      "rule": "java:S9352",
+      "component": "algoprep-backend:algoprep-ai-review/src/main/java/com/algoprep/aireview/application/command/review/ReviewLlmCall.java",
+      "hash": "f04c0c7a7f0f9bfe2cf6c1fc894e4bc9",
+      "count": 1,
+      "transition": "falsepositive",
+      "reason": "The two LlmProviderPort beans are mutually exclusive through @Conditional (KeyConfigured / KeyMissing), covered by LlmProviderSelectionTest."
+    },
+    {
+      "rule": "java:S9352",
+      "component": "algoprep-backend:algoprep-ai-review/src/main/java/com/algoprep/aireview/application/command/testcase/GenerateTestcaseScriptCommandHandler.java",
+      "hash": "5df3c07a0008d7fc2dd926f12a37b4f0",
+      "count": 1,
+      "transition": "falsepositive",
+      "reason": "The two LlmProviderPort beans are mutually exclusive through @Conditional (KeyConfigured / KeyMissing), covered by LlmProviderSelectionTest."
+    },
+    {
+      "rule": "typescript:S2068",
+      "component": "algoprep-frontend:src/entities/auth/api/__mock__/fake-auth.ts",
+      "hash": "c23f51b0d94e2553deed0fb775b82211",
+      "count": 1,
+      "transition": "accept",
+      "reason": "Mock login: compares with the literal 'wrong' to simulate a failed sign-in."
+    },
+    {
+      "rule": "typescript:S2068",
+      "component": "algoprep-frontend:src/entities/auth/api/real-auth.ts",
+      "hash": "c23f51b0d94e2553deed0fb775b82211",
+      "count": 1,
+      "transition": "falsepositive",
+      "reason": "An i18n key for the invalid credentials message, not a password."
+    },
+    {
+      "rule": "typescript:S6845",
+      "component": "algoprep-frontend:src/views/admin/ai-config/ui/admin-ai-config-view.tsx",
+      "hash": "fcc59cbcf1fd5f1bab2932f3c300423b",
+      "count": 1,
+      "transition": "accept",
+      "reason": "Deliberate: a scrollable region must be focusable so that keyboard users can scroll it."
+    },
+    {
+      "rule": "typescript:S6845",
+      "component": "algoprep-frontend:src/views/admin/system-log/ui/admin-system-log-view.tsx",
+      "hash": "fcc59cbcf1fd5f1bab2932f3c300423b",
+      "count": 1,
+      "transition": "accept",
+      "reason": "Deliberate: a scrollable region must be focusable so that keyboard users can scroll it."
+    }
+  ]
+}

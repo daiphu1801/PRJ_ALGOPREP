@@ -20,3 +20,17 @@ sonar-scanner -Dsonar.qualitygate.wait=true
 ```
 
 Quality Gate và Quality Profile được quản lý trên SonarQube. Bản Community Build chỉ phân tích nhánh chính; nếu cần phân tích pull request và trang trí PR, dùng edition hỗ trợ tính năng đó. Không đưa token vào file cấu hình hoặc URL công khai.
+
+## Quyết định rà Issue và Quality Gate `AlgoPrep`
+
+Đánh dấu "Accepted" và "False positive" chỉ nằm trong cơ sở dữ liệu của SonarQube, nên mất khi server bị dựng lại. Repo giữ bản gốc ở `sonar/triage.json` (mỗi mục gồm quy tắc, tệp, hash của dòng bị báo, số Issue đã rà, quyết định và lý do) cùng gate `AlgoPrep` (coverage dưới 90 là lỗi, cộng các điều kiện của `Sonar way`).
+
+Sau khi phân tích cả hai project, áp lại bằng tài khoản quản trị (`SONAR_LOGIN`, `SONAR_PASSWORD` trong `.env`; token phân tích không có quyền đánh dấu):
+
+```sh
+cd 05-coding
+node --env-file=.env sonar/apply-triage.mjs          # chạy thử, không ghi gì
+node --env-file=.env sonar/apply-triage.mjs --apply  # đánh dấu, tạo và gán gate
+```
+
+Một mục chỉ khớp khi dòng mã bị báo còn nguyên và số Issue không vượt số đã rà. Dòng đã đổi, hoặc có thêm một dòng giống hệt, thì Issue vẫn mở và script in ra để rà. Việc khớp chỉ dựa trên dòng bị báo, giống cách SonarQube tự theo dõi Issue: sửa cách dựng một chuỗi SQL ở dòng khác không làm Issue mở lại, nên vẫn phải xem khi review mã. Thêm mục mới vào `triage.json` là một quyết định chấp nhận rủi ro, cần ghi rõ lý do.
