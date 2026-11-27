@@ -129,6 +129,8 @@ jobs:
           NEXT_PUBLIC_MOCK_DATA: 'false'
           NEXT_PUBLIC_API_BASE_URL: /api/v1
           NEXT_PUBLIC_WS_BASE_URL: /ws
+          # Object storage shares the application origin behind Caddy.
+          NEXT_PUBLIC_OBJECT_STORAGE_URL: /
         run: pnpm build
 
       - name: Pack the standalone frontend

@@ -7,6 +7,18 @@ const withNextIntl = createNextIntlPlugin("./src/shared/i18n/request.ts");
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  poweredByHeader: false,
+  async headers() {
+    return [
+      {
+        source: "/:path*",
+        headers: [
+          { key: "X-Frame-Options", value: "DENY" },
+          { key: "X-Content-Type-Options", value: "nosniff" },
+        ],
+      },
+    ];
+  },
   // Self-contained server bundle (.next/standalone) for a small Docker image: `node .next/standalone/server.js`.
   output: "standalone",
   // Off by request — the dev-only floating "N" badge (route/build indicator) was mistaken for an

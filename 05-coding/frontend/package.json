@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "copy:monaco": "node -e \"require('fs').cpSync('node_modules/monaco-editor/min/vs','public/monaco/vs',{recursive:true})\"",
+    "copy:monaco": "node copy-monaco.mjs",
     "predev": "pnpm copy:monaco",
     "dev": "next dev",
     "prebuild": "pnpm copy:monaco",

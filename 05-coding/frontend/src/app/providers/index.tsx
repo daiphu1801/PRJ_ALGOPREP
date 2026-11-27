@@ -7,9 +7,15 @@ import { AuthProvider } from "./auth-provider";
 import { AppToaster } from "./app-toaster";
 import { AuthLoadingReset } from "@/features/auth-by-credentials";
 
-export function Providers({ children }: { children: ReactNode }) {
+export function Providers({
+  children,
+  nonce,
+}: {
+  children: ReactNode;
+  nonce?: string;
+}) {
   return (
-    <ThemeProvider>
+    <ThemeProvider nonce={nonce}>
       <AuthProvider>
         <QueryProvider>
           {children}

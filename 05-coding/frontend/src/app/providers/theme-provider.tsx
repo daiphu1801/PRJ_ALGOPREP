@@ -31,7 +31,13 @@ function clearCorruptedThemeStorage() {
 
 // Light is the default, Dark is optional (DEC-2026-0824-dark-light-theme). attribute="class"
 // matches .dark in globals.css.
-export function ThemeProvider({ children }: { children: ReactNode }) {
+export function ThemeProvider({
+  children,
+  nonce,
+}: {
+  children: ReactNode;
+  nonce?: string;
+}) {
   clearCorruptedThemeStorage();
 
   return (
@@ -39,6 +45,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       attribute="class"
       defaultTheme="light"
       enableSystem={false}
+      nonce={nonce}
     >
       {children}
     </NextThemesProvider>
