@@ -47,7 +47,7 @@ jobs:
       infrastructure: ${{ steps.filter.outputs.infrastructure }}
       judge: ${{ steps.filter.outputs.judge }}
     steps:
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Loc theo duong dan
         id: filter
@@ -91,7 +91,7 @@ jobs:
       run:
         working-directory: 05-coding
     steps:
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       # pnpm phai cai TRUOC setup-node, vi `cache: pnpm` cua setup-node can pnpm da ton tai de
       # tim duoc store path.
@@ -166,7 +166,7 @@ jobs:
       run:
         working-directory: 05-coding/backend
     steps:
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Cai JDK 21
         uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
@@ -222,7 +222,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 25
     steps:
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Validate workflows and CI Gate
         run: |
           go run github.com/rhysd/actionlint/cmd/actionlint@v1.7.7
@@ -266,7 +266,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Require every applicable check
         env:
           EVENT: ${{ github.event_name }}
