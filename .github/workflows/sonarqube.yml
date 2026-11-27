@@ -62,7 +62,7 @@ jobs:
       - name: Generate frontend coverage
         run: pnpm --filter frontend exec vitest run --coverage
       - name: Analyze frontend
-        uses: SonarSource/sonarqube-scan-action@d209202bc7d53ff1cc128f7f907dac145c9d6ae9 # v8.3.0
+        uses: SonarSource/sonarqube-scan-action@70bad232163b09d998ea0707ee80c0ec80798c16 # v8.5.1
         with:
           projectBaseDir: 05-coding/frontend
           args: -Dsonar.qualitygate.wait=true
