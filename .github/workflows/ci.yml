@@ -169,7 +169,7 @@ jobs:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
 
       - name: Cai JDK 21
-        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
+        uses: actions/setup-java@d1374f8ac74474200d16ef8ecee22c7ae7a51880 # v6.3.0
         with:
           # 21 chu khong phai 17 hay 25: DEC-2026-0820-stack-versions pin Java 21 LTS, va POM cha
           # co maven-enforcer chan JDK ngoai [21,26) nen sai phien ban la do ngay o buoc validate.
