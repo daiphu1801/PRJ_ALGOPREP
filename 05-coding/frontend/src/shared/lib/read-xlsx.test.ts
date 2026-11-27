@@ -100,6 +100,17 @@ describe("readXlsx", () => {
     expect(sheet.errorCells).toEqual(["C1"]);
   });
 
+  it("stays fast on a number format full of unclosed brackets", async () => {
+    const started = performance.now();
+    const sheet = await readXlsx(
+      book('<row><c r="A1" s="1"><v>45000</v></c></row>', {
+        "xl/styles.xml": `<styleSheet><numFmts><numFmt numFmtId="164" formatCode="${"[".repeat(100_000)}"/></numFmts><cellXfs><xf numFmtId="0"/><xf numFmtId="164"/></cellXfs></styleSheet>`,
+      }),
+    );
+    expect(sheet.rows).toEqual([["45000"]]);
+    expect(performance.now() - started).toBeLessThan(2000);
+  });
+
   it("reads only the first sheet and says how many there are", async () => {
     const sheet = await readXlsx(
       book('<row><c r="A1"><v>1</v></c></row>', {

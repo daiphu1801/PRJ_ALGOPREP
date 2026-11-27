@@ -121,7 +121,7 @@ const textOf = (node: Element) =>
     .map((t) => t.textContent)
     .join("")
     .replace(/_x([0-9A-Fa-f]{4})_/g, (_, hex: string) =>
-      String.fromCharCode(parseInt(hex, 16)),
+      String.fromCharCode(Number.parseInt(hex, 16)),
     )
     .replace(/\r\n?/g, "\n");
 
@@ -141,7 +141,8 @@ function dateStyles(
     tags(styles, "numFmt").map((format) => [
       Number(format.getAttribute("numFmtId")),
       (format.getAttribute("formatCode") ?? "").replace(
-        /"[^"]*"|\[[^\]]*\]/g,
+        // Excel brackets do not nest; leaving "[" out of the class keeps this linear on a crafted format.
+        /"[^"]*"|\[[^[\]]*\]/g,
         "",
       ),
     ]),

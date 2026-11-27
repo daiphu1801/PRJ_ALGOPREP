@@ -58,11 +58,14 @@ describe("MockInterviewHistoryView", () => {
     await renderList();
     pick("Mức điểm", /^Yếu/);
     await waitFor(() => expect(dataRows().length).toBeLessThan(10));
+    // An empty list would pass the loops below without checking anything.
+    expect(dataRows().length).toBeGreaterThan(0);
     for (const row of dataRows()) {
       expect(within(row).getByText("Yếu")).toBeInTheDocument();
     }
     pick("Nguồn", "Kho câu hỏi");
     await waitFor(() => {
+      expect(dataRows().length).toBeGreaterThan(0);
       for (const row of dataRows()) {
         expect(within(row).getByText("Kho câu hỏi")).toBeInTheDocument();
       }
@@ -74,11 +77,15 @@ describe("MockInterviewHistoryView", () => {
     fireEvent.change(screen.getByLabelText("Tìm phiên phỏng vấn"), {
       target: { value: "ngân hàng số 4" },
     });
-    await screen.findByText(/Hiển thị 1 đến 1 trong 1 phiên/);
+    expect(
+      await screen.findByText(/Hiển thị 1 đến 1 trong 1 phiên/),
+    ).toBeInTheDocument();
     fireEvent.change(screen.getByLabelText("Tìm phiên phỏng vấn"), {
       target: { value: "không có gì khớp" },
     });
-    await screen.findByText(/Chưa có phiên nào khớp/);
+    expect(
+      await screen.findByText(/Chưa có phiên nào khớp/),
+    ).toBeInTheDocument();
   });
 
   it("sorts by score when the header is pressed and pages forward", async () => {

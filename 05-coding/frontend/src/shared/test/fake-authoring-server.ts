@@ -88,7 +88,7 @@ export function fakeAuthoringServer(): FakeServer {
           id: `6666666${index}-6666-4666-8666-666666666666`,
         }),
       ),
-      testcases: problem.testcases.map(testcaseDto),
+      testcases: problem.testcases.map((row, index) => testcaseDto(row, index)),
       testcaseSummary: {
         total: problem.testcases.length,
         approved: problem.testcases.length,
